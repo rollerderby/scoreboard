@@ -706,12 +706,12 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
           <div class="nav-container">
             <div class="nav-inner" id="scroll-spy" style="width: min-content; overflow: auto; top: 60px; bottom: 0; padding 10px 0 10px 0;">
               <span class="toc">Table of contents</span>
-              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the 5.0.2 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
+              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the 5.0.3 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
 <h3 id="howtos">Howtos</h3>
 <ul class="nav"><li><strong><a href="#Installing-the-Scoreboard-Software">Installing the Scoreboard Software</a></strong><ul class="nav"><li><span>Instructions for getting the software installed and running on a standalone computer to provide a functioning scoreboard.</span></li></ul></li><li><strong><a href="#Quick-Start-Guide">Quick Start Guide</a></strong><ul class="nav"><li><span>Basic information to run a game with only what is mandatory for a regulation game. See the pages below for the full feature set.</span></li></ul></li><li><strong><a href="#Preparing-a-Game">Preparing a Game</a></strong></li><li><strong><a href="#Scoreboard-Operation">Scoreboard Operation</a></strong></li><li><strong><a href="#Configuring-Hotkeys">Configuring Hotkeys</a></strong></li><li><strong><a href="#Using-the-Scoreboard-on-a-Network">Using the Scoreboard on a Network</a></strong></li><li><strong><a href="#Penalty-Tracking">Penalty Tracking</a></strong></li><li><strong><a href="#Lineup-Tracking">Lineup Tracking</a></strong></li><li><span>The </span><strong>Penalty Lineup Tracking</strong> interface combines the PT and LT inputs for one team on a single screen. See those pages for info how to operate it.</li><li><strong><a href="Tweeting-from-CRG">Tweeting from CRG</a></strong></li></ul><h3 id="tips-tricks">Tips &amp; Tricks</h3>
 <ul class="nav"><li><strong><a href="#Scoreboard-Best-Practices">Scoreboard Best Practices</a></strong></li><li><strong><a href="#Graphics">Graphics</a></strong><ul class="nav"><li><span>Information on graphics for use with CRG, such as team logos and sponsor banners.</span></li></ul></li><li><strong><a href="#External-Links">External Links</a></strong><ul class="nav"><li><span>Links to other sites with information about CRG Scoreboard.</span></li></ul></li></ul><h3 id="details-about-screens-tabs">Details about Screens / Tabs</h3>
-<ul class="nav"><li><span>Main Operator </span><strong><a href="#Controls">Controls</a></strong></li><li><strong><a href="#Team-Editor">Team Editor</a></strong></li><li><strong><a href="#Ruleset-Editor">Ruleset Editor</a></strong></li><li><strong><a href="#IGRF-Editor">IGRF Editor</a></strong></li><li><span>The </span><strong>Sheets</strong> tab allows you to display and edit a single sheet of paperwork or two sheets side by side. See <a href="#Controls">Controls</a> (for SK), <a href="#Penalty-Controls">Penalty Controls</a>, and <a href="#Lineup-Controls">Lineup Controls</a> for details on how to edit them.</li><li><strong><a href="ScoreBoard-Settings">ScoreBoard Settings</a></strong></li><li><strong><a href="#Penalty-Controls">Penalty Controls</a></strong></li><li><strong><a href="#Lineup-Controls">Lineup Controls</a></strong></li><li><strong><a href="#Data-Management">Data Management</a></strong> (Games / Teams / Rulesets)</li><li><strong><a href="#Files">Files</a></strong></li><li><strong><a href="Mobile-Device-Operator-Controls">Mobile Device Operator Controls</a></strong></li><li><strong><a href="Scoreboard-Video-Overlays">Scoreboard Video Overlays</a></strong></li></ul><h3 id="developer-information">Developer Information</h3>
-<ul class="nav"><li><strong><a href="#Building-the-Scoreboard-from-Source">Building the Scoreboard from Source</a></strong></li><li><strong><a href="#Custom-Screen-Creation-Tutorial">Custom Screen Creation Tutorial</a></strong></li><li><strong><a href="#WebSocket-Commands">WebSocket Commands</a></strong></li><li><strong><a href="WebSocket-Channels">WebSocket Channels</a></strong></li></ul>
+<ul class="nav"><li><span>Main Operator </span><strong><a href="#Controls">Controls</a></strong></li><li><strong><a href="#Team-Editor">Team Editor</a></strong></li><li><strong><a href="#Ruleset-Editor">Ruleset Editor</a></strong></li><li><strong><a href="#IGRF-Editor">IGRF Editor</a></strong></li><li><span>The </span><strong>Sheets</strong> tab allows you to display and edit a single sheet of paperwork or two sheets side by side. See <a href="#Controls">Controls</a> (for SK), <a href="#Penalty-Controls">Penalty Controls</a>, and <a href="#Lineup-Controls">Lineup Controls</a> for details on how to edit them.</li><li><strong><a href="#ScoreBoard-Settings">ScoreBoard Settings</a></strong></li><li><strong><a href="#Penalty-Controls">Penalty Controls</a></strong></li><li><strong><a href="#Lineup-Controls">Lineup Controls</a></strong></li><li><strong><a href="#Data-Management">Data Management</a></strong> (Games / Teams / Rulesets)</li><li><strong><a href="#Files">Files</a></strong></li><li><strong><a href="Mobile-Device-Operator-Controls">Mobile Device Operator Controls</a></strong></li><li><strong><a href="Scoreboard-Video-Overlays">Scoreboard Video Overlays</a></strong></li></ul><h3 id="developer-information">Developer Information</h3>
+<ul class="nav"><li><strong><a href="#Building-the-Scoreboard-from-Source">Building the Scoreboard from Source</a></strong></li><li><strong><a href="#Custom-Screen-Creation-Tutorial">Custom Screen Creation Tutorial</a></strong></li><li><strong><a href="#WebSocket-Commands">WebSocket Commands</a></strong></li><li><strong><a href="#WebSocket-Channels">WebSocket Channels</a></strong></li></ul>
               
             </div>
           </div>
@@ -1882,6 +1882,79 @@ The editor for stored teams will always be a screen with a single team while the
 </ul>
 </li>
 </ul>
+<p class="page" id="ScoreBoard-Settings"></p><h1>ScoreBoard Settings</h1>
+<h2 id="general-settings">General Settings</h2>
+<ul>
+<li><em>Intermission Labels</em> - This button allows you to change the text used on the clock before and after the game, and between periods.<ul>
+<li><em>Pre Game</em> - The text displayed before the game, when the intermission clock is running. Default: &quot;Time To Derby&quot;.</li>
+<li><em>Intermission</em> - The text displayed between periods, when the intermission clock is running. Default: &quot;Intermission&quot;</li>
+<li><em>Unofficial Score</em> - The text displayed after the game, but before the &quot;Final Score&quot; button is clicked. Default: &quot;Unofficial Score&quot;</li>
+<li><em>Official Score</em> - The text displayed after the game, once the &quot;Final Score&quot; button is clicked. Default: &quot;Final Score&quot;</li>
+</ul>
+</li>
+<li><em>Sync Clocks</em> - When active (default) all running clocks will tick over at the same moment.</li>
+<li><em>Clock shown after Timeout</em> - Which clock should be displayed in the lineup time between the end of a timeout and the start of the next jam. Some people have very strong feelings about this. Default: Lineup</li>
+<li><em>Auto Start</em> - Should CRG automatically start a Jam or Timeout after the lineup has run for the duration set in the ruleset? This is intended for scrimmages with low staffing where you have to run the scoreboard (mostly) unattended. Default: Off</li>
+<li><em>Time between end of Lineup and auto start being applied</em> - When Auto Start is active CRG will wait for this time before actually activating autostart. This is intended to give you time to override the auto start behaviour (e.g. start a timeout when auto start would have started a jam). When auto start activates the clocks will be adjusted to the values they would have had without this delay.</li>
+<li><em>Auto End Jams</em> - When active (default in CRG 5 - default will change in CRG 6) the jam will automatically be ended after the jam clock has reached 0. It is recommended to deactivate this unless you have to run the scoreboard (mostly) unattended.</li>
+<li><em>Auto End Team Timeouts</em> - When active ends team timeouts after the duration set in the ruleset. Like the other automation settings this is intended for running CRG (mostly) unattended. Default: Off</li>
+<li><em>CRG Tracks Lineups</em> - Indicates when CRG is used to track the lineups for the current game.<ul>
+<li>When active the &quot;Box&quot; buttons for Jammers and Pivots will be hidden from the &quot;Controls&quot; tab as box trips are now entered by the LT.</li>
+<li>When not active (default) penalties will automatically marked as served.</li>
+<li>When you open the LT or PLT screen and lineup tracking is disabled, you will get a button to enable it from there.</li>
+</ul>
+</li>
+<li><em>Blank Statsbook File</em> - Path to a blank WFTDA statsbook file (2019 version, both A4 and US Letter will work). The path is relative to your CRG folder. (E.g. &quot;config/wftda-statsbook-full-A4.xlsx&quot; for the A4 version placed in the config subfolder.) Default: Unset, as you will have to download the file yourself.</li>
+<li><em>Team Name for Display</em> - The preferred name of a team to be used in most of CRG. See the <a href="#Team-Editor">Team Editor</a> page for a detailed explanation of which names CRG uses where for teams and how they are determined. Default: &quot;League Name&quot;</li>
+<li><em>Team Name for Files</em> - The name of a team to be used in statsbook files. <em>Note</em>: This must be &quot;League Name&quot; (default) when exporting statsbooks for WFTDA sanctioned games.</li>
+<li><em>Name Format for new games</em> - The name format string used when creating a game. Default: &quot;%G %d %1 vs. %2 (%s: %S)&quot;<ul>
+<li>Supports the following variables:
+| Variable | Meaning                                                        |
+| -------- | -------------------------------------------------------------- |
+| %g:      | Game Number                                                    |
+| %G:      | &quot;Game \<Game Number>: &quot; if game number is set, empty otherwise |
+| %d:      | Date of Game                                                   |
+| %t:      | Start Time                                                     |
+| %1:      | Team 1 Name                                                    |
+| %2:      | Team 2 Name                                                    |
+| %s:      | Game State                                                     |
+| %S:      | &quot;\<Team 1 Score> - \<Team 2 Score>&quot;                            |</li>
+</ul>
+</li>
+</ul>
+<h2 id="main-display-settings">Main Display Settings</h2>
+<p>The controls on this page are set up to allow you to preview changes to the scoreboard before you actually display them to the world.  When the page first loads, click both <em>Show Preview</em> buttons at the bottom of the page.  The left side of the page will now display what&#39;s currently visible on the scoreboard, and the right side will display a preview of what will be displayed next.</p>
+<p>If you want to live dangerously and apply changes directly to the scoreboard, you can switch the <em>Edit</em> dropdown to read &quot;Live ScoreBoard&quot;  Now any changes you make will be instantly visible to the entire venue.</p>
+<p>When you edit the preview the usual work flow is as follows:</p>
+<ul>
+<li>Under <em>Current View</em> select the type of screen you wish to display next:<ul>
+<li>ScoreBoard - This will display  the scoreboard</li>
+<li>WhiteBoard - This will display a penalty whiteboard</li>
+<li>Image - This will display a static image</li>
+<li>Video - This will display a looped video</li>
+<li>Custom Page - This will display a custom HTML page</li>
+</ul>
+</li>
+<li>Customize the preview screen as outlined below</li>
+<li>When you are happy with the preview and wish to make it visible on the main scoreboard, click <em>Apply Preview</em></li>
+</ul>
+<p>Details on customizing each type of screen are below.</p>
+<h3 id="scoreboard">ScoreBoard</h3>
+<ul>
+<li><em>Hide Logos</em> - When active hides team logos from the main scorebaord view in favor of larger names. Logos will still appear on the overlay. Default: Off</li>
+<li><em>Swap Team Sides</em> - When active swaps which side the teams appear on the scoreboard.  This will not affect the operator controls. Default: Off</li>
+<li><em>Box Style</em> - This dropdown changes the appearance of the boxes on the scoreboard</li>
+<li><em>Side Padding</em> - This adds padding to the side of the scoreboard.  Useful if your projector isn&#39;t matching the aspect ratio of the screen well.</li>
+</ul>
+<h3 id="image">Image</h3>
+<p>This option allows you to select a static image.  CRG comes preloaded with a test image, but you can add whatever images you like to the list. To add images, either use the <a href="#Files">Files</a> screen or start from the directory where you launched the scoreboard, and navigate to <code>html/images/fullscreen/</code>. In the same directory with the test image, drop whatever other images you would like to display.</p>
+<p>Once you have your image in the correct directory, select the file from the &quot;Image View&quot; dropdown.</p>
+<h3 id="video">Video</h3>
+<p>This option allows you to select a video, which will be automatically looped.  CRG comes preloaded with a test video. To add videos, either use the <a href="#Files">Files</a> screen or start from the directory where you launched the scoreboard, and navigate to <code>html/images/fullscreen/</code>. Be sure to test whether your video displays properly well ahead of time.</p>
+<p>Once you have your video in the correct directory, select the file from the &quot;Video View&quot; dropdown.</p>
+<h3 id="custom-page">Custom Page</h3>
+<p>You may write your own custom HTML pages for display on the scoreboard. For a starter on on how to do so see <a href="#Custom-Screen-Creation-Tutorial">Custom Screen Creation Tutorial</a>. Starting from the directory where you launched the scoreboard, they should be placed in <code>html/custom/view/</code>.</p>
+<p>Once you have your page in the correct directory, select the file from the &quot;Custom Page&quot; dropdown.</p>
 <p class="page" id="Penalty-Controls"></p><h1>Penalty Controls</h1>
 <h2 id="screen-layout">Screen Layout</h2>
 <p><img src="https://user-images.githubusercontent.com/34135287/75905739-b293b380-5e45-11ea-96b6-bbd80a180139.png" /></p>
@@ -2244,7 +2317,3870 @@ manageScore(k, v) {
 <p>A pong is sent by the backend as reply to a ping. It looks like:</p>
 <pre class="hljs">{ <span class="hljs-attr">"Pong"</span>: <span class="hljs-string">""</span> }</pre><h2 id="error">error</h2>
 <p>An error is sent by the backend if a command contained a wrong action. It looks like:</p>
-<pre class="hljs">{ <span class="hljs-attr">"error"</span>: _errorMessage_ }</pre>
+<pre class="hljs">{ <span class="hljs-attr">"error"</span>: _errorMessage_ }</pre><p class="page" id="WebSocket-Channels"></p><h1>WebSocket Channels</h1>
+<p>This gives an overview of all the channels/keys used in the WS communication between backend and frontend and in exported JSON files. For documentation on how to use them see <a href="#WebSocket-Commands">WebSocket Commands</a>.</p>
+<ul>
+<li><a href="#elements-in-scoreboard">Elements in <code>ScoreBoard</code></a></li>
+<li><a href="#elements-in-scoreboardgame-and-scoreboardcurrentgame">Elements in <code>ScoreBoard.Game(*)</code> and <code>ScoreBoard.CurrentGame</code></a></li>
+<li><a href="#elements-in-scoreboardclock-scoreboardgameclock--and-scoreboardcurrentgameclock">Elements in <code>ScoreBoard.Clock(*)</code>, <code>ScoreBoard.Game(*).Clock(*)</code>,  and <code>ScoreBoard.CurrentGame.Clock(*)</code></a></li>
+<li><a href="#elements-in-scoreboardteam-scoreboardgameteam-and-scoreboardcurrentgameteam">Elements in <code>ScoreBoard.Team(*)</code>, <code>ScoreBoard.Game(*).Team(*)</code>, and <code>ScoreBoard.CurrentGame.Team(*)</code></a></li>
+<li><a href="#elements-in-scoreboardteamskater-scoreboardgameteamskater-and-scoreboardcurrentgameteamskater">Elements in <code>ScoreBoard.Team(*).Skater(*)</code>, <code>ScoreBoard.Game(*).Team(*).Skater(*)</code>, and <code>ScoreBoard.CurrentGame.Team(*).Skater(*)</code></a></li>
+<li><a href="#elements-in-scoreboardteamskaterpenalty-scoreboardgameteamskaterpenalty-and-scoreboardcurrentgameteamskaterpenalty">Elements in <code>ScoreBoard.Team(*).Skater(*).Penalty(*)</code>, <code>ScoreBoard.Game(*).Team(*).Skater(*).Penalty(*)</code>, and <code>ScoreBoard.CurrentGame.Team(*).Skater(*).Penalty(*)</code></a></li>
+<li><a href="#elements-in-scoreboardteamposition-scoreboardgameteamposition-and-scoreboardcurrentgameteamposition">Elements in <code>ScoreBoard.Team(*).Position(*)</code>, <code>ScoreBoard.Game(*).Team(*).Position(*)</code>, and <code>ScoreBoard.CurrentGame.Team(*).Position(*)</code></a></li>
+<li><a href="#elements-in-scoreboardteamboxtrip-and-scoreboardgameteamboxtrip-and-scoreboardcurrentgameteamboxtrip">Elements in <code>ScoreBoard.Team(*).BoxTrip(*)</code>, and <code>ScoreBoard.Game(*).Team(*).BoxTrip(*)</code>, and <code>ScoreBoard.CurrentGame.Team(*).BoxTrip(*)</code></a></li>
+<li><a href="#elements-in-scoreboardperiod-scoreboardgameperiod-and-scoreboardcurrentgameperiod">Elements in <code>ScoreBoard.Period(*)</code>, <code>ScoreBoard.Game(*).Period(*)</code>, and <code>ScoreBoard.CurrentGame.Period(*)</code></a></li>
+<li><a href="#elements-in-scoreboardjam-scoreboardperiodjam-scoreboardgamejam-scoreboardgameperiodjam-scoreboardcurrentgamejam-and-scoreboardcurrentgameperiodjam">Elements in <code>ScoreBoard.Jam(*)</code>, <code>ScoreBoard.Period(*).Jam(*)</code>, <code>ScoreBoard.Game(*).Jam(*)</code>, <code>ScoreBoard.Game(*).Period(*).Jam(*)</code>, <code>ScoreBoard.CurrentGame.Jam(*)</code>, and <code>ScoreBoard.CurrentGame.Period(*).Jam(*)</code></a></li>
+<li><a href="#elements-in-scoreboardperiodjamteamjam-scoreboardgameperiodjamteamjam-and-scoreboardcurrentgameperiodjamteamjam">Elements in <code>ScoreBoard.Period(*).Jam(*).TeamJam(*)</code>, <code>ScoreBoard.Game(*).Period(*).Jam(*).TeamJam(*)</code>, and <code>ScoreBoard.CurrentGame.Period(*).Jam(*).TeamJam(*)</code></a></li>
+<li><a href="#elements-in-scoreboardperiodjamteamjamfielding-scoreboardgameperiodjamteamjamfielding-and-scoreboardcurrentgameperiodjamteamjamfielding">Elements in <code>ScoreBoard.Period(*).Jam(*).TeamJam(*).Fielding(*)</code>, <code>ScoreBoard.Game(*).Period(*).Jam(*).TeamJam(*).Fielding(*)</code>, and <code>ScoreBoard.CurrentGame.Period(*).Jam(*).TeamJam(*).Fielding(*)</code></a></li>
+<li><a href="#elements-in-scoreboardperiodjamteamjamscoringtrip-scoreboardgameperiodjamteamjamscoringtrip-and-scoreboardcurrentgameperiodjamteamjamscoringtrip">Elements in <code>ScoreBoard.Period(*).Jam(*).TeamJam(*).ScoringTrip(*)</code>, <code>ScoreBoard.Game(*).Period(*).Jam(*).TeamJam(*).ScoringTrip(*)</code>, and <code>ScoreBoard.CurrentGame.Period(*).Jam(*).TeamJam(*).ScoringTrip(*)</code></a></li>
+<li><a href="#elements-in-scoreboardperiodtimeout-scoreboardgameperiodtimeout-and-scoreboardcurrentgameperiodtimeout">Elements in <code>ScoreBoard.Period(*).Timeout(*)</code>, <code>ScoreBoard.Game(*).Period(*).Timeout(*)</code>, and <code>ScoreBoard.CurrentGame.Period(*).Timeout(*)</code></a></li>
+<li><a href="#elements-in-scoreboardgamenso-scoreboardgameref-scoreboardcurrentgamenso-and-scoreboardcurrentgameref">Elements in <code>ScoreBoard.Game(*).Nso(*)</code>, <code>ScoreBoard.Game(*).Ref(*)</code>, <code>ScoreBoard.CurrentGame.Nso(*)</code>, and <code>ScoreBoard.CurrentGame.Ref(*)</code></a></li>
+<li><a href="#elements-in-scoreboardgameexpulsion-and-scoreboardcurrentgameexpulsion">Elements in <code>ScoreBoard.Game(*).Expulsion(*)</code>, and <code>ScoreBoard.CurrentGame.Expulsion(*)</code></a></li>
+<li><a href="#elements-in-scoreboardpenaltycodes">Elements in <code>ScoreBoard.PenaltyCodes</code></a></li>
+<li><a href="#elements-in-scoreboardrulesets">Elements in <code>ScoreBoard.Rulesets</code></a></li>
+<li><a href="#elements-in-scoreboardrulesetsruledefinition">Elements in <code>ScoreBoard.Rulesets.RuleDefinition(*)</code></a></li>
+<li><a href="#elements-in-scoreboardrulesetsruleset">Elements in <code>ScoreBoard.Rulesets.Ruleset(*)</code></a></li>
+<li><a href="#elements-in-scoreboardsettings">Elements in <code>ScoreBoard.Settings</code></a><ul>
+<li><a href="#setting-ids-used-by-crg">Setting Ids used by CRG</a></li>
+</ul>
+</li>
+<li><a href="#elements-in-scoreboardtwitter">Elements in <code>ScoreBoard.Twitter</code></a></li>
+<li><a href="#elements-in-scoreboardtwitterconditionaltweet">Elements in <code>ScoreBoard.Twitter.ConditionalTweet(*)</code></a></li>
+<li><a href="#elements-in-scoreboardtwitterformatspecifier">Elements in <code>ScoreBoard.Twitter.FormatSpecifier(*)</code></a></li>
+<li><a href="#elements-in-scoreboardmedia">Elements in <code>ScoreBoard.Media</code></a></li>
+<li><a href="#elements-in-scoreboardmediamediaformat">Elements in <code>ScoreBoard.Media.MediaFormat(*)</code></a></li>
+<li><a href="#elements-in-scoreboardmediamediaformatmediatype">Elements in <code>ScoreBoard.Media.MediaFormat(*).MediaType(*)</code></a></li>
+<li><a href="#elements-in-scoreboardmediamediaformatmediatypemediafile">Elements in <code>ScoreBoard.Media.MediaFormat(*).MediaType(*).MediaFile(*)</code></a></li>
+<li><a href="#elements-in-scoreboardclients">Elements in <code>ScoreBoard.Clients</code></a></li>
+<li><a href="#elements-in-scoreboardclientsclient">Elements in <code>ScoreBoard.Clients.Client(*)</code></a></li>
+<li><a href="#elements-in-scoreboardclientsdevice">Elements in <code>ScoreBoard.Clients.Device(*)</code></a></li>
+<li><a href="#elements-in-scoreboardpreparedteam">Elements in <code>ScoreBoard.PreparedTeam(*)</code></a></li>
+<li><a href="#elements-in-scoreboardpreparedteamskater">Elements in <code>ScoreBoard.PreparedTeam(*).Skater(*)</code></a></li>
+</ul>
+<p>Notes:</p>
+<ul>
+<li>Channels with a value type of &quot;-&quot; are commands.</li>
+<li>Types ending in &quot;Id&quot; are the <code>Id</code> of an element of the corresponding type.</li>
+<li>Valid Values for <code>_position_</code> are <code>Jammer</code>, <code>Pivot</code>, <code>Blocker1</code>, <code>Blocker2</code>, <code>Blocker3</code>. (As in the regular paperwork, the Pivot position is used for the 4th Blocker if there is no Pivot.)</li>
+<li>Valid values for <code>_clock_</code> are <code>Period</code>, <code>Jam</code>, <code>Lineup</code>, <code>Timeout</code>, and <code>Intermission</code>.</li>
+<li>TimeoutOwner is <code>&quot;1&quot;</code> for Team 1, <code>&quot;2&quot;</code> for Team 2, <code>&quot;O&quot;</code> (the letter) for Official timeout, or <code>&quot;&quot;</code> for no timeout.</li>
+<li>All times are in ms unless stated otherwise. Walltime is ms since some fixed point. (Usually midnight 1970-01-01)</li>
+<li>Durations that are still ongoing are set to 0.</li>
+<li>If a writable value is a copy of another value, writing to it will write to the original value.</li>
+<li>For elements with subkeys writability indicates if you can add/remove entries.</li>
+</ul>
+<h2 id="elements-in-scoreboard">Elements in <code>ScoreBoard</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td>always empty string</td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CurrentPeriodNumber</code></td>
+<td>number</td>
+<td>no</td>
+<td>before 5.0</td>
+<td>copy of <code>CurrentPeriod-&gt;Number</code></td>
+</tr>
+<tr>
+<td><code>CurrentPeriod</code></td>
+<td>PeriodId</td>
+<td>no</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>InPeriod</code></td>
+<td>bool</td>
+<td>no</td>
+<td>before 5.0</td>
+<td>copy of <code>CurrentPeriod-&gt;Running</code></td>
+</tr>
+<tr>
+<td><code>UpcomingJam</code></td>
+<td>JamId</td>
+<td>no</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>UpcomingJamNumber</code></td>
+<td>number</td>
+<td>no</td>
+<td>before 5.0</td>
+<td>copy of <code>UpcomingJam-&gt;Number</code></td>
+</tr>
+<tr>
+<td><code>InJam</code></td>
+<td>bool</td>
+<td>no</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>InOvertime</code></td>
+<td>bool</td>
+<td>no</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CurrentTimeout</code></td>
+<td>TimeoutId</td>
+<td>no</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>TimeoutOwner</code></td>
+<td>TimeoutOwner</td>
+<td>during timeout</td>
+<td>before 5.0</td>
+<td>copy of <code>CurrentTimeout-&gt;Owner</code></td>
+</tr>
+<tr>
+<td><code>OfficialReview</code></td>
+<td>bool</td>
+<td>during timeout</td>
+<td>before 5.0</td>
+<td>copy of <code>CurrentTimeout-&gt;Review</code></td>
+</tr>
+<tr>
+<td><code>NoMoreJam</code></td>
+<td>bool</td>
+<td>no</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>OfficialScore</code></td>
+<td>bool</td>
+<td>yes</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Clock(_clock_)</code></td>
+<td>Clock</td>
+<td>no</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Team(_number_)</code></td>
+<td>Team</td>
+<td>no</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Period(_number_)</code></td>
+<td>Period</td>
+<td>no</td>
+<td>before 5.0</td>
+<td>There is a <code>Period(0)</code> for technical reasons. Just ignore it.</td>
+</tr>
+<tr>
+<td><code>Jam(_number_)</code></td>
+<td>Jam</td>
+<td>no</td>
+<td>before 5.0</td>
+<td>Should only hold one element at a time pointed to by <code>UpcomingJam</code>.</td>
+</tr>
+<tr>
+<td><code>PenaltyCodes</code></td>
+<td>no</td>
+<td>PenaltyCodes</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Game(_id_)</code></td>
+<td>Game</td>
+<td>yes</td>
+<td>from 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CurrentGame</code></td>
+<td>CurrentGame</td>
+<td>no</td>
+<td>from 5.0</td>
+<td>change <code>ScoreBoard.CurrentGame.Game</code> to set the current game</td>
+</tr>
+<tr>
+<td><code>Rulesets</code></td>
+<td>Rulesets</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Settings</code></td>
+<td>Settings</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Twitter</code></td>
+<td>Twitter</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Media</code></td>
+<td>Media</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Clients</code></td>
+<td>Clients</td>
+<td>no</td>
+<td>from v4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>PreparedTeam(_id_)</code></td>
+<td>PreparedTeam</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Version(_type_)</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td><code>Version(release)</code> is the version number of the running server</td>
+</tr>
+<tr>
+<td><code>Reset</code></td>
+<td>-</td>
+<td>-</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>StartJam</code></td>
+<td>-</td>
+<td>-</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>StopJam</code></td>
+<td>-</td>
+<td>-</td>
+<td>before 5.0</td>
+<td>Also used to stop timeouts.</td>
+</tr>
+<tr>
+<td><code>Timeout</code></td>
+<td>-</td>
+<td>-</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ClockUndo</code></td>
+<td>-</td>
+<td>-</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ClockReplace</code></td>
+<td>-</td>
+<td>-</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>StartOvertime</code></td>
+<td>-</td>
+<td>-</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>OfficialTimeout</code></td>
+<td>-</td>
+<td>-</td>
+<td>before 5.0</td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-game-and-scoreboard-currentgame">Elements in <code>ScoreBoard.Game(*)</code> and <code>ScoreBoard.CurrentGame</code></h2>
+<p>All values under <code>ScoreBoard.CurrentGame</code> are copies of the corresponding values of the game pointed to by <code>ScoreBoard.CurrentGame.Game</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Game</code></td>
+<td>GameId</td>
+<td>yes</td>
+<td></td>
+<td>only in <code>CurrentGame</code></td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>was not previously in <code>ScoreBoard</code>; overwrite <code>NameFormat</code> with a fixed string to set</td>
+</tr>
+<tr>
+<td><code>NameFormat</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>was not previously in <code>ScoreBoard</code></td>
+</tr>
+<tr>
+<td><code>State</code></td>
+<td>State</td>
+<td>no</td>
+<td></td>
+<td>was not previously in <code>ScoreBoard</code>. Possible values: <code>Prepared</code>, <code>Running</code>, <code>Finished</code></td>
+</tr>
+<tr>
+<td><code>CurrentPeriodNumber</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>CurrentPeriod-&gt;Running</code></td>
+</tr>
+<tr>
+<td><code>CurrentPeriod</code></td>
+<td>PeriodId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>InPeriod</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>CurrentPeriod-&gt;Running</code></td>
+</tr>
+<tr>
+<td><code>UpcomingJam</code></td>
+<td>JamId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>UpcomingJamNumber</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>UpcomingJam-&gt;Number</code></td>
+</tr>
+<tr>
+<td><code>InJam</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>InOvertime</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>CurrentTimeout</code></td>
+<td>TimeoutId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>TimeoutOwner</code></td>
+<td>TimeoutOwner</td>
+<td>during timeout</td>
+<td></td>
+<td>copy of <code>CurrentTimeout-&gt;Owner</code></td>
+</tr>
+<tr>
+<td><code>OfficialReview</code></td>
+<td>bool</td>
+<td>during timeout</td>
+<td></td>
+<td>copy of <code>CurrentTimeout-&gt;Review</code></td>
+</tr>
+<tr>
+<td><code>NoMoreJam</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>OfficialScore</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>AbortReason</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>was not previously in <code>ScoreBoard</code></td>
+</tr>
+<tr>
+<td><code>Ruleset</code></td>
+<td>RulesetId</td>
+<td>yes</td>
+<td></td>
+<td>was not previously in <code>ScoreBoard</code></td>
+</tr>
+<tr>
+<td><code>RulesetName</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>was not previously in <code>ScoreBoard</code>; copy of <code>Ruleset-&gt;Name</code></td>
+</tr>
+<tr>
+<td><code>HeadNso</code></td>
+<td>OfficialId</td>
+<td>yes</td>
+<td></td>
+<td>was not previously in <code>ScoreBoard</code></td>
+</tr>
+<tr>
+<td><code>HeadRef</code></td>
+<td>OfficialId</td>
+<td>yes</td>
+<td></td>
+<td>was not previously in <code>ScoreBoard</code></td>
+</tr>
+<tr>
+<td><code>Clock(_clock_)</code></td>
+<td>Clock</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Team(_number_)</code></td>
+<td>Team</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Period(_number_)</code></td>
+<td>Period</td>
+<td>no</td>
+<td></td>
+<td>There is a <code>Period(0)</code> for technical reasons. Just ignore it.</td>
+</tr>
+<tr>
+<td><code>Jam(_number_)</code></td>
+<td>Jam</td>
+<td>no</td>
+<td></td>
+<td>Should only hold one element at a time pointed to by <code>UpcomingJam</code>.</td>
+</tr>
+<tr>
+<td><code>Rule(_id_)</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>was previously in <code>ScoreBoard.Rulesets.CurrentRule(_id_)</code></td>
+</tr>
+<tr>
+<td><code>PenaltyCode(_code_)</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>list of verbal cues; was previously in <code>ScoreBoard.PenaltyCodes.Code(_code_)</code></td>
+</tr>
+<tr>
+<td><code>Label(_id_)</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>was not previously in <code>ScoreBoard</code></td>
+</tr>
+<tr>
+<td><code>EventInfo(_id_)</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>was not previously in <code>ScoreBoard</code></td>
+</tr>
+<tr>
+<td><code>Nso(_id_)</code></td>
+<td>Official</td>
+<td>yes</td>
+<td></td>
+<td>was not previously in <code>ScoreBoard</code></td>
+</tr>
+<tr>
+<td><code>Ref(_id_)</code></td>
+<td>Official</td>
+<td>yes</td>
+<td></td>
+<td>was not previously in <code>ScoreBoard</code></td>
+</tr>
+<tr>
+<td><code>Expulsion(_id_)</code></td>
+<td>Expulsion</td>
+<td>yes</td>
+<td></td>
+<td>was not previously in <code>ScoreBoard</code></td>
+</tr>
+<tr>
+<td><code>StartJam</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>StopJam</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td>Also used to stop timeouts.</td>
+</tr>
+<tr>
+<td><code>Timeout</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>ClockUndo</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>ClockReplace</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>StartOvertime</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>OfficialTimeout</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Export</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td>was not previously in <code>ScoreBoard</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-clock-scoreboard-game-clock-and-scoreboard-currentgame-clock-">Elements in <code>ScoreBoard.Clock(*)</code>, <code>ScoreBoard.Game(*).Clock(*)</code>,  and <code>ScoreBoard.CurrentGame.Clock(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Number</code></td>
+<td>number</td>
+<td>for timeout &amp; lineup clock</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Time</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>InvertedTime</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>MinimumTime</code></td>
+<td>number</td>
+<td>yes</td>
+<td>before 4.0.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>MaximumTime</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Direction</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td><code>true</code> indicates countdown</td>
+</tr>
+<tr>
+<td><code>Running</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Start</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Stop</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>ResetTime</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-team-scoreboard-game-team-and-scoreboard-currentgame-team-">Elements in <code>ScoreBoard.Team(*)</code>, <code>ScoreBoard.Game(*).Team(*)</code>, and <code>ScoreBoard.CurrentGame.Team(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td>string</td>
+<td>before 5.0</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>FullName</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>LeagueName</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 5.0</td>
+<td>copy of <code>PreparedTeam-&gt;LeagueName</code> when <code>PreparedTeamConnected</code> is <code>true</code></td>
+</tr>
+<tr>
+<td><code>TeamName</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 5.0</td>
+<td>copy of <code>PreparedTeam-&gt;TeamName</code> when <code>PreparedTeamConnected</code> is <code>true</code></td>
+</tr>
+<tr>
+<td><code>Initials</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>UniformColor</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>FileName</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Logo</code></td>
+<td>file name</td>
+<td>yes</td>
+<td></td>
+<td>without path - will be taken from <code>images/teamlogo/</code>; copy of <code>PreparedTeam-&gt;Logo</code> when <code>PreparedTeamConnected</code> is <code>true</code></td>
+</tr>
+<tr>
+<td><code>Score</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>RunningOrEndedTeamJam-&gt;TotalScore</code></td>
+</tr>
+<tr>
+<td><code>JamScore</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>RunningOrEndedTeamJam-&gt;JamScore</code></td>
+</tr>
+<tr>
+<td><code>TripScore</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td>copy of <code>CurrentTrip-&gt;Score</code></td>
+</tr>
+<tr>
+<td><code>LastScore</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>RunningOrEndedTeamJam-&gt;LastScore</code></td>
+</tr>
+<tr>
+<td><code>Lost</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td>copy of <code>RunningOrEndedTeamJam-&gt;Lost</code></td>
+</tr>
+<tr>
+<td><code>Lead</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td>copy of <code>RunningOrEndedTeamJam-&gt;Lead</code></td>
+</tr>
+<tr>
+<td><code>Calloff</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td>copy of <code>RunningOrEndedTeamJam-&gt;Calloff</code></td>
+</tr>
+<tr>
+<td><code>Injury</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td>copy of <code>RunningOrEndedTeamJam-&gt;Injury</code></td>
+</tr>
+<tr>
+<td><code>NoInitial</code></td>
+<td>bool</td>
+<td>during initial &amp; first scoring trip if <code>JamScore</code> is 0</td>
+<td></td>
+<td>copy of <code>RunningOrEndedTeamJam-&gt;NoInitial</code></td>
+</tr>
+<tr>
+<td><code>DisplayLead</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>RunningOrEndedTeamJam-&gt;DisplayLead</code></td>
+</tr>
+<tr>
+<td><code>StarPass</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td>copy of <code>RunningOrEndedTeamJam-&gt;StarPass</code></td>
+</tr>
+<tr>
+<td><code>StarPassTrip</code></td>
+<td>ScoringTripId</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>RunningOrEndedTeamJam-&gt;StarPassTrip</code></td>
+</tr>
+<tr>
+<td><code>CurrentTrip</code></td>
+<td>ScoringTripId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Timeouts</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>OfficialReviews</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>LastReview</code></td>
+<td>TimeoutId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>InTimeout</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>InOfficialReview</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>RetainedOfficialReview</code></td>
+<td>bool</td>
+<td>after team has taken a review</td>
+<td></td>
+<td>copy of <code>LastReview-&gt;RetainedReview</code></td>
+</tr>
+<tr>
+<td><code>NoPivot</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>RunningOrUpcomingTeamJam</code></td>
+<td>TeamJamId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>RunningOrEndedTeamJam</code></td>
+<td>TeamJamId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>LastEndedTeamJam</code></td>
+<td>TeamJamId</td>
+<td>no</td>
+<td>before 4.0.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>FieldingAdvancePending</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>PreparedTeam</code></td>
+<td>PreparedTeamId</td>
+<td>yes</td>
+<td>from 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>PreparedTeamConnected</code></td>
+<td>bool</td>
+<td>yes</td>
+<td>from 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Captain</code></td>
+<td>SkaterId</td>
+<td>no</td>
+<td>from 5.0</td>
+<td>set/unset the Captain flag on the skater instead</td>
+</tr>
+<tr>
+<td><code>Skater(_id_)</code></td>
+<td>Skater</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Position(_position_)</code></td>
+<td>Position</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>TimeOut(_id_)</code></td>
+<td>TimeoutId</td>
+<td>no</td>
+<td></td>
+<td>Capital O</td>
+</tr>
+<tr>
+<td><code>BoxTrip(_id_)</code></td>
+<td>BoxTrip</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>AlternateName(_type_)</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Color(_type_)</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>AddTrip</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>RemoveTrip</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>AdvanceFieldings</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Timeout</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td>small o</td>
+</tr>
+<tr>
+<td><code>OfficialReview</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-team-skater-scoreboard-game-team-skater-and-scoreboard-currentgame-team-skater-">Elements in <code>ScoreBoard.Team(*).Skater(*)</code>, <code>ScoreBoard.Game(*).Team(*).Skater(*)</code>, and <code>ScoreBoard.CurrentGame.Team(*).Skater(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>copy of <code>PreparedSkater-&gt;Name</code> if <code>PreparedTeamConnected</code> is <code>true</code> in the parent element</td>
+</tr>
+<tr>
+<td><code>Number</code></td>
+<td>string</td>
+<td>yes</td>
+<td>before 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>RosterNumber</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 4.1.1</td>
+<td>copy of <code>PreparedSkater-&gt;RosterNumber</code> if <code>PreparedTeamConnected</code> is <code>true</code> in the parent element</td>
+</tr>
+<tr>
+<td><code>PenaltyBox</code></td>
+<td>bool</td>
+<td>if currently fielded</td>
+<td></td>
+<td>copy of <code>CurrentFielding-&gt;PenaltyBox</code></td>
+</tr>
+<tr>
+<td><code>CurrentBoxSymbols</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>CurrentFielding-&gt;CurrentBoxSymbols</code></td>
+</tr>
+<tr>
+<td><code>CurrentPenalties</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Position</code></td>
+<td>PositionId</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>CurrentFielding-&gt;Position</code></td>
+</tr>
+<tr>
+<td><code>CurrentFielding</code></td>
+<td>FieldingId</td>
+<td>no</td>
+<td></td>
+<td>set <code>Role</code> to field the skater</td>
+</tr>
+<tr>
+<td><code>Role</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>BaseRole</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Flags</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>initially copied from <code>PreparedSkater-&gt;Flags</code> but not synced afterwards</td>
+</tr>
+<tr>
+<td><code>PreparedSkater</code></td>
+<td>PreparedSkaterId</td>
+<td>no</td>
+<td>from 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Fielding(_id_)</code></td>
+<td>FieldingId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Penalty(_number_)</code></td>
+<td>Penalty</td>
+<td>yes</td>
+<td></td>
+<td><code>Penalty(0)</code> is foul out or expulsion.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-team-skater-penalty-scoreboard-game-team-skater-penalty-and-scoreboard-currentgame-team-skater-penalty-">Elements in <code>ScoreBoard.Team(*).Skater(*).Penalty(*)</code>, <code>ScoreBoard.Game(*).Team(*).Skater(*).Penalty(*)</code>, and <code>ScoreBoard.CurrentGame.Team(*).Skater(*).Penalty(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Number</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Previous</code></td>
+<td>PenaltyId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Next</code></td>
+<td>PenaltyId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Code</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Jam</code></td>
+<td>JamId</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>PeriodNumber</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>Jam-&gt;PeriodNumber</code></td>
+</tr>
+<tr>
+<td><code>JamNumber</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>Jam-&gt;Number</code></td>
+</tr>
+<tr>
+<td><code>Serving</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>BoxTrip-&gt;IsCurrent</code></td>
+</tr>
+<tr>
+<td><code>Served</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>ForceServed</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>BoxTrip</code></td>
+<td>BoxTripId</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Time</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>Walltime when the penalty was entered</td>
+</tr>
+<tr>
+<td><code>Remove</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-team-position-scoreboard-game-team-position-and-scoreboard-currentgame-team-position-">Elements in <code>ScoreBoard.Team(*).Position(*)</code>, <code>ScoreBoard.Game(*).Team(*).Position(*)</code>, and <code>ScoreBoard.CurrentGame.Team(*).Position(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>will be <code>teamid_position</code></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Skater</code></td>
+<td>SkaterId</td>
+<td>yes</td>
+<td></td>
+<td>copy of <code>CurrentFielding-&gt;Skater</code></td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>Skater-&gt;Name</code></td>
+</tr>
+<tr>
+<td><code>Number</code></td>
+<td>string</td>
+<td>no</td>
+<td>before 4.1.1</td>
+<td>copy of <code>Skater-&gt;Number</code></td>
+</tr>
+<tr>
+<td><code>RosterNumber</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td>copy of <code>Skater-&gt;RosterNumber</code></td>
+</tr>
+<tr>
+<td><code>Flags</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>Skater-&gt;Flags</code></td>
+</tr>
+<tr>
+<td><code>CurrentFielding</code></td>
+<td>FieldingId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>PenaltyBox</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td>copy of <code>CurrentFielding-&gt;PenaltyBox</code></td>
+</tr>
+<tr>
+<td><code>CurrentBoxSymbols</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>CurrentFielding-&gt;CurrentBoxSymbols</code></td>
+</tr>
+<tr>
+<td><code>CurrentPenalties</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 5.0</td>
+<td>copy of <code>Skater-&gt;CurrentPenalties</code></td>
+</tr>
+<tr>
+<td><code>Annotation</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>CurrentFielding-&gt;Annotation</code></td>
+</tr>
+<tr>
+<td><code>Clear</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-team-boxtrip-and-scoreboard-game-team-boxtrip-and-scoreboard-currentgame-team-boxtrip-">Elements in <code>ScoreBoard.Team(*).BoxTrip(*)</code>, and <code>ScoreBoard.Game(*).Team(*).BoxTrip(*)</code>, and <code>ScoreBoard.CurrentGame.Team(*).BoxTrip(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>IsCurrent</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>CurrentFielding</code></td>
+<td>FieldingId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>StartFielding</code></td>
+<td>FieldingId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>StartJamNumber</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>StartFielding-&gt;Number</code></td>
+</tr>
+<tr>
+<td><code>StartBetweenJams</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>StartAfterSP</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>EndFielding</code></td>
+<td>FieldingId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>EndJamNumber</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>EndFielding-&gt;Number</code></td>
+</tr>
+<tr>
+<td><code>EndBetweenJams</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>EndAfterSP</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>WalltimeStart</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>WalltimeEnd</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>JamClockStart</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>JamClockEnd</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Duration</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Fielding(_id_)</code></td>
+<td>FieldingId</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Penalty(_id_)</code></td>
+<td>PenaltyId</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>StartEarlier</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>StartLater</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>EndEarlier</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>EndLater</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Delete</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-period-scoreboard-game-period-and-scoreboard-currentgame-period-">Elements in <code>ScoreBoard.Period(*)</code>, <code>ScoreBoard.Game(*).Period(*)</code>, and <code>ScoreBoard.CurrentGame.Period(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Number</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Previous</code></td>
+<td>PeriodId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Next</code></td>
+<td>PeriodId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>CurrentJam</code></td>
+<td>JamId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>CurrentJamNumber</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>CurrentJam-&gt;Number</code></td>
+</tr>
+<tr>
+<td><code>FirstJam</code></td>
+<td>JamId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>FirstJamNumber</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>FirstJam-&gt;Number</code></td>
+</tr>
+<tr>
+<td><code>Running</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Duration</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>WalltimeStart</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>WalltimeEnd</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>LocalTimeStart</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Jam(_number_)</code></td>
+<td>Jam</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Timeout(_id_)</code></td>
+<td>Timeout</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Delete</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>InsertBefore</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>InsertTimeout</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-jam-scoreboard-period-jam-scoreboard-game-jam-scoreboard-game-period-jam-scoreboard-currentgame-jam-and-scoreboard-currentgame-period-jam-">Elements in <code>ScoreBoard.Jam(*)</code>, <code>ScoreBoard.Period(*).Jam(*)</code>, <code>ScoreBoard.Game(*).Jam(*)</code>, <code>ScoreBoard.Game(*).Period(*).Jam(*)</code>, <code>ScoreBoard.CurrentGame.Jam(*)</code>, and <code>ScoreBoard.CurrentGame.Period(*).Jam(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Number</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Previous</code></td>
+<td>JamId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Next</code></td>
+<td>JamId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>PeriodNumber</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>Number</code> from the parent</td>
+</tr>
+<tr>
+<td><code>StarPass</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Overtime</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Duration</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>PeriodClockElapsedStart</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>PeriodClockElapsedEnd</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>PeriodClockDisplayEnd</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>WalltimeStart</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>WalltimeEnd</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>TeamJam(_number_)</code></td>
+<td>TeamJam</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Penalty(_id_)</code></td>
+<td>PenaltyId</td>
+<td>no</td>
+<td></td>
+<td>add/remove penalties to/from the skater</td>
+</tr>
+<tr>
+<td><code>TimeoutsAfter(_id_)</code></td>
+<td>TimeoutId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Delete</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>InsertBefore</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-period-jam-teamjam-scoreboard-game-period-jam-teamjam-and-scoreboard-currentgame-period-jam-teamjam-">Elements in <code>ScoreBoard.Period(*).Jam(*).TeamJam(*)</code>, <code>ScoreBoard.Game(*).Period(*).Jam(*).TeamJam(*)</code>, and <code>ScoreBoard.CurrentGame.Period(*).Jam(*).TeamJam(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>will be <code>jamId_teamnumber</code></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Number</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>jam number</td>
+</tr>
+<tr>
+<td><code>Previous</code></td>
+<td>TeamJamId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Next</code></td>
+<td>TeamJamId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>LastScore</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>Previous-&gt;TotalScore</code></td>
+</tr>
+<tr>
+<td><code>JamScore</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>AfterSPScore</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>TotalScore</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>OsOffset</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>OsOffsetReason</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Lost</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Lead</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Calloff</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Injury</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td>linked with <code>Injury</code> on the other team&#39;s TeamJam</td>
+</tr>
+<tr>
+<td><code>NoInitial</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>DisplayLead</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>CurrentTrip</code></td>
+<td>ScoringTripId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>CurrentTripNumber</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>CurrentTrip-&gt;Number</code></td>
+</tr>
+<tr>
+<td><code>StarPass</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>StarPassTrip</code></td>
+<td>ScoringTripId</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>NoPivot</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Fielding(_position_)</code></td>
+<td>Fielding</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>ScoringTrip(_number_)</code></td>
+<td>ScoringTrip</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>CopyLineupToCurrent</code></td>
+<td>-</td>
+<td>-</td>
+<td>from 5.0</td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-period-jam-teamjam-fielding-scoreboard-game-period-jam-teamjam-fielding-and-scoreboard-currentgame-period-jam-teamjam-fielding-">Elements in <code>ScoreBoard.Period(*).Jam(*).TeamJam(*).Fielding(*)</code>, <code>ScoreBoard.Game(*).Period(*).Jam(*).TeamJam(*).Fielding(*)</code>, and <code>ScoreBoard.CurrentGame.Period(*).Jam(*).TeamJam(*).Fielding(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>will be <code>jamId_teamnumber_position</code></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Number</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>jam number</td>
+</tr>
+<tr>
+<td><code>Previous</code></td>
+<td>FieldingId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Next</code></td>
+<td>FieldingId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Position</code></td>
+<td>PositionId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Skater</code></td>
+<td>SkaterId</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>SkaterNumber</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>Skater-&gt;RosterNumber</code>, <code>?</code> or <code>n/a</code></td>
+</tr>
+<tr>
+<td><code>NotFielded</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>SitFor3</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>PenaltyBox</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>CurrentBoxTrip</code></td>
+<td>BoxTripId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>BoxTripSymbols</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>BoxTripSymbolsBeforeSP</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>BoxTripSymbolsAfterSP</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Annotation</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>BoxTrip(_id_)</code></td>
+<td>BoxTripId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>AddBoxTrip</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>UnendBoxTrip</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-period-jam-teamjam-scoringtrip-scoreboard-game-period-jam-teamjam-scoringtrip-and-scoreboard-currentgame-period-jam-teamjam-scoringtrip-">Elements in <code>ScoreBoard.Period(*).Jam(*).TeamJam(*).ScoringTrip(*)</code>, <code>ScoreBoard.Game(*).Period(*).Jam(*).TeamJam(*).ScoringTrip(*)</code>, and <code>ScoreBoard.CurrentGame.Period(*).Jam(*).TeamJam(*).ScoringTrip(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Number</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Previous</code></td>
+<td>ScoringTripId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Next</code></td>
+<td>ScoringTripId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Score</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>AfterSP</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Current</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Annotation</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Duration</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>JamClockStart</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>Previous-&gt;JamClockEnd</code> or <code>0</code></td>
+</tr>
+<tr>
+<td><code>JamClockEnd</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>InsertBefore</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Remove</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-period-timeout-scoreboard-game-period-timeout-and-scoreboard-currentgame-period-timeout-">Elements in <code>ScoreBoard.Period(*).Timeout(*)</code>, <code>ScoreBoard.Game(*).Period(*).Timeout(*)</code>, and <code>ScoreBoard.CurrentGame.Period(*).Timeout(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Owner</code></td>
+<td>TimeoutOwner</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Review</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>RetainedReview</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Running</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>PrecedingJam</code></td>
+<td>JamId</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>PrecedingJamNumber</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>copy of <code>PrecedingJam-&gt;Number</code></td>
+</tr>
+<tr>
+<td><code>Duration</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>PeriodClockElapsedStart</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>PeriodClockElapsedEnd</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>PeriodClockEnd</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>WalltimeStart</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>WalltimeEnd</code></td>
+<td>number</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Delete</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-game-nso-scoreboard-game-ref-scoreboard-currentgame-nso-and-scoreboard-currentgame-ref-">Elements in <code>ScoreBoard.Game(*).Nso(*)</code>, <code>ScoreBoard.Game(*).Ref(*)</code>, <code>ScoreBoard.CurrentGame.Nso(*)</code>, and <code>ScoreBoard.CurrentGame.Ref(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Role</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>League</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Cert</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>P1Team</code></td>
+<td>TeamId</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Swap</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-game-expulsion-and-scoreboard-currentgame-expulsion-">Elements in <code>ScoreBoard.Game(*).Expulsion(*)</code>, and <code>ScoreBoard.CurrentGame.Expulsion(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Info</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>ExtraInfo</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Suspension</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-penaltycodes">Elements in <code>ScoreBoard.PenaltyCodes</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Code(_id_)</code></td>
+<td>string</td>
+<td>no</td>
+<td>not in 4.1.1</td>
+<td>value is comma-separated list of verbal cues</td>
+</tr>
+<tr>
+<td><code>PenaltyCode(_id_)</code></td>
+<td>string</td>
+<td>no</td>
+<td>only in 4.1.1</td>
+<td>value is comma-separated list of verbal cues</td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-rulesets">Elements in <code>ScoreBoard.Rulesets</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td>always empty string</td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CurrentRuleset</code></td>
+<td>RulesetId</td>
+<td>yes</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CurrentRulesetId</code></td>
+<td>string</td>
+<td>no</td>
+<td>before 5.0</td>
+<td>copied from <code>CurrentRuleset-&gt;Id</code></td>
+</tr>
+<tr>
+<td><code>CurrentRulesetName</code></td>
+<td>string</td>
+<td>no</td>
+<td>before 5.0</td>
+<td>copied from <code>CurrentRuleset-&gt;Name</code></td>
+</tr>
+<tr>
+<td><code>CurrentRule(_id_)</code></td>
+<td>string</td>
+<td>no</td>
+<td>before 5.0</td>
+<td>copied from <code>CurrentRuleset-&gt;Rule</code></td>
+</tr>
+<tr>
+<td><code>RuleDefinition(_id_)</code></td>
+<td>RuleDefinition</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Ruleset(_id_)</code></td>
+<td>Ruleset</td>
+<td>yes</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-rulesets-ruledefinition-">Elements in <code>ScoreBoard.Rulesets.RuleDefinition(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Type</code></td>
+<td>RuleType</td>
+<td>no</td>
+<td></td>
+<td>can be <code>Boolean</code>, <code>Integer</code>, <code>Long</code>, <code>String</code>, or <code>Time</code></td>
+</tr>
+<tr>
+<td><code>DefaultValue</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Description</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Index</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>TrueValue</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>only when <code>Type</code> is <code>Boolean</code></td>
+</tr>
+<tr>
+<td><code>FalseValue</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td>only when <code>Type</code> is <code>Boolean</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-rulesets-ruleset-">Elements in <code>ScoreBoard.Rulesets.Ruleset(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ParentId</code></td>
+<td>string</td>
+<td>yes</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Parent</code></td>
+<td>ParentId</td>
+<td>yes</td>
+<td>from 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Rule(_id_)</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td>might be number, time, or boolean encoded as string</td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-settings">Elements in <code>ScoreBoard.Settings</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td>always empty string</td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Setting(_id_)</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="setting-ids-used-by-crg">Setting Ids used by CRG</h3>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>Values</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Overlay.Interactive.BackgroundColor</code></td>
+<td>color name or color value</td>
+<td></td>
+<td>default: <code>transparent</code></td>
+</tr>
+<tr>
+<td><code>Overlay.Interactive.Clock</code></td>
+<td><code>On</code>, <code>Off</code></td>
+<td></td>
+<td>default: <code>On</code></td>
+</tr>
+<tr>
+<td><code>Overlay.Interactive.LowerThird.Line1</code></td>
+<td>text</td>
+<td></td>
+<td>default: empty</td>
+</tr>
+<tr>
+<td><code>Overlay.Interactive.LowerThird.Line2</code></td>
+<td>text</td>
+<td></td>
+<td>default: empty</td>
+</tr>
+<tr>
+<td><code>Overlay.Interactive.LowerThird.Style</code></td>
+<td><code>ColourDefault</code>, <code>ColourTeam1</code>, <code>ColourTeam2</code></td>
+<td></td>
+<td>default: <code>ColourDefault</code></td>
+</tr>
+<tr>
+<td><code>Overlay.Interactive.Panel</code></td>
+<td>empty, <code>PPJBox</code>, <code>RosterTeam1</code>, <code>RosterTeam2</code>, <code>PenaltyTeam1</code>, <code>PenaltyTeam2</code>, <code>LowerThird</code>, <code>Upcoming</code></td>
+<td></td>
+<td>default: empty</td>
+</tr>
+<tr>
+<td><code>Overlay.Interactive.Score</code></td>
+<td><code>On</code>, <code>Off</code></td>
+<td></td>
+<td>default: <code>On</code></td>
+</tr>
+<tr>
+<td><code>Overlay.Interactive.ShowJammers</code></td>
+<td><code>On</code>, <code>Off</code></td>
+<td></td>
+<td>default: <code>On</code></td>
+</tr>
+<tr>
+<td><code>Overlay.Interactive.ShowLineups</code></td>
+<td><code>On</code>, <code>Off</code></td>
+<td>from 5.0</td>
+<td>default: <code>On</code></td>
+</tr>
+<tr>
+<td><code>Overlay.Interactive.ShowAllNames</code></td>
+<td><code>On</code>, <code>Off</code></td>
+<td>from 5.0</td>
+<td>default: <code>Off</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.AutoStart</code></td>
+<td>empty, <code>Jam</code>, <code>Timeout</code></td>
+<td>from 5.0</td>
+<td>default: empty</td>
+</tr>
+<tr>
+<td><code>ScoreBoard.AutoStartBuffer</code></td>
+<td>time</td>
+<td>from 5.0</td>
+<td>default: <code>0:02</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.AutoEndJam</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td>from 5.0</td>
+<td>default: <code>true</code> (will change in 6.0)</td>
+</tr>
+<tr>
+<td><code>ScoreBoard.AutoEndTTO</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td>from 5.0</td>
+<td>default: <code>false</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.ClockAfterTimeout</code></td>
+<td><code>Lineup</code>, <code>Timeout</code></td>
+<td></td>
+<td>default: <code>Lineup</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Clock.Sync</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td></td>
+<td>default: <code>true</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Game.DefaultNameFormat</code></td>
+<td>format string</td>
+<td>from 5.0</td>
+<td>default: <code>%G %d %1 vs. %2 (%s: %S)</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Intermission.PreGame</code></td>
+<td>text</td>
+<td></td>
+<td>default: <code>Time To Derby</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Intermission.Intermission</code></td>
+<td>text</td>
+<td></td>
+<td>default: <code>Intermission</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Intermission.Unofficial</code></td>
+<td>text</td>
+<td></td>
+<td>default: <code>Unofficial Score</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Intermission.Official</code></td>
+<td>text</td>
+<td></td>
+<td>default: <code>Final Score</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Penalties.ForceServed</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td>before 4.1.1</td>
+<td>default: <code>false</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Penalties.UseLT</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td>from 4.1.1</td>
+<td>default: <code>false</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Stats.InputFile</code></td>
+<td>path</td>
+<td>from 5.0</td>
+<td>default: empty</td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Operator_Default.StartStopButtons</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td></td>
+<td>default: <code>false</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Operator_Default.TabBar</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td></td>
+<td>default: <code>true</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Operator_Default.ReplaceButton</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td></td>
+<td>default: <code>false</code> (will change in 6.0)</td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Operator__*.StartStopButtons</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td></td>
+<td>default: <code>false</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Operator__*.TabBar</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td></td>
+<td>default: <code>true</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Operator__*.ReplaceButton</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td></td>
+<td>default: <code>false</code>  (will change in 6.0)</td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Preview_BoxStyle</code></td>
+<td>empty, <code>box_flat</code>, <code>box_flat_bright</code></td>
+<td></td>
+<td>default: <code>box_flat_bright</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Preview_CurrentView</code></td>
+<td><code>scoreboard</code>, <code>whiteboard</code>, <code>image</code>, <code>video</code>, <code>html</code></td>
+<td></td>
+<td>default: <code>scoreboard</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Preview_CustomHtml</code></td>
+<td>path</td>
+<td></td>
+<td>default: <code>/customhtml/fullscreen/example.html</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Preview_Image</code></td>
+<td>path</td>
+<td></td>
+<td>default: <code>/images/fullscreen/test-image.png</code> (changed in 5.0)</td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Preview_HideLogos</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td></td>
+<td>default: <code>false</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Preview_SidePadding</code></td>
+<td>empty or number (in %)</td>
+<td></td>
+<td>default: empty</td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Preview_SwapTeams</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td></td>
+<td>default: <code>false</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Preview_Video</code></td>
+<td>path</td>
+<td></td>
+<td>default: <code>/videos/fullscreen/test-video.webm</code> (changed in 5.0)</td>
+</tr>
+<tr>
+<td><code>ScoreBoard.View_BoxStyle</code></td>
+<td>empty, <code>box_flat</code>, <code>box_flat_bright</code></td>
+<td></td>
+<td>default: <code>box_flat_bright</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.View_CurrentView</code></td>
+<td><code>scoreboard</code>, <code>whiteboard</code>, <code>image</code>, <code>video</code>, <code>html</code></td>
+<td></td>
+<td>default: <code>scoreboard</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.View_CustomHtml</code></td>
+<td>path</td>
+<td></td>
+<td>default: <code>/customhtml/fullscreen/example.html</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.View_HideLogos</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td></td>
+<td>default: <code>false</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.View_Image</code></td>
+<td>path</td>
+<td></td>
+<td>default: <code>/images/fullscreen/test-image.png</code> (changed in 5.0)</td>
+</tr>
+<tr>
+<td><code>ScoreBoard.View_SidePadding</code></td>
+<td>empty or number (in %)</td>
+<td></td>
+<td>default: empty</td>
+</tr>
+<tr>
+<td><code>ScoreBoard.View_SwapTeams</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td></td>
+<td>default: <code>false</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.View_Video</code></td>
+<td>path</td>
+<td></td>
+<td>default: <code>/videos/fullscreen/test-video.webm</code> (changed in 5.0)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-twitter">Elements in <code>ScoreBoard.Twitter</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>AuthUrl</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>CallbackUrl</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>OauthVerifier</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>AccessToken</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>ManualTweet</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Status</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Logged_In</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Error</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>ScreenName</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>TestMode</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>ConditionalTweet(_id_)</code></td>
+<td>ConditionalTweet</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>FormatSpecifier(_id_)</code></td>
+<td>FormatSpecifier</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Login</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Logout</code></td>
+<td>-</td>
+<td>-</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-twitter-conditionaltweet-">Elements in <code>ScoreBoard.Twitter.ConditionalTweet(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Condition</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Tweet</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-twitter-formatspecifier-">Elements in <code>ScoreBoard.Twitter.FormatSpecifier(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Key</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Description</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Current_Value</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-media">Elements in <code>ScoreBoard.Media</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Format(_id_)</code></td>
+<td>MediaFormat</td>
+<td>yes</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-media-mediaformat-">Elements in <code>ScoreBoard.Media.MediaFormat(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Type(_id_)</code></td>
+<td>MediaType</td>
+<td>yes</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-media-mediaformat-mediatype-">Elements in <code>ScoreBoard.Media.MediaFormat(*).MediaType(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>File(_id_)</code></td>
+<td>MediaFile</td>
+<td>yes</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-media-mediaformat-mediatype-mediafile-">Elements in <code>ScoreBoard.Media.MediaFormat(*).MediaType(*).MediaFile(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Src</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-clients">Elements in <code>ScoreBoard.Clients</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>NewDeviceWrite</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>AllLocalDevicesWrite</code></td>
+<td>bool</td>
+<td>yes</td>
+<td>from 4.1.3</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Client(_id_)</code></td>
+<td>Client</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Device(_id_)</code></td>
+<td>Device</td>
+<td>no</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-clients-client-">Elements in <code>ScoreBoard.Clients.Client(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Device</code></td>
+<td>DeviceId</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>RemoteAddr</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Platform</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Source</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Created</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>walltime</td>
+</tr>
+<tr>
+<td><code>Wrote</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>walltime</td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-clients-device-">Elements in <code>ScoreBoard.Clients.Device(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>RemoteAddr</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Platform</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Comment</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Created</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>walltime</td>
+</tr>
+<tr>
+<td><code>Wrote</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>walltime</td>
+</tr>
+<tr>
+<td><code>Accessed</code></td>
+<td>number</td>
+<td>no</td>
+<td></td>
+<td>walltime</td>
+</tr>
+<tr>
+<td><code>MayWrite</code></td>
+<td>bool</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Client(_id_)</code></td>
+<td>ClientId</td>
+<td>no</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-preparedteam-">Elements in <code>ScoreBoard.PreparedTeam(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td>string</td>
+<td>before 5.0</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>FullName</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>LeagueName</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>TeamName</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>UniformColor(_id_)</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Logo</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Skater(_id_)</code></td>
+<td>PreparedSkater</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>AlternateName(_id_)</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Color(_id_)</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-preparedteam-skater-">Elements in <code>ScoreBoard.PreparedTeam(*).Skater(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>Number</code></td>
+<td>string</td>
+<td>yes</td>
+<td>before 5.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>RosterNumber</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 4.1.1</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Flags</code></td>
+<td>string</td>
+<td>yes</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
         </div> <!-- /div.col-md-9 -->
       </div> <!-- /div.row -->
     </div> <!-- /div.container -->
