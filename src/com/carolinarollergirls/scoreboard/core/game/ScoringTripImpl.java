@@ -43,7 +43,7 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
             boolean nextJamNotEnded =
                 nextJamNotStarted ||
                 (game.getCurrentPeriod().getCurrentJam() == tj.getJam().getNext() && game.isInJam());
-            boolean lastTwoMinutes = (game.getClock(Clock.ID_PERIOD).getTimeRemaining() < 120000 ||
+            boolean lastTwoMinutes = (game.getClock(Clock.ID_PERIOD).getTimeRemaining() < 120000 &&
                                       game.getCurrentPeriodNumber() == game.getInt(Rule.NUMBER_PERIODS));
             boolean changeOk = ((!lastTwoMinutes && nextJamNotEnded) || (lastTwoMinutes && nextJamNotStarted)) &&
                                !game.isOfficialScore();
