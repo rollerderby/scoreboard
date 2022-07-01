@@ -56,10 +56,12 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         setBothViews("CurrentView", "scoreboard");
         setBothViews("CustomHtml", "/customhtml/fullscreen/example.html");
         setBothViews("Image", "/images/fullscreen/test-image.png");
+        setBothViews("ImageScaling", "contain");
         setBothViews("HideLogos", "false");
         setBothViews("SidePadding", "");
         setBothViews("SwapTeams", "false");
         setBothViews("Video", "/videos/fullscreen/test-video.webm");
+        setBothViews("VideoScaling", "contain");
     }
 
     @Override
