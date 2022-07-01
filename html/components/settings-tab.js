@@ -256,16 +256,38 @@ function createScoreBoardViewPreviewRows(table, type) {
   var imageViewSelect = $('<label>Image View: </label>')
     .add(mediaSelect('ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_Image)', 'images', 'fullscreen', 'Image'))
     .attr('ApplyPreview', 'Image');
+
+  var imageScaleSelect = $('<label>Image Scaling: </label>').add(
+      WSControl(
+        'ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_ImageScaling)',
+        $('<select>')
+          .attr('ApplyPreview', 'ImageScaling')
+          .append('<option value="contain">Scale to fit</option>')
+          .append('<option value="cover">Scale to fill</option>')
+          .append('<option value="fill">Stretch</option>')));
+
   var videoViewSelect = $('<label>Video View: </label>')
     .add(mediaSelect('ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_Video)', 'videos', 'fullscreen', 'Video'))
     .attr('ApplyPreview', 'Video');
+
+  var videoScaleSelect = $('<label>Video Scaling: </label>').add(
+    WSControl(
+      'ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_VideoScaling)',
+      $('<select>')
+        .attr('ApplyPreview', 'VideoScaling')
+        .append('<option value="contain">Scale to fit</option>')
+        .append('<option value="cover">Scale to fill</option>')
+        .append('<option value="fill">Stretch</option>')));
+
   var customPageViewSelect = $('<label>Custom Page View: </label>')
     .add(mediaSelect('ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_CustomHtml)', 'custom', 'view', 'Page'))
     .attr('ApplyPreview', 'CustomHtml');
 
   var optionsTable = $('<table/>').addClass(type).addClass('RowTable').css('width', '100%');
   $('<tr><td></td></tr>').addClass(type).appendTo(table).find('td').append(optionsTable);
-  $('<tr><td/><td/><td/></tr>')
+
+  let optionsTableRow = '<tr><td/><td/><td/><td/></tr>';
+  $(optionsTableRow)
     .addClass(type)
     .appendTo(optionsTable)
     .addClass('ScoreBoardOptions')
@@ -275,8 +297,10 @@ function createScoreBoardViewPreviewRows(table, type) {
     .next()
     .append(boxStyle)
     .next()
-    .append(imageViewSelect);
-  $('<tr><td/><td/><td/></tr>')
+    .append(imageViewSelect)
+    .next()
+    .append(imageScaleSelect);
+  $(optionsTableRow)
     .addClass(type)
     .appendTo(optionsTable)
     .addClass('ScoreBoardOptions')
@@ -286,8 +310,10 @@ function createScoreBoardViewPreviewRows(table, type) {
     .next()
     .append(sidePadding)
     .next()
-    .append(videoViewSelect);
-  $('<tr><td/><td/><td/></tr>')
+    .append(videoViewSelect)
+    .next()
+    .append(videoScaleSelect);
+  $(optionsTableRow)
     .addClass(type)
     .addClass('ScoreBoardOptions EndSubSection Footer')
     .appendTo(optionsTable)

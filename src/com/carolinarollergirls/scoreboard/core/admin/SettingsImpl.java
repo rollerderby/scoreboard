@@ -11,6 +11,9 @@ import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.StatsbookExporter;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implements Settings {
     public SettingsImpl(ScoreBoard s) {
         super(s, "", ScoreBoard.SETTINGS);
@@ -48,22 +51,17 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         set("ScoreBoard.Intermission.Intermission", "Intermission");
         set("ScoreBoard.Intermission.Unofficial", "Unofficial Score");
         set("ScoreBoard.Intermission.Official", "Final Score");
-        set("ScoreBoard.Preview_BoxStyle", "box_flat_bright");
-        set("ScoreBoard.Preview_CurrentView", "scoreboard");
-        set("ScoreBoard.Preview_CustomHtml", "/customhtml/fullscreen/example.html");
-        set("ScoreBoard.Preview_Image", "/images/fullscreen/test-image.png");
-        set("ScoreBoard.Preview_HideLogos", "false");
-        set("ScoreBoard.Preview_SidePadding", "");
-        set("ScoreBoard.Preview_SwapTeams", "false");
-        set("ScoreBoard.Preview_Video", "/videos/fullscreen/test-video.webm");
-        set("ScoreBoard.View_BoxStyle", "box_flat_bright");
-        set("ScoreBoard.View_CurrentView", "scoreboard");
-        set("ScoreBoard.View_CustomHtml", "/customhtml/fullscreen/example.html");
-        set("ScoreBoard.View_HideLogos", "false");
-        set("ScoreBoard.View_Image", "/images/fullscreen/test-image.png");
-        set("ScoreBoard.View_SidePadding", "");
-        set("ScoreBoard.View_SwapTeams", "false");
-        set("ScoreBoard.View_Video", "/videos/fullscreen/test-video.webm");
+
+        setBothViews("BoxStyle", "box_flat_bright");
+        setBothViews("CurrentView", "scoreboard");
+        setBothViews("CustomHtml", "/customhtml/fullscreen/example.html");
+        setBothViews("Image", "/images/fullscreen/test-image.png");
+        setBothViews("ImageScaling", "contain");
+        setBothViews("HideLogos", "false");
+        setBothViews("SidePadding", "");
+        setBothViews("SwapTeams", "false");
+        setBothViews("Video", "/videos/fullscreen/test-video.webm");
+        setBothViews("VideoScaling", "contain");
     }
 
     @Override
@@ -82,5 +80,10 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
                 add(SETTING, new ValWithId(k, v));
             }
         }
+    }
+
+    private void setBothViews(String key, String value) {
+        set("ScoreBoard.Preview_" + key, value);
+        set("ScoreBoard.View_" + key, value);
     }
 }
