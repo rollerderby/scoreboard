@@ -453,6 +453,9 @@ public class StatsbookExporter extends Thread {
         setCell(baseRow, baseCol, tj.getJam().getNumber(), tj.getJam().isOvertimeJam() ? "Overtime Jam" : "");
         if (tj.getJam().get(Jam.STAR_PASS)) { setCell(spRow, baseCol, tj.isStarPass() ? "SP" : "SP*"); }
         setCell(baseRow, baseCol + 1, tj.getFielding(FloorPosition.JAMMER).get(Fielding.SKATER_NUMBER));
+        if (tj.get(TeamJam.STAR_PASS)) {
+            setCell(spRow, baseCol + 1, tj.getFielding(FloorPosition.PIVOT).get(Fielding.SKATER_NUMBER));
+        }
 
         setCell(baseRow, baseCol + 2, tj.isLost() ? "X" : "");
         setCell(baseRow, baseCol + 3, tj.isLead() ? "X" : "");
