@@ -1075,6 +1075,7 @@ function createTimeTable(gameId) {
   var numberRow = row.clone().addClass('Number').appendTo(table);
   var controlRow = row.clone().addClass('Control').appendTo(table);
   var timeRow = row.clone().addClass('Time').appendTo(table);
+  var periodDialog = createPeriodDialog(gameId);
 
   $.each(['Period', 'Jam', 'Lineup', 'Timeout', 'Intermission'], function () {
     var clock = String(this);
@@ -1116,8 +1117,7 @@ function createTimeTable(gameId) {
     WS.Register(prefix + '.Number', function (k, v) {
       number.text(v);
     });
-    if (clock === 'Period') {
-      var periodDialog = createPeriodDialog(gameId);
+    if (clock === 'Period' || clock === 'Intermission') {
       numberTr.children('td:eq(1)').on('click', function () {
         periodDialog.dialog('open');
       });
