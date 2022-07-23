@@ -52,17 +52,17 @@ body.box_flat .Box.FlatDark { background: #595959; background: -moz-linear-gradi
 body.box_flat .Box.FlatBottom { border-radius: 5px 5px 0px 0px !important; } 
 body.box_flat .Box.FlatTop { border-radius: 0px 0px 5px 5px !important; } 
 
-.Team>.Name {position: absolute;top: 0%;width: 43%;overflow: none;border-radius: 5px; } 
-.Team.Left>.Name { left: 3%; } 
-.Team.Right>.Name { right: 3%; } 
+.Team>.Name {position: absolute;top: 0%;width: 41%;overflow: none;border-radius: 5px; } 
+.Team.Left>.Name { left: 1%; } 
+.Team.Right>.Name { right: 1%; } 
 .Team:not(.HasName)>.Name {opacity: 0; } 
 .Team:not(.HasLogo)>.Logo, .Team.HideLogos>.Logo {opacity: 0; } 
 .Team.HasName>.Name {height: 30%;font-size: 33vh; } 
 .Team.HasName.HasLogo:not(.HideLogos)>.Name {height: 10%;font-size: 10vh; } 
 
-.Team>.Logo {position: absolute;top: 0%;width: 43%;background-repeat: no-repeat;background-position: center;background-size: contain; } 
-.Team.Left>.Logo { left: 0%; } 
-.Team.Right>.Logo { right: 0%; } 
+.Team>.Logo {position: absolute;top: 0%;width: 41%;background-repeat: no-repeat;background-position: center;background-size: contain; } 
+.Team.Left>.Logo { left: 1%; } 
+.Team.Right>.Logo { right: 1%; } 
 .Team.HasName.HasLogo:not(.HideLogos)>.Logo {top: 10%;height: 20%; } 
 .Team.HasLogo:not(.HideLogos)>.Logo {top: 0%;height: 30%; } 
 
