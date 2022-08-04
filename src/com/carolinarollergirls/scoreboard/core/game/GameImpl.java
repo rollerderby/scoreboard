@@ -122,8 +122,6 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         snapshot = null;
         replacePending = false;
 
-        setRuleset(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID));
-
         setLabel(Button.START, ACTION_START_JAM);
         setLabel(Button.STOP, ACTION_LINEUP);
         setLabel(Button.TIMEOUT, ACTION_TIMEOUT);
