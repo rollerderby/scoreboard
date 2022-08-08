@@ -356,6 +356,8 @@ function preparePltInputTable(element, gameId, teamId, mode, statsbookPeriod, al
     var p = $('<tr>').addClass('Skater Penalty').attr('id', id).attr('number', number).attr('role', role);
     var j = $('<tr>').addClass('Skater Jam').attr('id', id);
 
+    p.toggleClass('Captain', WS.state['ScoreBoard.Game(' + gameId + ').Team(' + t + ').Skater(' + id + ').Flags'] === 'C');
+
     if (mode === 'lt' || mode === 'plt') {
       var benchCell = $('<td>')
         .addClass('Role Bench')
