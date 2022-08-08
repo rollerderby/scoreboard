@@ -187,11 +187,11 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
       case 'NoInitial':
         var trip1Score = WS.state[prefix + 'ScoringTrip(1).Score'];
         var trip1AfterSP = isTrue(WS.state[prefix + 'ScoringTrip(1).AfterSP']);
-        var trip1HasAnnotation = WS.state[prefix + 'ScoringTrip(1).Annotation'] !== '';
+        var trip1HasAnnotation = (WS.state[prefix + 'ScoringTrip(1).Annotation'] || '') !== '';
         var trip2Score = WS.state[prefix + 'ScoringTrip(2).Score'];
         var trip2Current = isTrue(WS.state[prefix + 'ScoringTrip(2).Current']);
         var trip2AfterSP = isTrue(WS.state[prefix + 'ScoringTrip(2).AfterSP']);
-        var trip2HasAnnotation = trip2Score != null && WS.state[prefix + 'ScoringTrip(2).Annotation'] !== '';
+        var trip2HasAnnotation = trip2Score != null && (WS.state[prefix + 'ScoringTrip(2).Annotation'] || '') !== '';
         var noInitial = isTrue(WS.state[prefix + 'NoInitial']);
         var scoreText = '';
         var otherScoreText = '';
@@ -235,7 +235,7 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
           }
           var score = WS.state[prefix + 'ScoringTrip(' + trip + ').Score'];
           var current = isTrue(WS.state[prefix + 'ScoringTrip(' + trip + ').Current']);
-          var hasAnnotation = WS.state[prefix + 'ScoringTrip(' + trip + ').Annotation'] !== '';
+          var hasAnnotation = (WS.state[prefix + 'ScoringTrip(' + trip + ').Annotation'] || '') !== '';
           row
             .find('.Trip' + trip)
             .toggleClass('hasAnnotation', hasAnnotation)
@@ -257,10 +257,10 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
             }
             if (isTrue(WS.state[prefix + 'ScoringTrip(' + t + ').AfterSP'])) {
               scoreAfterSP = scoreAfterSP === '' ? tripScore : scoreAfterSP + ' + ' + tripScore;
-              annotationAfterSP = annotationAfterSP || WS.state[prefix + 'ScoringTrip(' + t + ').Annotation'] !== '';
+              annotationAfterSP = annotationAfterSP || (WS.state[prefix + 'ScoringTrip(' + t + ').Annotation'] || '') !== '';
             } else {
               scoreBeforeSP = scoreBeforeSP === '' ? tripScore : scoreBeforeSP + ' + ' + tripScore;
-              annotationBeforeSP = annotationBeforeSP || WS.state[prefix + 'ScoringTrip(' + t + ').Annotation'] !== '';
+              annotationBeforeSP = annotationBeforeSP || (WS.state[prefix + 'ScoringTrip(' + t + ').Annotation'] || '') !== '';
             }
             t++;
           }
@@ -507,6 +507,7 @@ function prepareTripEditor() {
                   .button()
                   .on('click', function () {
                     tripEditor.find('#annotation').val('');
+                    WS.Set(tripEditor.data('prefix') + 'Annotation', '');
                   })
               )
             )
