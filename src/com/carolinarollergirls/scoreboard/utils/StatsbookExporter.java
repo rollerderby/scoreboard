@@ -177,14 +177,12 @@ public class StatsbookExporter extends Thread {
         setEventInfoCell(row, 1, Game.INFO_TOURNAMENT);
         setEventInfoCell(row, 8, Game.INFO_HOST);
         row = igrf.getRow(6);
-        if (game.get(Game.EVENT_INFO, Game.INFO_DATE) != null) {
+        try {
             LocalDate date = LocalDate.parse(game.get(Game.EVENT_INFO, Game.INFO_DATE).getValue());
             row.getCell(1).setCellValue(date);
-            if (game.get(Game.EVENT_INFO, Game.INFO_START_TIME) != null) {
-                LocalTime time = LocalTime.parse(game.get(Game.EVENT_INFO, Game.INFO_START_TIME).getValue());
-                row.getCell(8).setCellValue(LocalDateTime.of(date, time));
-            }
-        }
+            LocalTime time = LocalTime.parse(game.get(Game.EVENT_INFO, Game.INFO_START_TIME).getValue());
+            row.getCell(8).setCellValue(LocalDateTime.of(date, time));
+        } catch (Exception e) {} // when parsing fails just leave them empty
     }
 
     private void fillExpulsionSuspensionInfo(Sheet igrf) {
