@@ -82,7 +82,7 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
           } else if (k.field === 'CurrentBoxSymbols') {
             element.find('#upcoming .Box.Box' + k.Position).text(v);
           } else if (k.field === 'Annotation') {
-            element.find('#upcoming .Skater.' + k.Position).toggleClass('hasAnnotation', v !== '');
+            element.find('#upcoming .Skater.' + k.Position).toggleClass('hasAnnotation', v != null && v !== '');
           }
         }
       );

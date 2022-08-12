@@ -85,17 +85,19 @@ public class CurrentGameImpl extends MirrorScoreBoardEventProviderImpl<Game, Cur
             Game g = (Game) value;
             if (g.get(Game.EVENT_INFO, Game.INFO_START_TIME) != null &&
                 !"".equals(g.get(Game.EVENT_INFO, Game.INFO_START_TIME).getValue())) {
-                LocalTime time = LocalTime.parse(g.get(Game.EVENT_INFO, Game.INFO_START_TIME).getValue());
-                LocalDate date = "".equals(g.get(Game.EVENT_INFO, Game.INFO_DATE).getValue())
-                                     ? LocalDate.now()
-                                     : LocalDate.parse(g.get(Game.EVENT_INFO, Game.INFO_DATE).getValue());
-                long timeToStart = ChronoUnit.MILLIS.between(LocalDateTime.now(), LocalDateTime.of(date, time));
-                if (timeToStart > 0) {
-                    Clock ic = g.getClock(Clock.ID_INTERMISSION);
-                    ic.setMaximumTime(timeToStart);
-                    ic.resetTime();
-                    ic.start();
-                }
+                try {
+                    LocalTime time = LocalTime.parse(g.get(Game.EVENT_INFO, Game.INFO_START_TIME).getValue());
+                    LocalDate date = "".equals(g.get(Game.EVENT_INFO, Game.INFO_DATE).getValue())
+                                         ? LocalDate.now()
+                                         : LocalDate.parse(g.get(Game.EVENT_INFO, Game.INFO_DATE).getValue());
+                    long timeToStart = ChronoUnit.MILLIS.between(LocalDateTime.now(), LocalDateTime.of(date, time));
+                    if (timeToStart > 0) {
+                        Clock ic = g.getClock(Clock.ID_INTERMISSION);
+                        ic.setMaximumTime(timeToStart);
+                        ic.resetTime();
+                        ic.start();
+                    }
+                } catch (Exception e) {} // if parsing fails just set no time to derby
             }
         }
     }

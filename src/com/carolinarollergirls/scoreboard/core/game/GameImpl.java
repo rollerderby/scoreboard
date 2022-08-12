@@ -122,8 +122,6 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         snapshot = null;
         replacePending = false;
 
-        setRuleset(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID));
-
         setLabel(Button.START, ACTION_START_JAM);
         setLabel(Button.STOP, ACTION_LINEUP);
         setLabel(Button.TIMEOUT, ACTION_TIMEOUT);
@@ -245,8 +243,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 return source.isFile() ? value : last;
             }
             String date = get(EVENT_INFO, INFO_DATE) == null ? "0000-00-00" : get(EVENT_INFO, INFO_DATE).getValue();
-            String team1 = getTeam(Team.ID_1).get(Team.FILE_NAME).replace(" ", "");
-            String team2 = getTeam(Team.ID_2).get(Team.FILE_NAME).replace(" ", "");
+            String team1 = getTeam(Team.ID_1).get(Team.FILE_NAME).replaceAll("\\W+", "");
+            String team2 = getTeam(Team.ID_2).get(Team.FILE_NAME).replaceAll("\\W+", "");
             String newName = "STATS-" + date + "_" + team1 + "_vs_" + team2;
             if (newName.equals(last)) {
                 return newName;

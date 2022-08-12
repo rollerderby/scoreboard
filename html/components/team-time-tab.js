@@ -724,7 +724,7 @@ function createTeamTable(gameId) {
       colorA.toggleClass('AlternateName', v != null);
     });
 
-    var names = nameA.add(altNameA);
+    var names = nameA.add(colorA).add(altNameA);
     WS.Register(prefix + '.Color(*)', function (k, v) {
       v = v || '';
       switch (k.Color) {
@@ -1600,12 +1600,13 @@ function createTimeoutDialog(gameId) {
       row.remove();
       return;
     }
-    if (k.field === 'PrecedingJamNumber') {
+    if (k.field === 'PrecedingJam') {
       row.remove();
       row = [];
     }
     if (v != null && row.length === 0) {
       var jam = Number(WS.state[prefix + '.PrecedingJamNumber']);
+      processJamNumber(k, jam);
       var dur = isTrue(WS.state[prefix + '.Running']) ? 'Running' : _timeConversions.msToMinSec(WS.state[prefix + '.Duration'], true);
       var pc = _timeConversions.msToMinSec(
         isTrue(WS.state[prefix + '.Running'])
