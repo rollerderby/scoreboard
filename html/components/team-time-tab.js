@@ -724,7 +724,7 @@ function createTeamTable(gameId) {
       colorA.toggleClass('AlternateName', v != null);
     });
 
-    var names = nameA.add(altNameA);
+    var names = nameA.add(colorA).add(altNameA);
     WS.Register(prefix + '.Color(*)', function (k, v) {
       v = v || '';
       switch (k.Color) {
