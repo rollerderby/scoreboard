@@ -245,7 +245,7 @@ function preparePltInputTable(element, gameId, teamId, mode, statsbookPeriod, al
           if (penaltyPeriod === statsbookPeriod) {
             penaltyBox.text(code);
           } else {
-            penaltyBox.html(''); // &nbsp; would confuse the forumla to calculate number of penalties.
+            penaltyBox.html(''); // &nbsp; would confuse the formula to calculate number of penalties.
           }
         } else {
           penaltyBox.text(code);
@@ -305,7 +305,7 @@ function preparePltInputTable(element, gameId, teamId, mode, statsbookPeriod, al
       tbody.children('.Skater[id=' + s + ']').toggleClass('Warn2', cnt === limit - 1 && !fo_exp);
       tbody.children('.Skater[id=' + s + ']').toggleClass('Warn3', cnt >= limit || fo_exp);
 
-      if (p !== 0) {
+      if (p != 0) {
         if (oldId == null && newId != null) {
           totalPenaltyCount++;
         } else if (oldId != null && newId == null) {
