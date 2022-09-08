@@ -125,6 +125,9 @@ function createNonViewRows(table) {
   var statsbookFile = $('<label>Blank Statsbook File: </label>').add(
     WSControl('ScoreBoard.Settings.Setting(ScoreBoard.Stats.InputFile)', $('<input type="text" size="40">'))
   );
+  WS.Register('ScoreBoard.BlankStatsbookFound', function (k, v) {
+    statsbookFile.parent().addClass('StatsFile').toggleClass('Readable', isTrue(v));
+  });
   var teamDisplayName = $('<label>Team Name for Display: </label>').add(
     WSControl(
       'ScoreBoard.Settings.Setting(ScoreBoard.Teams.DisplayName)',
@@ -258,13 +261,15 @@ function createScoreBoardViewPreviewRows(table, type) {
     .attr('ApplyPreview', 'Image');
 
   var imageScaleSelect = $('<label>Image Scaling: </label>').add(
-      WSControl(
-        'ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_ImageScaling)',
-        $('<select>')
-          .attr('ApplyPreview', 'ImageScaling')
-          .append('<option value="contain">Scale to fit</option>')
-          .append('<option value="cover">Scale to fill</option>')
-          .append('<option value="fill">Stretch</option>')));
+    WSControl(
+      'ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_ImageScaling)',
+      $('<select>')
+        .attr('ApplyPreview', 'ImageScaling')
+        .append('<option value="contain">Scale to fit</option>')
+        .append('<option value="cover">Scale to fill</option>')
+        .append('<option value="fill">Stretch</option>')
+    )
+  );
 
   var videoViewSelect = $('<label>Video View: </label>')
     .add(mediaSelect('ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_Video)', 'videos', 'fullscreen', 'Video'))
@@ -277,7 +282,9 @@ function createScoreBoardViewPreviewRows(table, type) {
         .attr('ApplyPreview', 'VideoScaling')
         .append('<option value="contain">Scale to fit</option>')
         .append('<option value="cover">Scale to fill</option>')
-        .append('<option value="fill">Stretch</option>')));
+        .append('<option value="fill">Stretch</option>')
+    )
+  );
 
   var customPageViewSelect = $('<label>Custom Page View: </label>')
     .add(mediaSelect('ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_CustomHtml)', 'custom', 'view', 'Page'))

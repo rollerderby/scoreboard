@@ -67,16 +67,33 @@ function createIgrfTab(tab, gameId) {
     .button()
     .appendTo(table.find('tr.Files>td:eq(0)'));
   var jsonButton = $('<a download>').text('Download JSON').button().appendTo(table.find('tr.Files>td:eq(0)'));
+  var noJson = $('<span>').text(' No JSON yet ').appendTo(table.find('tr.Files>td:eq(0)'));
   var xlsxButton = $('<a download>').text('Download Statsbook').button().appendTo(table.find('tr.Files>td:eq(0)'));
+  var noXlsx = $('<span>').text(' No Statsbook yet  ').appendTo(table.find('tr.Files>td:eq(0)'));
   $('<span>').text(' Last Updated: ').appendTo(table.find('tr.Files>td:eq(0)'));
   var downloadDate = $('<span>').appendTo(table.find('tr.Files>td:eq(0)'));
+  var noBlankStatsbookWarning = $('<span>')
+    .text('  Blank Statsbook not set up.')
+    .addClass('Warning')
+    .appendTo(table.find('tr.Files>td:eq(0)'));
 
   WS.Register(gamePrefix + '.Filename', function (k, v) {
     jsonButton.attr('href', '/game-data/json/' + v + '.json');
     xlsxButton.attr('href', '/game-data/xlsx/' + v + '.xlsx');
   });
+  WS.Register(gamePrefix + '.JsonExists', function (k, v) {
+    jsonButton.toggle(isTrue(v));
+    noJson.toggle(!isTrue(v));
+  });
+  WS.Register(gamePrefix + '.StatsbookExists', function (k, v) {
+    xlsxButton.toggle(isTrue(v));
+    noXlsx.toggle(!isTrue(v));
+  });
   WS.Register(gamePrefix + '.LastFileUpdate', function (k, v) {
     downloadDate.text(v);
+  });
+  WS.Register('ScoreBoard.BlankStatsbookFound', function (k, v) {
+    noBlankStatsbookWarning.toggle(!isTrue(v));
   });
 
   $('<span>').text('Tournament: ').appendTo(table.find('tr.Event>td:eq(0)'));

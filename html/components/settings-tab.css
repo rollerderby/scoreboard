@@ -12,6 +12,8 @@
 #ScoreBoardSettings>tr>td.ViewFrames iframe { width: 100%; height: 300px; } 
 #ScoreBoardSettings .EndSubSection>td { padding-bottom: 10px; }
 #ScoreBoardSettings .ui-button.ui-state-active, #ScoreBoardSettings .Active { background: #3f3; color: #000; }
+#ScoreBoardSettings .StatsFile.Readable::after { content: "✓"; color: green; font-size: 150%; }
+#ScoreBoardSettings .StatsFile:not(.Readable)::after { content: "❌"; color: red; }
 
 /* Intermission Control Dialog */
 table.IntermissionControlDialog { width: 100%; border-spacing: 0px; } 

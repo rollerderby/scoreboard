@@ -1,5 +1,7 @@
 package com.carolinarollergirls.scoreboard.core.admin;
 
+import java.nio.file.Paths;
+
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
@@ -11,9 +13,6 @@ import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.StatsbookExporter;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
 public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implements Settings {
     public SettingsImpl(ScoreBoard s) {
         super(s, "", ScoreBoard.SETTINGS);
@@ -23,8 +22,10 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
 
     @Override
     protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
-        if (item != null && ScoreBoard.SETTING_STATSBOOK_INPUT.equals(item.getId()) && scoreBoard.isInitialLoadDone()) {
-            StatsbookExporter.preload(item.getValue());
+        if (item != null && ScoreBoard.SETTING_STATSBOOK_INPUT.equals(item.getId())) {
+            boolean found = Paths.get(item.getValue()).toFile().canRead();
+            getScoreBoard().set(ScoreBoard.BLANK_STATSBOOK_FOUND, found);
+            if (found && scoreBoard.isInitialLoadDone()) { StatsbookExporter.preload(item.getValue()); }
         }
     }
 

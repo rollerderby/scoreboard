@@ -17,6 +17,8 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.Expulsion;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
+import com.carolinarollergirls.scoreboard.core.interfaces.Media.MediaFile;
+import com.carolinarollergirls.scoreboard.core.interfaces.Media.MediaType;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period.PeriodSnapshot;
@@ -196,6 +198,32 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                     refreshRuleset((Ruleset) event.getProvider());
                 }
             }));
+
+        // handle file updates
+        scoreBoard.getMedia()
+            .getFormat("game-data")
+            .getType("json")
+            .addScoreBoardListener(
+                new ConditionalScoreBoardListener<>(MediaType.class, MediaType.FILE, new ScoreBoardListener() {
+                    @Override
+                    public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                        if (((MediaFile) event.getValue()).getId().equals(getFilename() + ".json")) {
+                            set(JSON_EXISTS, true);
+                        }
+                    }
+                }));
+        scoreBoard.getMedia()
+            .getFormat("game-data")
+            .getType("xlsx")
+            .addScoreBoardListener(
+                new ConditionalScoreBoardListener<>(MediaType.class, MediaType.FILE, new ScoreBoardListener() {
+                    @Override
+                    public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                        if (((MediaFile) event.getValue()).getId().equals(getFilename() + ".xlsx")) {
+                            set(STATSBOOK_EXISTS, true);
+                        }
+                    }
+                }));
     }
 
     @Override
@@ -251,6 +279,10 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             } else {
                 return checkNewFilename(newName);
             }
+        } else if (prop == STATSBOOK_EXISTS) {
+            return BasePath.get().toPath().resolve("html/game-data/xlsx/" + getFilename() + ".xlsx").toFile().canRead();
+        } else if (prop == JSON_EXISTS) {
+            return BasePath.get().toPath().resolve("html/game-data/json/" + getFilename() + ".json").toFile().canRead();
         } else if (prop == RULESET && value != null && !source.isFile()) {
             if (get(STATE) != State.PREPARED && source == Source.WS) {
                 return null; // no change after game start
@@ -389,6 +421,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             if (prop == NSO) { return new OfficialImpl(this, id, NSO); }
             if (prop == REF) { return new OfficialImpl(this, id, REF); }
             if (prop == EXPULSION && source.isFile()) {
+                if (elements.get(Penalty.class) == null) { return null; }
                 Penalty p = (Penalty) elements.get(Penalty.class).get(id);
                 if (p != null) {
                     Expulsion e = get(EXPULSION, p.getId());
