@@ -355,7 +355,7 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
   var updateSkaterCount = function () {
     var count = 0;
     skatersTable.find('tr.Skater td.Flags select').each(function (_, f) {
-      if (f.value !== 'BC' && f.value !== 'ALT') {
+      if (f.value === '' || f.value === 'C' || f.value === 'A') {
         count++;
       }
     });
