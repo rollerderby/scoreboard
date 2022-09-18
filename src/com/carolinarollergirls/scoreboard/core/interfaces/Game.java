@@ -124,6 +124,8 @@ public interface Game extends ScoreBoardEventProvider {
     public static final Value<String> FILENAME =
         new Value<>(String.class, "Filename", "STATS-0000-00-00_Team1_vs_Team_2", props);
     public static final Value<String> LAST_FILE_UPDATE = new Value<>(String.class, "LastFileUpdate", "Never", props);
+    public static final Value<Boolean> STATSBOOK_EXISTS = new Value<>(Boolean.class, "StatsbookExists", false, props);
+    public static final Value<Boolean> JSON_EXISTS = new Value<>(Boolean.class, "JsonExists", false, props);
 
     public static final Child<Clock> CLOCK = new Child<>(Clock.class, "Clock", props);
     public static final Child<Team> TEAM = new Child<>(Team.class, "Team", props);

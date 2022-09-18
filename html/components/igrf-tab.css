@@ -14,6 +14,7 @@
 #Igrf .Variables td { text-align: left; width: 50%; } 
 #Igrf tr.Files > td { background: #ddd; } 
 #Igrf tr.Files .ui-button { margin: 1px 5px; } 
+#Igrf tr.Files .Warning { color: red; }
 
 #Igrf .Expulsions th { font-size: 150%; } 
 #Igrf .Expulsions table { width: 100%; } 

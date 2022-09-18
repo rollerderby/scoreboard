@@ -6,6 +6,7 @@ import java.util.Collection;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
@@ -35,6 +36,9 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public boolean isInitialLoadDone();
 
     public static Collection<Property<?>> props = new ArrayList<>();
+
+    public static final Value<Boolean> BLANK_STATSBOOK_FOUND =
+        new Value<>(Boolean.class, "BlankStatsbookFound", false, props);
 
     public static final Child<ValWithId> VERSION = new Child<>(ValWithId.class, "Version", props);
     public static final Child<Settings> SETTINGS = new Child<>(Settings.class, "Settings", props);
