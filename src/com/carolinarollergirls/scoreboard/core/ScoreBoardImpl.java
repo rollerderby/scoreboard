@@ -23,6 +23,7 @@ import com.carolinarollergirls.scoreboard.core.prepared.RulesetsImpl;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.utils.StatsbookExporter;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
@@ -53,6 +54,13 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
         addWriteProtection(CURRENT_GAME);
         add(TWITTER, new TwitterImpl(this));
         addWriteProtection(TWITTER);
+    }
+
+    @Override
+    protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
+        if (prop == GAME && item == getCurrentGame().getSourceElement()) {
+            getCurrentGame().set(CurrentGame.GAME, null);
+        }
     }
 
     @Override
