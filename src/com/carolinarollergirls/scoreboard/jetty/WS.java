@@ -317,7 +317,7 @@ public class WS extends WebSocketServlet {
         protected Client sbClient;
         protected Device device;
         protected PathTrie paths = new PathTrie();
-        private Map<String, Object> state;
+        private Map<String, Object> state = new HashMap<>();
         private Session wsSession;
     }
 
