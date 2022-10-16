@@ -30,7 +30,10 @@ public class JSONStateSnapshotter implements JSONStateListener {
         boolean hadNonClockUpdate = false;
         for (String key : changed) {
             if ((key.startsWith(pathPrefix) || key.startsWith("ScoreBoard.Version")) && !key.endsWith("Secret")) {
-                if (!key.startsWith(pathPrefix + ".Clock")) { hadNonClockUpdate = true; }
+                if (!key.startsWith(pathPrefix + ".Clock") && !key.endsWith(".JsonExists") &&
+                    !key.endsWith(".StatsbookExists")) {
+                    hadNonClockUpdate = true;
+                }
                 state.put(key, newState.get(key));
             }
         }
