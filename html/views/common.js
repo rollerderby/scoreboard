@@ -105,7 +105,6 @@ function smallDescriptionUpdate(k, v) {
           $('.Team' + to + '>.Timeouts').addClass('Red');
           dotSel = '.Team' + to + ' .Timeout' + (WS.state['ScoreBoard.CurrentGame.Team(' + to + ').Timeouts'] + 1);
         }
-        console.log(dotSel, $(dotSel).length);
         $(dotSel).addClass('Active');
       }
     }
@@ -118,10 +117,15 @@ function intermissionDisplay() {
   var num = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Number'];
   var max = WS.state['ScoreBoard.CurrentGame.Rule(Period.Number)'];
   var isOfficial = WS.state['ScoreBoard.CurrentGame.OfficialScore'];
+  var showDuringOfficial = WS.state['ScoreBoard.CurrentGame.ClockDuringFinalScore'];
   var ret = '';
 
   if (isOfficial) {
-    ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)'];
+    if (showDuringOfficial) {
+      ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.OfficialWithClock)'];
+    } else {
+      ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)'];
+    }
   } else if (num === 0) {
     ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)'];
   } else if (num != max) {
@@ -130,7 +134,10 @@ function intermissionDisplay() {
     ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)'];
   }
 
-  $('.Clock.Intermission .Time').toggleClass('Hide', num == max || isOfficial);
+  $('.Clock.Intermission .Time, .Clock.Intermission.Time').toggleClass(
+    'Hide',
+    (num == max || isOfficial) && !(isOfficial && showDuringOfficial)
+  );
   return ret;
 }
 

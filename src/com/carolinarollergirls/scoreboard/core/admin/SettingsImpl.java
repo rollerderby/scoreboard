@@ -52,6 +52,7 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         set("ScoreBoard.Intermission.Intermission", "Intermission");
         set("ScoreBoard.Intermission.Unofficial", "Unofficial Score");
         set("ScoreBoard.Intermission.Official", "Final Score");
+        set("ScoreBoard.Intermission.OfficialWithClock", "Final Score");
 
         setBothViews("BoxStyle", "box_flat_bright");
         setBothViews("CurrentView", "scoreboard");
