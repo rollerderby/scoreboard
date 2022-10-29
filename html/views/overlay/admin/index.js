@@ -106,6 +106,7 @@ function initialize() {
 
   WS.Register(
     [
+      'ScoreBoard.Settings.Setting(Overlay.Interactive.Scaling)',
       'ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)',
       'ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)',
       'ScoreBoard.CurrentGame.Team(1).AlternateName(overlay)',

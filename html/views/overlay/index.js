@@ -157,6 +157,10 @@ function initialize() {
     $('body').css('backgroundColor', v || 'transparent');
   });
 
+  WS.Register(['ScoreBoard.Settings.Setting(Overlay.Interactive.Scaling)'], function (k, v) {
+    $('body').css('font-size', v + '%');
+  });
+
   WS.Register(
     ['ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)', 'ScoreBoard.Settings.Setting(Overlay.Interactive.Score)'],
     function (k, v) {
