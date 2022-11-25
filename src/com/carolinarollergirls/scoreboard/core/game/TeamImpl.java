@@ -428,7 +428,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     @Override
     public void loadPreparedTeam(PreparedTeam pt) {
         synchronized (coreLock) {
-            set(PREPARED_TEAM_CONNECTED, true, Flag.SPECIAL_CASE);
+            set(PREPARED_TEAM_CONNECTED, pt != null, Flag.SPECIAL_CASE);
             set(PREPARED_TEAM, pt);
         }
     }
