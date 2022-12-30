@@ -1321,6 +1321,7 @@ function createJamDialog(gameId) {
     [
       'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Duration',
       'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Number',
+      'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).StarPass',
       'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).PeriodClockDisplayEnd',
       'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(*).JamScore',
     ],
@@ -1359,6 +1360,7 @@ function createJamDialog(gameId) {
             $('<td>').append(
               $('<button>')
                 .text('Delete')
+                .addClass('delete')
                 .button()
                 .on('click', function () {
                   //TODO: confirmation popup
@@ -1395,6 +1397,18 @@ function createJamDialog(gameId) {
       if (v != null) {
         if (key === 'JamScore') {
           row.find('td.Points .' + k.TeamJam).text(v);
+        }
+        if (key === 'StarPass' || key === 'JamScore') {
+          row
+            .find('button.delete')
+            .prop(
+              'disabled',
+              isTrue(
+                WS.state[prefix + '.StarPass'] ||
+                  WS.state[prefix + '.TeamJam(1).JamScore'] > 0 ||
+                  WS.state[prefix + '.TeamJam(2).JamScore'] > 0
+              )
+            );
         }
         if (key === 'Duration') {
           if (WS.state[prefix + '.WalltimeEnd'] === 0 && WS.state[prefix + '.WalltimeStart'] > 0) {

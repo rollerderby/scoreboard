@@ -98,6 +98,7 @@ table.TimeDialog button.Set>span { padding: 0.1em 1em; }
 /* Period/Jam/Timeout Dialog */
 div.NumberDialog .Hide { display: none; } 
 div.NumberDialog button.Active { background: #3F3; color: black; } 
+div.NumberDialog button:disabled { background: #eee; color: #bbb; } 
 /* End Period/Jam/Timeout Dialog */
 
 

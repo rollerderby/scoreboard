@@ -14,6 +14,7 @@ import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderI
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.Value;
+import com.carolinarollergirls.scoreboard.utils.Logger;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements Jam {
@@ -71,8 +72,18 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
             if (prop == DELETE) {
                 if (game.isInJam() && (parent == game.getCurrentPeriod()) &&
                     (this == ((Period) parent).getCurrentJam())) {
+                    Logger.printMessage("Refusing to delete current Jam.");
                     return;
                 }
+                if (getTeamJam(Team.ID_1).getJamScore() > 0 || getTeamJam(Team.ID_2).getJamScore() > 0) {
+                    Logger.printMessage("Refusing to delete Jam with points. Remove points first.");
+                    return;
+                }
+                if (get(STAR_PASS)) {
+                    Logger.printMessage("Refusing to delete Jam with Star Pass. Remove SP first.");
+                    return;
+                }
+
                 delete(source);
                 game.updateTeamJams();
             } else if (prop == INSERT_BEFORE) {
