@@ -4,7 +4,6 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -86,7 +85,7 @@ public class StatsbookExporter extends Thread {
                     wb.close();
 
                     Files.delete(tmpPath);
-                } catch (IOException e) { Logger.printStackTrace(e); }
+                } catch (Exception e) { Logger.printStackTrace(e); }
             }
         }).start();
     }
@@ -119,7 +118,7 @@ public class StatsbookExporter extends Thread {
                 Files.move(tmpPath, fullPath, REPLACE_EXISTING);
             }
             success = true;
-        } catch (IOException e) { Logger.printStackTrace(e); } finally {
+        } catch (Exception e) { Logger.printStackTrace(e); } finally {
             game.exportDone(success);
         }
     }

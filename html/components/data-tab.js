@@ -51,8 +51,12 @@ function createDataTab(tab) {
     .on('click', function () {
       uploadForm.attr('action', '/Load/xlsx').submit();
     });
+  var spinner = $('<div>').addClass('spin').appendTo(uploadForm);
   _crgUtils.bindAndRun(uploadForm.children('input:file').button(), 'change', function () {
     uploadForm.children('button').button(this.value ? 'enable' : 'disable');
+  });
+  WS.Register('ScoreBoard.ImportsInProgress', function (k, v) {
+    spinner.toggle(v != 0);
   });
 
   // Download table
