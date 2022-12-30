@@ -64,13 +64,18 @@
 			</div>
 
 		</p>
-		<p id="Background" class="Panel">
+		<div id="Scaling" class="Panel">
+			<h2>Scaling</h2>
+			<input data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.Scaling)" type="range" min="50" max="200"/><br/>
+			<input data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.Scaling)" type="number"/> %
+		</div>
+		<div id="Background" class="Panel">
 			<h2>Background</h2>
 			<select class="Selector" id="BackgroundColor" data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.BackgroundColor)" data-field="data-next">
 				<option value="transparent">Transparent</option>
 				<option value="#00ff00">Green</option>
 			</select>
-		</p>
+		</div>
 		<div id="TeamOptions" class="Panel" sbContext="ScoreBoard">
 			<h2>Team Display</h2>
 			<label>1 - Name/FG/BG</label>
