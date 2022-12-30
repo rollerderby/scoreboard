@@ -133,7 +133,7 @@
 
           <div
             class="ClockBarMiddle Wrapper SlideDown ShowInIntermission ShowInLineup ShowInTimeout Box BigName ClockDescription"
-            sbDisplay="Clock(Intermission).Running, Clock.(Intermission).Number, Clock(Lineup).Running, Clock(Lineup).Name, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReviews, Team(1).Timeouts, Team(2).OfficialReviews, Team(2).Timeouts, /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official), OfficialScore, Clock(Intermission).Number, Rule(Period.Number)"
+            sbDisplay="Clock(Intermission).Running, Clock.(Intermission).Number, Clock(Lineup).Running, Clock(Lineup).Name, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReviews, Team(1).Timeouts, Team(2).OfficialReviews, Team(2).Timeouts, /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.OfficialWithClock), OfficialScore, ClockDuringFinalScore, Clock(Intermission).Number, Rule(Period.Number)"
             sbModify="clockType"
           ></div>
           <div class="ClockBarBottom Wrapper Row BottomRow barBackgroundBottom">
@@ -160,7 +160,7 @@
           <div class="Wrapper Clock SlideDown ShowInIntermission ShowInLineup ShowInTimeout">
             <div
               class="Box BigName ShowInIntermission Clock"
-              sbDisplay="/ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official), OfficialScore, Clock(Intermission).Number, Rule(Period.Number)"
+              sbDisplay="/ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.OfficialWithClock), OfficialScore, ClockDuringFinalScore, Clock(Intermission).Number, Rule(Period.Number)"
               sbModify="intermissionDisplay"
             ></div>
             <div class="Box BoxLarge TextCenter Time Clock ShowInIntermission" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>

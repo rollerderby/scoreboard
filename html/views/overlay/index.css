@@ -57,6 +57,7 @@ div { white-space: nowrap; display: block; padding: 0; margin: 0; overflow: hidd
 .ClockBox .Name { width: 49%; } 
 .ClockBox .Time { width: 49%; } 
 .ClockBox .Time.ShowInIntermission { width: 100%; } 
+.ClockBox .Time.Hide { display: none; }
 
 .BottomClock .Name { width: 100%; text-align: center; height: 2em; } 
 .BottomClock .Time { width: 100%; text-align: center; height: 5em; } 

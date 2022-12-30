@@ -340,6 +340,7 @@ function createIntermissionControlDialog() {
     { id: 'ScoreBoard.Intermission.Intermission', display: 'Intermission' },
     { id: 'ScoreBoard.Intermission.Unofficial', display: 'Unofficial Score' },
     { id: 'ScoreBoard.Intermission.Official', display: 'Official Score' },
+    { id: 'ScoreBoard.Intermission.OfficialWithClock', display: 'Official Score with clock' },
   ];
   $.each(fields, function (i, field) {
     var path = 'ScoreBoard.Settings.Setting(' + field.id + ')';

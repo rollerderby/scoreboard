@@ -178,6 +178,12 @@ function createMetaControlTable(gameId) {
     .on('click', function () {
       createOvertimeDialog(WS.state['ScoreBoard.Game(' + gameId + ').Rule(Period.Number)'], gameId);
     });
+  var clockDuringFinalButton = toggleButton(
+    'ScoreBoard.Game(' + gameId + ').ClockDuringFinalScore',
+    'Show Clock during Final Score',
+    'Show Clock during Final Score'
+  );
+  clockDuringFinalButton.appendTo(periodEndTd);
 
   function updateHighlights() {
     var noPeriod = !isTrue(WS.state['ScoreBoard.Game(' + gameId + ').InPeriod']);

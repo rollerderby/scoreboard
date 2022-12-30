@@ -126,6 +126,8 @@ public interface Game extends ScoreBoardEventProvider {
     public static final Value<String> LAST_FILE_UPDATE = new Value<>(String.class, "LastFileUpdate", "Never", props);
     public static final Value<Boolean> STATSBOOK_EXISTS = new Value<>(Boolean.class, "StatsbookExists", false, props);
     public static final Value<Boolean> JSON_EXISTS = new Value<>(Boolean.class, "JsonExists", false, props);
+    public static final Value<Boolean> CLOCK_DURING_FINAL_SCORE =
+        new Value<>(Boolean.class, "ClockDuringFinalScore", false, props);
 
     public static final Child<Clock> CLOCK = new Child<>(Clock.class, "Clock", props);
     public static final Child<Team> TEAM = new Child<>(Team.class, "Team", props);
