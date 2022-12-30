@@ -66,6 +66,7 @@ function createIgrfTab(tab, gameId) {
     })
     .button()
     .appendTo(table.find('tr.Files>td:eq(0)'));
+  var spinner = $('<div>').addClass('spin').appendTo(table.find('tr.Files>td:eq(0)'));
   var jsonButton = $('<a download>').text('Download JSON').button().appendTo(table.find('tr.Files>td:eq(0)'));
   var noJson = $('<span>').text(' No JSON yet ').appendTo(table.find('tr.Files>td:eq(0)'));
   var xlsxButton = $('<a download>').text('Download Statsbook').button().appendTo(table.find('tr.Files>td:eq(0)'));
@@ -77,6 +78,9 @@ function createIgrfTab(tab, gameId) {
     .addClass('Warning')
     .appendTo(table.find('tr.Files>td:eq(0)'));
 
+  WS.Register(gamePrefix + '.UpdateInProgress', function (k, v) {
+    spinner.toggle(isTrue(v));
+  });
   WS.Register(gamePrefix + '.Filename', function (k, v) {
     jsonButton.attr('href', '/game-data/json/' + v + '.json');
     xlsxButton.attr('href', '/game-data/xlsx/' + v + '.xlsx');

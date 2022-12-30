@@ -404,7 +404,10 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             setTimeoutType(Timeout.Owners.OTO, false);
         } else if (prop == EXPORT) {
             jsonSnapshotter.writeFile();
-            if (statsbookExporter == null) { statsbookExporter = new StatsbookExporter(this); }
+            if (statsbookExporter == null) {
+                set(UPDATE_IN_PROGRESS, true);
+                statsbookExporter = new StatsbookExporter(this);
+            }
         }
     }
 
@@ -971,6 +974,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             set(LAST_FILE_UPDATE,
                 LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
         }
+        set(UPDATE_IN_PROGRESS, false);
         statsbookExporter = null;
     }
 

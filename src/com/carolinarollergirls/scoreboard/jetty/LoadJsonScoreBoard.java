@@ -18,6 +18,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import com.fasterxml.jackson.jr.ob.JSON;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
 import com.carolinarollergirls.scoreboard.utils.StatsbookImporter;
@@ -33,6 +34,12 @@ public class LoadJsonScoreBoard extends HttpServlet {
         throws ServletException, IOException {
         if (scoreBoard.getClients().getDevice(request.getSession().getId()).mayWrite()) {
             scoreBoard.getClients().getDevice(request.getSession().getId()).write();
+            scoreBoard.runInBatch(new Runnable() {
+                @Override
+                public void run() {
+                    scoreBoard.set(ScoreBoard.IMPORTS_IN_PROGRESS, 1, Flag.CHANGE);
+                }
+            });
             try {
                 if (!ServletFileUpload.isMultipartContent(request)) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -76,6 +83,13 @@ public class LoadJsonScoreBoard extends HttpServlet {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, fuE.getMessage());
             } catch (IOException iE) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error Reading File: " + iE.getMessage());
+            } finally {
+                scoreBoard.runInBatch(new Runnable() {
+                    @Override
+                    public void run() {
+                        scoreBoard.set(ScoreBoard.IMPORTS_IN_PROGRESS, -1, Flag.CHANGE);
+                    }
+                });
             }
         } else {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "No write access");
