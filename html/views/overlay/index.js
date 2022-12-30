@@ -387,7 +387,7 @@ function jamData(k, v) {
 
   if ($(me).length === 0) {
     pointsPerJamColumnWidths();
-    var xv = $('<div data-sort="' + jam + '" class="ColumnWidth GraphBlock Jam' + jam + '"></div>');
+    var xv = $('<div data-sort="' + String(jam).padStart(3,'0') + '" class="ColumnWidth GraphBlock Jam' + jam + '"></div>');
     $('<div class="JammerStar ColumnWidth"></div>').appendTo(xv);
     $('<div class="Points ColumnWidth"></div>').appendTo(xv);
     $pId.append(xv);
