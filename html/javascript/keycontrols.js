@@ -149,8 +149,8 @@ var _crgKeyControls = {
   _validKey: function (keycode) {
     'use strict';
     /* For reference see http://en.wikipedia.org/wiki/List_of_Unicode_characters */
-    if (keycode < 0x20) {
-      // Low control chars
+    if (keycode < 0x21) {
+      // Low control chars and space
       return false;
     }
     if (0x7e < keycode && keycode < 0xa1) {
