@@ -116,7 +116,7 @@ function initialize() {
     $('.Team' + k.Team + ' .Pivot').toggleClass('Jamming', isTrue(v));
   });
 
-  WS.Register('ScoreBoard.CurrentGame.Team(*).Lead', function (k, v) {
+  WS.Register('ScoreBoard.CurrentGame.Team(*).DisplayLead', function (k, v) {
     $('.Team' + k.Team).toggleClass('Lead', isTrue(v));
   });
 
@@ -391,7 +391,7 @@ function jamData(k, v) {
 
   if ($(me).length === 0) {
     pointsPerJamColumnWidths();
-    var xv = $('<div data-sort="' + String(jam).padStart(3,'0') + '" class="ColumnWidth GraphBlock Jam' + jam + '"></div>');
+    var xv = $('<div data-sort="' + String(jam).padStart(3, '0') + '" class="ColumnWidth GraphBlock Jam' + jam + '"></div>');
     $('<div class="JammerStar ColumnWidth"></div>').appendTo(xv);
     $('<div class="Points ColumnWidth"></div>').appendTo(xv);
     $pId.append(xv);
@@ -473,7 +473,7 @@ function clockType(k, v) {
       } else {
         ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)'];
       }
-      } else if (num === 0) {
+    } else if (num === 0) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)'];
     } else if (num != max) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)'];
