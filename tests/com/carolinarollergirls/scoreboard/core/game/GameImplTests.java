@@ -388,6 +388,51 @@ public class GameImplTests {
     }
 
     @Test
+    public void testStartJam_injuryContiunuation() {
+        fastForwardJams(6);
+        assertTrue(pc.isRunning());
+        assertEquals(1, pc.getNumber());
+
+        g.startJam();
+        advance(35000);
+        TeamJam tj1 = g.getCurrentPeriod().getCurrentJam().getTeamJam(Team.ID_1);
+        tj1.set(TeamJam.LEAD, true);
+        tj1.addScoringTrip();
+        g.timeout();
+        tj1.set(TeamJam.INJURY, true);
+
+        g.set(Game.INJURY_CONTINUATION_UPCOMING, true);
+        g.startJam();
+
+        assertEquals(Game.ACTION_START_JAM, g.snapshot.getType());
+        assertTrue(pc.isRunning());
+        assertEquals(1, pc.getNumber());
+        assertTrue(jc.isRunning());
+        assertTrue(jc.isTimeAtStart());
+        assertEquals(120000 - 35000, jc.getMaximumTime());
+        assertEquals(8, jc.getNumber());
+        assertTrue(tj1.getNext().isLead());
+        assertFalse(tj1.getOtherTeam().getNext().isLead());
+        assertEquals(3, tj1.getCurrentScoringTrip().getNumber());
+        assertEquals(4, tj1.getNext().getCurrentScoringTrip().getNumber());
+        assertEquals(1, tj1.getOtherTeam().getNext().getCurrentScoringTrip().getNumber());
+
+        g.stopJamTO();
+        advance(30000);
+        g.startJam();
+        assertEquals(120000, jc.getMaximumTime());
+    }
+
+    @Test
+    public void testStartJam_suddenScoring() {
+        g.set(Game.IN_SUDDEN_SCORING, true);
+        g.startJam();
+
+        assertTrue(jc.isRunning());
+        assertEquals(60000, jc.getMaximumTime());
+    }
+
+    @Test
     public void testStartJam_fromTimeout() {
         fastForwardJams(17);
         g.timeout();

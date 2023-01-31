@@ -57,7 +57,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
             if (getCurrentScoringTrip() == null) { return true; }
             return getCurrentScoringTrip().getNumber() == 1;
         }
-        if (prop == LOST && getJam().isOvertimeJam()) { return false; }
+        if ((prop == LEAD || prop == LOST) && getJam().isImmediateScoring()) { return false; }
         if (prop == DISPLAY_LEAD) { return isLead() && !isLost(); }
         if (prop == STAR_PASS) {
             if (source == Source.RECALCULATE || source.isFile()) {
@@ -157,6 +157,16 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     @Override
     public TeamJam getOtherTeam() {
         return getJam().getTeamJam(Team.ID_1.equals(subId) ? Team.ID_2 : Team.ID_1);
+    }
+
+    @Override
+    public void setupInjuryContinuation() {
+        if (getPrevious().isLead()) { set(LEAD, true); }
+        removeScoringTrip();
+        int priorTrips = getPrevious().getCurrentScoringTrip().getNumber();
+        if (priorTrips > 1 || getPrevious().getJam().isImmediateScoring()) {
+            getCurrentScoringTrip().set(NUMBER, priorTrips + 1, Source.RENUMBER);
+        }
     }
 
     @Override

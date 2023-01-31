@@ -90,6 +90,20 @@ function createMetaControlTable(gameId) {
 
   WSActiveButton('ScoreBoard.Settings.Setting(ScoreBoard.AutoEndJam)', $('<button>').text('Auto End Jams').button()).appendTo(buttonsTd);
 
+  var suddenScoringButton = WSActiveButton(
+    'ScoreBoard.Game(' + gameId + ').InSuddenScoring',
+    $('<button>').text('Sudden Scoring').button()
+  ).appendTo(buttonsTd);
+  WS.Register(
+    ['ScoreBoard.Game(' + gameId + ').Rule(Jam.SuddenScoring)', 'ScoreBoard.Game(' + gameId + ').CurrentPeriodNumber'],
+    function () {
+      suddenScoringButton.toggle(
+        isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Rule(Jam.SuddenScoring)']) &&
+          WS.state['ScoreBoard.Game(' + gameId + ').CurrentPeriodNumber'] > 1
+      );
+    }
+  );
+
   $('<label>').addClass('EnableReplaceButton').text('Enable Replace on Undo').attr('for', 'EnableReplaceButton').appendTo(buttonsTd);
   $('<input type="checkbox">')
     .attr('id', 'EnableReplaceButton')
@@ -536,6 +550,20 @@ function createJamControlTable(gameId) {
     jamStartButton.find('span.Label').text(v);
   });
   jamStartButton.appendTo(controlsTr.children('td:eq(0)'));
+  var continuationJamButton = WSActiveButton(
+    'ScoreBoard.Game(' + gameId + ').InjuryContinuationUpcoming',
+    $('<button>').text('Continuation Upcoming').addClass('Smaller').button()
+  );
+  WS.Register(
+    ['ScoreBoard.Game(' + gameId + ').Rule(Jam.InjuryContinuation)', 'ScoreBoard.Game(' + gameId + ').Team(1).Injury'],
+    function () {
+      continuationJamButton.toggle(
+        isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Rule(Jam.InjuryContinuation)']) &&
+          isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Team(1).Injury'])
+      );
+    }
+  );
+  continuationJamButton.appendTo(controlsTr.children('td:eq(0)'));
 
   var jamStopButton = $('<button>')
     .html('<span><span class="Label">Stop Jam</span></span>')

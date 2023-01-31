@@ -14,6 +14,7 @@ import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderI
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.Value;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.Logger;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
@@ -65,6 +66,18 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
         if (prop == STAR_PASS) { return getTeamJam(Team.ID_1).isStarPass() || getTeamJam(Team.ID_2).isStarPass(); }
         return value;
     }
+    @Override
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == INJURY_CONTINUATION && (Boolean) value == true && source.isFile()) {
+            for (TeamJam tj : getAll(TEAM_JAM)) {
+                ScoringTrip first = tj.getFirst(TeamJam.SCORING_TRIP);
+                if (getPrevious().isImmediateScoring() || first.hasNext() && first.getNext().getNumber() > 2) {
+                    // team started on a scoring trip but constructor added initial - remove again
+                    tj.remove(TeamJam.SCORING_TRIP, first);
+                }
+            }
+        }
+    }
 
     @Override
     public void execute(Command prop, Source source) {
@@ -113,6 +126,16 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
     }
 
     @Override
+    public boolean isInjuryContinuation() {
+        return get(INJURY_CONTINUATION);
+    }
+
+    @Override
+    public boolean isImmediateScoring() {
+        return isOvertimeJam() || getPeriod().isSuddenScoring();
+    }
+
+    @Override
     public long getDuration() {
         return get(DURATION);
     }
@@ -152,6 +175,15 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
         synchronized (coreLock) {
             setPeriodClockElapsedStart(game.getClock(Clock.ID_PERIOD).getTimeElapsed());
             setWalltimeStart(ScoreBoardClock.getInstance().getCurrentWalltime());
+            if (isInjuryContinuation()) {
+                if (getPrevious().isOvertimeJam()) { set(OVERTIME, true); }
+                game.getClock(Clock.ID_JAM).set(Clock.MAXIMUM_TIME, -getPrevious().getDuration(), Flag.CHANGE);
+                getTeamJam(Team.ID_1).setupInjuryContinuation();
+                getTeamJam(Team.ID_2).setupInjuryContinuation();
+            } else if (getPrevious().isInjuryContinuation()) {
+                game.getClock(Clock.ID_JAM)
+                    .set(Clock.MAXIMUM_TIME, game.getLong(Rule.JAM_DURATION), Source.RECALCULATE);
+            }
         }
     }
     @Override

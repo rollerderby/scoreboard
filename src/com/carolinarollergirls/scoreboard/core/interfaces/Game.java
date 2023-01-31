@@ -41,6 +41,8 @@ public interface Game extends ScoreBoardEventProvider {
     public void setInOvertime(boolean inOvertime);
     public void startOvertime();
 
+    public boolean isInSuddenScoring();
+
     public boolean isOfficialScore();
     public void setOfficialScore(boolean official);
 
@@ -109,6 +111,9 @@ public interface Game extends ScoreBoardEventProvider {
     public static final Value<Boolean> IN_PERIOD = new Value<>(Boolean.class, "InPeriod", false, props);
     public static final Value<Boolean> IN_JAM = new Value<>(Boolean.class, "InJam", false, props);
     public static final Value<Boolean> IN_OVERTIME = new Value<>(Boolean.class, "InOvertime", false, props);
+    public static final Value<Boolean> IN_SUDDEN_SCORING = new Value<>(Boolean.class, "InSuddenScoring", false, props);
+    public static final Value<Boolean> INJURY_CONTINUATION_UPCOMING =
+        new Value<>(Boolean.class, "InjuryContinuationUpcoming", false, props);
     public static final Value<Boolean> OFFICIAL_SCORE = new Value<>(Boolean.class, "OfficialScore", false, props);
     public static final Value<String> ABORT_REASON = new Value<>(String.class, "AbortReason", "", props);
     public static final Value<Timeout> CURRENT_TIMEOUT = new Value<>(Timeout.class, "CurrentTimeout", null, props);

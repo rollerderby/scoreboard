@@ -52,6 +52,12 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
     }
 
     private void addDefaultRulesets(Ruleset root) {
+        RulesetImpl jrda = new RulesetImpl(this, "JRDA", root, "JRDARuleset");
+        jrda.setRule("Jam.SuddenScoring", "true");
+        jrda.setRule("Jam.InjuryContinuation", "true");
+        jrda.set(READONLY, true);
+        add(RULESET, jrda);
+
         RulesetImpl sevens = new RulesetImpl(this, "Sevens", root, "SevensRuleset");
         sevens.setRule("Intermission.Durations", "60:00");
         sevens.setRule("Penalties.NumberToFoulout", "4");

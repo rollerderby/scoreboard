@@ -16,6 +16,8 @@ public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
 
     public TeamJam getOtherTeam();
 
+    public void setupInjuryContinuation();
+
     public boolean isRunningOrEnded();
     public boolean isRunningOrUpcoming();
 

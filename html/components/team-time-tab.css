@@ -13,6 +13,7 @@
 #TeamTime { user-select: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; } 
 #TeamTime a { font-weight: bold; } 
 #TeamTime .ui-button { font-size: 80%; line-height: 1em; padding: .4em; } 
+#TeamTime .ui-button.Active { color: black; background: #3f3; } 
 #TeamTime .BigButton.ui-button { font-size: 100%; line-height: 1.4em; } 
 
 #TeamTime table.TabTable { width: 100%; border-spacing: 1px 0px; } 
@@ -32,6 +33,7 @@
 #TeamTime table.JamControl>tbody>tr>td { width: 100%; } 
 #TeamTime table.JamControl>tbody>tr:first-of-type>td { border-radius: 12px; } 
 #TeamTime table.JamControl .ui-button { font-size: 100%; padding: .3em; } 
+#TeamTime table.JamControl .ui-button.Smaller { font-size: 80%; } 
 #TeamTime table.JamControl .Label { display: inline-block; min-width:50px; } 
 #TeamTime table.JamControl .Hidden { display: none; } 
 

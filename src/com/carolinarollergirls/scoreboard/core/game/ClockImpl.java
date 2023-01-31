@@ -30,6 +30,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
         } else {
             values.put(NUMBER, 0);
         }
+        setRecalculated(MAXIMUM_TIME).addSource(g, Game.IN_SUDDEN_SCORING).addSource(g, Game.IN_OVERTIME);
         setRecalculated(TIME).addSource(this, MAXIMUM_TIME);
         setRecalculated(INVERTED_TIME).addSource(this, MAXIMUM_TIME).addSource(this, TIME);
         setName(subId);
@@ -62,6 +63,15 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
             if ((flag == Flag.RESET && !isCountDirectionDown()) || (Long) value < 0 - 500) { return Long.valueOf(0); }
         }
         if (prop == INVERTED_TIME) { return getMaximumTime() - getTime(); }
+        if (prop == MAXIMUM_TIME && subId.equals(ID_JAM) && source == Source.RECALCULATE) {
+            if (game.isInJam() && game.getCurrentPeriod().getCurrentJam().isInjuryContinuation()) {
+                value = last;
+            } else if (game.isInSuddenScoring() && !game.isInOvertime()) {
+                value = game.getLong(Rule.SUDDEN_SCORING_JAM_DURATION);
+            } else {
+                value = game.getLong(Rule.JAM_DURATION);
+            }
+        }
         if (prop == MAXIMUM_TIME && (Long) value < 0) { return Long.valueOf(0); }
         if (prop == NUMBER && (Integer) value < 0) { return 0; }
         return value;
@@ -98,8 +108,10 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
         public void scoreBoardChange(ScoreBoardEvent<?> event) {
             // Get default values from current settings or use hardcoded values
             setCountDirectionDown(Boolean.parseBoolean(game.get(Game.RULE, subId + ".ClockDirection").getValue()));
-            if (subId.equals(ID_PERIOD) || subId.equals(ID_JAM)) {
-                setMaximumTime(ClockConversion.fromHumanReadable(game.get(Game.RULE, subId + ".Duration").getValue()));
+            if (subId.equals(ID_PERIOD)) {
+                setMaximumTime(game.getLong(Rule.PERIOD_DURATION));
+            } else if (subId.equals(ID_JAM)) {
+                set(MAXIMUM_TIME, game.getLong(Rule.JAM_DURATION), Source.RECALCULATE);
             } else if (subId.equals(ID_INTERMISSION)) {
                 setMaximumTime(getCurrentIntermissionTime());
             } else if (subId.equals(ID_LINEUP) && isCountDirectionDown()) {

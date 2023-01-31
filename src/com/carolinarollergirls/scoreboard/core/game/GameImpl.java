@@ -69,7 +69,9 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
 
         setCopy(CURRENT_PERIOD_NUMBER, this, CURRENT_PERIOD, Period.NUMBER, true);
         setCopy(IN_PERIOD, this, CURRENT_PERIOD, Period.RUNNING, false);
+        setCopy(IN_SUDDEN_SCORING, this, CURRENT_PERIOD, Period.SUDDEN_SCORING, false);
         setCopy(UPCOMING_JAM_NUMBER, this, UPCOMING_JAM, Jam.NUMBER, true);
+        setCopy(INJURY_CONTINUATION_UPCOMING, this, UPCOMING_JAM, Jam.INJURY_CONTINUATION, false);
         setCopy(TIMEOUT_OWNER, this, CURRENT_TIMEOUT, Timeout.OWNER, false);
         setCopy(OFFICIAL_REVIEW, this, CURRENT_TIMEOUT, Timeout.REVIEW, false);
         setCopy(RULESET_NAME, this, RULESET, Ruleset.NAME, true);
@@ -516,6 +518,11 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     }
 
     @Override
+    public boolean isInSuddenScoring() {
+        return get(IN_SUDDEN_SCORING);
+    }
+
+    @Override
     public boolean isOfficialScore() {
         return get(OFFICIAL_SCORE);
     }
@@ -620,6 +627,15 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             getUpcomingJam().set(Jam.NUMBER, 1, Source.RENUMBER, Flag.SPECIAL_CASE);
             // show Jam 0 on the display for the upcoming period
             scoreBoardChange(new ScoreBoardEvent<>(jc, Clock.NUMBER, 0, jc.getNumber()));
+        }
+
+        if (getBoolean(Rule.SUDDEN_SCORING)) {
+            int pointsDiff = Math.abs(getTeam(Team.ID_1).getScore() - getTeam(Team.ID_2).getScore());
+            int trailingScore = Math.min(getTeam(Team.ID_1).getScore(), getTeam(Team.ID_2).getScore());
+            if (pointsDiff >= getInt(Rule.SUDDEN_SCORING_MIN_POINTS_DIFFERENCE) &&
+                trailingScore <= getInt(Rule.SUDDEN_SCORING_MAX_TRAILING_POINTS)) {
+                set(IN_SUDDEN_SCORING, true);
+            }
         }
         pc.resetTime();
         jc.resetTime();
@@ -995,6 +1011,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             this.type = type;
             currentTimeout = g.getCurrentTimeout();
             inOvertime = g.isInOvertime();
+            inSuddenScoring = g.isInSuddenScoring();
             inJam = g.isInJam();
             inPeriod = g.isInPeriod();
             currentPeriod = g.getCurrentPeriod();
@@ -1011,6 +1028,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         public long getSnapshotTime() { return snapshotTime; }
         public Timeout getCurrentTimeout() { return currentTimeout; }
         public boolean inOvertime() { return inOvertime; }
+        public boolean inSuddenScoring() { return inSuddenScoring; }
         public boolean inJam() { return inJam; }
         public boolean inPeriod() { return inPeriod; }
         public Period getCurrentPeriod() { return currentPeriod; }
@@ -1025,6 +1043,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         protected long snapshotTime;
         protected Timeout currentTimeout;
         protected boolean inOvertime;
+        protected boolean inSuddenScoring;
         protected boolean inJam;
         protected boolean inPeriod;
         protected Period currentPeriod;
