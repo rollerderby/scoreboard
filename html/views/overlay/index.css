@@ -221,8 +221,9 @@ html > body div.Wrapper .FloatRight { float: right !important; right: 0; }
 .GraphBlock[lead=true] .JammerStar:after { content: '\02605'; } 
 
 .Skater .Flags[data-flag="C"]:after { content: 'C'; visibility: visible; } 
-.Skater .Flags[data-flag="AC"]:after { content: '\00040'; visibility: visible; } 
-.Skater .Flags[data-flag="BC"]:after { content: 'B'; visibility: visible; } 
+.Skater .Flags[data-flag="A"]:after { content: 'A'; visibility: visible; } 
+.Skater .Flags[data-flag="B"]:after { content: 'B'; visibility: visible; } 
+.Skater .Flags[data-flag="BA"]:after { content: '@'; visibility: visible; } 
 .Skater .Flags[data-flag="ALT"]:after { content: '\02717'; visibility: visible; } 
 
 .GraphBlock { display: block; float: left; width: 10px; background: #888; margin: 0 2px; font-size: 60%; text-align: center; } 
