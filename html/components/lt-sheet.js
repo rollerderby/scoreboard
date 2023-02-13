@@ -43,6 +43,8 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
         'ScoreBoard.Game(' + gameId + ').Period(*).Number',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Number',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).StarPass',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).InjuryContinuation',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Lead',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').NoPivot',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').StarPass',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(*)',
@@ -141,6 +143,12 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
       } else {
         spRow.detach();
       }
+    } else if (k == prefix + 'InjuryContinuation') {
+      var nrText = k.Jam;
+      if (isTrue(v)) {
+        nrText = 'INJ' + (isTrue(WS.state[prefix + 'TeamJam(' + teamId + ').Lead']) ? '*' : '');
+      }
+      jamRow.find('.JamNumber').text(nrText);
     }
 
     // Everything after here is team specific.
@@ -149,6 +157,11 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
     }
     prefix = prefix + 'TeamJam(' + teamId + ').';
     switch (k.substring(prefix.length)) {
+      case 'Lead':
+        if (isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Period(' + k.Period + ').Jam(' + k.Jam + ').InjuryContinuation'])) {
+          jamRow.find('.JamNumber').text('INJ' + isTrue(v) ? '*' : '');
+        }
+        break;
       case 'NoPivot':
         jamRow.find('.NP').text(isTrue(v) ? 'X' : '');
         break;

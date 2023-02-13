@@ -464,7 +464,11 @@ public class StatsbookExporter extends Thread {
     }
 
     private void fillScoreTeamJam(Row baseRow, Row spRow, int baseCol, TeamJam tj) {
-        setCell(baseRow, baseCol, tj.getJam().getNumber(), tj.getJam().isOvertimeJam() ? "Overtime Jam" : "");
+        if (tj.getJam().isInjuryContinuation()) {
+            setCell(baseRow, baseCol, "INJ" + (tj.isLead() ? "*" : ""));
+        } else {
+            setCell(baseRow, baseCol, tj.getJam().getNumber(), tj.getJam().isOvertimeJam() ? "Overtime Jam" : "");
+        }
         if (tj.getJam().get(Jam.STAR_PASS)) { setCell(spRow, baseCol, tj.isStarPass() ? "SP" : "SP*"); }
         setCell(baseRow, baseCol + 1, tj.getFielding(FloorPosition.JAMMER).get(Fielding.SKATER_NUMBER));
         if (tj.get(TeamJam.STAR_PASS)) {
@@ -487,6 +491,10 @@ public class StatsbookExporter extends Thread {
 
     private ScoringTrip fillInitialTrip(Row baseRow, Row spRow, int initialCol, ScoringTrip initialTrip) {
         Row initialRow = baseRow;
+        if (initialTrip.getNumber() > 1) {
+            // injury continuation jam
+            return fillTrip(baseRow, spRow, initialCol + initialTrip.getNumber() - 1, initialTrip);
+        }
         if (initialTrip.isAfterSP()) {
             setCell(baseRow, initialCol, "X");
             initialRow = spRow;

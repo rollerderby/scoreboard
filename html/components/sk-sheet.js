@@ -38,6 +38,7 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Number',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).StarPass',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Overtime',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).InjuryContinuation',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').AfterSPScore',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Calloff',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').JamScore',
@@ -121,6 +122,12 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
       }
     } else if (k == prefix + 'Overtime') {
       jamRow.toggleClass('Overtime', isTrue(v));
+    } else if (k == prefix + 'InjuryContinuation') {
+      var nrText = k.Jam;
+      if (isTrue(v)) {
+        nrText = 'INJ' + (isTrue(WS.state[prefix + 'TeamJam(' + teamId + ').Lead']) ? '*' : '');
+      }
+      jamRow.find('.JamNumber').text(nrText);
     }
 
     // Everything after here is team specific.
@@ -139,6 +146,9 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
         break;
       case 'Lead':
         jamRow.find('.Lead').text(isTrue(v) ? 'X' : '');
+        if (isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Period(' + k.Period + ').Jam(' + k.Jam + ').InjuryContinuation'])) {
+          jamRow.find('.JamNumber').text('INJ' + (isTrue(v) ? '*' : ''));
+        }
         break;
 
       case 'JamScore':

@@ -16,6 +16,8 @@ public interface Period extends NumberedScoreBoardEventProvider<Period> {
     public PeriodSnapshot snapshot();
     public void restoreSnapshot(PeriodSnapshot s);
 
+    public boolean isSuddenScoring();
+
     public boolean isRunning();
 
     public Jam getJam(int j);
@@ -35,6 +37,7 @@ public interface Period extends NumberedScoreBoardEventProvider<Period> {
     public static final Value<Integer> CURRENT_JAM_NUMBER = new Value<>(Integer.class, "CurrentJamNumber", 0, props);
     public static final Value<Jam> FIRST_JAM = new Value<>(Jam.class, "FirstJam", null, props);
     public static final Value<Integer> FIRST_JAM_NUMBER = new Value<>(Integer.class, "FirstJamNumber", 0, props);
+    public static final Value<Boolean> SUDDEN_SCORING = new Value<>(Boolean.class, "SuddenScoring", false, props);
     public static final Value<Boolean> RUNNING = new Value<>(Boolean.class, "Running", false, props);
     public static final Value<Long> DURATION = new Value<>(Long.class, "Duration", 0L, props);
     public static final Value<Long> WALLTIME_START = new Value<>(Long.class, "WalltimeStart", 0L, props);

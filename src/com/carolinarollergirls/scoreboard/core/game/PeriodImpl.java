@@ -23,6 +23,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         setCopy(FIRST_JAM_NUMBER, this, FIRST_JAM, Jam.NUMBER, true);
         if (hasPrevious()) {
             set(CURRENT_JAM, getPrevious().get(CURRENT_JAM));
+            set(SUDDEN_SCORING, getPrevious().isSuddenScoring());
         } else {
             set(CURRENT_JAM, getOrCreate(JAM, "0"));
         }
@@ -134,6 +135,11 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     @Override
     public Game getGame() {
         return game;
+    }
+
+    @Override
+    public boolean isSuddenScoring() {
+        return get(SUDDEN_SCORING);
     }
 
     @Override

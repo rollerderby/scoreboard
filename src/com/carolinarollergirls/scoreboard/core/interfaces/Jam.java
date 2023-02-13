@@ -16,6 +16,8 @@ public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
     public void setParent(ScoreBoardEventProvider p);
 
     public boolean isOvertimeJam();
+    public boolean isInjuryContinuation();
+    public boolean isImmediateScoring();
 
     public long getDuration();
     public long getPeriodClockElapsedStart();
@@ -34,6 +36,8 @@ public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
     public static final Value<Boolean> STAR_PASS =
         new Value<>(Boolean.class, "StarPass", false, props); // true, if either team had an SP
     public static final Value<Boolean> OVERTIME = new Value<>(Boolean.class, "Overtime", false, props);
+    public static final Value<Boolean> INJURY_CONTINUATION =
+        new Value<>(Boolean.class, "InjuryContinuation", false, props);
     public static final Value<Long> DURATION = new Value<>(Long.class, "Duration", 0L, props);
     public static final Value<Long> PERIOD_CLOCK_ELAPSED_START =
         new Value<>(Long.class, "PeriodClockElapsedStart", 0L, props);

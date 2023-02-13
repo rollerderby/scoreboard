@@ -13,6 +13,18 @@ public enum Rule {
     JAM_DURATION(new TimeRule("Jam.Duration", "Maximum duration of a jam", "2:00")),
     JAM_DIRECTION(new BooleanRule("Jam.ClockDirection", "Which way should the jam clock count?", true, "Count Down",
                                   "Count Up")),
+    SUDDEN_SCORING(new BooleanRule("Jam.SuddenScoring", "Use JRDA Sudden Scoring rule?", false, "Enabled", "Disabled")),
+    SUDDEN_SCORING_MIN_POINTS_DIFFERENCE(
+        new IntegerRule("Jam.SuddenScoringMinPointsDifference",
+                        "Minimal score difference at halftime at which sudden scoring is activated.", 150)),
+    SUDDEN_SCORING_MAX_TRAILING_POINTS(
+        new IntegerRule("Jam.SuddenScoringMaxTrainingPoints",
+                        "Maximum points the trailing team may have at halftime to trigger sudden scoring.", 25)),
+    SUDDEN_SCORING_JAM_DURATION(new TimeRule("Jam.SuddenScoringDuration",
+                                             "Maximum duration of a jam when sudden scoring is in effect", "1:00")),
+    INJURY_CONTINUATION(new BooleanRule("Jam.InjuryContinuation",
+                                        "A jam called for injury can be followed by a continuation jam.", false,
+                                        "Enabled", "Disabled")),
 
     LINEUP_DURATION(new TimeRule("Lineup.Duration", "Duration of lineup", "0:30")),
     OVERTIME_LINEUP_DURATION(new TimeRule("Lineup.OvertimeDuration", "Duration of lineup before an overtime jam",
