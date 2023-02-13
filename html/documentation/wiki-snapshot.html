@@ -706,7 +706,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
           <div class="nav-container">
             <div class="nav-inner" id="scroll-spy" style="width: min-content; overflow: auto; top: 60px; bottom: 0; padding 10px 0 10px 0;">
               <span class="toc">Table of contents</span>
-              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the 5.0.9 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
+              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the 5.0.10 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
 <h3 id="howtos">Howtos</h3>
 <ul class="nav"><li><strong><a href="#Installing-the-Scoreboard-Software">Installing the Scoreboard Software</a></strong><ul class="nav"><li><span>Instructions for getting the software installed and running on a standalone computer to provide a functioning scoreboard.</span></li></ul></li><li><strong><a href="#Quick-Start-Guide">Quick Start Guide</a></strong><ul class="nav"><li><span>Basic information to run a game with only what is mandatory for a regulation game. See the pages below for the full feature set.</span></li></ul></li><li><strong><a href="#Preparing-a-Game">Preparing a Game</a></strong></li><li><strong><a href="#Scoreboard-Operation">Scoreboard Operation</a></strong></li><li><strong><a href="#Configuring-Hotkeys">Configuring Hotkeys</a></strong></li><li><strong><a href="#Using-the-Scoreboard-on-a-Network">Using the Scoreboard on a Network</a></strong></li><li><strong><a href="#Penalty-Tracking">Penalty Tracking</a></strong></li><li><strong><a href="#Lineup-Tracking">Lineup Tracking</a></strong></li><li><span>The </span><strong>Penalty Lineup Tracking</strong> interface combines the PT and LT inputs for one team on a single screen. See those pages for info how to operate it.</li><li><strong><a href="Tweeting-from-CRG">Tweeting from CRG</a></strong></li></ul><h3 id="tips-tricks">Tips &amp; Tricks</h3>
 <ul class="nav"><li><strong><a href="#Scoreboard-Best-Practices">Scoreboard Best Practices</a></strong></li><li><strong><a href="#Graphics">Graphics</a></strong><ul class="nav"><li><span>Information on graphics for use with CRG, such as team logos and sponsor banners.</span></li></ul></li><li><strong><a href="#External-Links">External Links</a></strong><ul class="nav"><li><span>Links to other sites with information about CRG Scoreboard.</span></li></ul></li></ul><h3 id="details-about-screens-tabs">Details about Screens / Tabs</h3>
@@ -729,13 +729,11 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 <h3 id="web-browser">Web Browser</h3>
 <p><a href="https://www.google.com/chrome/">Google Chrome</a> and <a href="https://www.microsoft.com/edge/">Microsoft Edge</a> (as well as their open-source parent <a href="http://www.chromium.org/">Chromium</a> or other browsers derived from it) are recommended for running the software. Some known issues may occur when using Mozilla Firefox or Apple Safari. Microsoft Internet Explorer is not recommended.</p>
 <h3 id="java">Java</h3>
-<p>Java is required for providing a Java Runtime Environment (JRE) version 8.0 or newer. Installing the latest version of Oracle&#39;s Java is recommended.</p>
+<p>Java is required for providing a Java Runtime Environment (JRE) version 8.0 or newer. Installing the latest version is recommended.</p>
 <ul>
-<li><p>Windows users can install the standard Java for Windows package that is available when clicking on Free Java Download from <a href="https://java.com/">Oracle’s Java site</a>.</p>
+<li><p>Windows and Apple users can install the Java SE Development Kit that is available from <a href="https://www.oracle.com/au/java/technologies/downloads/">Oracle’s Java site</a>.</p>
 </li>
-<li><p>Apple users must install the complete <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java Platform (JDK)</a>, which includes the JRE, to run the scoreboard properly.</p>
-</li>
-<li><p>Linux users may already have a JRE from the OpenJDK project installed, if not, OpenJDK can be obtained from <a href="http://openjdk.java.net/install/">their repositories</a>.</p>
+<li><p>Linux users likely already have a JDK or JRE from the OpenJDK project installed or available from their distribution. If not, OpenJDK can be obtained from <a href="https://openjdk.org">their repositories</a>.</p>
 </li>
 </ul>
 <h2 id="downloading-the-scoreboard">Downloading the Scoreboard</h2>
@@ -907,6 +905,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 <li>Official Reviews at halftime are weird - find out ahead of time how your HNSO wishes to handle them.  If you haven&#39;t heard anything, just let the halftime clock run, and someone will tell you if they want it stopped or reset.</li>
 <li>At the end of the game, the &quot;End of Period Controls&quot; button at the top should be orange. Press it to open the end of period menu.</li>
 <li>When the score is made official, press the &quot;Unofficial Score&quot; button to change the score to official.  You&#39;re done!</li>
+<li>(optional) If a countdown clock for the next game is wanted along with the scores for the game that just ended, adjust the clock value in the Intermission clock control and press the &quot;Show Clock during Final Score&quot; button.</li>
 <li>There are two &quot;End of Period/Game&quot; special cases:<ul>
 <li>If the officials determine a timeout was called before the time ran out, press the &quot;Timeout Before Period End&quot; button and enter the remaining time on the clock, then behave like a normal timeout.</li>
 <li>If overtime is warranted, press the &quot;Overtime&quot; button and enter the amount of lineup time, then press &quot;Start Overtime Lineup Clock&quot; to start the lineup.  (Note that different head officials have different preferences for the amount of time before starting the lineup for overtime. Fortunately, this doesn&#39;t happen very often.)</li>
@@ -945,6 +944,15 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 </ul>
 <h3 id="recording-a-jammer-who-gets-reabsorbed-into-an-already-completed-trip-or-a-1-trip-from-the-initial-trip-">Recording a jammer who gets reabsorbed into an already completed trip (or a -1 trip from the initial trip)</h3>
 <p>This is not tracked by the software. Just make a mental note to not advance the trip the next time the jammer emerges from the pack.</p>
+<h3 id="handling-a-jam-continued-after-an-injury-call-off-as-per-jrda-rules">Handling a jam continued after an injury call-off as per JRDA rules</h3>
+<p>(only possible if the Jam.InjuryContinuation rule is enabled)</p>
+<ul>
+<li>If not already done, mark the prior jam as called for injury.</li>
+<li>Click the &quot;Continuation Upcoming&quot; button next to the &quot;Start Jam&quot; button.</li>
+<li>Proceed as usual, the clock and trips will be adjusted when the jam starts.</li>
+</ul>
+<h3 id="handling-sudden-scoring-as-per-jrda-rules">Handling Sudden Scoring as per JRDA rules</h3>
+<p>If the Jam.SuddenScoring rule is enabled, this is handled automatically. The detection is done when the halftime clock has run down or period two has started. During period two there is a button in the options section that indicates the status and allows overriding it.</p>
 <h3 id="adding-a-missed-jam-increasing-the-jam-number-">Adding a missed Jam (= increasing the jam number)</h3>
 <ul>
 <li>In the jam clock section click on the jam number.</li>
@@ -954,7 +962,10 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 <h3 id="removing-a-jam-recorded-in-error-decreasing-the-jam-number-">Removing a Jam recorded in error (= decreasing the jam number)</h3>
 <ul>
 <li>In the jam clock section click on the jam number.</li>
-<li>Find the surplus jam in the list and click the corresponding &quot;Delete&quot; button</li>
+<li>Find the surplus jam in the list and click the corresponding &quot;Delete&quot; button.<ul>
+<li>If there are points or a star pass recorded for the jam, those have to be removed first.</li>
+</ul>
+</li>
 <li>Close the popup.</li>
 </ul>
 <h3 id="unstarting-a-period-game">Unstarting a period/game</h3>
@@ -1099,9 +1110,7 @@ take care that you are careful how you use this feature.</p>
 </ul>
 <h2 id="important-considerations-when-assigning-hotkeys">Important Considerations when Assigning Hotkeys</h2>
 <ol>
-<li><p>Do <em>not</em> assign the spacebar as a hotkey. Most browsers treat the spacebar as a special key, and it
-is not always possible for the scoreboard to override the default behavior. Unexpected consequences can result
-when both the scoreboard and the browser attempt to react to a spacebar press.</p>
+<li><p>The space bar and any keys that don&#39;t produce a character (Shift, Control, Alt, Arrows, Function Keys, ...) can not be used as hotkeys.</p>
 </li>
 <li><p>Hotkeys are case sensitive - &quot;a&quot; and &quot;A&quot; are different hotkeys and may be assigned to different actions.
 One common use for this feature is to assign lower case keys to &quot;Points +1&quot; and &quot;Add Trip&quot; and the corresponding upper case keys to the inverse actions &quot;Points -1&quot; and &quot;Remove Trip&quot;.</p>
@@ -1331,7 +1340,7 @@ user before changing hotkeys. It is impolite and confusing to redefine the hotke
 </li>
 <li><p><strong>Delete old games</strong> from time to time. Each game will increase the size of the internal data notably which will eventually lead to performance impacts if the data grows too large. Note that deleting a game from the internal list does not delete any exported statsbooks or data files from the game (and there is no need to clean up those).</p>
 </li>
-<li><p>When using a projector, consider not using <strong>Team Logos</strong> and instead have larger team names. Contrast on projectors is often not that great which can lead to neither logo nor name being very recognizable.</p>
+<li><p>When using a projector, consider <strong>not</strong> using <strong>Team Logos</strong> and instead have larger team names. Contrast on projectors is often not that great which can lead to neither logo nor name being very recognizable.</p>
 </li>
 <li><p><strong>Clearing browsing data</strong> is strongly recommended if you are upgrading from version 3.x to version 4.x or higher. It shouldn&#39;t be needed when switching between different releases of 4.x and above.</p>
 </li>
@@ -1354,6 +1363,7 @@ user before changing hotkeys. It is impolite and confusing to redefine the hotke
 <p><code>html\images\teamlogo</code></p>
 <p class="page" id="External-Links"></p><h1>External Links</h1>
 <p>The following pages and videos are not maintained by the CRG development team, and are not guaranteed to be accurate, complete, or even still in existence, but they may provide some help. If a version is given, that&#39;s the CRG version they were (or appeared to be) based on the last time the respective entry was updated.</p>
+<h2 id="how-tos">How Tos</h2>
 <ul>
 <li><p>(Version 4.0) Here is a playlist with <a href="https://www.youtube.com/playlist?list=PLWi76Bd9Lfof46zUSEdZY7vrsF7WA6NxK">video tutorials</a> by Brain of Terror on the Dublin Roller Derby youtube channel.</p>
 </li>
@@ -1366,10 +1376,11 @@ user before changing hotkeys. It is impolite and confusing to redefine the hotke
 <li><p>An <a href="https://gist.github.com/yetzt/90032ed6cdce613fe588f439628cf298">overview of running CRG Scoreboard on the Raspberry Pi 3</a> was written by Sebastian Vollnhals.</p>
 </li>
 </ul>
-<p>Other files to help you with CRG Scoreboard are available here:</p>
+<h2 id="addons-custom-screens">Addons/Custom Screens</h2>
 <ul>
 <li>A custom slideshow that will display the score and sponsorship banners at halftime is available from Thom Grimes <a href="https://drive.google.com/drive/folders/1WEFFtFeMZK4jXdKGRT8gAMR1OqY1ILPT">here</a>.</li>
 <li>(Version 4.0) Official Sounding wrote an app that <a href="https://github.com/official-sounding/crg-jamtimer">plays jam timer signals</a> based on the state of a CRG instance.</li>
+<li>(Version 4.x &amp; 5.x) <a href="https://github.com/dhmay/jamstats">jamstats</a> is a tool by Damon May that visualizes game stats based on CRG data.</li>
 </ul>
 <p class="page" id="Controls"></p><h1>Controls</h1>
 <p>This is a description of all the elements on the main operator panel, moving from top to bottom, and left to right.</p>
@@ -1378,6 +1389,7 @@ user before changing hotkeys. It is impolite and confusing to redefine the hotke
 <ul>
 <li><strong>Edit Key Control</strong> - Used for <a href="#Configuring-Hotkeys">Configuring Hotkeys</a></li>
 <li><strong>Auto End Jams</strong> - When active the running jam will automatically be ended as soon as the jam clock reaches 0. It is recommended to disable this. Unlike the other settings in this bar this setting is not stored per user.</li>
+<li><strong>Sudden Scoring</strong> - When active, JRDA sudden scoring rules are used. This button is only visible if the corresponding rule is enabled and the halftime clock has run down or period two has been started.</li>
 <li><strong>Enable Replace on Undo</strong> - When active, pressing the &quot;Undo&quot; button will allow you to replace your button press with a different one at the same time. Very useful when an assumed jam start whistle turns out to actually be a timeout whistle. There is an option to replace with &quot;No Action&quot; which gives normal undo behaviour.</li>
 <li><strong>Show Start/Stop Buttons</strong> - Displays start and stop buttons on each individual clock. You should not normally need those.</li>
 <li><strong>Show Tab Bar</strong> - Allows hiding the tab bar above. Can be useful on small screens.</li>
@@ -1396,6 +1408,7 @@ user before changing hotkeys. It is impolite and confusing to redefine the hotke
 <p>These buttons change their text based on the current function. When they are inactive the text will be &quot;---&quot;</p>
 <ul>
 <li><strong>Start Jam</strong> - Starts a jam.</li>
+<li><strong>Continuation Upcoming</strong> (only visible if the Jam.InjuryContinuation rule is enabled and the prior jam is marked as having been called for injury) - marks the next jam as an injury continuation jam as defined in the JRDA rules.</li>
 <li><strong>Stop Jam</strong>/<strong>End Timeout</strong>/<strong>Lineup</strong> - Ends the current jam or timeout (if any) and starts the lineup clock. (If the scorebaord is configured to continue showing the timeout clock after the end of the timeout, pressing this button will only mark the timeout duration in the internal data but not change the displayed clock.)</li>
 <li><strong>Timeout</strong>/<strong>New Timeout</strong> - Starts a (new) timeout.</li>
 <li><strong>Un-...</strong> - Pressing this will undo the last press of a clock control button. (See &quot;Enable Replace on Undo&quot; above for modifying the bahaviour of this button.)</li>
@@ -1454,7 +1467,7 @@ user before changing hotkeys. It is impolite and confusing to redefine the hotke
 <li><em>Jams</em> (Period only) - The number of jams in the period</li>
 <li><em>Points</em> (Jam only) - How many points each team scored in the jam</li>
 <li><em>Duration</em> - How long the period/jam lasted. In the case of a period, this includes time for clock stoppages.</li>
-<li><em>Delete</em> - Delete this period/jam. <strong>Attention!</strong> Deleting a period or jam will delete all points recorded for that period or jam. Use with care.</li>
+<li><em>Delete</em> - Delete this period/jam. Jams with points and/or a star pass cannot be deleted. You have to remove the points/SP first. <strong>Attention!</strong> Deleting a period will delete all points recorded for that period. Use with care.</li>
 <li><em>Insert Before</em> - insert an extra period/jam before this one.</li>
 </ul>
 </li>
@@ -1690,6 +1703,7 @@ The editor for stored teams will always be a screen with a single team while the
 <ul>
 <li><strong>Edit Key Control</strong> - Used for <a href="#Configuring-Hotkeys">Configuring Hotkeys</a></li>
 <li><strong>Auto End Jams</strong> - When active the running jam will automatically be ended as soon as the jam clock reaches 0. It is recommended to disable this. Unlike the other settings in this bar this setting is not stored per user.</li>
+<li><strong>Sudden Scoring</strong> - When active, JRDA sudden scoring rules are used. This button is only visible if the corresponding rule is enabled and the halftime clock has run down or period two has been started.</li>
 <li><strong>Enable Replace on Undo</strong> - When active, pressing the &quot;Undo&quot; button will allow you to replace your button press with a different one at the same time. Very useful when an assumed jam start whistle turns out to actually be a timeout whistle. There is an option to replace with &quot;No Action&quot; which gives normal undo behaviour.</li>
 <li><strong>Show Start/Stop Buttons</strong> - Displays start and stop buttons on each individual clock. You should not normally need those.</li>
 <li><strong>Show Tab Bar</strong> - Allows hiding the tab bar above. Can be useful on small screens.</li>
@@ -1708,6 +1722,7 @@ The editor for stored teams will always be a screen with a single team while the
 <p>These buttons change their text based on the current function. When they are inactive the text will be &quot;---&quot;</p>
 <ul>
 <li><strong>Start Jam</strong> - Starts a jam.</li>
+<li><strong>Continuation Upcoming</strong> (only visible if the Jam.InjuryContinuation rule is enabled and the prior jam is marked as having been called for injury) - marks the next jam as an injury continuation jam as defined in the JRDA rules.</li>
 <li><strong>Stop Jam</strong>/<strong>End Timeout</strong>/<strong>Lineup</strong> - Ends the current jam or timeout (if any) and starts the lineup clock. (If the scorebaord is configured to continue showing the timeout clock after the end of the timeout, pressing this button will only mark the timeout duration in the internal data but not change the displayed clock.)</li>
 <li><strong>Timeout</strong>/<strong>New Timeout</strong> - Starts a (new) timeout.</li>
 <li><strong>Un-...</strong> - Pressing this will undo the last press of a clock control button. (See &quot;Enable Replace on Undo&quot; above for modifying the bahaviour of this button.)</li>
@@ -1766,7 +1781,7 @@ The editor for stored teams will always be a screen with a single team while the
 <li><em>Jams</em> (Period only) - The number of jams in the period</li>
 <li><em>Points</em> (Jam only) - How many points each team scored in the jam</li>
 <li><em>Duration</em> - How long the period/jam lasted. In the case of a period, this includes time for clock stoppages.</li>
-<li><em>Delete</em> - Delete this period/jam. <strong>Attention!</strong> Deleting a period or jam will delete all points recorded for that period or jam. Use with care.</li>
+<li><em>Delete</em> - Delete this period/jam. Jams with points and/or a star pass cannot be deleted. You have to remove the points/SP first. <strong>Attention!</strong> Deleting a period will delete all points recorded for that period. Use with care.</li>
 <li><em>Insert Before</em> - insert an extra period/jam before this one.</li>
 </ul>
 </li>
@@ -1905,6 +1920,7 @@ The editor for stored teams will always be a screen with a single team while the
 <li><em>Intermission</em> - The text displayed between periods, when the intermission clock is running. Default: &quot;Intermission&quot;</li>
 <li><em>Unofficial Score</em> - The text displayed after the game, but before the &quot;Final Score&quot; button is clicked. Default: &quot;Unofficial Score&quot;</li>
 <li><em>Official Score</em> - The text displayed after the game, once the &quot;Final Score&quot; button is clicked. Default: &quot;Final Score&quot;</li>
+<li><em>Official Score with clock</em> - The text displayed after the game, once the &quot;Final Score&quot; button is clicked when the clock during final score is activated. Default: &quot;Final Score&quot;</li>
 </ul>
 </li>
 <li><em>Sync Clocks</em> - When active (default) all running clocks will tick over at the same moment.</li>
@@ -2654,6 +2670,13 @@ manageScore(k, v) {
 <td>bool</td>
 <td>yes</td>
 <td>from 5.0.6</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ImportsInProgress</code></td>
+<td>number</td>
+<td>yes</td>
+<td>from 5.0.10</td>
 </tr>
 </tbody>
 </table>
@@ -2760,6 +2783,20 @@ manageScore(k, v) {
 <td>no</td>
 <td></td>
 <td></td>
+</tr>
+<tr>
+<td><code>InSuddenScoring</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 5.0.10</td>
+<td>copy of <code>CurrentPeriod-&gt;SuddenScoring</code></td>
+</tr>
+<tr>
+<td><code>InjuryContinuationUpcoming</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 5.0.10</td>
+<td>copy of <code>UpcomingJam-&gt;InjuryContinuation</code></td>
 </tr>
 <tr>
 <td><code>CurrentTimeout</code></td>
@@ -2965,6 +3002,13 @@ manageScore(k, v) {
 <td>was not previously in <code>ScoreBoard</code></td>
 </tr>
 <tr>
+<td><code>UpdateInProgress</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 5.0.10</td>
+<td></td>
+</tr>
+<tr>
 <td><code>StatsbookExists</code></td>
 <td>bool</td>
 <td>yes</td>
@@ -2976,6 +3020,13 @@ manageScore(k, v) {
 <td>bool</td>
 <td>yes</td>
 <td>from 5.0.6</td>
+<td></td>
+</tr>
+<tr>
+<td><code>ClockDuringFinalScore</code></td>
+<td>bool</td>
+<td>yes</td>
+<td>from 5.0.10</td>
 </tr>
 </tbody>
 </table>
@@ -4036,6 +4087,13 @@ manageScore(k, v) {
 <td>copy of <code>FirstJam-&gt;Number</code></td>
 </tr>
 <tr>
+<td><code>SuddenScoring</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 5.0.10</td>
+<td></td>
+</tr>
+<tr>
 <td><code>Running</code></td>
 <td>bool</td>
 <td>no</td>
@@ -4172,6 +4230,13 @@ manageScore(k, v) {
 <td>bool</td>
 <td>yes</td>
 <td></td>
+<td></td>
+</tr>
+<tr>
+<td><code>InjuryContinuation</code></td>
+<td>bool</td>
+<td>yes</td>
+<td>from 5.0.10</td>
 <td></td>
 </tr>
 <tr>
