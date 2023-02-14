@@ -1,0 +1,11 @@
+body { margin: 0px; } 
+#operatorIdDiv { width: 100%; text-align: center; } 
+#operatorId { font-weight: bold; } 
+#indexLink { position: absolute; top: 2px; right: 2px; } 
+#tabsDiv>div.TabContent { padding: 2px; overflow: hidden; } 
+#tabsDiv>div.TabContent>table { width: 100%; border-spacing: 0px; } 
+#tabsDiv>div.TabContent>div.Loading { text-align: center; font-weight: bold; font-size: 300%; } 
+#dmTabBar { background: #660000; } 
+table.RowTable { border-spacing: 0px; } 
+#capsLockWarning { padding: .5em 1em; color: white; } 
+#capsLockWarning.Hidden { display: none; } 
