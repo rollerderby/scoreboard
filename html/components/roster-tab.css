@@ -1,0 +1,26 @@
+#Teams { width: 100%; } 
+#Teams>tr>td { text-align: center; vertical-align: top; background: #eee; } 
+#Teams>tr:first-of-type>td { border-radius: 12px 12px 0px 0px; } 
+#Teams>tr:last-of-type>td { border-radius: 0px 0px 12px 12px; } 
+#Teams>tr:only-of-type>td { border-radius: 12px; } 
+
+#Teams .Hide { display: none; } 
+
+#Teams table.Team { width: 100%; border-spacing: 0px; } 
+#Teams table.Team tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; font-size: 200%; font-weight: bold; } 
+#Teams table.Team tr.League>td, #Teams table.Team tr.LTeam>td, #Teams table.Team tr.Color>td { text-align: left; }
+#Teams table.Team tr.League>td:first-of-type, #Teams table.Team tr.LTeam>td:first-of-type,
+#Teams table.Team tr.Color>td:first-of-type { text-align: right; }
+#Teams .Logo { max-height: 4em; }
+
+#Teams table.Skaters { width: 100%; border-spacing: 0px; } 
+#Teams table.Skaters.Empty tr:last-of-type>th:first-of-type { border-radius: 0px 0px 0px 12px; } 
+#Teams table.Skaters.Empty tr:last-of-type>th:last-of-type { border-radius: 0px 0px 12px 0px; } 
+#Teams table.Skaters tr:last-of-type>td:first-of-type { border-radius: 0px 0px 0px 12px; } 
+#Teams table.Skaters tr:last-of-type>td:last-of-type { border-radius: 0px 0px 12px 0px; } 
+#Teams table.Skaters tbody tr:nth-of-type(2n)>td { background: #ddd; } 
+#Teams table.Skaters col.Name { width: 50%; } 
+#Teams table.Skaters col.RosterNumber { width: 20%; } 
+
+#Teams table.Skaters th.Title { font-size: 150%; } 
+#Teams table.Skaters th#skaterCount { font-size: 100%; font-weight: normal; } 
