@@ -128,6 +128,8 @@ function createDataTab(tab) {
     rulesets.find('tr.Content.Selected').each(function () {
       paths = paths + ',ScoreBoard.Rulesets.Ruleset(' + $(this).attr('id') + ')';
     });
+	
+	
     var d = new Date();
     var name = $.datepicker.formatDate('yy-mm-dd_', d);
     name += _timeConversions.twoDigit(d.getHours());
@@ -135,6 +137,27 @@ function createDataTab(tab) {
     name += _timeConversions.twoDigit(d.getSeconds());
     selectedA.attr('href', '/SaveJSON/crg-dataset-' + name + '.json?path=' + paths);
   };
+    var updateSelectedUrlSelectedDelete = function () {
+    var paths = 'X';
+    games.find('tr.Content.SelectedDelete').each(function () {
+      paths = paths + ',ScoreBoard.Game(' + $(this).attr('id') + ')';
+    });
+    teams.find('tr.Content.SelectedDelete').each(function () {
+      paths = paths + ',ScoreBoard.PreparedTeam(' + $(this).attr('id') + ')';
+    });
+    rulesets.find('tr.Content.SelectedDelete').each(function () {
+      paths = paths + ',ScoreBoard.Rulesets.Ruleset(' + $(this).attr('id') + ')';
+    });
+	
+	
+    var d = new Date();
+    var name = $.datepicker.formatDate('yy-mm-dd_', d);
+    name += _timeConversions.twoDigit(d.getHours());
+    name += _timeConversions.twoDigit(d.getMinutes());
+    name += _timeConversions.twoDigit(d.getSeconds());
+    selectedA.attr('href', '/SaveJSON/crg-dataset-' + name + '.json?path=' + paths);
+  };
+
 
   // Delete table
   var sbDeleteTable = $('<table>').addClass('UpDown Hide').appendTo(tab);
@@ -214,6 +237,8 @@ function createDataTab(tab) {
     var rulesetsSelector = 'tr.Content.None';
     if (type === 'selected') {
       gamesSelector = teamsSelector = rulesetsSelector = 'tr.Content.Selected';
+    } else if (type === 'SelectedDelete') {
+      gamesSelector = teamsSelector = rulesetsSelector = 'tr.Content.SelectedDelete';
     } else if (type === 'games') {
       gamesSelector = 'tr.Content';
     } else if (type === 'teams') {
@@ -249,7 +274,7 @@ function createDataTab(tab) {
       },
     });
   }
-
+  
   // Data Tables
   var typeTemplate = $('<table>')
     .addClass('Type')
@@ -302,6 +327,17 @@ function createDataTab(tab) {
         )
         .append($('<span>'))
         .append($('<a edit>').addClass('Edit Left'))
+		.append(
+          $('<button>')
+            .addClass('Delete Left')
+            .text('Delete')
+            .button()
+            .on('click', function () {
+			  $(this).parents('tr.Content').toggleClass('SelectedDelete');
+              updateSelectedUrlSelectedDelete()
+			  createRemoveDialog('SelectedDelete')
+            })
+        )
     );
 
   games = typeTemplate
