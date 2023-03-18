@@ -3,7 +3,6 @@ function createDataTab(tab) {
   var games;
   var teams;
   var rulesets;
-  var operators;
   // Upload table
   var sbUploadTable = $('<table>').addClass('UpDown Hide').appendTo(tab);
   $('<tr>')
@@ -128,9 +127,6 @@ function createDataTab(tab) {
     });
     rulesets.find('tr.Content.Selected').each(function () {
       paths = paths + ',ScoreBoard.Rulesets.Ruleset(' + $(this).attr('id') + ')';
-    });
-	operators.find('tr.Content.Selected').each(function () {
-      paths = paths + ',ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + $(this).attr('id') + ')';
     });
     var d = new Date();
     var name = $.datepicker.formatDate('yy-mm-dd_', d);
