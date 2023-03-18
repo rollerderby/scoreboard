@@ -3,6 +3,7 @@ function createDataTab(tab) {
   var games;
   var teams;
   var rulesets;
+  var operators;
   // Upload table
   var sbUploadTable = $('<table>').addClass('UpDown Hide').appendTo(tab);
   $('<tr>')
@@ -66,7 +67,7 @@ function createDataTab(tab) {
     .appendTo($('<thead>').appendTo(sbDownloadTable))
     .append(
       $('<th>')
-        .attr('colspan', '5')
+        .attr('colspan', '6')
         .append(
           $('<button>')
             .addClass('Show Left')
@@ -94,6 +95,7 @@ function createDataTab(tab) {
     { name: 'All Games', url: 'games.json?path=ScoreBoard.Game' },
     { name: 'All Teams', url: 'teams.json?path=ScoreBoard.PreparedTeam' },
     { name: 'All Rulesets', url: 'rulesets.json?path=ScoreBoard.Rulesets.Ruleset' },
+	{ name: 'All Operators', url: 'operators.json?path=ScoreBoard.Settings.Setting(ScoreBoard.Operator__' },
     { name: 'All Data', url: '' },
   ];
   $.each(links, function () {
@@ -104,7 +106,7 @@ function createDataTab(tab) {
       .button()
       .attr('href', '/SaveJSON/' + this.url);
   });
-  var allDataA = downloadRow.find('>td:eq(4)>a');
+  var allDataA = downloadRow.find('>td:eq(5)>a');
   var updateAllUrl = function () {
     var d = new Date();
     var name = $.datepicker.formatDate('yy-mm-dd_', d);
@@ -126,6 +128,9 @@ function createDataTab(tab) {
     });
     rulesets.find('tr.Content.Selected').each(function () {
       paths = paths + ',ScoreBoard.Rulesets.Ruleset(' + $(this).attr('id') + ')';
+    });
+	operators.find('tr.Content.Selected').each(function () {
+      paths = paths + ',ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + $(this).attr('id') + ')';
     });
     var d = new Date();
     var name = $.datepicker.formatDate('yy-mm-dd_', d);
