@@ -214,6 +214,8 @@ function createDataTab(tab) {
     var rulesetsSelector = 'tr.Content.None';
     if (type === 'selected') {
       gamesSelector = teamsSelector = rulesetsSelector = 'tr.Content.Selected';
+    } else if (type === 'SelectedDelete') {
+      gamesSelector = teamsSelector = rulesetsSelector = 'tr.Content.SelectedDelete';
     } else if (type === 'games') {
       gamesSelector = 'tr.Content';
     } else if (type === 'teams') {
@@ -244,6 +246,10 @@ function createDataTab(tab) {
           div.dialog('close');
         },
         No: function () {
+              const collection = document.getElementsByClassName("SelectedDelete");
+              for (let i = 0; i < collection.length; i++) {
+                collection[i].classList.remove("SelectedDelete");;
+              }
           div.dialog('close');
         },
       },
@@ -302,6 +308,16 @@ function createDataTab(tab) {
         )
         .append($('<span>'))
         .append($('<a edit>').addClass('Edit Left'))
+        .append(
+          $('<button>')
+            .addClass('Delete Left')
+            .text('Delete')
+            .button()
+            .on('click', function () {
+              $(this).parents('tr.Content').addClass('SelectedDelete');
+              createRemoveDialog('SelectedDelete')
+            })
+        )
     );
 
   games = typeTemplate
