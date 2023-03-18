@@ -2,6 +2,10 @@ package com.carolinarollergirls.scoreboard.jetty;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -74,6 +78,16 @@ public class LoadJsonScoreBoard extends HttpServlet {
                             }
                         } else if (request.getPathInfo().equalsIgnoreCase("/xlsx")) {
                             sbImporter.read(item.openStream());
+                        } else if (request.getPathInfo().equalsIgnoreCase("/blank_xlsx")) {
+                            Path outputPath = Paths.get("blank_statsbook.xlsx");
+                            Files.copy(item.openStream(), outputPath, StandardCopyOption.REPLACE_EXISTING);
+                            scoreBoard.runInBatch(new Runnable() {
+                                @Override
+                                public void run() {
+                                    scoreBoard.getSettings().set(ScoreBoard.SETTING_STATSBOOK_INPUT,
+                                                                 outputPath.toString());
+                                }
+                            });
                         }
                         return;
                     }
