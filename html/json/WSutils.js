@@ -56,3 +56,11 @@ function WSControl(key, element) {
   });
   return element;
 }
+
+function WSDisplay(key, element) {
+  'use strict';
+  WS.Register(key, function (k, v) {
+    element.text(v);
+  });
+  return element;
+}
