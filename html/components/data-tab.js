@@ -94,7 +94,7 @@ function createDataTab(tab) {
     { name: 'All Games', url: 'games.json?path=ScoreBoard.Game' },
     { name: 'All Teams', url: 'teams.json?path=ScoreBoard.PreparedTeam' },
     { name: 'All Rulesets', url: 'rulesets.json?path=ScoreBoard.Rulesets.Ruleset' },
-	{ name: 'All Operators', url: 'operators.json?path=ScoreBoard.Settings.Setting(ScoreBoard.Operator__' },
+    { name: 'All Operators', url: 'operators.json?path=ScoreBoard.Settings.Setting(ScoreBoard.Operator__' },
     { name: 'All Data', url: '' },
   ];
   $.each(links, function () {
