@@ -575,7 +575,7 @@ function createColorsDialog(prefix) {
   $('<tr>')
     .append('<th class="X"></th>')
     .append('<th class="Id">Id</th>')
-    .append('<th class="fg">Foreground</th>')
+    .append('<th class="fg">Text/Icons</th>')
     .append('<th class="bg">Background</th>')
     .append('<th class="glow">Glow/Halo</th>')
     .appendTo(thead);
