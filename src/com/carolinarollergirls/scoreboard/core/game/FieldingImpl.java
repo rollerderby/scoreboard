@@ -169,8 +169,18 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     }
     @Override
     public void updateBoxTripSymbols() {
+        if (getTeamJam().getJam().isInjuryContinuation() && getTeamJam().isLead()) {
+            getPrevious().updateBoxTripSymbols();
+        }
+        boolean considerContinuation = false;
         List<BoxTrip> trips = new ArrayList<>();
         for (BoxTrip bt : getAll(BOX_TRIP)) { trips.add(bt); }
+        if (getNext() != null && getNext().getTeamJam().getJam().isInjuryContinuation() && getTeamJam().isLead()) {
+            considerContinuation = true;
+            for (BoxTrip bt : getNext().getAll(BOX_TRIP)) {
+                if (bt.getStartFielding() == getNext() && !bt.startedAfterSP()) { trips.add(bt); }
+            }
+        }
         Collections.sort(trips, new Comparator<BoxTrip>() {
             @Override
             public int compare(BoxTrip b1, BoxTrip b2) {
@@ -208,16 +218,24 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
                     typeJam = 2;
                     typeBeforeSP = 2;
                 }
+            } else if (considerContinuation && getNext() == trip.getStartFielding()) {
+                // team had Lead at continuation -> no SP possible
+                typeJam = 2;
+                typeBeforeSP = 2;
             }
             if (this == trip.getEndFielding()) {
-                if (trip.endedAfterSP()) {
+                if (trip.endedAfterSP() && !trip.endedBetweenJams()) {
                     typeJam += 3;
                     typeAfterSP += 3;
-                } else if (!trip.endedBetweenJams()) {
+                } else if (!trip.endedBetweenJams() || considerContinuation) {
                     typeJam += 3;
                     typeBeforeSP += 3;
                     typeAfterSP = 0;
                 }
+            } else if (considerContinuation && getNext() == trip.getEndFielding() && !trip.endedAfterSP() &&
+                       !trip.endedBetweenJams()) {
+                typeJam += 3;
+                typeBeforeSP += 3;
             }
             if (typeBeforeSP > 0) { beforeSP.append(" " + symbols[typeBeforeSP - 1]); }
             if (typeAfterSP > 0) { afterSP.append(" " + symbols[typeAfterSP - 1]); }

@@ -166,22 +166,6 @@ public class BoxTripImplTests {
         assertEquals("S", getBoxTripSymbols(3));
         assertEquals(null, getBoxTripSymbols(4));
 
-        // Penalty is ongoing, but skater isn't in the upcoming jam.
-        bt.execute(BoxTrip.END_LATER);
-        assertEquals(null, getBoxTripSymbols(1));
-        assertEquals("-", getBoxTripSymbols(2));
-        assertEquals("S", getBoxTripSymbols(3));
-        assertEquals(null, getBoxTripSymbols(4));
-
-        // Field them in upcoming jam.
-        t.field(s, Role.PIVOT);
-        assertEquals(null, getBoxTripSymbols(1));
-        assertEquals("-", getBoxTripSymbols(2));
-        assertEquals("S", getBoxTripSymbols(3));
-        assertEquals("", getBoxTripSymbols(4));
-        assertEquals(false, s.getFielding(t.getRunningOrUpcomingTeamJam()).isInBox());
-
-        // Now can mark penalty as ongoing.
         bt.execute(BoxTrip.END_LATER);
         assertEquals(null, getBoxTripSymbols(1));
         assertEquals("-", getBoxTripSymbols(2));

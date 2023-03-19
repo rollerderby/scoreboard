@@ -15,6 +15,8 @@ div.LT { font-size: 200%; text-align: center; background-color: #cccccc; color: 
 .LT.Period.Backwards tbody tr:nth-last-child(even) .Darker { background-color: #cee7ff; } 
 .LT.Period.Backwards tr.SP td { border-bottom-style: dotted; } 
 .LT.Period.Forwards tr.SP td { border-top-style: dotted; } 
+.LT.Period.Backwards tr.INJ td { border-bottom-style: dotted; } 
+.LT.Period.Forwards tr.INJ td { border-top-style: dotted; } 
 .LT.Period tbody .Box { background-color: #b6daff; } 
 .LT.Period .JamNumber { width: 30px; } 
 .LT.Period .CopyArrow { position: relative; }

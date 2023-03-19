@@ -555,12 +555,14 @@ public class StatsbookExporter extends Thread {
     }
 
     private void fillLineupsTeamJam(Row baseRow, Row spRow, int c, TeamJam tj) {
-        setCell(baseRow, c + 1, tj.hasNoPivot() ? "X" : "");
-        fillFielding(baseRow, c + 2, tj.getFielding(FloorPosition.JAMMER), false, true);
-        fillFielding(baseRow, c + 6, tj.getFielding(FloorPosition.PIVOT), false);
-        fillFielding(baseRow, c + 10, tj.getFielding(FloorPosition.BLOCKER1), false);
-        fillFielding(baseRow, c + 14, tj.getFielding(FloorPosition.BLOCKER2), false);
-        fillFielding(baseRow, c + 18, tj.getFielding(FloorPosition.BLOCKER3), false);
+        if (!tj.getJam().isInjuryContinuation() || !tj.isLead()) {
+            setCell(baseRow, c + 1, tj.hasNoPivot() ? "X" : "");
+            fillFielding(baseRow, c + 2, tj.getFielding(FloorPosition.JAMMER), false, true);
+            fillFielding(baseRow, c + 6, tj.getFielding(FloorPosition.PIVOT), false);
+            fillFielding(baseRow, c + 10, tj.getFielding(FloorPosition.BLOCKER1), false);
+            fillFielding(baseRow, c + 14, tj.getFielding(FloorPosition.BLOCKER2), false);
+            fillFielding(baseRow, c + 18, tj.getFielding(FloorPosition.BLOCKER3), false);
+        }
         if (tj.isStarPass()) {
             spRow.getCell(c + 1).setCellValue("X");
             fillFielding(spRow, c + 2, tj.getFielding(FloorPosition.PIVOT), true, true);

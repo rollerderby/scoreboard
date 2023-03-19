@@ -67,7 +67,7 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
             .toggleClass(
               'Hide',
               isTrue(WS.state['ScoreBoard.Game(' + gameId + ').InJam']) ||
-                WS.state['ScoreBoard.Game(' + gameId + ').CurrentPeriodNumber'] !== p
+                WS.state['ScoreBoard.Game(' + gameId + ').CurrentPeriodNumber'] != p
             );
         }
       });
@@ -100,6 +100,13 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
     }
 
     element.find('#head .Team').text(teamName);
+  }
+
+  function isInjAsterisk(period, jam) {
+    return (
+      isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Period(' + period + ').Jam(' + jam + ').InjuryContinuation']) &&
+      isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Period(' + period + ').Jam(' + jam + ').TeamJam(' + teamId + ').Lead'])
+    );
   }
 
   function handleUpdate(k, v) {
@@ -144,11 +151,24 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
         spRow.detach();
       }
     } else if (k == prefix + 'InjuryContinuation') {
+      jamRow.toggleClass('INJ', isTrue(v));
       var nrText = k.Jam;
       if (isTrue(v)) {
         nrText = 'INJ' + (isTrue(WS.state[prefix + 'TeamJam(' + teamId + ').Lead']) ? '*' : '');
       }
       jamRow.find('.JamNumber').text(nrText);
+      if (isInjAsterisk(k.Period, k.Jam)) {
+        jamRow.find('.NP').text('');
+        jamRow.find('.Skater').text('');
+        jamRow.find('.Box').text('');
+      } else {
+        jamRow.children('.NP').text(isTrue(WS.state[prefix + 'NoPivot']) ? 'X' : '');
+        $.each(['Jammer', 'Pivot', 'Blocker1', 'Blocker2', 'Blocker3'], function () {
+          var pos = String(this);
+          jamRow.children('.' + pos).text(WS.state[prefix + 'Fielding(' + pos + ').SkaterNumber']);
+          setBoxTripSymbols(jamRow, '.Box' + pos, WS.state[prefix + 'Fielding(' + pos + ').BoxTripSymbolsBeforeSP']);
+        });
+      }
     }
 
     // Everything after here is team specific.
@@ -159,11 +179,23 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
     switch (k.substring(prefix.length)) {
       case 'Lead':
         if (isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Period(' + k.Period + ').Jam(' + k.Jam + ').InjuryContinuation'])) {
-          jamRow.find('.JamNumber').text('INJ' + isTrue(v) ? '*' : '');
+          jamRow.find('.JamNumber').text('INJ' + (isTrue(v) ? '*' : ''));
+          if (isTrue(v)) {
+            jamRow.find('.NP').text('');
+            jamRow.find('.Skater').text('');
+            jamRow.find('.Box').text('');
+          } else {
+            jamRow.children('.NP').text(isTrue(WS.state[prefix + 'NoPivot']) ? 'X' : '');
+            $.each(['Jammer', 'Pivot', 'Blocker1', 'Blocker2', 'Blocker3'], function () {
+              var pos = String(this);
+              jamRow.children('.' + pos).text(WS.state[prefix + 'Fielding(' + pos + ').SkaterNumber']);
+              setBoxTripSymbols(jamRow, '.Box' + pos, WS.state[prefix + 'Fielding(' + pos + ').BoxTripSymbolsBeforeSP']);
+            });
+          }
         }
         break;
       case 'NoPivot':
-        jamRow.find('.NP').text(isTrue(v) ? 'X' : '');
+        jamRow.find('.NP').text(isTrue(v) && !isInjAsterisk(k.Period, k.Jam) ? 'X' : '');
         break;
       case 'StarPass':
         spRow.children('.JamNumber').text(isTrue(v) ? 'SP' : 'SP*');
@@ -177,12 +209,12 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
       default:
         if (k.Fielding != null) {
           if (k.SkaterNumber != null) {
-            jamRow.children('.' + k.Fielding).text(v);
+            jamRow.children('.' + k.Fielding).text(isInjAsterisk(k.Period, k.Jam) ? '' : v);
             if (isTrue(WS.state[prefix + 'StarPass'])) {
               spRow.children('.' + k.Fielding).text(v);
             }
           } else if (k.BoxTripSymbolsBeforeSP != null) {
-            setBoxTripSymbols(jamRow, '.Box' + k.Fielding, v);
+            setBoxTripSymbols(jamRow, '.Box' + k.Fielding, isInjAsterisk(k.Period, k.Jam) ? '' : v);
           } else if (k.BoxTripSymbolsAfterSP != null) {
             if (isTrue(WS.state[prefix + 'StarPass'])) {
               setBoxTripSymbols(spRow, '.Box' + k.Fielding, v);
@@ -614,15 +646,17 @@ function prepareFieldingEditor(elem, gameId, teamId) {
       }
       return;
     }
-    var between = isTrue(WS.state[prefix + 'EndBetweenJams']);
-    var afterSP = isTrue(WS.state[prefix + 'EndAfterSP']);
     if (['StartJamNumber', 'StartBetweenJams', 'StartAfterSP'].includes(key)) {
+      var between = isTrue(WS.state[prefix + 'StartBetweenJams']);
+      var afterSP = isTrue(WS.state[prefix + 'StartAfterSP']);
       row
         .find('.tripStartText')
         .text((between ? 'Before ' : '') + 'Jam ' + WS.state[prefix + 'StartJamNumber'] + (afterSP ? ' after SP' : ''));
     }
     if (['EndJamNumber', 'EndBetweenJams', 'EndAfterSP'].includes(key)) {
       var jam = WS.state[prefix + 'EndJamNumber'];
+      var between = isTrue(WS.state[prefix + 'EndBetweenJams']);
+      var afterSP = isTrue(WS.state[prefix + 'EndAfterSP']);
       row
         .find('.tripEndText')
         .text((between ? ' After ' : ' ') + (jam === 0 ? 'ongoing' : 'Jam ' + jam) + (afterSP && !between ? ' after SP ' : ' '));
