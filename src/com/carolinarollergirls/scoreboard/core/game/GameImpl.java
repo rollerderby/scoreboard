@@ -182,7 +182,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 @Override
                 public void scoreBoardChange(ScoreBoardEvent<?> event) {
                     if (getBooleanSetting(ScoreBoard.SETTING_AUTO_END_TTO) && (getTimeoutOwner() instanceof Team) &&
-                        (Long) event.getValue() == getLong(Rule.TTO_DURATION)) {
+                        !getCurrentTimeout().isReview() && (Long) event.getValue() == getLong(Rule.TTO_DURATION)) {
                         stopJamTO();
                     }
                     if ((Long) event.getValue() == getLong(Rule.STOP_PC_AFTER_TO_DURATION) &&
