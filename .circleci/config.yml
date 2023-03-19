@@ -2,8 +2,8 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: cimg/openjdk:8.0
     steps:
+      - run: sudo apt update && sudo apt -y install ant junit4
       - checkout
       - run: ant
-
