@@ -199,10 +199,10 @@ public class WS extends WebSocketServlet {
                                 int jam = (Integer) data.get("Jam");
                                 if (jam == 0 && period > 1) {
                                     g.getClock(Clock.ID_PERIOD)
-                                        .elapseTime(g.getClock(Clock.ID_PERIOD).getMaximumTime());
+                                        .elapseTime(g.getClock(Clock.ID_PERIOD).getMaximumTime() + 1000);
                                     g.stopJamTO();
                                     g.getClock(Clock.ID_INTERMISSION)
-                                        .elapseTime(g.getClock(Clock.ID_INTERMISSION).getMaximumTime());
+                                        .elapseTime(g.getClock(Clock.ID_INTERMISSION).getMaximumTime() + 1000);
                                     for (int i = 2; i < period; i++) {
                                         g.getCurrentPeriod().execute(Period.INSERT_BEFORE);
                                     }
@@ -213,8 +213,9 @@ public class WS extends WebSocketServlet {
                                     for (int i = 1; i < jam; i++) {
                                         g.getCurrentPeriod().getCurrentJam().execute(Jam.INSERT_BEFORE);
                                     }
-                                    g.getClock(Clock.ID_PERIOD).setTime(Long.valueOf((String) data.get("PeriodClock")));
                                 }
+                                long periodClock = Long.valueOf((String) data.get("PeriodClock"));
+                                if (periodClock > 0) { g.getClock(Clock.ID_PERIOD).setTime(periodClock); }
                             } else {
                                 String intermissionClock = (String) data.get("IntermissionClock");
                                 if (intermissionClock != null) {

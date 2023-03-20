@@ -1380,8 +1380,7 @@ public class GameImplTests {
         assertFalse(jc.isRunning());
         assertTrue(jc.isTimeAtStart());
         assertEquals(20, jc.getNumber());
-        assertEquals(1, collectedEvents.size());
-        assertEquals(0, collectedEvents.poll().getValue());
+        assertEquals(0, collectedEvents.size());
         assertFalse(lc.isRunning());
         assertFalse(tc.isRunning());
         assertFalse(ic.isRunning());

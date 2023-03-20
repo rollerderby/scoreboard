@@ -356,7 +356,7 @@ function createGameControlDialog(gameId) {
     )
     .append(
       $('<tr>')
-        .append($('<td>').addClass('rowLabel').text('Jam:'))
+        .append($('<td>').addClass('rowLabel').text('Prior Jam:'))
         .append($('<td>').append($('<input>').attr('type', 'number').attr('min', '0').addClass('Jam')))
     )
     .append(
@@ -372,8 +372,8 @@ function createGameControlDialog(gameId) {
     var include = (state === 'Prepared' || state === 'Running') && name !== '' && k.Game != WS.state['ScoreBoard.CurrentGame.Game'];
     var options = preparedGame.find('option[value="' + k.Game + '"]');
     if (include && options.length === 0) {
-      var option = $('<option>').attr('value', k.Game).data('name', name).text(name);
-      _windowFunctions.appendAlphaSortedByData(preparedGame.find('select.Game'), option, 'name', 1);
+      var option = $('<option>').attr('value', k.Game).text(name);
+      _windowFunctions.appendAlphaSortedByText(preparedGame.find('select.Game'), option, 1);
     } else if (include) {
       options.text(name);
     } else {
@@ -392,8 +392,8 @@ function createGameControlDialog(gameId) {
     var options = adhocGame.find('option[value="' + k.PreparedTeam + '"]');
     if (options.length === 0) {
       var option = $('<option>').attr('value', k.PreparedTeam).text(v);
-      _windowFunctions.appendAlphaSortedByAttr(adhocGame.find('select.Team1'), option, 'value', 1);
-      _windowFunctions.appendAlphaSortedByAttr(adhocGame.find('select.Team2'), option.clone(), 'value', 1);
+      _windowFunctions.appendAlphaSortedByText(adhocGame.find('select.Team1'), option, 1);
+      _windowFunctions.appendAlphaSortedByText(adhocGame.find('select.Team2'), option.clone(), 1);
     } else {
       options.text(v);
     }
@@ -409,8 +409,10 @@ function createGameControlDialog(gameId) {
       return;
     }
     var option = $('<option>').attr('value', k.Ruleset).attr('name', v).text(v);
-    _windowFunctions.appendAlphaSortedByAttr(select, option, 'name');
-    select.val(WS.state['ScoreBoard.Game(' + gameId + ').Ruleset']);
+    _windowFunctions.appendAlphaSortedByText(select, option);
+    if (k.Ruleset === WS.state['ScoreBoard.Game(' + gameId + ').Ruleset'] || k.Ruleset === 'WFTDARuleset') {
+      select.val(k.Ruleset);
+    }
   });
 
   dialog.dialog({
