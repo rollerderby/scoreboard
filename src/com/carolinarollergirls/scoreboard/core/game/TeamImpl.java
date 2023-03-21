@@ -703,7 +703,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                 }
             }
             if (s.getFielding(tj) == null || s.getRole(tj) != r) {
-                Fielding f = getAvailableFielding(r, tj);
+                Fielding priorFielding = tj.hasPrevious() ? s.getFielding(tj.getPrevious()) : null;
+                FloorPosition priorFp = priorFielding == null ? null : priorFielding.getPosition().getFloorPosition();
+                Fielding f = getAvailableFielding(r, tj, priorFp);
                 if (r == Role.PIVOT && f != null) {
                     if (f.getSkater() != null && (tj.hasNoPivot() || s.getRole(tj) == Role.BLOCKER)) {
                         // If we are moving a blocker to pivot, move the previous pivot to blocker
@@ -713,7 +715,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                         if (s.getRole(tj) == Role.BLOCKER) {
                             f2 = s.getFielding(tj);
                         } else {
-                            f2 = getAvailableFielding(Role.BLOCKER, tj);
+                            f2 = getAvailableFielding(Role.BLOCKER, tj, priorFp);
                         }
                         f2.setSkater(f.getSkater());
                     }
@@ -728,7 +730,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         }
     }
 
-    private Fielding getAvailableFielding(Role r, TeamJam tj) {
+    private Fielding getAvailableFielding(Role r, TeamJam tj, FloorPosition preferredFp) {
         switch (r) {
         case JAMMER:
             if (tj.isStarPass()) {
@@ -743,6 +745,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                 return tj.getFielding(FloorPosition.PIVOT);
             }
         case BLOCKER:
+            if (preferredFp != null && preferredFp.getRole() == r && tj.getFielding(preferredFp).getSkater() == null) {
+                return tj.getFielding(preferredFp);
+            }
             Fielding[] fs = {tj.getFielding(FloorPosition.BLOCKER1), tj.getFielding(FloorPosition.BLOCKER2),
                              tj.getFielding(FloorPosition.BLOCKER3)};
             for (Fielding f : fs) {

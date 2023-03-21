@@ -184,14 +184,20 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
                 set(END_AFTER_S_P, true);
             } else if (!endedBetweenJams()) {
                 set(END_BETWEEN_JAMS, true);
-            } else if (add(FIELDING,
-                           getEndFielding().getSkater().getFielding(getEndFielding().getTeamJam().getNext()))) {
-                set(END_AFTER_S_P, false);
-                set(END_BETWEEN_JAMS, false);
+            } else {
+                if (getEndFielding().getTeamJam().isRunningOrEnded() && !game.isInJam()) {
+                    // user is attempting to extend trip into upcoming jam - field skater if necessary
+                    getTeam().field(getEndFielding().getSkater(), getEndFielding().getCurrentRole(),
+                                    getEndFielding().getTeamJam().getNext());
+                }
+                if (add(FIELDING, getEndFielding().getSkater().getFielding(getEndFielding().getTeamJam().getNext()))) {
+                    set(END_AFTER_S_P, false);
+                    set(END_BETWEEN_JAMS, false);
+                }
             }
             if (getEndFielding().getTeamJam().isRunningOrUpcoming() && (endedBetweenJams() || !game.isInJam())) {
-                // moved end past the present point in the game -> make ongoing if possible
-                if (!getEndFielding().isInBox()) { unend(); }
+                // moved end past the present point in the game -> make ongoing
+                unend();
             }
         }
     }
