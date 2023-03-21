@@ -625,8 +625,6 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         set(CURRENT_PERIOD, getOrCreatePeriod(getCurrentPeriodNumber() + 1));
         if (getBoolean(Rule.JAM_NUMBER_PER_PERIOD)) {
             getUpcomingJam().set(Jam.NUMBER, 1, Source.RENUMBER, Flag.SPECIAL_CASE);
-            // show Jam 0 on the display for the upcoming period
-            scoreBoardChange(new ScoreBoardEvent<>(jc, Clock.NUMBER, 0, jc.getNumber()));
         }
 
         if (getBoolean(Rule.SUDDEN_SCORING)) {

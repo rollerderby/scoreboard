@@ -144,6 +144,20 @@ var _windowFunctions = {
     };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
+  appendAlphaSortedByText: function (parent, newChild, startIndex) {
+    'use strict';
+    var comp = function (a, b) {
+      return _windowFunctions.alphaCompareByText(a, b);
+    };
+    return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
+  },
+  appendAlphaNumSortedByText: function (parent, newChild, startIndex) {
+    'use strict';
+    var comp = function (a, b) {
+      return _windowFunctions.numCompareByText(a, b);
+    };
+    return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
+  },
 
   alphaCompare: function (a, b) {
     'use strict';
@@ -164,6 +178,10 @@ var _windowFunctions = {
   alphaCompareByData: function (n, a, b) {
     'use strict';
     return _windowFunctions.alphaCompare($(a).data(n), $(b).data(n));
+  },
+  alphaCompareByText: function (a, b) {
+    'use strict';
+    return _windowFunctions.alphaCompare($(a).text(), $(b).text());
   },
   numCompare: function (a, b) {
     'use strict';
@@ -191,6 +209,10 @@ var _windowFunctions = {
   numCompareByData: function (n, a, b) {
     'use strict';
     return _windowFunctions.numCompare($(a).data(n), $(b).data(n));
+  },
+  numCompareByText: function (a, b) {
+    'use strict';
+    return _windowFunctions.numCompare($(a).text(), $(b).text());
   },
   fullscreenRequest: function (a) {
     'use strict';
