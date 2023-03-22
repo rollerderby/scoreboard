@@ -217,7 +217,7 @@ function createFileManagementTab(tab) {
     var uploadFunction = function () {
       var data = { files: $(this).find('input:file.File')[0].files };
       var length = data.files.length;
-      var statustxt = 'file' + (length > 1 ? 's' : '');
+      var statustxt = length + ' file' + (length > 1 ? 's' : '') + ' uploaded successfully';
       uploader.fileupload('option', 'formData', [
         { name: 'media', value: format },
         { name: 'type', value: type },
