@@ -171,14 +171,9 @@ public class MediaImpl extends ScoreBoardEventProviderImpl<Media> implements Med
 
     public class MediaFormatImpl extends ScoreBoardEventProviderImpl<MediaFormat> implements MediaFormat {
         MediaFormatImpl(Media parent, String format) {
-            super(parent, "", Media.FORMAT);
+            super(parent, format, Media.FORMAT);
             addProperties(props);
             this.format = format;
-        }
-
-        @Override
-        public String getId() {
-            return format;
         }
 
         @Override
@@ -197,14 +192,14 @@ public class MediaImpl extends ScoreBoardEventProviderImpl<Media> implements Med
 
     public class MediaTypeImpl extends ScoreBoardEventProviderImpl<MediaType> implements MediaType {
         MediaTypeImpl(MediaFormat parent, String type) {
-            super(parent, "", MediaFormat.TYPE);
+            super(parent, parent.getId() + "_" + type, MediaFormat.TYPE);
             addProperties(props);
             this.parent = parent;
             this.type = type;
         }
 
         @Override
-        public String getId() {
+        public String getProviderId() {
             return type;
         }
 
