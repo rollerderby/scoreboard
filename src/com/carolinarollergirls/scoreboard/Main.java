@@ -5,6 +5,18 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.CopyOption;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -29,6 +41,7 @@ public class Main extends Logger {
     public Main(String argv[]) {
         parseArgv(argv);
         setLogger(this);
+        importFromOldVersion();
         start();
         if (guiFrameText != null) {
             guiFrameText.setText("ScoreBoard status: running (close this window to exit scoreboard)");
@@ -109,13 +122,100 @@ public class Main extends Logger {
             } else if (arg.equals("--nogui") || arg.equals("-G")) {
                 gui = false;
             } else if (arg.startsWith("--port=") || arg.startsWith("-p=")) {
-                port = Integer.parseInt(arg.split("=")[1]);
-            } else if (arg.startsWith("--host") || arg.startsWith("-h=")) {
-                host = arg.split("=")[1];
+                port = Integer.parseInt(arg.split("=", 2)[1]);
+            } else if (arg.startsWith("--host=") || arg.startsWith("-h=")) {
+                host = arg.split("=", 2)[1];
+            } else if (arg.startsWith("--import=") || arg.startsWith("-i=")) {
+                importPath = arg.split("=", 2)[1];
             }
         }
 
         if (gui) { createGui(); }
+    }
+
+    private static void copyDir(Path src, Path dst, Path subdirectory, CopyOption... options) throws IOException {
+
+        Files.walkFileTree(src.resolve(subdirectory), new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                Files.createDirectories(dst.resolve(src.relativize(dir)));
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                try {
+                    Files.copy(file, dst.resolve(src.relativize(file)), options);
+                    return FileVisitResult.CONTINUE;
+                } catch (FileAlreadyExistsException e) { return FileVisitResult.CONTINUE; }
+            }
+        });
+    }
+
+    private static void copyFiles(Path src, Path dst, Path subdirectory, String suffix, CopyOption... options)
+        throws IOException {
+        Files.createDirectories(dst.resolve(subdirectory));
+        List<Path> paths = Files.list(src.resolve(subdirectory))
+                               .map(Path::normalize)
+                               .filter(path -> path.getFileName().toString().endsWith(suffix))
+                               .collect(Collectors.toList());
+        for (Path path : paths) { Files.copy(path, dst.resolve(src.relativize(path)), options); }
+    }
+
+    private void importFromOldVersion() {
+        Path sourcePath = null;
+        if (importPath == null) {
+            // no import path given on command line
+            if (Files.exists(Paths.get("config", "autosave"))) {
+                Logger.printMessage("Found existing autosave dir - skipping import");
+                return;
+            } // if not first start don't import
+
+            long newestAutosave = 0;
+            try (DirectoryStream<Path> stream =
+                     Files.newDirectoryStream(Paths.get(".").toAbsolutePath().normalize().getParent())) {
+                for (Path dir : stream) {
+                    if (Files.isDirectory(dir)) {
+                        Path autosave = dir.resolve(Paths.get("config", "autosave", "scoreboard-0-secs-ago.json"));
+                        if (Files.exists(autosave) && Files.getLastModifiedTime(autosave).toMillis() > newestAutosave) {
+                            newestAutosave = Files.getLastModifiedTime(autosave).toMillis();
+                            sourcePath = dir;
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                Logger.printMessage("Error looking for instance to import from:");
+                Logger.printStackTrace(e);
+                Logger.printMessage("Skipping import");
+                return;
+            }
+        } else if (importPath.equals("")) {
+            Logger.printMessage("Skipping import as per user request");
+            return; // user explicitly requested no import
+        } else {
+            sourcePath = Paths.get(importPath);
+        }
+
+        if (sourcePath == null) {
+            Logger.printMessage("No valid import path found - skipping import");
+            return;
+        }
+
+        Logger.printMessage("importing data from " + sourcePath.toString());
+        Path targetPath = Paths.get(".");
+        try {
+            copyFiles(sourcePath, targetPath, Paths.get("config", "autosave"), ".json",
+                      StandardCopyOption.REPLACE_EXISTING);
+            copyFiles(sourcePath, targetPath, Paths.get(""), ".xlsx");
+            copyDir(sourcePath, targetPath, Paths.get("config", "penalties"));
+            copyDir(sourcePath, targetPath, Paths.get("html", "game-data"));
+            copyDir(sourcePath, targetPath, Paths.get("html", "custom"));
+            copyDir(sourcePath, targetPath, Paths.get("html", "images"));
+            copyDir(sourcePath, targetPath, Paths.get("html", "videos"));
+        } catch (IOException e) {
+            Logger.printMessage("Exception during importing: ");
+            Logger.printStackTrace(e);
+        }
     }
 
     private void createGui() {
@@ -146,6 +246,8 @@ public class Main extends Logger {
 
     private String host = null;
     private int port = 8000;
+
+    private String importPath = null;
 
     private static ScoreBoard scoreBoard;
 }
