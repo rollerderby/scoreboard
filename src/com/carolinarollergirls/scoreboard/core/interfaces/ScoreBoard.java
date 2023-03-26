@@ -43,7 +43,6 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public static final Child<ValWithId> VERSION = new Child<>(ValWithId.class, "Version", props);
     public static final Child<Settings> SETTINGS = new Child<>(Settings.class, "Settings", props);
-    public static final Child<Twitter> TWITTER = new Child<>(Twitter.class, "Twitter", props);
     public static final Child<Media> MEDIA = new Child<>(Media.class, "Media", props);
     public static final Child<Clients> CLIENTS = new Child<>(Clients.class, "Clients", props);
     public static final Child<Rulesets> RULESETS = new Child<>(Rulesets.class, "Rulesets", props);

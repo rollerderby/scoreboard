@@ -5,7 +5,6 @@ import java.util.Map;
 import com.carolinarollergirls.scoreboard.core.admin.ClientsImpl;
 import com.carolinarollergirls.scoreboard.core.admin.MediaImpl;
 import com.carolinarollergirls.scoreboard.core.admin.SettingsImpl;
-import com.carolinarollergirls.scoreboard.core.admin.TwitterImpl;
 import com.carolinarollergirls.scoreboard.core.current.CurrentGameImpl;
 import com.carolinarollergirls.scoreboard.core.game.GameImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients;
@@ -52,8 +51,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
         addWriteProtection(CLIENTS);
         add(CURRENT_GAME, new CurrentGameImpl(this));
         addWriteProtection(CURRENT_GAME);
-        add(TWITTER, new TwitterImpl(this));
-        addWriteProtection(TWITTER);
     }
 
     @Override
@@ -68,7 +65,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
         synchronized (coreLock) {
             if (prop == PREPARED_TEAM) { return new PreparedTeamImpl(this, id); }
             if (prop == GAME) { return new GameImpl(this, id); }
-            if (prop == TWITTER) { return new TwitterImpl(this); }
             return null;
         }
     }
@@ -79,7 +75,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
             for (Game g : getAll(GAME)) { g.postAutosaveUpdate(); }
             get(CURRENT_GAME, "").postAutosaveUpdate();
             get(CLIENTS, "").postAutosaveUpdate();
-            get(TWITTER, "").postAutosaveUpdate();
             initialLoadDone = true;
             StatsbookExporter.preload(getSettings().get(SETTING_STATSBOOK_INPUT));
         }
