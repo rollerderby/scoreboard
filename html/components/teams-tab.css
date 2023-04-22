@@ -26,9 +26,10 @@
 #Teams table.Skaters tr:last-of-type>td:first-of-type { border-radius: 0px 0px 0px 12px; } 
 #Teams table.Skaters tr:last-of-type>td:last-of-type { border-radius: 0px 0px 12px 0px; } 
 #Teams table.Skaters tbody tr:nth-of-type(2n)>td { background: #ddd; } 
-#Teams table.Skaters col.Name { width: 50%; } 
-#Teams table.Skaters col.RosterNumber { width: 20%; } 
+#Teams table.Skaters col.Name { width: 40%; } 
+#Teams table.Skaters col.RosterNumber { width: 15%; } 
 #Teams table.Skaters col.Button { width: 15%; } 
+#Teams table.Skaters col.Pronoun { width: 15%; } 
 
 #Teams table.Skaters th.Title { font-size: 150%; } 
 #Teams table.Skaters th#skaterCount { font-size: 100%; font-weight: normal; } 
