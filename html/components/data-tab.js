@@ -199,7 +199,7 @@ function createDataTab(tab) {
               createRemoveDialog('singleElement');
             })
         )
-        .append($('<a>').addClass('Download Left').text('Download').button())
+        .append($('<a download>').addClass('Download Left').text('Download').button())
         .append($('<a>').addClass('Edit Left'))
         .append($('<span>'))
     );
