@@ -48,6 +48,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         setInverseReference(FIELDING, Fielding.SKATER);
         setCopy(NAME, this, PREPARED_SKATER, NAME, false, team, Team.PREPARED_TEAM_CONNECTED);
         setCopy(ROSTER_NUMBER, this, PREPARED_SKATER, ROSTER_NUMBER, false, team, Team.PREPARED_TEAM_CONNECTED);
+        setCopy(PRONOUNS, this, PREPARED_SKATER, PRONOUNS, false, team, Team.PREPARED_TEAM_CONNECTED);
         set(ROLE, Role.BENCH, Flag.SPECIAL_CASE);
         set(BASE_ROLE, Role.BENCH);
         addWriteProtectionOverride(BASE_ROLE, Source.ANY_INTERNAL);
@@ -327,8 +328,10 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     public void mergeInto(PreparedSkater ps) {
         if ("".equals(ps.get(NAME))) { ps.set(NAME, get(NAME)); }
         if ("".equals(ps.get(ROSTER_NUMBER))) { ps.set(ROSTER_NUMBER, get(ROSTER_NUMBER)); }
+        if ("".equals(ps.get(PRONOUNS))) { ps.set(PRONOUNS, get(PRONOUNS)); }
         if ("".equals(get(NAME))) { set(NAME, ps.get(NAME)); }
         if ("".equals(get(ROSTER_NUMBER))) { set(ROSTER_NUMBER, ps.get(ROSTER_NUMBER)); }
+        if ("".equals(get(PRONOUNS))) { set(PRONOUNS, ps.get(PRONOUNS)); }
         set(PREPARED_SKATER, ps);
     }
 
