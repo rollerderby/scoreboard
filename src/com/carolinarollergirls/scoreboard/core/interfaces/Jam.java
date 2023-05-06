@@ -54,4 +54,5 @@ public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
 
     public static final Command DELETE = new Command("Delete", props);
     public static final Command INSERT_BEFORE = new Command("InsertBefore", props);
+    public static final Command INSERT_TIMEOUT_AFTER = new Command("InsertTimeoutAfter", props);
 }

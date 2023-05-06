@@ -4,6 +4,7 @@ body:not(.AllowSelect) .SK { user-select: none; -webkit-user-select: none; -khtm
 .SK tr { color: #333; } 
 .SK .Hide { display: none; } 
 .SK.Period tr.Edit .EditButton .ui-button { background: #3f3; }
+.SK.Period tr.Edits:not(.Edit) { display: none; }
 .SK.Period tr:not(.Edit) .EditOnly { display: none; }
 .SK.Period tr.IgnoreEdit .EditOnly { display: none; }
 .SK.Period tr.Edit .NoEditOnly { display: none; }
@@ -14,22 +15,28 @@ body:not(.AllowSelect) .SK { user-select: none; -webkit-user-select: none; -khtm
 .SK.Period td:not(.Used) + td > .FirstUnusedOnly { display: none; }
 .SK.Period tr.HasSP .AddSP { display: none; }
 .SK.Period tr:not(.HasSP) .InitialSP { display: none; }
-.SK.Period .InitialSP.Active { background: #3f3; }
+.SK.Period tr:not(.IsOR) .OROnly { display:none; }
+.SK.Period .Active { background: #3f3; }
 .SK.Period { width: 98%; table-layout:fixed; margin: 0.5em 1%; } 
 .SK.Period thead td { font-size: 95%; background-color: #cccccc; color: #333333; } 
 .SK.Period .SmallHead>div { font-size: 75%; transform: rotate(270deg); } 
 .SK.Period td { text-align: center; vertical-align: middle; } 
 .SK.Period tr { background-color: #FFF; height: 31px; } 
-.SK.Period.Forwards tr:nth-child(even) { background-color: #e9f6da; } 
-.SK.Period.Backwards tr:nth-last-child(even) { background-color: #e9f6da; } 
+.SK.Period.Forwards tr:nth-child(odd) { background-color: #e9f6da; } 
+.SK.Period.Backwards tr:nth-last-child(odd) { background-color: #e9f6da; } 
+.SK.Period tr.Timeout { background-color: #e0d0f0; height: 31px; } 
+.SK.Period.Forwards tr.Timeout:nth-child(odd) { background-color: #e0d0f0; } 
+.SK.Period.Backwards tr.Timeout:nth-last-child(odd) { background-color: #f0d0f0; } 
 .SK.Period tr .Darker { background-color: #e9f6da; } 
-.SK.Period.Forwards tr:nth-child(even) .Darker { background-color: #d3ecb6; } 
-.SK.Period.Backwards tr:nth-last-child(even) .Darker { background-color: #d3ecb6; } 
-.SK.Period.Backwards tr.SP td:not(.EditButton) { border-bottom-style: dotted; } 
-.SK.Period.Forwards tr.Edits td:not(.EditButton) { border-bottom-style: dotted; } 
-.SK.Period.Backwards tr.Edits td:not(.EditButton) { border-top-style: dotted; } 
-.SK.Period.Forwards tr.SP td:not(.EditButton) { border-top-style: dotted; } 
-.SK.Period .EditButton { width: 30px; border: none; background-color: #FFF; }
+.SK.Period.Forwards tr:nth-child(odd) .Darker { background-color: #d3ecb6; } 
+.SK.Period.Backwards tr:nth-last-child(odd) .Darker { background-color: #d3ecb6; } 
+.SK.Period.Backwards tr.SP td { border-bottom-style: dotted; } 
+.SK.Period.Forwards tr.SP td { border-top-style: dotted; } 
+.SK.Period.Forwards tr.Edits:not(.Before) td { border-top-style: dotted; } 
+.SK.Period.Backwards tr.Edits:not(.Before) td { border-bottom-style: dotted; } 
+.SK.Period.Forwards tr.Edits.Before td { border-bottom-style: dotted; } 
+.SK.Period.Backwards tr.Edits.Before td { border-top-style: dotted; } 
+.SK.Period .EditButton { width: 30px; background-color: #FFF; }
 .SK.Period .EditButton .ui-button { padding: .4em; }
 .SK.Period .JamNumber { width: 30px; } 
 .SK.Period .Overtime .JamNumber::after { font-size: 50%; content: "OT"; vertical-align: top; padding-left: 1px; } 
