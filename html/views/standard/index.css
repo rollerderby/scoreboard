@@ -1,7 +1,9 @@
+@font-face {font-family: 'LiberationSans'; src: url("/fonts/LiberationSans-Bold.ttf") format("truetype"); font-weight: bold;} 
+
 .ConnectionError {position: absolute;display: none;z-index: 9999;background-color: #A00000;font-size: 40px;width: 100%;height: 100%;opacity: 0.5;top: 0;left: 0; } 
 .ConnectionError:not(.Connected) {display: block; } 
 
-body {color: #FFFFFF;font-weight: bold;font-family: 'LiberationSans',helvetica;background: #000000;height: 100%;width: 100%;margin: 0;padding: 0;
+body {color: #FFFFFF;font-weight: bold;font-family:'LiberationSans',sans-serif;background: #000000;height: 100%;width: 100%;margin: 0;padding: 0;
 user-select: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-o-user-select: none; } 
 
 #scoreboard {position: absolute;left: 0px; top: 0px; width: 100%; height: 100%; } 
