@@ -26,7 +26,7 @@ body:not(.AllowSelect) .SK { user-select: none; -webkit-user-select: none; -khtm
 .SK.Period.Backwards tr:nth-last-child(odd) { background-color: #e9f6da; } 
 .SK.Period tr.Timeout { background-color: #e0d0f0; height: 31px; } 
 .SK.Period.Forwards tr.Timeout:nth-child(odd) { background-color: #e0d0f0; } 
-.SK.Period.Backwards tr.Timeout:nth-last-child(odd) { background-color: #f0d0f0; } 
+.SK.Period.Backwards tr.Timeout:nth-last-child(odd) { background-color: #e0d0f0; } 
 .SK.Period tr .Darker { background-color: #e9f6da; } 
 .SK.Period.Forwards tr:nth-child(odd) .Darker { background-color: #d3ecb6; } 
 .SK.Period.Backwards tr:nth-last-child(odd) .Darker { background-color: #d3ecb6; } 

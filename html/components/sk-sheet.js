@@ -777,7 +777,6 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
             .addClass('RemoveTO')
             .text('Remove Timeout')
             .on('click', function () {
-              WS.Set(prefix + 'Running', false);
               WS.Set(prefix + 'Delete', true);
             })
             .button()

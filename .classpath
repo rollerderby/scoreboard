@@ -29,8 +29,6 @@
 	<classpathentry kind="lib" path="lib/deps/simpleclient_servlet-0.14.1.jar"/>
 	<classpathentry kind="lib" path="lib/deps/simpleclient_servlet_common-0.14.1.jar"/>
 	<classpathentry kind="lib" path="lib/deps/simpleclient-0.14.1.jar"/>
-	<classpathentry kind="lib" path="lib/deps/twitter4j-async-4.0.7.jar"/>
-	<classpathentry kind="lib" path="lib/deps/twitter4j-core-4.0.7.jar"/>
 	<classpathentry kind="lib" path="test-libs/junit-4.13.2.jar"/>
 	<classpathentry kind="lib" path="test-libs/hamcrest-2.2.jar"/>
 	<classpathentry kind="lib" path="test-libs/mockito-core-4.2.0.jar"/>

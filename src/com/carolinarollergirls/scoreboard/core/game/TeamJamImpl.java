@@ -17,6 +17,7 @@ import com.carolinarollergirls.scoreboard.event.RecalculateScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJam> implements TeamJam {
     public TeamJamImpl(Jam j, String teamId) {
@@ -25,6 +26,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         game = j.getPeriod().getGame();
         team = game.getTeam(teamId);
         setRecalculated(CURRENT_TRIP).addSource(this, SCORING_TRIP);
+        setCopy(CURRENT_TRIP_NUMBER, this, CURRENT_TRIP, ScoringTrip.NUMBER, true);
         setRecalculated(TOTAL_SCORE).addSource(this, LAST_SCORE).addSource(this, JAM_SCORE).addSource(this, OS_OFFSET);
         setCopy(LAST_SCORE, this, PREVIOUS, TOTAL_SCORE, true);
         jamScoreListener = setRecalculated(JAM_SCORE).addSource(this, SCORING_TRIP);
@@ -86,8 +88,8 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
             }
             if (last != null) { ((ScoringTrip) last).set(ScoringTrip.CURRENT, false); }
         }
-        if (prop == NO_PIVOT && getFielding(FloorPosition.PIVOT).getSkater() != null
-                && getFielding(FloorPosition.PIVOT).isCurrent()) {
+        if (prop == NO_PIVOT && getFielding(FloorPosition.PIVOT).getSkater() != null &&
+            getFielding(FloorPosition.PIVOT).isCurrent()) {
             getFielding(FloorPosition.PIVOT).getSkater().setRole(FloorPosition.PIVOT.getRole(this));
         }
         if (prop == NO_PIVOT && (Boolean) value) { set(STAR_PASS_TRIP, null); }
@@ -103,9 +105,12 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     }
     @Override
     protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
-        if (prop == SCORING_TRIP && item == get(STAR_PASS_TRIP)) {
-            for (ScoringTrip trip = getLast(SCORING_TRIP); trip != null; trip = trip.getPrevious()) {
-                if (!trip.get(ScoringTrip.AFTER_S_P)) { set(STAR_PASS_TRIP, trip.getNext()); }
+        if (prop == SCORING_TRIP) {
+            possiblyChangeOsOffset(((ScoringTrip) item).getScore());
+            if (item == get(STAR_PASS_TRIP)) {
+                for (ScoringTrip trip = getLast(SCORING_TRIP); trip != null; trip = trip.getPrevious()) {
+                    if (!trip.get(ScoringTrip.AFTER_S_P)) { set(STAR_PASS_TRIP, trip.getNext()); }
+                }
             }
         }
     }
@@ -136,22 +141,28 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
 
         boolean placeAvailable = target.getFielding(fp).getSkater() == null;
         if (fp.getRole() == Role.BLOCKER) {
-            placeAvailable = target.getFielding(FloorPosition.BLOCKER1).getSkater() == null
-                    || target.getFielding(FloorPosition.BLOCKER2).getSkater() == null
-                    || target.getFielding(FloorPosition.BLOCKER3).getSkater() == null
-                    || target.getFielding(FloorPosition.PIVOT).getSkater() == null;
+            placeAvailable = target.getFielding(FloorPosition.BLOCKER1).getSkater() == null ||
+                             target.getFielding(FloorPosition.BLOCKER2).getSkater() == null ||
+                             target.getFielding(FloorPosition.BLOCKER3).getSkater() == null ||
+                             target.getFielding(FloorPosition.PIVOT).getSkater() == null;
         }
 
         if (placeAvailable) { team.field(s, fp.getRole(), target); }
     }
 
     @Override
-    public Jam getJam() { return (Jam) parent; }
+    public Jam getJam() {
+        return (Jam) parent;
+    }
     @Override
-    public Team getTeam() { return team; }
+    public Team getTeam() {
+        return team;
+    }
 
     @Override
-    public TeamJam getOtherTeam() { return getJam().getTeamJam(Team.ID_1.equals(subId) ? Team.ID_2 : Team.ID_1); }
+    public TeamJam getOtherTeam() {
+        return getJam().getTeamJam(Team.ID_1.equals(subId) ? Team.ID_2 : Team.ID_1);
+    }
 
     @Override
     public void setupInjuryContinuation() {
@@ -164,19 +175,27 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     }
 
     @Override
-    public boolean isRunningOrEnded() { return this == team.getRunningOrEndedTeamJam(); }
+    public boolean isRunningOrEnded() {
+        return this == team.getRunningOrEndedTeamJam();
+    }
     @Override
-    public boolean isRunningOrUpcoming() { return this == team.getRunningOrUpcomingTeamJam(); }
+    public boolean isRunningOrUpcoming() {
+        return this == team.getRunningOrUpcomingTeamJam();
+    }
 
     @Override
-    public int getLastScore() { return get(LAST_SCORE); }
+    public int getLastScore() {
+        return get(LAST_SCORE);
+    }
     @Override
     public void setLastScore(int l) {
         set(LAST_SCORE, l);
     }
 
     @Override
-    public int getOsOffset() { return get(OS_OFFSET); }
+    public int getOsOffset() {
+        return get(OS_OFFSET);
+    }
     @Override
     public void setOsOffset(int o) {
         set(OS_OFFSET, o);
@@ -185,14 +204,44 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     public void changeOsOffset(int c) {
         set(OS_OFFSET, c, Flag.CHANGE);
     }
+    @Override
+    public void possiblyChangeOsOffset(int amount) {
+        if (game.isOfficialScore()) {
+            changeOsOffset(amount);
+        } else {
+            possiblyChangeOsOffset(amount, game.getCurrentPeriod().getCurrentJam(), game.isInJam(),
+                                   game.isLastTwoMinutes());
+        }
+    }
+    @Override
+    public boolean possiblyChangeOsOffset(int amount, Jam jamRecorded, boolean recordedInJam,
+                                          boolean recordedInLastTwoMins) {
+        if (game.getBoolean(Rule.WFTDA_LATE_SCORE_RULE)) {
+            boolean nextJamNotStarted = getJam() == jamRecorded;
+            boolean nextJamNotEnded = nextJamNotStarted || (jamRecorded == getJam().getNext() && recordedInJam);
+            boolean lastTwoMinutes = game.isLastTwoMinutes();
+            boolean changeOk = (!lastTwoMinutes && nextJamNotEnded) || (lastTwoMinutes && nextJamNotStarted);
+            if (!changeOk) {
+                changeOsOffset(amount);
+                return true;
+            }
+        }
+        return false;
+    }
 
     @Override
-    public int getJamScore() { return get(JAM_SCORE); }
+    public int getJamScore() {
+        return get(JAM_SCORE);
+    }
     @Override
-    public int getTotalScore() { return get(TOTAL_SCORE); }
+    public int getTotalScore() {
+        return get(TOTAL_SCORE);
+    }
 
     @Override
-    public ScoringTrip getCurrentScoringTrip() { return get(CURRENT_TRIP); }
+    public ScoringTrip getCurrentScoringTrip() {
+        return get(CURRENT_TRIP);
+    }
     @Override
     public void addScoringTrip() {
         getOrCreate(SCORING_TRIP, getCurrentScoringTrip().getNumber() + 1);
@@ -203,20 +252,34 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     }
 
     @Override
-    public boolean isLost() { return get(LOST); }
+    public boolean isLost() {
+        return get(LOST);
+    }
     @Override
-    public boolean isLead() { return get(LEAD); }
+    public boolean isLead() {
+        return get(LEAD);
+    }
     @Override
-    public boolean isCalloff() { return get(CALLOFF); }
+    public boolean isCalloff() {
+        return get(CALLOFF);
+    }
     @Override
-    public boolean isInjury() { return get(INJURY); }
+    public boolean isInjury() {
+        return get(INJURY);
+    }
     @Override
-    public boolean isDisplayLead() { return get(DISPLAY_LEAD); }
+    public boolean isDisplayLead() {
+        return get(DISPLAY_LEAD);
+    }
 
     @Override
-    public boolean isStarPass() { return get(STAR_PASS); }
+    public boolean isStarPass() {
+        return get(STAR_PASS);
+    }
     @Override
-    public ScoringTrip getStarPassTrip() { return get(STAR_PASS_TRIP); }
+    public ScoringTrip getStarPassTrip() {
+        return get(STAR_PASS_TRIP);
+    }
 
     @Override
     public boolean hasNoPivot() {

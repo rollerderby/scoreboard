@@ -523,6 +523,12 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     }
 
     @Override
+    public boolean isLastTwoMinutes() {
+        return (getClock(Clock.ID_PERIOD).getTimeRemaining() < 120000 &&
+                getCurrentPeriodNumber() == getInt(Rule.NUMBER_PERIODS));
+    }
+
+    @Override
     public boolean isOfficialScore() {
         return get(OFFICIAL_SCORE);
     }

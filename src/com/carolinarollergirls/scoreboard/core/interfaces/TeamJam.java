@@ -27,6 +27,9 @@ public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
     public int getOsOffset();
     public void setOsOffset(int o);
     public void changeOsOffset(int c);
+    public void possiblyChangeOsOffset(int amount);
+    public boolean possiblyChangeOsOffset(int amount, Jam jamRecorded, boolean recordedInJam,
+                                          boolean recordedInLastTwoMins);
 
     public int getJamScore();
     public int getTotalScore();
