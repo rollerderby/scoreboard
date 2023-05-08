@@ -10,9 +10,14 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
 
   var teamName = '';
 
+  var isReverse = mode === 'operator';
+
   // Looking these up via the DOM is slow, so cache them.
   var periodElements = {};
   var jamElements = {};
+  var timeoutElements = {};
+
+  var skaterSelect = $('<select>').addClass('skaterSelect EditOnly').append($('<option>').attr('value', '').text('?'));
 
   function initialize() {
     if (mode !== 'operator') {
@@ -34,6 +39,32 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
 
     WS.Register(
       [
+        'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Skater(*).RosterNumber',
+        'ScoreBoard.Game(' + gameId + ').Team(*).Skater(*).Role',
+      ],
+      function (k, v) {
+        var objects = element.find('.skaterSelect').add(skaterSelect);
+        $.each(jamElements, function () {
+          $.each(this, function () {
+            objects = objects.add(this[1].find('.skaterSelect'));
+          });
+        });
+        objects.children('[value="' + k.Skater + '"]').remove();
+        var prefix = 'ScoreBoard.Game(' + gameId + ').Team(' + k.Team + ').Skater(' + k.Skater + ').';
+        if (v != null && WS.state[prefix + 'Role'] !== 'NotInGame') {
+          var number = WS.state[prefix + 'RosterNumber'];
+          var option = $('<option>').attr('number', number).val(k.Skater).text(number);
+          objects.each(function () {
+            var dropdown = $(this);
+            _windowFunctions.appendAlphaSortedByAttr(dropdown, option.clone(), 'number', 1);
+            dropdown.val(dropdown.parent().attr('uid'));
+          });
+        }
+      }
+    );
+
+    WS.Register(
+      [
         'ScoreBoard.Game(' + gameId + ').Period(*).Number',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Number',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).StarPass',
@@ -50,6 +81,8 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').TotalScore',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').OsOffset',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').OsOffsetReason',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(Jammer).Skater',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(Pivot).Skater',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(Jammer).SkaterNumber',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(Pivot).SkaterNumber',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).AfterSP',
@@ -59,6 +92,8 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
       ],
       handleUpdate
     );
+
+    WS.Register('ScoreBoard.Game(' + gameId + ').Period(*).Timeout(*)', handleTimeoutUpdate);
   }
 
   function teamNameUpdate() {
@@ -87,6 +122,7 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
       element.children('table.Period[nr=' + k.Period + ']').remove();
       delete periodElements[k.Period];
       delete jamElements[k.Period];
+      delete timeoutElements[k.Period];
     } else if (v != null) {
       createPeriod(k.Period);
     }
@@ -110,9 +146,10 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
     }
     var jamRow = je[0];
     var spRow = je[1];
+    var editRow2 = je[3];
     if (k == prefix + 'StarPass') {
       if (isTrue(v)) {
-        if (mode === 'operator') {
+        if (isReverse) {
           jamRow.before(spRow);
         } else {
           jamRow.after(spRow);
@@ -139,7 +176,11 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
     var otherRow = spRow;
     switch (k.substring(prefix.length)) {
       case 'Fielding(Jammer).SkaterNumber':
-        jamRow.find('.Jammer').text(v);
+        jamRow.find('.Jammer>span').text(v);
+        break;
+      case 'Fielding(Jammer).Skater':
+        jamRow.find('.Jammer').attr('uid', v);
+        jamRow.find('.Jammer>select').val(v);
         break;
       case 'Lost':
         jamRow.find('.Lost').text(isTrue(v) ? 'X' : '');
@@ -175,16 +216,24 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
       case 'Injury':
       case 'StarPass':
       case 'Fielding(Pivot).SkaterNumber':
+      case 'Fielding(Pivot).Skater':
         if (isTrue(WS.state[prefix + 'StarPass'])) {
           row = spRow;
           otherRow = jamRow;
+          editRow2.addClass('HasSP');
+          spRow.removeClass('IgnoreEdit');
+        } else {
+          editRow2.removeClass('HasSP');
+          spRow.addClass('IgnoreEdit');
         }
         row.find('.Calloff').text(isTrue(WS.state[prefix + 'Calloff']) ? 'X' : '');
         row.find('.Injury').text(isTrue(WS.state[prefix + 'Injury']) ? 'X' : '');
         otherRow.find('.Calloff').text('');
         otherRow.find('.Injury').text('');
         spRow.find('.JamNumber').text(isTrue(WS.state[prefix + 'StarPass']) ? 'SP' : 'SP*');
-        spRow.find('.Jammer').text(isTrue(WS.state[prefix + 'StarPass']) ? WS.state[prefix + 'Fielding(Pivot).SkaterNumber'] : '');
+        spRow.find('.Jammer>span').text(isTrue(WS.state[prefix + 'StarPass']) ? WS.state[prefix + 'Fielding(Pivot).SkaterNumber'] : '');
+        spRow.find('.Jammer').attr('uid', WS.state[prefix + 'Fielding(Pivot).Skater']);
+        spRow.find('.Jammer>select').val(WS.state[prefix + 'Fielding(Pivot).Skater']);
         break;
 
       case 'ScoringTrip(1).AfterSP':
@@ -224,15 +273,29 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
           row = spRow;
           otherRow = jamRow;
         }
-        row.find('.Trip2').toggleClass('hasAnnotation', trip2HasAnnotation).text(scoreText);
-        otherRow.find('.Trip2').removeClass('hasAnnotation').text(otherScoreText);
+        row
+          .find('.Trip2')
+          .toggleClass('hasAnnotation', trip2HasAnnotation)
+          .toggleClass('Used', trip2Score != null)
+          .removeClass('OtherUsed')
+          .children('span')
+          .text(scoreText);
+        otherRow
+          .find('.Trip2')
+          .removeClass('hasAnnotation')
+          .toggleClass('OtherUsed', trip2Score != null)
+          .removeClass('Used')
+          .children('span')
+          .text(otherScoreText);
         jamRow
           .find('.NoInitial')
           .toggleClass('hasAnnotation', trip1HasAnnotation && !trip1AfterSP)
+          .toggleClass('Used', !trip1AfterSP)
           .text(trip1AfterSP || noInitial ? 'X' : '');
         spRow
           .find('.NoInitial')
           .toggleClass('hasAnnotation', trip1HasAnnotation && trip1AfterSP)
+          .toggleClass('Used', trip1AfterSP)
           .text(trip1AfterSP && noInitial ? 'X' : '');
         break;
 
@@ -249,10 +312,16 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
           row
             .find('.Trip' + trip)
             .toggleClass('hasAnnotation', hasAnnotation)
+            .toggleClass('Used', score != null)
+            .removeClass('OtherUsed')
+            .children('span')
             .text(score == null ? '' : current && score === 0 ? '.' : score);
           otherRow
             .find('.Trip' + trip)
             .removeClass('hasAnnotation')
+            .toggleClass('OtherUsed', score != null)
+            .removeClass('Used')
+            .children('span')
             .text('');
         } else if (k.parts[5] === 'ScoringTrip' && k.ScoringTrip >= 10) {
           var scoreBeforeSP = '';
@@ -274,9 +343,76 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
             }
             t++;
           }
-          jamRow.find('.Trip10').toggleClass('hasAnnotation', annotationBeforeSP).text(scoreBeforeSP);
-          spRow.find('.Trip10').toggleClass('hasAnnotation', annotationAfterSP).text(scoreAfterSP);
+          jamRow.find('.Trip10').toggleClass('hasAnnotation', annotationBeforeSP).children('span').text(scoreBeforeSP);
+          spRow.find('.Trip10').toggleClass('hasAnnotation', annotationAfterSP).children('span').text(scoreAfterSP);
         }
+    }
+  }
+
+  function handleTimeoutUpdate(k, v) {
+    // Ensure period/timeout exist.
+    if (!k.Period || k.Period === 0) {
+      return;
+    } else if (v != null) {
+      createPeriod(k.Period);
+    }
+    if (!k.Timeout || k.Timeout === 0 || timeoutElements[k.Period] == null) {
+      return;
+    }
+    var prefix = 'ScoreBoard.Game(' + gameId + ').Period(' + k.Period + ').Timeout(' + k.Timeout + ').';
+    if (v == null && k == prefix + 'Id') {
+      element
+        .children('table.Period[nr=' + k.Period + ']')
+        .find('tr[to=' + k.Timeout + ']')
+        .remove();
+      delete timeoutElements[k.Period][k.Timeout];
+      return;
+    } else if (v == null) {
+      return;
+    }
+
+    createTimeout(k.Period, k.Timeout);
+    var te = (timeoutElements[k.Period] || {})[k.Timeout];
+    if (te == null) {
+      return;
+    }
+    var toRow = te[0];
+    var editRow = te[1];
+
+    switch (k.field) {
+      case 'PrecedingJamNumber':
+      case 'WalltimeStart':
+        var jamNo = WS.state[prefix + 'PrecedingJamNumber'];
+        var startTime = WS.state[prefix + 'WalltimeStart'];
+        toRow.attr('time', startTime).detach();
+        editRow.attr('time', startTime).detach();
+        createJam(k.Period, jamNo);
+        var rowBefore = jamElements[k.Period][jamNo][3];
+        var rowAfter = isReverse ? rowBefore.prev() : rowBefore.next();
+        while (rowAfter.hasClass('Timeout') && rowAfter.attr('time') < startTime) {
+          rowBefore = rowAfter;
+          rowAfter = isReverse ? rowBefore.prev() : rowBefore.next();
+        }
+        if (isReverse) {
+          rowBefore.before(toRow);
+          toRow.before(editRow);
+        } else {
+          rowBefore.after(toRow);
+          toRow.after(editRow);
+        }
+        break;
+      case 'Owner':
+      case 'Review':
+        toRow.find('.Type > select').val(WS.state[prefix + 'Owner'] + '.' + WS.state[prefix + 'Review']);
+        toRow.find('.Type > span').text(toRow.find('.Type > select > :selected').text());
+        toRow.toggleClass('IsOR', isTrue(WS.state[prefix + 'Review'] && WS.state[prefix + 'Owner'] === gameId + '_' + teamId));
+        break;
+      case 'Duration':
+      case 'Running':
+        toRow
+          .children('.Duration')
+          .text(isTrue(WS.state[prefix + 'Running']) ? 'Running' : _timeConversions.msToMinSec(WS.state[prefix + 'Duration'], true));
+        break;
     }
   }
 
@@ -284,13 +420,35 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
     if (nr > 0 && periodElements[nr] == null) {
       createPeriod(nr - 1);
       var table = $('<table cellpadding="0" cellspacing="0" border="1">').addClass('SK Period').attr('nr', nr);
-      if (mode === 'operator') {
+      $('<col>').addClass('EditButton').appendTo(table);
+      $('<col>').addClass('JamNumber').appendTo(table);
+      $('<col>').addClass('Jammer').appendTo(table);
+      $('<col>').addClass('Narrow').appendTo(table);
+      $('<col>').addClass('Narrow').appendTo(table);
+      $('<col>').addClass('Narrow').appendTo(table);
+      $('<col>').addClass('Narrow').appendTo(table);
+      $('<col>').addClass('Narrow').appendTo(table);
+      $('<td>').addClass('Trip').appendTo(table);
+      $('<td>').addClass('Trip').appendTo(table);
+      $('<td>').addClass('Trip').appendTo(table);
+      $('<td>').addClass('Trip').appendTo(table);
+      $('<td>').addClass('Trip').appendTo(table);
+      $('<td>').addClass('Trip').appendTo(table);
+      $('<td>').addClass('Trip').appendTo(table);
+      $('<td>').addClass('Trip').appendTo(table);
+      $('<td>').addClass('Trip').appendTo(table);
+      if (mode !== 'copyToStatsbook') {
+        $('<col>').addClass('JamTotal').appendTo(table);
+        $('<col>').addClass('GameTotal').appendTo(table);
+      }
+      if (isReverse) {
         table.prependTo(element).addClass('Backwards');
       } else {
         table.appendTo(element).addClass('Forwards');
       }
       if (mode !== 'operator') {
         var header = $('<thead><tr>').appendTo(table);
+        $('<td>').addClass('EditButton').text('EDIT').appendTo(header);
         $('<td>').addClass('JamNumber').text('JAM').appendTo(header);
         $('<td>').addClass('Jammer').text('JAMMER').appendTo(header);
         $('<td>').addClass('SmallHead').append($('<div>').text('LOST')).appendTo(header);
@@ -311,7 +469,12 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
       var body = $('<tbody>').appendTo(table);
       periodElements[nr] = body;
       jamElements[nr] = {};
+      timeoutElements[nr] = {};
     }
+  }
+
+  function stopEvent(event) {
+    event.stopPropagation();
   }
 
   function createJam(p, nr) {
@@ -319,11 +482,17 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
     if (nr > 0 && jamElements[p][nr] == null) {
       createJam(p, nr - 1);
 
-      var prefix = 'ScoreBoard.Game(' + gameId + ').Period(' + p + ').Jam(' + nr + ').TeamJam(' + teamId + ').';
+      var jamPrefix = 'ScoreBoard.Game(' + gameId + ').Period(' + p + ').Jam(' + nr + ').';
+      var prefix = jamPrefix + 'TeamJam(' + teamId + ').';
 
       var jamRow = $('<tr>').addClass('Jam').attr('nr', nr);
+      $('<td>').addClass('EditButton').appendTo(jamRow);
       $('<td>').addClass('JamNumber Darker').text(nr).appendTo(jamRow);
-      $('<td>').addClass('Jammer').appendTo(jamRow);
+      $('<td>')
+        .addClass('Jammer')
+        .append($('<span>').addClass('NoEditOnly'))
+        .append(skaterSelect.clone().on('click', stopEvent))
+        .appendTo(jamRow);
       $('<td>')
         .addClass('Lost Narrow Darker')
         .on('click', function () {
@@ -358,9 +527,54 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
         var t = idx + 2;
         $('<td>')
           .addClass('Trip Trip' + t)
+          .attr('nr', t)
           .on('click', function () {
             setupTripEditor(gameId, p, nr, teamId, t);
           })
+          .append(
+            $('<button>')
+              .addClass('EditOnly UsedOnly')
+              .text('+')
+              .on('click', function (event) {
+                WS.Set(prefix + 'ScoringTrip(' + t + ').Score', +1, 'change');
+                event.stopPropagation();
+              })
+              .button()
+          )
+          .append($('<br/>').addClass('EditOnly UsedOnly'))
+          .append($('<span>'))
+          .append($('<br/>').addClass('EditOnly UsedOnly'))
+          .append(
+            $('<button>')
+              .addClass('EditOnly UsedOnly')
+              .text('-')
+              .on('click', function (event) {
+                WS.Set(prefix + 'ScoringTrip(' + t + ').Score', -1, 'change');
+                event.stopPropagation();
+              })
+              .button()
+          )
+          .append($('<br/>').addClass('EditOnly UsedOnly'))
+          .append(
+            $('<button>')
+              .addClass('EditOnly UsedOnly')
+              .text('X')
+              .on('click', function (event) {
+                WS.Set(prefix + 'ScoringTrip(' + t + ').Remove', true);
+                event.stopPropagation();
+              })
+              .button()
+          )
+          .append(
+            $('<button>')
+              .addClass('EditOnly FirstUnusedOnly')
+              .text('Add')
+              .on('click', function (event) {
+                WS.Set(prefix + 'ScoringTrip(' + t + ').Score', 0);
+                event.stopPropagation();
+              })
+              .button()
+          )
           .appendTo(jamRow);
       });
       if (mode !== 'copyToStatsbook') {
@@ -374,18 +588,211 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
       }
 
       var spRow = jamRow.clone(true).removeClass('Jam').addClass('SP');
+
+      var editRow = $('<tr>').addClass('Edits Before').attr('nr', nr);
+      $('<td>').addClass('EditButton').appendTo(editRow);
+      $('<td>')
+        .attr('colspan', mode === 'copyToStatsbook' ? 16 : 18)
+        .addClass('Buttons Darker')
+        .append(
+          $('<button>')
+            .addClass('RemoveJam')
+            .text('Remove Jam ' + nr)
+            .on('click', function () {
+              WS.Set(jamPrefix + 'Delete', false);
+            })
+            .button()
+        )
+        .append(
+          $('<button>')
+            .addClass('AddJam')
+            .text('Insert Jam')
+            .on('click', function () {
+              WS.Set(jamPrefix + 'InsertBefore', false);
+            })
+            .button()
+        )
+        .appendTo(editRow);
+
+      var editRow2 = $('<tr>').addClass('Edits').attr('nr', nr);
+      $('<td>').addClass('EditButton').appendTo(editRow2);
+      $('<td>')
+        .attr('colspan', mode === 'copyToStatsbook' ? 16 : 18)
+        .addClass('Buttons Darker')
+        .append(
+          $('<button>')
+            .addClass('AddSP')
+            .text('Add SP')
+            .on('click', function () {
+              WS.Set(prefix + 'StarPass', true);
+            })
+            .button()
+        )
+        .append(WSActiveButton(prefix + 'ScoringTrip(1).AfterSP', $('<button>').addClass('InitialSP').text('SP on Initial')).button())
+        .append(
+          $('<button>')
+            .addClass('AddTO')
+            .text('Insert Timeout')
+            .on('click', function () {
+              WS.Set(jamPrefix + 'InsertTimeoutAfter', true);
+            })
+            .button()
+        )
+        .appendTo(editRow2);
+
+      jamRow.children('.EditButton').append(
+        $('<button>')
+          .text('✎')
+          .on('click', function () {
+            jamRow.toggleClass('Edit');
+            spRow.toggleClass('Edit');
+            editRow.toggleClass('Edit');
+            editRow2.toggleClass('Edit');
+          })
+          .button()
+      );
       jamRow.children('.Jammer').on('click', function () {
         showSkaterSelector(prefix + 'Fielding(Jammer).Skater', teamId);
       });
       spRow.children('.Jammer').on('click', function () {
         showSkaterSelector(prefix + 'Fielding(Pivot).Skater', teamId);
       });
-      if (mode === 'operator') {
+      jamRow
+        .children('.Jammer')
+        .children('select')
+        .on('change', function () {
+          WS.Set(prefix + 'Fielding(Jammer).Skater', $(this).val());
+        });
+      spRow
+        .children('.Jammer')
+        .children('select')
+        .on('change', function () {
+          WS.Set(prefix + 'Fielding(Pivot).Skater', $(this).val());
+        });
+      jamRow.children('.Trip').append(
+        $('<button>')
+          .addClass('EditOnly OtherUsedOnly')
+          .text(isReverse ? '↓' : '↑')
+          .on('click', function (event) {
+            WS.Set(prefix + 'ScoringTrip(' + $(this).parent().attr('nr') + ').AfterSP', false);
+            event.stopPropagation();
+          })
+          .button()
+      );
+      spRow.children('.Trip').append(
+        $('<button>')
+          .addClass('EditOnly OtherUsedOnly')
+          .text(isReverse ? '↑' : '↓')
+          .on('click', function (event) {
+            WS.Set(prefix + 'ScoringTrip(' + $(this).parent().attr('nr') + ').AfterSP', true);
+            event.stopPropagation();
+          })
+          .button()
+      );
+
+      if (isReverse) {
+        table.prepend(editRow);
         table.prepend(jamRow);
+        table.prepend(editRow2);
       } else {
+        table.append(editRow);
         table.append(jamRow);
+        table.append(editRow2);
       }
-      jamElements[p][nr] = [jamRow, spRow];
+      jamElements[p][nr] = [jamRow, spRow, editRow, editRow2];
+    }
+  }
+
+  var toTypeSelect = $('<select>')
+    .addClass('EditOnly')
+    .append($('<option>').attr('value', '.false').text('Untyped Timeout'))
+    .append($('<option>').attr('value', 'O.false').text('Official Timeout'))
+    .append(
+      $('<option>')
+        .attr('value', gameId + '_1.false')
+        .text('Team TO ' + (teamId === 1 ? 'this' : 'other') + ' team')
+    )
+    .append(
+      $('<option>')
+        .attr('value', gameId + '_2.false')
+        .text('Team TO ' + (teamId === 2 ? 'this' : 'other') + ' team')
+    )
+    .append(
+      $('<option>')
+        .attr('value', gameId + '_1.true')
+        .text('Off. Review ' + (teamId === 1 ? 'this' : 'other') + ' team')
+    )
+    .append(
+      $('<option>')
+        .attr('value', gameId + '_2.true')
+        .text('Off. Review ' + (teamId === 2 ? 'this' : 'other') + ' team')
+    );
+
+  function createTimeout(p, id) {
+    if (timeoutElements[p][id] == null) {
+      var prefix = 'ScoreBoard.Game(' + gameId + ').Period(' + p + ').Timeout(' + id + ').';
+
+      var editRow = $('<tr>').addClass('Edits Timeout').attr('to', id);
+      var toRow = $('<tr>').addClass('Timeout').attr('to', id);
+      $('<td>')
+        .addClass('EditButton')
+        .append(
+          $('<button>')
+            .text('✎')
+            .on('click', function () {
+              toRow.toggleClass('Edit');
+              editRow.toggleClass('Edit');
+            })
+            .button()
+        )
+        .appendTo(toRow);
+      $('<td>')
+        .attr('colspan', 9)
+        .addClass('Type')
+        .append($('<span>').addClass('NoEditOnly'))
+        .append(
+          toTypeSelect.clone().on('change', function () {
+            var parts = $(this).val().split('.');
+            WS.Set(prefix + 'Owner', parts[0]);
+            WS.Set(prefix + 'Review', isTrue(parts[1]));
+          })
+        )
+        .appendTo(toRow);
+      $('<td>')
+        .attr('colspan', 4)
+        .addClass('Retained')
+        .append(WSActiveButton(prefix + 'RetainedReview', $('<button>').addClass('OROnly').text('Retained').button()))
+        .appendTo(toRow);
+      $('<td>')
+        .attr('colspan', mode === 'copyToStatsbook' ? 3 : 5)
+        .addClass('Duration')
+        .appendTo(toRow);
+
+      $('<td>').addClass('EditButton').appendTo(editRow);
+      $('<td>')
+        .attr('colspan', mode === 'copyToStatsbook' ? 16 : 18)
+        .addClass('Buttons')
+        .append(
+          $('<button>')
+            .addClass('RemoveTO')
+            .text('Remove Timeout')
+            .on('click', function () {
+              WS.Set(prefix + 'Delete', true);
+            })
+            .button()
+        )
+        .append(
+          $('<button>')
+            .addClass('AddTO')
+            .text('Insert Timeout')
+            .on('click', function () {
+              WS.Set(prefix + 'InsertAfter', true);
+            })
+            .button()
+        )
+        .appendTo(editRow);
+
+      timeoutElements[p][id] = [toRow, editRow];
     }
   }
 }

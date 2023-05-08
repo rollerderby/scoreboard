@@ -77,6 +77,14 @@
 
 #TeamTime tr.Control:not(.Show) { display: none; } 
 
+#ScoreAdjustments:not(.Show) { display: none; }
+#ScoreAdjustments > div { float: left; width: calc( 50% - 1em ); background: #ccc; border-radius: 12px; padding: 0.4em; margin: 1px; }
+#ScoreAdjustments > div > div { width: 100%; } 
+#ScoreAdjustments > div > div:not(.Active) { border-top: 1px dashed black; }
+#ScoreAdjustments .Hide { display: none; }
+#ScoreAdjustments button { margin: 2px; }
+#ScoreAdjustments .Amount { margin: 2px; font-weight: bold; }
+
 div.NumberDialog table.Period:not(.Show) { display: none; } 
 div.NumberDialog table tr:nth-child(2n+1) { background-color: #d8d8d8; } 
 div.NumberDialog table { text-align: center; } 

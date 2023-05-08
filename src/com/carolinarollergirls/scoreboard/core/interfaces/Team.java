@@ -45,6 +45,8 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
     public int getScore();
 
+    public void applyScoreAdjustment(ScoreAdjustment adjustment);
+
     public ScoringTrip getCurrentTrip();
 
     public int getTimeouts();
@@ -128,6 +130,10 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final Value<Boolean> PREPARED_TEAM_CONNECTED =
         new Value<>(Boolean.class, "PreparedTeamConnected", false, props);
     public static final Value<Skater> CAPTAIN = new Value<>(Skater.class, "Captain", null, props);
+    public static final Value<ScoreAdjustment> ACTIVE_SCORE_ADJUSTMENT =
+        new Value<>(ScoreAdjustment.class, "ActiveScoreAdjustment", null, props);
+    public static final Value<Integer> ACTIVE_SCORE_ADJUSTMENT_AMOUNT =
+        new Value<>(Integer.class, "ActiveScoreAdjustmentAmount", 0, props);
 
     public static final Child<ValWithId> ALTERNATE_NAME = new Child<>(ValWithId.class, "AlternateName", preparedProps);
     public static final Child<ValWithId> COLOR = new Child<>(ValWithId.class, "Color", preparedProps);
@@ -135,6 +141,8 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final Child<Position> POSITION = new Child<>(Position.class, "Position", props);
     public static final Child<Timeout> TIME_OUT = new Child<>(Timeout.class, "TimeOut", props);
     public static final Child<BoxTrip> BOX_TRIP = new Child<>(BoxTrip.class, "BoxTrip", props);
+    public static final Child<ScoreAdjustment> SCORE_ADJUSTMENT =
+        new Child<>(ScoreAdjustment.class, "ScoreAdjustment", props);
 
     public static final Command ADD_TRIP = new Command("AddTrip", props);
     public static final Command REMOVE_TRIP = new Command("RemoveTrip", props);
