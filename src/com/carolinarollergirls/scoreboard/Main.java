@@ -49,7 +49,6 @@ public class Main extends Logger {
     }
 
     public void start() {
-        setSystemProperties();
         try {
             if (!Version.load()) { stop(null); }
         } catch (IOException e) { stop(e); }
@@ -88,10 +87,6 @@ public class Main extends Logger {
                 autosaver.run();
             }
         });
-    }
-
-    private void setSystemProperties() {
-        System.getProperties().setProperty("twitter4j.loggerFactory", "twitter4j.internal.logging.NullLoggerFactory");
     }
 
     private void stop(Exception ex) {
