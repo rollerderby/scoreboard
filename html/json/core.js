@@ -44,6 +44,7 @@ _include('/external/jquery-plugins/fileupload/jquery.fileupload.js');
 
 /* Core functionality */
 _include('/javascript', ['timeconversions.js', 'windowfunctions.js', 'autofit.js']);
+_include('/styles', ['fonts.css']);
 _include('/json', ['WS.js']);
 
 $(function () {
