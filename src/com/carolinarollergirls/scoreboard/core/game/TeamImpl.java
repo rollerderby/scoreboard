@@ -17,6 +17,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreAdjustment;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Settings;
@@ -27,6 +28,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.IndirectScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.RecalculateScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
@@ -50,7 +52,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         setCopy(TEAM_NAME, this, PREPARED_TEAM, TEAM_NAME, false, PREPARED_TEAM_CONNECTED);
         setCopy(LOGO, this, PREPARED_TEAM, LOGO, false, PREPARED_TEAM_CONNECTED);
         setCopy(CURRENT_TRIP, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.CURRENT_TRIP, true);
-        setCopy(SCORE, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.TOTAL_SCORE, true);
         setCopy(JAM_SCORE, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.JAM_SCORE, true);
         setCopy(LAST_SCORE, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.LAST_SCORE, true);
         setCopy(TRIP_SCORE, this, CURRENT_TRIP, ScoringTrip.SCORE, false);
@@ -63,6 +64,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         setCopy(NO_PIVOT, this, RUNNING_OR_UPCOMING_TEAM_JAM, TeamJam.NO_PIVOT, false);
         setCopy(STAR_PASS, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.STAR_PASS, false);
         setCopy(STAR_PASS_TRIP, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.STAR_PASS_TRIP, false);
+        scoreListener = setRecalculated(SCORE)
+                            .addIndirectSource(this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.TOTAL_SCORE)
+                            .addSource(this, SCORE_ADJUSTMENT);
         setRecalculated(IN_TIMEOUT)
             .addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.OWNER)
             .addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.REVIEW)
@@ -90,6 +94,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         setCopy(RETAINED_OFFICIAL_REVIEW, this, LAST_REVIEW, Timeout.RETAINED_REVIEW, false);
         setCopy(ALTERNATE_NAME, this, PREPARED_TEAM, ALTERNATE_NAME, false, PREPARED_TEAM_CONNECTED);
         setCopy(COLOR, this, PREPARED_TEAM, COLOR, false, PREPARED_TEAM_CONNECTED);
+        setCopy(ACTIVE_SCORE_ADJUSTMENT_AMOUNT, this, ACTIVE_SCORE_ADJUSTMENT, ScoreAdjustment.AMOUNT, false);
         providers.put(skaterListener, null);
     }
 
@@ -182,6 +187,11 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                 tripScoreTimer.schedule(tripScoreTimerTask, 4000);
             }
         }
+        if (prop == SCORE) {
+            int sum = getRunningOrEndedTeamJam().getTotalScore();
+            for (ScoreAdjustment adjustment : getAll(SCORE_ADJUSTMENT)) { sum += adjustment.getAmount(); }
+            return sum;
+        }
         if (prop == NO_INITIAL && source != Source.COPY) {
             if (!(Boolean) value && (Boolean) last) {
                 execute(ADD_TRIP, source);
@@ -207,6 +217,21 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         }
         if (prop == PREPARED_TEAM_CONNECTED && flag != Flag.SPECIAL_CASE && get(PREPARED_TEAM) == null) {
             return false;
+        }
+        if (prop == ACTIVE_SCORE_ADJUSTMENT && value == null && last != null &&
+            (source == Source.WS || flag == Flag.SPECIAL_CASE)) {
+            ((ScoreAdjustment) last).set(ScoreAdjustment.OPEN, false);
+        }
+        if (prop == ACTIVE_SCORE_ADJUSTMENT_AMOUNT && get(ACTIVE_SCORE_ADJUSTMENT) == null) {
+            if (source == Source.WS) {
+                ScoreAdjustment newAdjustment = new ScoreAdjustmentImpl(this, UUID.randomUUID().toString());
+                add(SCORE_ADJUSTMENT, newAdjustment);
+                set(ACTIVE_SCORE_ADJUSTMENT, newAdjustment);
+            } else if (source == Source.COPY) {
+                return value;
+            } else {
+                return last;
+            }
         }
         return value;
     }
@@ -265,6 +290,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                 }
             } else if (prop == BOX_TRIP) {
                 return new BoxTripImpl(this, id);
+            } else if (prop == SCORE_ADJUSTMENT) {
+                return new ScoreAdjustmentImpl(this, id);
             }
             return null;
         }
@@ -273,6 +300,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     @Override
     protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
         if (prop == TIME_OUT) { recountTimeouts(); }
+        if (prop == SCORE_ADJUSTMENT) { scoreListener.addSource(((ScoreAdjustment) item), ScoreAdjustment.AMOUNT); }
     }
 
     @Override
@@ -294,6 +322,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
             s.delete();
         }
         if (prop == TIME_OUT) { recountTimeouts(); }
+        if (prop == SCORE_ADJUSTMENT && item == get(ACTIVE_SCORE_ADJUSTMENT)) { set(ACTIVE_SCORE_ADJUSTMENT, null); }
     }
 
     @Override
@@ -322,6 +351,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     @Override
     public void stopJam() {
         synchronized (coreLock) {
+            if (get(ACTIVE_SCORE_ADJUSTMENT) != null) { set(ACTIVE_SCORE_ADJUSTMENT, null, Flag.SPECIAL_CASE); }
             if (isDisplayLead() && !game.getClock(Clock.ID_JAM).isTimeAtEnd() && !isInjury() &&
                 !getOtherTeam().isInjury()) {
                 set(CALLOFF, true);
@@ -584,6 +614,15 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     @Override
     public int getScore() {
         return get(SCORE);
+    }
+
+    @Override
+    public void applyScoreAdjustment(ScoreAdjustment adjustment) {
+        int remainingAmount = adjustment.getTripAppliedTo().tryApplyScoreAdjustment(adjustment);
+        if (remainingAmount != 0) {
+            adjustment.getJamRecorded().getTeamJam(subId).possiblyChangeOsOffset(remainingAmount);
+        }
+        adjustment.delete();
     }
 
     @Override
@@ -866,6 +905,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     private Game game;
     private String subId;
     private String nextSkaterId;
+
+    private RecalculateScoreBoardListener<?> scoreListener;
 
     public static final String DEFAULT_NAME_PREFIX = "Team ";
     public static final String DEFAULT_LOGO = "";

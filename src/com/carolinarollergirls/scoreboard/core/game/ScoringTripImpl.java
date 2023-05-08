@@ -2,12 +2,12 @@ package com.carolinarollergirls.scoreboard.core.game;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreAdjustment;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;
-import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<ScoringTrip> implements ScoringTrip {
     ScoringTripImpl(TeamJam parent, int number) {
@@ -37,20 +37,8 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
             game.getClock(Clock.ID_JAM) != null) {
             set(JAM_CLOCK_END, game.getClock(Clock.ID_JAM).getTimeElapsed());
         }
-        if (prop == SCORE && source == Source.WS && game.getBoolean(Rule.WFTDA_LATE_SCORE_RULE)) {
-            TeamJam tj = (TeamJam) parent;
-            boolean nextJamNotStarted = tj.getJam() == game.getCurrentPeriod().getCurrentJam();
-            boolean nextJamNotEnded =
-                nextJamNotStarted ||
-                (game.getCurrentPeriod().getCurrentJam() == tj.getJam().getNext() && game.isInJam());
-            boolean lastTwoMinutes = (game.getClock(Clock.ID_PERIOD).getTimeRemaining() < 120000 &&
-                                      game.getCurrentPeriodNumber() == game.getInt(Rule.NUMBER_PERIODS));
-            boolean changeOk = ((!lastTwoMinutes && nextJamNotEnded) || (lastTwoMinutes && nextJamNotStarted)) &&
-                               !game.isOfficialScore();
-            if (!changeOk) {
-                int change = (Integer) value - (Integer) last;
-                tj.set(TeamJam.OS_OFFSET, -change, Flag.CHANGE);
-            }
+        if (prop == SCORE && source == Source.WS) {
+            ((TeamJam) parent).possiblyChangeOsOffset((Integer) last - (Integer) value);
         }
         if (prop == CURRENT && (Boolean) value && get(SCORE) == 0) { set(JAM_CLOCK_END, 0L); }
         if (prop == AFTER_S_P) {
@@ -96,6 +84,23 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     @Override
     public String getAnnotation() {
         return get(ANNOTATION);
+    }
+
+    @Override
+    public int tryApplyScoreAdjustment(ScoreAdjustment adjustment) {
+        int remainingAmount = 0;
+        int appliedAmount = adjustment.getAmount();
+        if (-appliedAmount > getScore()) {
+            appliedAmount = -getScore();
+            remainingAmount = adjustment.getAmount() - appliedAmount;
+        }
+        set(SCORE, appliedAmount, Flag.CHANGE);
+        if (((TeamJam) parent)
+                .possiblyChangeOsOffset(-appliedAmount, adjustment.getJamRecorded(), adjustment.isRecordedInJam(),
+                                        adjustment.isRecordedLastTwoMins())) {
+            remainingAmount = adjustment.getAmount();
+        }
+        return remainingAmount;
     }
 
     private Game game;
