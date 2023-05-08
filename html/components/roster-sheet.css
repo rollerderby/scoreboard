@@ -1,4 +1,4 @@
-.Roster {font-size: 11pt;font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; } 
+.Roster {font-size: 11pt; } 
 table.Roster, .Roster table, .Roster tr, .Roster td, #PenaltyEditor table, #PenaltyEditor tr, #PenaltyEditor td {border-collapse: collapse;border-color:#777; margin-bottom: 1em; } 
 .Roster tr { color: #333; } 
 .Roster.Team {top: 0%; } 

@@ -1,0 +1,5 @@
+@font-face {font-family: 'LiberationSans'; src: url("/fonts/LiberationSans-Regular.ttf") format("truetype");} 
+@font-face {font-family: 'LiberationSans'; src: url("/fonts/LiberationSans-Bold.ttf") format("truetype"); font-weight: bold;} 
+
+body { font-family: 'LiberationSans', sans-serif; } 
+.ui-button, .ui-widget, .ui-widget * { font-family: 'LiberationSans', sans-serif; } 

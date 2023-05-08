@@ -1,4 +1,4 @@
-.SK, #TripEditor { font-size: 11pt; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; } 
+.SK, #TripEditor { font-size: 11pt; } 
 table.SK, .SK .table, .SK tr, .SK td, #TripEditor table, #TripEditor tr, #TripEditor td { border-collapse: collapse; border-color:#777; } 
 body:not(.AllowSelect) .SK { user-select: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; } 
 .SK tr { color: #333; } 

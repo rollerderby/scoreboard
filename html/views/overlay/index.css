@@ -1,11 +1,9 @@
-@font-face {font-family: 'LiberationSans'; src: url("/fonts/LiberationSans-Regular.ttf") format("truetype");} 
-
 html { height: 100%; width: 100%; } 
 body { margin: 0 auto; } 
 
 .preload * { transition: none !important; } 
 
-body { font-family:'LiberationSans',sans-serif; font-weight: bold; margin: 0; padding: 0; overflow: hidden; } 
+body { font-weight: bold; margin: 0; padding: 0; overflow: hidden; } 
 div { white-space: nowrap; display: block; padding: 0; margin: 0; overflow: hidden; } 
 
 .barBackgroundTop { background: silver; background: linear-gradient(to bottom, #eee, #ddd 30%, #ccc 60%, #bbb); } 

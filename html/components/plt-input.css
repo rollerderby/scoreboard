@@ -1,4 +1,4 @@
-.PLT, #PenaltyEditor, .GameAdvance {font-size: 11pt;font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; } 
+.PLT, #PenaltyEditor, .GameAdvance {font-size: 11pt; } 
 table.PLT, .PLT table, .PLT tr, .PLT td, #PenaltyEditor table, #PenaltyEditor tr, #PenaltyEditor td, .GameAdvance {border-collapse: collapse;border-color:#777; } 
 body:not(.AllowSelect) .PLT {user-select: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-o-user-select: none; } 
 

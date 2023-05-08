@@ -1,4 +1,4 @@
-.LT, #FieldingEditor { font-size: 11pt; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; } 
+.LT, #FieldingEditor { font-size: 11pt; } 
 table.LT, .LT table,.LT tr, .LT td, #FieldingEditor table, #FieldingEditor tr, #FieldingEditor td { border-collapse: collapse; border-color:#777; } 
 body:not(.AllowSelect) .LT { user-select: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; } 
 .LT tr { color: #333; } 
