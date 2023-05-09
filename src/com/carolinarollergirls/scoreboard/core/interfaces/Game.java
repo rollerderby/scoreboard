@@ -43,6 +43,8 @@ public interface Game extends ScoreBoardEventProvider {
 
     public boolean isInSuddenScoring();
 
+    public boolean isLastTwoMinutes();
+
     public boolean isOfficialScore();
     public void setOfficialScore(boolean official);
 

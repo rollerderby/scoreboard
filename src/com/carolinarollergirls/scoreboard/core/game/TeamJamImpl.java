@@ -17,6 +17,7 @@ import com.carolinarollergirls.scoreboard.event.RecalculateScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJam> implements TeamJam {
     public TeamJamImpl(Jam j, String teamId) {
@@ -25,6 +26,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         game = j.getPeriod().getGame();
         team = game.getTeam(teamId);
         setRecalculated(CURRENT_TRIP).addSource(this, SCORING_TRIP);
+        setCopy(CURRENT_TRIP_NUMBER, this, CURRENT_TRIP, ScoringTrip.NUMBER, true);
         setRecalculated(TOTAL_SCORE).addSource(this, LAST_SCORE).addSource(this, JAM_SCORE).addSource(this, OS_OFFSET);
         setCopy(LAST_SCORE, this, PREVIOUS, TOTAL_SCORE, true);
         jamScoreListener = setRecalculated(JAM_SCORE).addSource(this, SCORING_TRIP);
@@ -76,7 +78,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == STAR_PASS_TRIP) {
-            if (last != null) { ((ScoringTrip) last).set(ScoringTrip.AFTER_S_P, false, Flag.SPECIAL_CASE); }
+            if (last != null) { getLast(SCORING_TRIP).set(ScoringTrip.AFTER_S_P, false, Flag.SPECIAL_CASE); }
             if (value != null) { ((ScoringTrip) value).set(ScoringTrip.AFTER_S_P, true, Flag.SPECIAL_CASE); }
         }
         if (prop == INJURY) { getOtherTeam().set(INJURY, (Boolean) value); }
@@ -103,9 +105,12 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     }
     @Override
     protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
-        if (prop == SCORING_TRIP && item == get(STAR_PASS_TRIP)) {
-            for (ScoringTrip trip = getLast(SCORING_TRIP); trip != null; trip = trip.getPrevious()) {
-                if (!trip.get(ScoringTrip.AFTER_S_P)) { set(STAR_PASS_TRIP, trip.getNext()); }
+        if (prop == SCORING_TRIP) {
+            possiblyChangeOsOffset(((ScoringTrip) item).getScore());
+            if (item == get(STAR_PASS_TRIP)) {
+                for (ScoringTrip trip = getLast(SCORING_TRIP); trip != null; trip = trip.getPrevious()) {
+                    if (!trip.get(ScoringTrip.AFTER_S_P)) { set(STAR_PASS_TRIP, trip.getNext()); }
+                }
             }
         }
     }
@@ -198,6 +203,30 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     @Override
     public void changeOsOffset(int c) {
         set(OS_OFFSET, c, Flag.CHANGE);
+    }
+    @Override
+    public void possiblyChangeOsOffset(int amount) {
+        if (game.isOfficialScore()) {
+            changeOsOffset(amount);
+        } else {
+            possiblyChangeOsOffset(amount, game.getCurrentPeriod().getCurrentJam(), game.isInJam(),
+                                   game.isLastTwoMinutes());
+        }
+    }
+    @Override
+    public boolean possiblyChangeOsOffset(int amount, Jam jamRecorded, boolean recordedInJam,
+                                          boolean recordedInLastTwoMins) {
+        if (game.getBoolean(Rule.WFTDA_LATE_SCORE_RULE)) {
+            boolean nextJamNotStarted = getJam() == jamRecorded;
+            boolean nextJamNotEnded = nextJamNotStarted || (jamRecorded == getJam().getNext() && recordedInJam);
+            boolean lastTwoMinutes = game.isLastTwoMinutes();
+            boolean changeOk = (!lastTwoMinutes && nextJamNotEnded) || (lastTwoMinutes && nextJamNotStarted);
+            if (!changeOk) {
+                changeOsOffset(amount);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

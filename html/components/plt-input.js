@@ -836,7 +836,11 @@ function openAnnotationEditor(gameId, teamId, skaterId) {
   }
   annotationEditor[teamId].data('skaterNumber', skaterNumber);
   annotationEditor[teamId].data('position', position);
-  annotationEditor[teamId].find('#subDropdown').val(skaterId);
+  annotationEditor[teamId].find('#subList').children().removeClass('Hide');
+  annotationEditor[teamId]
+    .find('#subList')
+    .children('[skater="' + skaterId + '"]')
+    .addClass('Hide');
   annotationEditor[teamId].find('#annotation').val(WS.state[fieldingPrefix + 'Annotation']);
   annotationEditor[teamId].find('.Box').toggleClass('Hide', WS.state[fieldingPrefix + 'CurrentBoxTrip'] === '');
   annotationEditor[teamId].find('.Box .Current').toggleClass('Hide', !isTrue(WS.state[prefix + 'PenaltyBox']));
@@ -848,8 +852,8 @@ function prepareAnnotationEditor(elem, gameId, teamId) {
   'use strict';
   $(initialize);
 
-  var subDropdown = $('<select>').attr('id', 'subDropdown');
-  var annotationField = $('<input type="text">').attr('size', '40').attr('id', 'annotation');
+  var subList = $('<span>').attr('id', 'subList').controlgroup();
+  var annotationField = $('<input type="text">').attr('size', '60').attr('id', 'annotation');
   var jamPrefix;
 
   function initialize() {
@@ -864,19 +868,6 @@ function prepareAnnotationEditor(elem, gameId, teamId) {
           .on('click', function () {
             var prefix = jamPrefix + elem.data('position') + ').';
             WS.Set(prefix + 'UnendBoxTrip', true);
-            elem.dialog('close');
-          })
-      )
-      .append(subDropdown.addClass('Current'))
-      .append(
-        $('<button>')
-          .addClass('Current')
-          .text('Substitute')
-          .button()
-          .on('click', function () {
-            var prefix = jamPrefix + elem.data('position') + ').';
-            WS.Set(prefix + 'Skater', subDropdown.val());
-            WS.Set(prefix + 'Annotation', 'Substitute for #' + elem.data('skaterNumber'));
             elem.dialog('close');
           })
       )
@@ -901,6 +892,9 @@ function prepareAnnotationEditor(elem, gameId, teamId) {
           })
       )
       .appendTo(row);
+
+    row = $('<tr>').addClass('Box').appendTo(table);
+    $('<td>').attr('colspan', '3').append($('<span>').text('Substitute: ')).append(subList.addClass('Current')).appendTo(row);
 
     row = $('<tr>').appendTo(table);
     $('<td>')
@@ -962,9 +956,9 @@ function prepareAnnotationEditor(elem, gameId, teamId) {
     annotationEditor[teamId] = elem.dialog({
       modal: true,
       closeOnEscape: false,
-      title: 'Annotation Editor',
+      title: 'Annotation & Box Trip Editor',
       autoOpen: false,
-      width: '500px',
+      width: '700px',
     });
   }
 
@@ -980,13 +974,21 @@ function prepareAnnotationEditor(elem, gameId, teamId) {
   }
 
   function processSkater(k, v) {
-    var select = elem.find('#subDropdown');
-    select.children('[value="' + k.Skater + '"]').remove();
-    var prefix = 'ScoreBoard.Game(' + gameId + ').Team(' + k.Team + ').Skater(' + k.Skater + ').';
-    if (v != null && WS.state[prefix + 'Role'] !== 'NotInGame') {
-      var number = WS.state[prefix + 'RosterNumber'];
-      var option = $('<option>').attr('number', number).val(k.Skater).text(number);
-      _windowFunctions.appendAlphaSortedByAttr(select, option, 'number');
+    subList.children('[skater="' + k.Skater + '"]').remove();
+    if (v != null && WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Skater(' + k.Skater + ').Role'] !== 'NotInGame') {
+      var number = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Skater(' + k.Skater + ').RosterNumber'];
+      var button = $('<button>')
+        .attr('number', number)
+        .attr('skater', k.Skater)
+        .text(number)
+        .on('click', function () {
+          var prefix = jamPrefix + elem.data('position') + ').';
+          WS.Set(prefix + 'Skater', k.Skater);
+          WS.Set(prefix + 'Annotation', 'Substitute for #' + elem.data('skaterNumber'));
+          elem.dialog('close');
+        })
+        .button();
+      _windowFunctions.appendAlphaSortedByAttr(subList, button, 'number', 1);
     }
   }
 }

@@ -13,6 +13,8 @@ public interface ScoringTrip extends NumberedScoreBoardEventProvider<ScoringTrip
     public boolean isAfterSP();
     public String getAnnotation();
 
+    public int tryApplyScoreAdjustment(ScoreAdjustment adjustment);
+
     public static Collection<Property<?>> props = new ArrayList<>();
 
     public static final Value<Integer> SCORE = new Value<>(Integer.class, "Score", 0, props);

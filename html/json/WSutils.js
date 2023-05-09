@@ -46,6 +46,22 @@ function WSActiveButton(key, button) {
   return button;
 }
 
+function WSChangeButton(key, value, button) {
+  'use strict';
+  button.on('click', function () {
+    WS.Set(key, value, 'change');
+  });
+  return button;
+}
+
+function WSSetButton(key, value, button) {
+  'use strict';
+  button.on('click', function () {
+    WS.Set(key, typeof value === 'function' ? value() : value);
+  });
+  return button;
+}
+
 function WSControl(key, element) {
   'use strict';
   element.on('change', function () {
@@ -61,6 +77,14 @@ function WSDisplay(key, element) {
   'use strict';
   WS.Register(key, function (k, v) {
     element.text(v);
+  });
+  return element;
+}
+
+function WSTextToggle(key, element, trueText, falseText) {
+  'use strict';
+  WS.Register(key, function (k, v) {
+    element.text(isTrue(v) ? trueText : falseText);
   });
   return element;
 }

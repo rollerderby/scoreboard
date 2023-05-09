@@ -92,6 +92,15 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> implements
         synchronized (coreLock) {
             if (prop == DELETE) {
                 if (!isRunning()) { delete(source); }
+            } else if (prop == INSERT_AFTER) {
+                Timeout newTo = new TimeoutImpl(get(PRECEDING_JAM));
+                newTo.set(RUNNING, false);
+                newTo.set(WALLTIME_START, get(WALLTIME_END));
+                newTo.set(WALLTIME_END, get(WALLTIME_END));
+                newTo.set(PERIOD_CLOCK_ELAPSED_START, get(PERIOD_CLOCK_ELAPSED_END));
+                newTo.set(PERIOD_CLOCK_ELAPSED_END, get(PERIOD_CLOCK_ELAPSED_END));
+                newTo.set(PERIOD_CLOCK_END, get(PERIOD_CLOCK_END));
+                getParent().add(Period.TIMEOUT, newTo);
             }
         }
     }

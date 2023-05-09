@@ -37,6 +37,7 @@ public interface Timeout extends ScoreBoardEventProvider {
     public static final Value<Long> WALLTIME_END = new Value<>(Long.class, "WalltimeEnd", 0L, props);
 
     public static final Command DELETE = new Command("Delete", props);
+    public static final Command INSERT_AFTER = new Command("InsertAfter", props);
 
     public enum Owners implements TimeoutOwner {
         NONE(""),

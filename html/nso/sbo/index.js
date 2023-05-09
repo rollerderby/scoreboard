@@ -51,14 +51,13 @@ function setOperatorSettings(op) {
   // the latter currently happens to be.
   var defPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator_Default.';
   setClockControls(isTrue(WS.state[opPrefix + 'StartStopButtons)'] || WS.state[defPrefix + 'StartStopButtons)']));
+  setScoreAdjustments(isTrue(WS.state[opPrefix + 'ScoreAdjustments)'] || WS.state[defPrefix + 'ScoreAdjustments)']));
   setReplaceButton(isTrue(WS.state[opPrefix + 'ReplaceButton)'] || WS.state[defPrefix + 'ReplaceButton)']));
   setTabBar(isTrue(WS.state[opPrefix + 'TabBar)'] || WS.state[defPrefix + 'TabBar)']));
 }
 
-// FIXME - this is done after the team/time panel is loaded,
-//         as the button setup needs to happen after that panel creates its buttons...
-//         really, the keycontrol helper lib needs to have a per-tab interface so
-//         each tab can setup its own keycontrol.
+// this is done after the team/time panel is loaded,
+// as the button setup needs to happen after that panel creates its buttons...
 function initialLogin() {
   'use strict';
   var operator = _windowFunctions.getParam('operator');
