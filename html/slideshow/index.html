@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Slideshow Page</title>
+    <script type="text/javascript" src="/external/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/components/slideshow.js"></script>
+    <script type="text/javascript" src="/views/standard/index.js"></script>
+    <script type="text/javascript" src="/json/core.js"></script>
+    <script type="text/javascript" src="/json/WS.js"></script>
+    <script type="text/javascript" src="/views/common.js"></script>
+    <link href="/components/slideshow.css" type="text/css" rel="stylesheet" />
+    <link href="/fonts/liberationsans/stylesheet.css" type="text/css" rel="stylesheet" />
+    <link href="/fonts/roboto/stylesheet.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+    <!-- Slideshow Banners -->
+    <div class="Slideshow Show" id="SlideshowBox">
+        <div class="NextSldShwImg">
+          <img src="" style="display: none" />
+        </div>
+        <div class="CurrentSldShwImg">
+          <img src="" style="display: none" />
+        </div>
+        <div class="FinishedSldShwImg">
+          <img src="" style="display: none" />
+        </div>
+        
+        <div class="DisplayPane Show" id="scoreboard" sbContext="ScoreBoard.CurrentGame" class="JamScore">
+
+            <div class="Clock ClkSlideshow">
+                <div
+                  class="Message Box AutoFit"
+                  sbDisplay="/ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.OfficialWithClock), OfficialScore, ClockDuringFinalScore, Clock(Intermission).Number, Rule(Period.Number)"
+                  sbModify="intermissionDisplay"
+                ></div>
+                <div class="Time Box AutoFit" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
+          </div>
+        </div>
+    </div>
+
+</body>
+</html>
