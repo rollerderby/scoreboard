@@ -1,0 +1,64 @@
+body {color: #FFFFFF;font-weight: bold;font-family: 'LiberationSans',helvetica;background: #000000;height: 100%;width: 100%;margin: 0;padding: 0; 
+user-select: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-o-user-select: none;scrolling: no; frameborder: 0px; border: 0px;overflow: hidden; } 
+
+.Clock.ClkSlideshow { position: relative; left: 15%; width: 60%; height: 25%; top: 100%; } 
+.Clock.ClkSlideshow.Show { top: 95%; } 
+.Clock.ClkSlideshow .Message { position: relative; top: 5%; height: 35%; left: 0%; width: 100%; font-size: 11vh; line-height: 1; text-align: center;} 
+.Clock.ClkSlideshow .Time { position: relative; top: 7.5%; height: 50%; left: 0%; width: 100%; font-size: 21vh; line-height: 1.2; text-align: center;} 
+
+.Box {box-shadow: inset -0.03em -0.05em 0.15em rgba(0,0,0,0.5);color: #000000;background: -moz-linear-gradient(top, #FFFFFF, #A0A0A0 100%);background: -webkit-gradient(linear, 0 0, 0 100%, from(#FFFFFF), color-stop(100%, #A0A0A0));border-radius: 15px; } 
+
+.Slideshow { position: absolute; left: 5%; top: 0%; width: 100%; height: 95%; animation: SlideshowHide 0.5s; -moz-animation: SlideshowHide 0.5s; -webkit-animation: SlideshowHide 0.5s;  } 
+.Slideshow.Show { top: 2%; animation: SlideshowShow 0.5s; -moz-animation: SlideshowShow 0.5s; -webkit-animation: SlideshowShow 0.5s; } 
+@-moz-keyframes SlideshowHide { 
+ 0% { top: 0%; } 50% { top: 0%; } 100% { top: 0%; } 
+ } 
+@-moz-keyframes SlideshowShow { 
+ 0% { top: 0%; } 50% { top: 0%; } 100% { top: 0%; } 
+ } 
+@-webkit-keyframes SlideshowHide { 
+ 0% { top: 0%; } 50% { top: 0%; } 100% { top: 0%; } 
+ } 
+@-webkit-keyframes SlideshowShow { 
+ 0% { top: 0%; } 50% { top: 0%; } 100% { top: 0%; } 
+ } 
+@keyframes SlideshowHide { 
+ 0% { top: 0%; } 50% { top: 0%; } 100% { top: 0%; } 
+ } 
+@keyframes SlideshowShow { 
+ 0% { top: 0%; } 50% { top: 0%; } 100% { top: 0%; } 
+ } 
+
+#SlideshowBox>div { position: absolute; top: 0%; right: 0%; width: 100%; height: 80%; font-size: 0px; } 
+#SlideshowBox>div.NextSldShwImg { right: 100%; } 
+#SlideshowBox>div.CurrentSldShwImg { right: 0%; animation: CurrentSldShwImg 1.01s; -moz-animation: CurrentSldShwImg 1.01s; -webkit-animation: CurrentSldShwImg 1.01s; } 
+@-moz-keyframes CurrentSldShwImg { 
+ from { right: 100%; } 
+ to { right: 0%; } 
+ } 
+@-webkit-keyframes CurrentSldShwImg { 
+ from { right: 100%; } 
+ to { right: 0%; } 
+ } 
+@keyframes CurrentSldShwImg { 
+ from { right: 100%; } 
+ to { right: 0%; } 
+ } 
+#SlideshowBox>div.FinishedSldShwImg { right: -100%; animation: FinishedSldShwImg 0.99s; -moz-animation: FinishedSldShwImg 0.99s; -webkit-animation: FinishedSldShwImg 0.99s; } 
+@-moz-keyframes FinishedSldShwImg { 
+ from { right: 0%; } 
+ to { right: -100%; } 
+ } 
+@-webkit-keyframes FinishedSldShwImg { 
+ from { right: 0%; } 
+ to { right: -100%; } 
+ } 
+@keyframes FinishedSldShwImg { 
+ from { right: 0%; } 
+ to { right: -100%; } 
+ } 
+
+#SlideshowBox>div>img { width: 90%; height: 100%; } 
+
+
+
