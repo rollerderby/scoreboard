@@ -287,7 +287,6 @@ function createScoreBoardViewPreviewRows(table, type) {
     )
   );
 
-
   var customPageViewSelect = $('<label>Custom Page View: </label>')
     .add(mediaSelect('ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_CustomHtml)', 'custom', 'view', 'Page'))
     .attr('ApplyPreview', 'CustomHtml');
