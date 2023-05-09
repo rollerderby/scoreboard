@@ -50,6 +50,9 @@ function initialize() {
   WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_VideoScaling)', function (k, v) {
     $('div#video>video').css('object-fit', v);
   });
+  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_Slideshow)', function (k, v) {
+    $('div#slideshow>iframe').attr('src', v);
+  });
   WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_CustomHtml)', function (k, v) {
     $('div#html>iframe').attr('src', v);
   });
