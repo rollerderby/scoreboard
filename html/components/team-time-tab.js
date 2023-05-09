@@ -1080,6 +1080,7 @@ function createTeamTable(gameId) {
           var button = $('<button>')
             .attr('number', number)
             .attr('skater', k.Skater)
+            .attr('color', WS.state[prefix + '.Skater(' + k.Skater + ').Color'] || '')
             .attr('id', 'Team' + team + pos + k.Skater)
             .addClass('KeyControl')
             .append($('<span>').text(number))
@@ -1092,6 +1093,9 @@ function createTeamTable(gameId) {
         }
         setValue(WS.state[prefix + '.Position(' + pos + ').Skater']);
       });
+      WS.Register(prefix + '.Skater(*).Color', function (k, v) {
+        container.children('[skater="' + k.Skater + '"]').attr('color', v || '');
+      });
       WS.Register(prefix + '.Position(' + pos + ').Skater', function (k, v) {
         setValue(v);
       });
@@ -1100,7 +1104,7 @@ function createTeamTable(gameId) {
 
     var jammerSelectTd = jammerTr.children('td');
     $('<span>').text('Jammer:').appendTo(jammerSelectTd);
-    makeSkaterSelector('Jammer').appendTo(jammerSelectTd);
+    makeSkaterSelector('Jammer').addClass('JammerSelect').appendTo(jammerSelectTd);
 
     var jammerBoxButton = WSActiveButton(prefix + '.Position(Jammer).PenaltyBox', $('<button>'))
       .append($('<span>').text('Box'))
@@ -1111,7 +1115,7 @@ function createTeamTable(gameId) {
 
     var pivotSelectTd = pivotTr.children('td');
     $('<span>').text('Piv/4th Bl:').appendTo(pivotSelectTd);
-    makeSkaterSelector('Pivot').appendTo(pivotSelectTd);
+    makeSkaterSelector('Pivot').addClass('PivotSelect').appendTo(pivotSelectTd);
 
     var pivotBoxButton = WSActiveButton(prefix + '.Position(Pivot).PenaltyBox', $('<button>'))
       .append($('<span>').text('Box'))
