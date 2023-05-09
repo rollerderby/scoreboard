@@ -4,6 +4,7 @@ bin
 test-bin
 release
 lib/crg-scoreboard.jar
+logs
 config/autosave
 config/*.xlsx
 html/stream
