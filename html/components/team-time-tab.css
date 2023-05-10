@@ -58,6 +58,7 @@
 #TeamTime .ui-controlgroup>button:last-of-type { border-radius: 0px 6px 6px 0px; } 
 #TeamTime .ui-controlgroup>button:only-of-type { border-radius: 6px; } 
 #TeamTime .ui-controlgroup>button>span { padding-top: 0.3em; padding-bottom: 0.3em; } 
+#TeamTime .JammerSelect [color="Jammer"]:not(.Active), #TeamTime .PivotSelect [color="Pivot"]:not(.Active) { background: #888; color: #fff; }
 
 #TeamTime table.Team button.Box.Hide { display: none } 
 #TeamTime table.Team button.Box.Active { color: #000; background: #F33; } 

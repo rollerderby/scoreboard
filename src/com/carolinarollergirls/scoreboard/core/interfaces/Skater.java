@@ -57,6 +57,7 @@ public interface Skater extends ScoreBoardEventProvider {
     public static final Value<Boolean> PENALTY_BOX = new Value<>(Boolean.class, "PenaltyBox", false, props);
     public static final Value<String> FLAGS = new Value<>(String.class, "Flags", "", preparedProps);
     public static final Value<String> PRONOUNS = new Value<>(String.class, "Pronouns", "", preparedProps);
+    public static final Value<String> COLOR = new Value<>(String.class, "Color", "", props);
 
     public static final Child<Fielding> FIELDING = new Child<>(Fielding.class, "Fielding", props);
 

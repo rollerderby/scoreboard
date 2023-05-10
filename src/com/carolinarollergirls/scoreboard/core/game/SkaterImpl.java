@@ -93,6 +93,8 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
                     f.add(Fielding.BOX_TRIP, lf.getCurrentBoxTrip());
                 }
             }
+            if (f != null && f.getPosition().getFloorPosition() == FloorPosition.JAMMER) { set(COLOR, "Jammer"); }
+            if (f != null && f.getPosition().getFloorPosition() == FloorPosition.PIVOT) { set(COLOR, "Pivot"); }
         }
         if (prop == FLAGS) {
             if ("C".equals(value)) {
