@@ -20,23 +20,9 @@ public class JSONStateSnapshotter implements JSONStateListener {
 
     public JSONStateSnapshotter(JSONStateManager jsm, Game g) {
         this.directory = BasePath.get();
-        stateManager = jsm;
         game = g;
         pathPrefix = "ScoreBoard.Game(" + game.getId() + ")";
-    }
-
-    public synchronized void startUpdates() {
-        if (!isUpdating) {
-            state = new TreeMap<>();
-            stateManager.register(this);
-            isUpdating = true;
-        }
-    }
-    public synchronized void stopUpdates() {
-        if (isUpdating) {
-            stateManager.unregister(this);
-            isUpdating = false;
-        }
+        jsm.register(this);
     }
 
     @Override
@@ -59,7 +45,7 @@ public class JSONStateSnapshotter implements JSONStateListener {
         }
     }
 
-    public synchronized void writeOnNextUpdate() { writeOnNextUpdate = true; }
+    public void writeOnNextUpdate() { writeOnNextUpdate = true; }
 
     public synchronized void writeFile() {
         Histogram.Timer timer = updateStateDuration.startTimer();
@@ -100,14 +86,12 @@ public class JSONStateSnapshotter implements JSONStateListener {
         timer.observeDuration();
     }
 
-    private JSONStateManager stateManager;
-    private boolean isUpdating = false;
     private File directory;
     private Game game;
     private String pathPrefix;
     private boolean writeOnNextUpdate = false;
     // Use a TreeMap so output is sorted.
-    private Map<String, Object> state;
+    private Map<String, Object> state = new TreeMap<>();
 
     private static final Histogram updateStateDuration = Histogram.build()
                                                              .name("crg_json_state_disk_snapshot_duration_seconds")

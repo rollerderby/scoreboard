@@ -1008,15 +1008,6 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         statsbookExporter = null;
     }
 
-    @Override
-    public void setCurrent(boolean isCurrent) {
-        if (isCurrent) {
-            jsonSnapshotter.startUpdates();
-        } else {
-            jsonSnapshotter.stopUpdates();
-        }
-    }
-
     protected GameSnapshot snapshot = null;
     protected boolean replacePending = false;
     protected boolean autostartRan = false;

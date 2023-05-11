@@ -79,8 +79,6 @@ public interface Game extends ScoreBoardEventProvider {
 
     public void exportDone(boolean success);
 
-    public void setCurrent(boolean isCurrent);
-
     public enum State {
         PREPARED("Prepared"),
         RUNNING("Running"),

@@ -81,10 +81,8 @@ public class CurrentGameImpl extends MirrorScoreBoardEventProviderImpl<Game, Cur
 
     @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == GAME && last != null) { ((Game) last).setCurrent(false); }
         if (prop == GAME && value != null) {
             Game g = (Game) value;
-            g.setCurrent(true);
             if (g.get(Game.EVENT_INFO, Game.INFO_START_TIME) != null &&
                 !"".equals(g.get(Game.EVENT_INFO, Game.INFO_START_TIME).getValue())) {
                 try {
