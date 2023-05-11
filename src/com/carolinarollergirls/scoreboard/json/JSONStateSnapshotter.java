@@ -20,34 +20,48 @@ public class JSONStateSnapshotter implements JSONStateListener {
 
     public JSONStateSnapshotter(JSONStateManager jsm, Game g) {
         this.directory = BasePath.get();
+        stateManager = jsm;
         game = g;
         pathPrefix = "ScoreBoard.Game(" + game.getId() + ")";
-        jsm.register(this);
+    }
+
+    public synchronized void startUpdates() {
+        if (!isUpdating) {
+            state = new TreeMap<>();
+            stateManager.register(this);
+            isUpdating = true;
+        }
+    }
+    public synchronized void stopUpdates() {
+        if (isUpdating) {
+            stateManager.unregister(this);
+            isUpdating = false;
+        }
     }
 
     @Override
     public synchronized void sendUpdates(Map<String, Object> newState, Set<String> changed) {
-        boolean hadNonClockUpdate = false;
-        for (String key : changed) {
-            if ((key.startsWith(pathPrefix) || key.startsWith("ScoreBoard.Version")) && !key.endsWith("Secret")) {
-                if (!key.startsWith(pathPrefix + ".Clock") && !key.endsWith(".JsonExists") &&
-                    !key.endsWith(".StatsbookExists")) {
-                    hadNonClockUpdate = true;
+        boolean initialUpdate = state.isEmpty();
+        if (initialUpdate) {
+            for (String key : changed) {
+                if (key.startsWith(pathPrefix) || key.startsWith("ScoreBoard.Version")) {
+                    state.put(key, newState.get(key));
                 }
-                state.put(key, newState.get(key));
+            }
+        } else {
+            for (String key : changed) {
+                if (key.startsWith(pathPrefix)) { state.put(key, newState.get(key)); }
             }
         }
-        if (writeOnNextUpdate ||
-            (hadNonClockUpdate && game.isOfficialScore() &&
-             ("Never".equals(game.get(Game.LAST_FILE_UPDATE)) || "Pre Game".equals(game.get(Game.LAST_FILE_UPDATE))))) {
+        if (writeOnNextUpdate) {
             writeOnNextUpdate = false;
             writeFile();
         }
     }
 
-    public void writeOnNextUpdate() { writeOnNextUpdate = true; }
+    public synchronized void writeOnNextUpdate() { writeOnNextUpdate = true; }
 
-    public void writeFile() {
+    public synchronized void writeFile() {
         Histogram.Timer timer = updateStateDuration.startTimer();
 
         File file = new File(new File(directory, "html/game-data/json"), game.getFilename() + ".json");
@@ -86,12 +100,14 @@ public class JSONStateSnapshotter implements JSONStateListener {
         timer.observeDuration();
     }
 
+    private JSONStateManager stateManager;
+    private boolean isUpdating = false;
     private File directory;
     private Game game;
     private String pathPrefix;
     private boolean writeOnNextUpdate = false;
     // Use a TreeMap so output is sorted.
-    private Map<String, Object> state = new TreeMap<>();
+    private Map<String, Object> state;
 
     private static final Histogram updateStateDuration = Histogram.build()
                                                              .name("crg_json_state_disk_snapshot_duration_seconds")
