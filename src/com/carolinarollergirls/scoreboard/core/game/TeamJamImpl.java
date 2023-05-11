@@ -209,8 +209,12 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         if (game.isOfficialScore()) {
             changeOsOffset(amount);
         } else {
-            possiblyChangeOsOffset(amount, game.getCurrentPeriod().getCurrentJam(), game.isInJam(),
-                                   game.isLastTwoMinutes());
+            try {
+                possiblyChangeOsOffset(amount, game.getCurrentPeriod().getCurrentJam(), game.isInJam(),
+                                       game.isLastTwoMinutes());
+            } catch (NullPointerException e) {
+                // happens during game deletion - just ignore it
+            }
         }
     }
     @Override

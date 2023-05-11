@@ -599,16 +599,24 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
             .addClass('RemoveJam')
             .text('Remove Jam ' + nr)
             .on('click', function () {
-              WS.Set(jamPrefix + 'Delete', false);
+              WS.Set(jamPrefix + 'Delete', true);
+              jamRow.toggleClass('Edit');
+              spRow.toggleClass('Edit');
+              editRow.toggleClass('Edit');
+              editRow2.toggleClass('Edit');
             })
             .button()
         )
         .append(
           $('<button>')
             .addClass('AddJam')
-            .text('Insert Jam')
+            .text('Insert New Jam Before Jam ' + nr)
             .on('click', function () {
-              WS.Set(jamPrefix + 'InsertBefore', false);
+              WS.Set(jamPrefix + 'InsertBefore', true);
+              jamRow.toggleClass('Edit');
+              spRow.toggleClass('Edit');
+              editRow.toggleClass('Edit');
+              editRow2.toggleClass('Edit');
             })
             .button()
         )
@@ -632,9 +640,13 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
         .append(
           $('<button>')
             .addClass('AddTO')
-            .text('Insert Timeout')
+            .text('Insert Timeout After Jam ' + nr)
             .on('click', function () {
               WS.Set(jamPrefix + 'InsertTimeoutAfter', true);
+              jamRow.toggleClass('Edit');
+              spRow.toggleClass('Edit');
+              editRow.toggleClass('Edit');
+              editRow2.toggleClass('Edit');
             })
             .button()
         )

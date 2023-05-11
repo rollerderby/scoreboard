@@ -59,13 +59,14 @@ function createIgrfTab(tab, gameId) {
   });
 
   $('<span>').text('Game Files: ').appendTo(table.find('tr.Files>td:eq(0)'));
-  $('<button>')
+  var updateButton = $('<button>')
     .text('Update')
     .on('click', function () {
       WS.Set(gamePrefix + '.Export', true);
     })
     .button()
     .appendTo(table.find('tr.Files>td:eq(0)'));
+  var exportBlocked = $('<span>').appendTo(table.find('tr.Files>td:eq(0)'));
   var spinner = $('<div>').addClass('spin').appendTo(table.find('tr.Files>td:eq(0)'));
   var jsonButton = $('<a download>').text('Download JSON').button().appendTo(table.find('tr.Files>td:eq(0)'));
   var noJson = $('<span>').text(' No JSON yet ').appendTo(table.find('tr.Files>td:eq(0)'));
@@ -78,6 +79,10 @@ function createIgrfTab(tab, gameId) {
     .addClass('Warning')
     .appendTo(table.find('tr.Files>td:eq(0)'));
 
+  WS.Register(gamePrefix + '.ExportBlockedBy', function (k, v) {
+    exportBlocked.text('Export Blocked by ' + v).toggle(v != '');
+    updateButton.toggle(v == '');
+  });
   WS.Register(gamePrefix + '.UpdateInProgress', function (k, v) {
     spinner.toggle(isTrue(v));
   });

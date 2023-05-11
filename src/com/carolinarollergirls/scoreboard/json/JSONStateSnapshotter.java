@@ -27,19 +27,19 @@ public class JSONStateSnapshotter implements JSONStateListener {
 
     @Override
     public synchronized void sendUpdates(Map<String, Object> newState, Set<String> changed) {
-        boolean hadNonClockUpdate = false;
-        for (String key : changed) {
-            if ((key.startsWith(pathPrefix) || key.startsWith("ScoreBoard.Version")) && !key.endsWith("Secret")) {
-                if (!key.startsWith(pathPrefix + ".Clock") && !key.endsWith(".JsonExists") &&
-                    !key.endsWith(".StatsbookExists")) {
-                    hadNonClockUpdate = true;
+        boolean initialUpdate = state.isEmpty();
+        if (initialUpdate) {
+            for (String key : changed) {
+                if (key.startsWith(pathPrefix) || key.startsWith("ScoreBoard.Version")) {
+                    state.put(key, newState.get(key));
                 }
-                state.put(key, newState.get(key));
+            }
+        } else {
+            for (String key : changed) {
+                if (key.startsWith(pathPrefix)) { state.put(key, newState.get(key)); }
             }
         }
-        if (writeOnNextUpdate ||
-            (hadNonClockUpdate && game.isOfficialScore() &&
-             ("Never".equals(game.get(Game.LAST_FILE_UPDATE)) || "Pre Game".equals(game.get(Game.LAST_FILE_UPDATE))))) {
+        if (writeOnNextUpdate) {
             writeOnNextUpdate = false;
             writeFile();
         }
@@ -47,7 +47,7 @@ public class JSONStateSnapshotter implements JSONStateListener {
 
     public void writeOnNextUpdate() { writeOnNextUpdate = true; }
 
-    public void writeFile() {
+    public synchronized void writeFile() {
         Histogram.Timer timer = updateStateDuration.startTimer();
 
         File file = new File(new File(directory, "html/game-data/json"), game.getFilename() + ".json");

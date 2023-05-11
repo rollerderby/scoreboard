@@ -66,6 +66,7 @@ public class ScoreBoardJSONListenerTests {
         g = sb.getCurrentGame().get(CurrentGame.GAME);
         gameId = g.getId();
         sb.getSettings().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, Clock.ID_LINEUP);
+        sb.getSettings().set(Clock.SETTING_SYNC, String.valueOf(false));
 
         jsm = new JSONStateManager();
         jsm.register(jsonListener);
