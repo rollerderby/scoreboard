@@ -107,6 +107,9 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             .addSource(get(TEAM, Team.ID_1), Team.FILE_NAME)
             .addSource(get(TEAM, Team.ID_2), Team.FILE_NAME);
         setRecalculated(STATE).addSource(this, CURRENT_PERIOD_NUMBER).addSource(this, OFFICIAL_SCORE);
+        setRecalculated(EXPORT_BLOCKED_BY)
+            .addSource(get(TEAM, Team.ID_1), Team.SCORE_ADJUSTMENT)
+            .addSource(get(TEAM, Team.ID_2), Team.SCORE_ADJUSTMENT);
         set(IN_JAM, false);
         set(NAME_FORMAT, "");
         removeAll(Period.JAM);
@@ -304,6 +307,13 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 !getCurrentTimeout().isRunning()) {
                 // Only allow a running game to be ended prematurely during intermission or a timeout
                 return false;
+            }
+        } else if (prop == EXPORT_BLOCKED_BY) {
+            if (!getTeam(Team.ID_1).getAll(Team.SCORE_ADJUSTMENT).isEmpty() ||
+                !getTeam(Team.ID_2).getAll(Team.SCORE_ADJUSTMENT).isEmpty()) {
+                return "unapplied score adjustments";
+            } else {
+                return "";
             }
         }
         return value;
