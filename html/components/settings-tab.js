@@ -219,6 +219,7 @@ function createScoreBoardViewPreviewRows(table, type) {
           .append('<option value="whiteboard">WhiteBoard</option>')
           .append('<option value="image">Image</option>')
           .append('<option value="video">Video</option>')
+          .append('<option value="slideshow">Slideshow</option>')
           .append('<option value="html">Custom Page</option>')
       )
     );

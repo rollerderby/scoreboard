@@ -95,6 +95,7 @@
 		<mkdir dir="${dest.dir}"/>
 		<mkdir dir="html/images/teamlogo" />
 		<mkdir dir="html/images/sponsor_banner" />
+                <mkdir dir="html/images/slideshow" />
 		<javac srcdir="."
 			destdir="${dest.dir}"
 			deprecation="${compile.deprecation}"
@@ -215,6 +216,7 @@
 				<exclude name="html/stream/*" />
 				<exclude name="html/images/teamlogo/*" />
 				<exclude name="html/images/sponsor_banner/*" />
+                                <exclude name="html/images/slideshow/*" />
 				<include name="html/images/teamlogo" />
 				<include name="html/images/sponsor_banner" />
 				<exclude name="html/game-data/json/*" />

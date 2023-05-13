@@ -31,7 +31,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl<Media> implements Med
 
     private void setup(Path path) {
         this.path = path;
-        addFormat("images", "fullscreen", "sponsor_banner", "teamlogo");
+        addFormat("images", "fullscreen", "sponsor_banner", "teamlogo", "slideshow");
         addFormat("videos", "fullscreen");
         addFormat("custom", "nso", "settings", "view", "overlay");
         addFormat("game-data", "json", "xlsx");
