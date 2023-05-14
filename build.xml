@@ -217,6 +217,7 @@
 				<exclude name="html/images/teamlogo/*" />
 				<exclude name="html/images/sponsor_banner/*" />
                                 <exclude name="html/images/slideshow/*" />
+				<include name="html/images/slideshow" />
 				<include name="html/images/teamlogo" />
 				<include name="html/images/sponsor_banner" />
 				<exclude name="html/game-data/json/*" />
