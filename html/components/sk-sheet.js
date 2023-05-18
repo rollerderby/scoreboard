@@ -219,7 +219,8 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
         if (mode !== 'copyToStatsbook') {
           jamRow
             .find('.JamTotal')
-            .toggleClass('hasAnnotation', WS.state[prefix + 'OsOffset'] !== 0 || WS.state[prefix + 'OsOffsetReason'] !== '');
+            .toggleClass('hasAnnotation', WS.state[prefix + 'OsOffset'] !== 0 || WS.state[prefix + 'OsOffsetReason'] !== '')
+            .toggleClass('clickMe', WS.state[prefix + 'OsOffset'] !== 0 && WS.state[prefix + 'OsOffsetReason'] === '');
         }
         break;
 
