@@ -146,7 +146,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
             String setting = scoreBoard.getSettings().get(SETTING_FILE_NAME);
             if (OPTION_TEAM_NAME.equals(setting) && !"".equals(get(TEAM_NAME))) {
                 return get(TEAM_NAME);
-            } else if (!OPTION_FULL_NAME.equals(setting) && !"".equals(get(LEAGUE_NAME))) {
+            } else if (OPTION_LEAGUE_NAME.equals(setting) && !"".equals(get(LEAGUE_NAME))) {
                 return get(LEAGUE_NAME);
             } else {
                 return get(FULL_NAME);
