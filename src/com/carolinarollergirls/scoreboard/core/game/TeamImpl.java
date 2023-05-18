@@ -163,8 +163,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         }
         if (prop == TRIP_SCORE && source != Source.COPY) {
             tripScoreTimerTask.cancel();
-            if ((Integer) value > 0 && getCurrentTrip().getNumber() == 1 && !game.isInOvertime() &&
-                !game.isInSuddenScoring()) {
+            if (((Integer) value > 0 || flag != Flag.CHANGE) && getCurrentTrip().getNumber() == 1 &&
+                !game.isInOvertime() && !game.isInSuddenScoring() && source == Source.WS) {
                 // If points arrive during an initial trip and we are not in overtime, assign
                 // the points to the first scoring trip instead.
                 getCurrentTrip().set(ScoringTrip.ANNOTATION, "Points were added without Add Trip\n" +
