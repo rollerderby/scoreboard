@@ -167,8 +167,8 @@ body.box_flat .Clock.Jam.Large>.Name { left: 0%; width: 100%; height: 40% }
 .Clock.Period.NameNumber.Small { left: 29%; width: 12%; } 
 .Clock.Jam.NameNumber.Small { left: 42%; width: 16%; } 
 .Clock.Description.Small { right: 29%; width: 12%; } 
-.Clock.Lineup.Small { right: 1%; width: 27%; line-height: 0.8; } 
-.Clock.Timeout.Small { right: 1%; width: 27%; line-height: 0.8; } 
+.Clock.Lineup.Small,.Clock.Timeout.Small { right: 1%; width: 27%; line-height: 0.8; } 
+.Clock.None.Small { right: 1%; width: 57%; } 
 @-moz-keyframes SmallClockHide { 
  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 0; } 
  } 

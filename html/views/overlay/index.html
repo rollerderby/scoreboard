@@ -126,14 +126,19 @@
           data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)"
           class="ClockBox TopClock AnimatedPanel PanelHideTop Wrapper"
         >
-          <div class="ClockBarTop Wrapper Row SlideDown ClockNames ShowInJam ShowInLineup ShowInTimeout barBackgroundTop">
+          <div class="ClockBarTop Wrapper Row SlideDown ClockNames ShowInJam ShowInLineup ShowInTimeout ShowInNoClock barBackgroundTop">
             <div class="Box TextLeft Name" sbDisplay="Name,Number" sbContext="Clock(Period)" sbModify="toClockInitialNumber"></div>
-            <div class="Box TextRight Name" sbDisplay="Name,Number" sbContext="Clock(Jam)" sbModify="toClockInitialNumber"></div>
+            <div
+              class="Box TextRight Clock ShowInJam ShowInIntermission ShowInLineup ShowInTimeout Name"
+              sbDisplay="Name,Number"
+              sbContext="Clock(Jam)"
+              sbModify="toClockInitialNumber"
+            ></div>
           </div>
 
           <div
-            class="ClockBarMiddle Wrapper SlideDown ShowInIntermission ShowInLineup ShowInTimeout Box BigName ClockDescription"
-            sbDisplay="Clock(Intermission).Running, Clock.(Intermission).Number, Clock(Lineup).Running, Clock(Lineup).Name, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReviews, Team(1).Timeouts, Team(2).OfficialReviews, Team(2).Timeouts, /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.OfficialWithClock), OfficialScore, ClockDuringFinalScore, Clock(Intermission).Number, Rule(Period.Number)"
+            class="ClockBarMiddle Wrapper SlideDown ShowInIntermission ShowInLineup ShowInTimeout ShowInNoClock Box BigName ClockDescription"
+            sbDisplay="Clock(Intermission).Running, Clock.(Intermission).Number, Clock(Lineup).Running, Clock(Jam).Running, Clock(Lineup).Name, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReviews, Team(1).Timeouts, Team(2).OfficialReviews, Team(2).Timeouts, /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.OfficialWithClock), OfficialScore, ClockDuringFinalScore, Clock(Intermission).Number, Rule(Period.Number)"
             sbModify="clockType"
           ></div>
           <div class="ClockBarBottom Wrapper Row BottomRow barBackgroundBottom">

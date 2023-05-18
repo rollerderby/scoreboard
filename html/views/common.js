@@ -66,6 +66,7 @@ function smallDescriptionUpdate(k, v) {
   'use strict';
   var lc = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Running'];
   var tc = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Running'];
+  var jc = WS.state['ScoreBoard.CurrentGame.Clock(Jam).Running'];
   var to = WS.state['ScoreBoard.CurrentGame.TimeoutOwner'].slice(-1);
   var or = WS.state['ScoreBoard.CurrentGame.OfficialReview'];
   var lcn = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Name'];
@@ -143,21 +144,18 @@ function intermissionDisplay() {
 
 function toClockInitialNumber(k, v) {
   'use strict';
+  k = WS._enrichProp(k);
   var ret = '';
-  $.each(['Period', 'Jam'], function (i, c) {
-    if (k.indexOf('Clock(' + c + ')') > -1) {
-      var name = WS.state['ScoreBoard.CurrentGame.Clock(' + c + ').Name'];
-      var number = WS.state['ScoreBoard.CurrentGame.Clock(' + c + ').Number'];
+  var name = WS.state['ScoreBoard.CurrentGame.Clock(' + k.Clock + ').Name'];
+  var number = WS.state['ScoreBoard.CurrentGame.Clock(' + k.Clock + ').Number'];
 
-      if (name != null && number != null) {
-        ret = name.substring(0, 1) + number;
-      }
+  if (name != null && number != null) {
+    ret = name.substring(0, 1) + number;
+  }
 
-      if (name === 'Period' && WS.state['ScoreBoard.CurrentGame.Rule(Period.Number)'] == 1) {
-        ret = 'Game';
-      }
-    }
-  });
+  if (name === 'Period' && WS.state['ScoreBoard.CurrentGame.Rule(Period.Number)'] == 1) {
+    ret = 'Game';
+  }
   return ret;
 }
 
@@ -173,19 +171,27 @@ function toSP(k, v) {
   return isTrue(v) ? 'SP' : '';
 }
 
+function toComingUp(k, v) {
+  'use strict';
+  return 'Coming Up';
+}
+
 function clockRunner(k, v) {
   'use strict';
   var lc = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Running'];
   var tc = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Running'];
   var ic = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Running'];
+  var jc = WS.state['ScoreBoard.CurrentGame.Clock(Jam).Running'];
 
-  var clock = 'Jam';
+  var clock = 'NoClock';
   if (isTrue(tc)) {
     clock = 'Timeout';
   } else if (isTrue(lc)) {
     clock = 'Lineup';
   } else if (isTrue(ic)) {
     clock = 'Intermission';
+  } else if (isTrue(jc)) {
+    clock = 'Jam';
   }
 
   $('.Clock,.SlideDown').removeClass('Show');

@@ -446,6 +446,7 @@ function clockType(k, v) {
   var tc = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Running'];
   var lc = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Running'];
   var ic = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Running'];
+  var jc = WS.state['ScoreBoard.CurrentGame.Clock(Jam).Running'];
 
   if (tc) {
     ret = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Name'];
@@ -482,8 +483,12 @@ function clockType(k, v) {
     }
 
     $('.ClockDescription').css('backgroundColor', 'blue');
-  } else {
+  } else if (jc) {
     ret = 'Jam';
+    $('.ClockDescription').css('backgroundColor', '#888');
+  } else {
+    ret = 'Coming Up';
+    $('.ClockDescription').css('backgroundColor', 'blue');
   }
 
   return ret;
