@@ -79,6 +79,7 @@ public class GameImplTests {
     @Before
     public void setUp() throws Exception {
         ScoreBoardClock.getInstance().stop();
+        GameImpl.setQuickClockThreshold(0L);
         sb = new ScoreBoardImpl();
         sb.postAutosaveUpdate();
         g = (GameImpl) sb.getCurrentGame().get(CurrentGame.GAME);
@@ -102,6 +103,7 @@ public class GameImplTests {
     @After
     public void tearDown() throws Exception {
         ScoreBoardClock.getInstance().start(false);
+        GameImpl.setQuickClockThreshold(1000L);
         // Check all started batches were ended.
         assertEquals(0, batchLevel);
     }
@@ -775,6 +777,7 @@ public class GameImplTests {
     @Test
     public void testStopJam_lineupEarlyInIntermission() {
         fastForwardPeriod();
+        GameImpl.setQuickClockThreshold(1000L);
         assertFalse(pc.isRunning());
         assertEquals(1, pc.getNumber());
         assertFalse(jc.isRunning());
@@ -971,6 +974,7 @@ public class GameImplTests {
         assertEquals(Timeout.Owners.NONE, g.getTimeoutOwner());
         checkLabels(Game.ACTION_START_JAM, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
                     Game.UNDO_PREFIX + Game.ACTION_RE_TIMEOUT);
+        GameImpl.setQuickClockThreshold(1000L);
 
         g.setTimeoutOwner(Timeout.Owners.OTO);
         g.timeout();

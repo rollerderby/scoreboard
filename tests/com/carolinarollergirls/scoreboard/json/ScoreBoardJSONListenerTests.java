@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.game.GameImpl;
 import com.carolinarollergirls.scoreboard.core.game.SkaterImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
@@ -61,6 +62,7 @@ public class ScoreBoardJSONListenerTests {
         dir.newFile("html/images/teamlogo/init.png");
 
         ScoreBoardClock.getInstance().stop();
+        GameImpl.setQuickClockThreshold(0L);
         sb = new ScoreBoardImpl();
         sb.postAutosaveUpdate();
         g = sb.getCurrentGame().get(CurrentGame.GAME);
@@ -81,6 +83,7 @@ public class ScoreBoardJSONListenerTests {
         advance(0);
         assertEquals("foo", state.get("ScoreBoard.Settings.Setting(teardownTest)"));
         ScoreBoardClock.getInstance().start(false);
+        GameImpl.setQuickClockThreshold(1000L);
         BasePath.set(oldDir);
     }
 

@@ -550,7 +550,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     @Override
     public void startJam() {
         synchronized (coreLock) {
-            if (!isInJam() && !isOfficialScore()) {
+            if (!quickClockControl(Button.START) && !isInJam() && !isOfficialScore()) {
                 createSnapshot(ACTION_START_JAM);
                 setLabels(ACTION_NONE, ACTION_STOP_JAM, ACTION_TIMEOUT);
                 _startJam();
@@ -561,49 +561,44 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     @Override
     public void stopJamTO() {
         synchronized (coreLock) {
-            autostartRan = false;
-            Clock lc = getClock(Clock.ID_LINEUP);
-            Clock tc = getClock(Clock.ID_TIMEOUT);
-            Clock ic = getClock(Clock.ID_INTERMISSION);
+            if (!quickClockControl(Button.STOP)) {
+                autostartRan = false;
+                Clock lc = getClock(Clock.ID_LINEUP);
+                Clock tc = getClock(Clock.ID_TIMEOUT);
 
-            if (isInJam()) {
-                createSnapshot(ACTION_STOP_JAM);
-                setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
-                _endJam();
-                finishReplace();
-            } else if (tc.isRunning()) {
-                createSnapshot(ACTION_STOP_TO);
-                setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
-                _endTimeout(false);
-                finishReplace();
-            } else if (!lc.isRunning() && (!ic.isRunning() || ic.getTimeElapsed() > 1000L)) {
-                // just after starting intermission this is almost surely the operator trying to
-                // end a last jam that was just auto ended or accidentally hitting the button twice
-                // - ignore, as this confuses operators and makes undoing the Jam end impossible
-                createSnapshot(ACTION_LINEUP);
-                setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
-                _startLineup();
-                finishReplace();
+                if (isInJam()) {
+                    createSnapshot(ACTION_STOP_JAM);
+                    setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
+                    _endJam();
+                    finishReplace();
+                } else if (tc.isRunning()) {
+                    createSnapshot(ACTION_STOP_TO);
+                    setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
+                    _endTimeout(false);
+                    finishReplace();
+                } else if (!lc.isRunning()) {
+                    createSnapshot(ACTION_LINEUP);
+                    setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
+                    _startLineup();
+                    finishReplace();
+                }
             }
         }
     }
     @Override
     public void timeout() {
         synchronized (coreLock) {
-            Clock tc = getClock(Clock.ID_TIMEOUT);
-            if (tc.isRunning()) {
-                if (tc.getTimeElapsed() < 1000L) {
-                    // This is almost surely an accidental double press
-                    // ignore as it messes up stats and makes undo impossible
-                    return;
+            if (!quickClockControl(Button.TIMEOUT)) {
+                Clock tc = getClock(Clock.ID_TIMEOUT);
+                if (tc.isRunning()) {
+                    createSnapshot(ACTION_RE_TIMEOUT);
+                } else {
+                    createSnapshot(ACTION_TIMEOUT);
                 }
-                createSnapshot(ACTION_RE_TIMEOUT);
-            } else {
-                createSnapshot(ACTION_TIMEOUT);
+                setLabels(ACTION_START_JAM, ACTION_STOP_TO, ACTION_RE_TIMEOUT);
+                _startTimeout();
+                finishReplace();
             }
-            setLabels(ACTION_START_JAM, ACTION_STOP_TO, ACTION_RE_TIMEOUT);
-            _startTimeout();
-            finishReplace();
         }
     }
     @Override
@@ -840,6 +835,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     protected void finishReplace() {
         if (!replacePending) { return; }
         ScoreBoardClock.getInstance().start(true);
+        lastButton = Button.UNDO;
         replacePending = false;
     }
     @Override
@@ -856,9 +852,21 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                     setLabel(Button.UNDO, ACTION_NO_REPLACE);
                 } else {
                     ScoreBoardClock.getInstance().start(true);
+                    lastButton = Button.UNDO;
                 }
             }
         }
+    }
+
+    protected boolean quickClockControl(Button button) {
+        long currentTime = ScoreBoardClock.getInstance().getCurrentTime();
+        long lastTime = lastButtonTime;
+        boolean differentButton = button != lastButton;
+        lastButton = button;
+        lastButtonTime = currentTime;
+        if (replacePending || currentTime - lastTime >= quickClockThreshold) { return false; }
+        if (differentButton) { clockUndo(true); }
+        return true;
     }
 
     private String getSetting(String key) { return scoreBoard.getSettings().get(key); }
@@ -1008,6 +1016,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         statsbookExporter = null;
     }
 
+    public static void setQuickClockThreshold(long threshold) { quickClockThreshold = threshold; } // for unit tests
+
     protected GameSnapshot snapshot = null;
     protected boolean replacePending = false;
     protected boolean autostartRan = false;
@@ -1015,6 +1025,10 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     protected static File jsonDirectory = new File(BasePath.get(), "html/game-data/json");
 
     protected Timeout noTimeoutDummy;
+
+    protected Button lastButton = Button.UNDO;
+    protected long lastButtonTime = ScoreBoardClock.getInstance().getCurrentTime();
+    protected static long quickClockThreshold = 1000; // ms
 
     protected StatsbookExporter statsbookExporter;
     protected JSONStateSnapshotter jsonSnapshotter;

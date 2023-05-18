@@ -49,6 +49,7 @@ public class TeamJamImplTests {
                  .getTeam(Team.ID_1)
                  .get(Team.RUNNING_OR_UPCOMING_TEAM_JAM);
         ScoreBoardClock.getInstance().stop();
+        GameImpl.setQuickClockThreshold(0L);
     }
 
     @Test

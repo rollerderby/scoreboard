@@ -58,6 +58,7 @@ public class TeamImplTests {
         g = sb.getCurrentGame().get(CurrentGame.GAME);
         team = (TeamImpl) g.getTeam(ID);
         ScoreBoardClock.getInstance().stop();
+        GameImpl.setQuickClockThreshold(0L);
 
         // run a jam so timeouts and ORs are credited to period 1.
         g.startJam();
