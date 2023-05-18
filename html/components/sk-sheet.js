@@ -70,6 +70,8 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).StarPass',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Overtime',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).InjuryContinuation',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).WalltimeStart',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).WalltimeEnd',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').AfterSPScore',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Calloff',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').JamScore',
@@ -146,6 +148,7 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
     }
     var jamRow = je[0];
     var spRow = je[1];
+    var editRow = je[2];
     var editRow2 = je[3];
     if (k == prefix + 'StarPass') {
       if (isTrue(v)) {
@@ -165,6 +168,14 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
         nrText = 'INJ' + (isTrue(WS.state[prefix + 'TeamJam(' + teamId + ').Lead']) ? '*' : '');
       }
       jamRow.find('.JamNumber').text(nrText);
+    } else if (k.field === 'JamScore' || k.field === 'OsOffset' || k.field === 'WalltimeStart' || k.field === 'WalltimeEnd') {
+      var isRunning = WS.state[prefix + 'WalltimeEnd'] === 0 && WS.state[prefix + 'WalltimeStart'] > 0;
+      var hasPoints =
+        WS.state[prefix + 'TeamJam(1).JamScore'] + WS.state[prefix + 'TeamJam(1).OsOffset'] != 0 ||
+        WS.state[prefix + 'TeamJam(2).JamScore'] + WS.state[prefix + 'TeamJam(2).OsOffset'] != 0;
+      editRow.find('.RemoveJam').toggleClass('Hide', isRunning || hasPoints);
+      editRow.find('.NoRemoveJamPoints').toggleClass('Hide', !hasPoints);
+      editRow.find('.NoRemoveJamRunning').toggleClass('Hide', !isRunning || hasPoints);
     }
 
     // Everything after here is team specific.
@@ -607,6 +618,8 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
             })
             .button()
         )
+        .append($('<span>').addClass('NoRemoveJamPoints Hide').text("Can't delete jam with points"))
+        .append($('<span>').addClass('NoRemoveJamRunning Hide').text("Can't delete running jam"))
         .append(
           $('<button>')
             .addClass('AddJam')

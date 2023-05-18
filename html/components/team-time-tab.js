@@ -1367,6 +1367,7 @@ function createJamDialog(gameId) {
   $('<a>').text('Points').addClass('Title').appendTo(headers.children('td:eq(1)').addClass('Title'));
   $('<a>').text('Duration').addClass('Title').appendTo(headers.children('td:eq(2)').addClass('Title'));
   $('<a>').text('PC at end').addClass('Title').appendTo(headers.children('td:eq(3)').addClass('Title'));
+  $('<a>').text('Delete').addClass('Title').appendTo(headers.children('td:eq(4)').addClass('Title'));
   var footer = $('<tr><td colspan="4"></td><td></td><td></td>').addClass('Jam').attr('nr', 999).appendTo(tableTemplate);
   $('<span>').text('Upcoming').appendTo(footer.children('td:eq(0)'));
   $('<button>')
@@ -1381,9 +1382,11 @@ function createJamDialog(gameId) {
     [
       'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Duration',
       'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Number',
-      'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).StarPass',
       'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).PeriodClockDisplayEnd',
+      'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).WalltimeStart',
+      'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).WalltimeEnd',
       'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(*).JamScore',
+      'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(*).OsOffset',
     ],
     function (k, v) {
       var per = k.Period;
@@ -1417,16 +1420,17 @@ function createJamDialog(gameId) {
           .append($('<td>').addClass('Duration'))
           .append($('<td>').addClass('PC'))
           .append(
-            $('<td>').append(
-              $('<button>')
-                .text('Delete')
-                .addClass('delete')
-                .button()
-                .on('click', function () {
-                  //TODO: confirmation popup
-                  WS.Set(prefix + '.Delete', true);
-                })
-            )
+            $('<td>')
+              .append(
+                $('<button>')
+                  .text('Delete')
+                  .addClass('delete')
+                  .button()
+                  .on('click', function () {
+                    WS.Set(prefix + '.Delete', true);
+                  })
+              )
+              .append($('<span>').text('has points').addClass('noDeletePoints Hide'))
           )
           .append(
             $('<td>').append(
@@ -1458,17 +1462,13 @@ function createJamDialog(gameId) {
         if (key === 'JamScore') {
           row.find('td.Points .' + k.TeamJam).text(v);
         }
-        if (key === 'StarPass' || key === 'JamScore') {
-          row
-            .find('button.delete')
-            .prop(
-              'disabled',
-              isTrue(
-                WS.state[prefix + '.StarPass'] ||
-                  WS.state[prefix + '.TeamJam(1).JamScore'] > 0 ||
-                  WS.state[prefix + '.TeamJam(2).JamScore'] > 0
-              )
-            );
+        if (key === 'OsOffset' || key === 'JamScore' || key === 'WalltimeEnd') {
+          var isRunning = WS.state[prefix + '.WalltimeEnd'] === 0 && WS.state[prefix + '.WalltimeStart'] > 0;
+          var hasPoints =
+            WS.state[prefix + '.TeamJam(1).JamScore'] + WS.state[prefix + '.TeamJam(1).OsOffset'] != 0 ||
+            WS.state[prefix + '.TeamJam(2).JamScore'] + WS.state[prefix + '.TeamJam(2).OsOffset'] != 0;
+          row.find('button.delete').toggleClass('Hide', isRunning || hasPoints);
+          row.find('.noDeletePoints').toggleClass('Hide', !hasPoints);
         }
         if (key === 'Duration') {
           if (WS.state[prefix + '.WalltimeEnd'] === 0 && WS.state[prefix + '.WalltimeStart'] > 0) {
