@@ -92,7 +92,7 @@ function createMetaControlTable(gameId) {
     });
   $('<a>')
     .text(
-      'Key Control Edit mode enabled.  Buttons do not operate in this mode.  Move the mouse over a button, then press a normal key (not ESC, Enter, F1, etc.) to assign.  Backspace/Delete to remove.'
+      'Key Control Edit mode enabled.  Keys do not operate in this mode but clicking buttons still DOES perform the action.  Move the mouse over a button, then press a normal key (not ESC, Enter, F1, etc.) to assign.  Backspace/Delete to remove.'
     )
     .appendTo(helpTd);
 
