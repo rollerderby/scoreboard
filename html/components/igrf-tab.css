@@ -16,6 +16,13 @@
 #Igrf tr.Files .ui-button { margin: 1px 5px; } 
 #Igrf tr.Files .Warning { color: red; }
 
+#Igrf table.Summary { border: 1px solid black; border-collapse: collapse; background-color: white; font-weight: bold; font-size: 80%; margin: auto; }
+#Igrf table.Summary td { border: 1px solid black; border-collapse: collapse; width: 80px; }
+#Igrf table.Summary .Head, #Igrf table.Summary .Total { background-color: #ffd0ff; }
+#Igrf table.Summary .Label { background-color: #ffe8ff; }
+#Igrf table.Summary .Small { font-weight: initial; }
+#Igrf table.Summary .Value { font-size: 125%; }
+
 #Igrf .Expulsions th { font-size: 150%; } 
 #Igrf .Expulsions table { width: 100%; } 
 

@@ -12,6 +12,8 @@ function createIgrfTab(tab, gameId) {
     .append($('<tr><td/><td/><td/></tr>').addClass('Time'))
     .append($('<tr><td colspan="3"><hr/></td></tr>').addClass('Separator Abort'))
     .append($('<tr><td colspan="3"/></tr>').addClass('Abort Info'))
+    .append($('<tr><td colspan="3"><hr/></td></tr>').addClass('Separator'))
+    .append($('<tr><td colspan="3"/></tr>').addClass('Summary'))
     .append($('<tr><td colspan="3"><hr/></td></tr>').addClass('Separator Expulsions Hide'))
     .append($('<tr><td colspan="3"><table><tr><th colspan="3">Expulsions</th></tr></table></td></tr>').addClass('Expulsions Hide'))
     .append($('<tr><td colspan="3"><hr/></td></tr>').addClass('Separator'))
@@ -157,6 +159,69 @@ function createIgrfTab(tab, gameId) {
       $('tr.Abort').toggleClass('Hide', !show);
     }
   );
+
+  var summaryTable = $('<table>')
+    .addClass('Summary')
+    .append(
+      $('<tr>')
+        .attr('nr', 0)
+        .addClass('Head')
+        .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Team(1).Name', $('<td colspan="5">').addClass('Value')))
+        .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Team(2).Name', $('<td colspan="5">').addClass('Value')))
+    )
+    .append(
+      $('<tr>')
+        .addClass('Total')
+        .append($('<td colspan="2">').text('TOTAL POINTS:'))
+        .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Team(1).Score', $('<td>').addClass('Value')))
+        .append($('<td>').text('PENALTIES:'))
+        .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Team(1).TotalPenalties', $('<td>').addClass('Value')))
+        .append($('<td colspan="2">').text('TOTAL POINTS:'))
+        .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Team(2).Score', $('<td>').addClass('Value')))
+        .append($('<td>').text('PENALTIES:'))
+        .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Team(2).TotalPenalties', $('<td>').addClass('Value')))
+    )
+    .appendTo(table.find('tr.Summary>td'));
+
+  function addSummaryPeriodRow(nr) {
+    if (nr == 0) {
+      return summaryTable.children('tr[nr=0]');
+    }
+    var previousRow = summaryTable.children('tr[nr=' + (nr - 1) + ']');
+    if (!previousRow.length) {
+      previousRow = addSummaryPeriodRow(nr - 1);
+    }
+    return $('<tr>')
+      .attr('nr', nr)
+      .addClass('Period')
+      .append(
+        $('<td>')
+          .addClass('Label')
+          .text('Period ' + nr)
+      )
+      .append($('<td>').addClass('Label Small').text('Points'))
+      .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Period(' + nr + ').Team1Points', $('<td>').addClass('Value')))
+      .append($('<td>').addClass('Label Small').text('Penalties'))
+      .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Period(' + nr + ').Team1PenaltyCount', $('<td>').addClass('Value')))
+      .append(
+        $('<td>')
+          .addClass('Label')
+          .text('Period ' + nr)
+      )
+      .append($('<td>').addClass('Label Small').text('Points'))
+      .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Period(' + nr + ').Team2Points', $('<td>').addClass('Value')))
+      .append($('<td>').addClass('Label Small').text('Penalties'))
+      .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Period(' + nr + ').Team2PenaltyCount', $('<td>').addClass('Value')))
+      .insertAfter(previousRow);
+  }
+
+  WS.Register('ScoreBoard.Game(' + gameId + ').Period(*).Number', function (k, v) {
+    if (v == null) {
+      summaryTable.children('tr[nr=' + k.Period + ']').remove();
+    } else {
+      addSummaryPeriodRow(v);
+    }
+  });
 
   function createExpulsionRow(id) {
     $('.Expulsions').removeClass('Hide');
