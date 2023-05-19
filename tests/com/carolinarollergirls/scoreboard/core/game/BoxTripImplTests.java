@@ -44,6 +44,7 @@ public class BoxTripImplTests {
 
     @Before
     public void setUp() throws Exception {
+        GameImpl.setQuickClockThreshold(0L);
         sb = new ScoreBoardImpl();
         sb.postAutosaveUpdate();
         g = sb.getCurrentGame().get(CurrentGame.GAME);
@@ -71,6 +72,7 @@ public class BoxTripImplTests {
     @After
     public void tearDown() throws Exception {
         ScoreBoardClock.getInstance().start(false);
+        GameImpl.setQuickClockThreshold(1000L);
         // Check all started batches were ended.
         assertEquals(0, batchLevel);
     }

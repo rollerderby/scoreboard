@@ -60,11 +60,13 @@ public class FieldingImplTests {
         sb.addScoreBoardListener(batchCounter);
 
         ScoreBoardClock.getInstance().stop();
+        GameImpl.setQuickClockThreshold(0L);
     }
 
     @After
     public void tearDown() throws Exception {
         ScoreBoardClock.getInstance().start(false);
+        GameImpl.setQuickClockThreshold(1000L);
         // Check all started batches were ended.
         assertEquals(0, batchLevel);
     }

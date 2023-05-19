@@ -33,6 +33,7 @@ public class SkaterImplTests {
 
     @Before
     public void setup() {
+        GameImpl.setQuickClockThreshold(0L);
         sb = new ScoreBoardImpl();
         sb.postAutosaveUpdate();
         g = sb.getCurrentGame().get(CurrentGame.GAME);

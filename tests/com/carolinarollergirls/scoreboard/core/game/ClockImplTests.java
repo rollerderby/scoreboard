@@ -44,6 +44,7 @@ public class ClockImplTests {
     @Before
     public void setUp() throws Exception {
         ScoreBoardClock.getInstance().stop();
+        GameImpl.setQuickClockThreshold(0L);
         collectedEvents = new LinkedList<>();
 
         sb = new ScoreBoardImpl();
@@ -57,6 +58,7 @@ public class ClockImplTests {
     @After
     public void tearDown() throws Exception {
         ScoreBoardClock.getInstance().start(false);
+        GameImpl.setQuickClockThreshold(1000L);
     }
 
     @Test

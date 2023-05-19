@@ -3,6 +3,7 @@ table.SK, .SK td, #TripEditor table, #TripEditor tr, #TripEditor td { border-col
 body:not(.AllowSelect) .SK { user-select: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; } 
 .SK tr { color: #333; } 
 .SK .Hide { display: none; } 
+.SK.Period tr td.clickMe { color: black; background: #ff9010; }
 .SK.Period tr.Edit .EditButton .ui-button { background: #3f3; }
 .SK.Period tr.Edits:not(.Edit) { display: none; }
 .SK.Period tr:not(.Edit) .EditOnly { display: none; }

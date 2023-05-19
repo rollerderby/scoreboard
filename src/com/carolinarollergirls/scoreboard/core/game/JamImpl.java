@@ -88,12 +88,9 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
                     Logger.printMessage("Refusing to delete current Jam.");
                     return;
                 }
-                if (getTeamJam(Team.ID_1).getJamScore() > 0 || getTeamJam(Team.ID_2).getJamScore() > 0) {
+                if (getTeamJam(Team.ID_1).getJamScore() + getTeamJam(Team.ID_1).getOsOffset() != 0 ||
+                    getTeamJam(Team.ID_2).getJamScore() + getTeamJam(Team.ID_2).getOsOffset() != 0) {
                     Logger.printMessage("Refusing to delete Jam with points. Remove points first.");
-                    return;
-                }
-                if (get(STAR_PASS)) {
-                    Logger.printMessage("Refusing to delete Jam with Star Pass. Remove SP first.");
                     return;
                 }
 

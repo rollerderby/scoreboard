@@ -31,6 +31,7 @@ public class PositionImplTests {
 
     @Before
     public void setup() {
+        GameImpl.setQuickClockThreshold(0L);
         sb = new ScoreBoardImpl();
         sb.postAutosaveUpdate();
 
