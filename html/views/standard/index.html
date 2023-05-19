@@ -6,7 +6,6 @@
     <script type="text/javascript" src="/json/core.js"></script>
     <script type="text/javascript" src="/json/WS.js"></script>
     <script type="text/javascript" src="/views/common.js"></script>
-
   </head>
   <body>
     <div class="ConnectionError">Not connected</div>
@@ -80,8 +79,9 @@
         sbDisplay="Time"
         sbModify="toTime"
       ></div>
+      <div class="ShowInNoClock Clock Period Small Time Box AutoFit"></div>
       <div
-        class="ShowInLineup ShowInTimeout Clock Period Small NameNumber Box AutoFit"
+        class="ShowInLineup ShowInTimeout ShowInNoClock Clock Period Small NameNumber Box AutoFit"
         sbContext="Clock(Period)"
         sbDisplay="Name,Number"
         sbModify="toClockInitialNumber"
@@ -99,9 +99,10 @@
       ></div>
       <div class="ShowInLineup Clock Lineup Small Box AutoFit" sbContext="Clock(Lineup)" sbDisplay="Time" sbModify="toTime"></div>
       <div class="ShowInTimeout Clock Timeout Small Box AutoFit" sbContext="Clock(Timeout)" sbDisplay="Time" sbModify="toTime"></div>
+      <div class="ShowInNoClock Clock None Small Box AutoFit" sbContext="Clock(Jam)" sbDisplay="Name" sbModify="toComingUp"></div>
 
       <!-- Sponsor Banners -->
-      <div class="ShowInTimeout ShowInLineup Clock" id="SponsorBox">
+      <div class="ShowInTimeout ShowInLineup ShowInNoClock Clock" id="SponsorBox">
         <div class="NextImg">
           <img src="" style="display: none" />
         </div>
