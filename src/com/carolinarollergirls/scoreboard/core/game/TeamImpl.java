@@ -12,6 +12,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
+import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
@@ -67,6 +68,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         scoreListener = setRecalculated(SCORE)
                             .addIndirectSource(this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.TOTAL_SCORE)
                             .addSource(this, SCORE_ADJUSTMENT);
+        penaltyListener = setRecalculated(TOTAL_PENALTIES).addSource(this, SKATER);
         setRecalculated(IN_TIMEOUT)
             .addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.OWNER)
             .addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.REVIEW)
@@ -233,6 +235,15 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                 return last;
             }
         }
+        if (prop == TOTAL_PENALTIES) {
+            int count = 0;
+            for (Skater s : getAll(SKATER)) {
+                for (Penalty p : s.getAll(Skater.PENALTY)) {
+                    if (!Skater.FO_EXP_ID.equals(p.getProviderId())) { count++; }
+                }
+            }
+            return count;
+        }
         return value;
     }
 
@@ -301,6 +312,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
         if (prop == TIME_OUT) { recountTimeouts(); }
         if (prop == SCORE_ADJUSTMENT) { scoreListener.addSource(((ScoreAdjustment) item), ScoreAdjustment.AMOUNT); }
+        if (prop == SKATER) { penaltyListener.addSource((Skater) item, Skater.PENALTY); }
     }
 
     @Override
@@ -907,6 +919,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     private String nextSkaterId;
 
     private RecalculateScoreBoardListener<?> scoreListener;
+    private RecalculateScoreBoardListener<?> penaltyListener;
 
     public static final String DEFAULT_NAME_PREFIX = "Team ";
     public static final String DEFAULT_LOGO = "";

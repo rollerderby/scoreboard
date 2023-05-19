@@ -4,12 +4,17 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
+import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
+import com.carolinarollergirls.scoreboard.core.interfaces.Team;
+import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.RecalculateScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
+import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
@@ -21,6 +26,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         setCopy(CURRENT_JAM_NUMBER, this, CURRENT_JAM, Jam.NUMBER, true);
         setRecalculated(FIRST_JAM).addSource(this, JAM);
         setCopy(FIRST_JAM_NUMBER, this, FIRST_JAM, Jam.NUMBER, true);
+        penaltyListener = setRecalculated(TEAM_1_PENALTY_COUNT).addSource(this, JAM);
         if (hasPrevious()) {
             set(CURRENT_JAM, getPrevious().get(CURRENT_JAM));
             set(SUDDEN_SCORING, getPrevious().isSuddenScoring());
@@ -31,6 +37,12 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         addWriteProtectionOverride(RUNNING, Source.NON_WS);
         addWriteProtectionOverride(JAM, Source.NON_WS);
         addWriteProtectionOverride(RUNNING, Source.NON_WS);
+        setRecalculated(TEAM_1_POINTS)
+            .addSource(g.getTeam(Team.ID_1), Team.SCORE)
+            .addSource(g.getTeam(Team.ID_1), Team.SCORE_ADJUSTMENT);
+        setRecalculated(TEAM_2_POINTS)
+            .addSource(g.getTeam(Team.ID_2), Team.SCORE)
+            .addSource(g.getTeam(Team.ID_2), Team.SCORE_ADJUSTMENT);
     }
 
     @Override
@@ -42,6 +54,33 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
             } else {
                 return getWalltimeEnd() - getWalltimeStart();
             }
+        }
+        if (prop == TEAM_1_PENALTY_COUNT) {
+            int t1Count = 0;
+            int t2Count = 0;
+            for (Jam jam : getAll(JAM)) {
+                for (Penalty p : jam.getAll(Jam.PENALTY)) {
+                    if (!Skater.FO_EXP_ID.equals(p.getProviderId())) {
+                        if (Team.ID_1.equals(p.getParent().getParent().getProviderId())) {
+                            t1Count++;
+                        } else {
+                            t2Count++;
+                        }
+                    }
+                }
+            }
+            set(TEAM_2_PENALTY_COUNT, t2Count);
+            return t1Count;
+        }
+        if (prop == TEAM_1_POINTS) {
+            return getAll(JAM).size() > 0 ? getCurrentJam().getTeamJam(Team.ID_1).get(TeamJam.TOTAL_SCORE) -
+                                                getFirst(JAM).getTeamJam(Team.ID_1).get(TeamJam.LAST_SCORE)
+                                          : 0;
+        }
+        if (prop == TEAM_2_POINTS) {
+            return getAll(JAM).size() > 0 ? getCurrentJam().getTeamJam(Team.ID_2).get(TeamJam.TOTAL_SCORE) -
+                                                getFirst(JAM).getTeamJam(Team.ID_2).get(TeamJam.LAST_SCORE)
+                                          : 0;
         }
         return value;
     }
@@ -62,6 +101,11 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         } else if (prop == PREVIOUS && value != null && numberOf(JAM) > 0) {
             getFirst(JAM).setPrevious(getPrevious().getCurrentJam());
         }
+    }
+
+    @Override
+    protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
+        if (prop == JAM) { penaltyListener.addSource((ScoreBoardEventProvider) item, Jam.PENALTY); }
     }
 
     @Override
@@ -187,6 +231,8 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     }
 
     private Game game;
+
+    private RecalculateScoreBoardListener<?> penaltyListener;
 
     public static class PeriodSnapshotImpl implements PeriodSnapshot {
         private PeriodSnapshotImpl(Period period) {
