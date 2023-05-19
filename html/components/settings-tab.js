@@ -143,7 +143,7 @@ function createNonViewRows(table) {
       $('<select>')
         .append('<option value="League">League Name</option>')
         .append('<option value="Team">Team Name</option>')
-        .append('<option value="Full">Full Name</option>')
+        .append('<option selected value="Full">Full Name</option>')
     )
   );
   var defaultGameNameFormat = $('<label>Name format for new games: </label>').add(
