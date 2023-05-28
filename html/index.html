@@ -5,6 +5,7 @@
 
     <script type="text/javascript" src="/external/jquery/jquery.js"></script>
     <script type="text/javascript" src="/external/jquery-ui/jquery-ui.js"></script>
+    <script type="text/javascript" src="/external/jquery-qrcode/jquery.qrcode.min.js"></script>
     <script type="text/javascript" src="/json/core.js"></script>
     <link rel="stylesheet" href="external/jquery-ui/css/default/jquery-ui.css" />
     <link rel="stylesheet" href="external/fontawesome/css/font-awesome.min.css" />
@@ -13,11 +14,27 @@
       $(function () {
         $.get('/urls', function (data) {
           var urls = data.trim();
-          if (!urls) $('#URLtext').html('<b>The scoreboard is not networked</b>.	 You can access it only from this computer.');
-          else
+          if (!urls) {
+            $('#URLtext').html('<b>The scoreboard is not networked</b>.	 You can access it only from this computer.');
+          } else {
             $.each(urls.split('\n'), function (i, e) {
-              $('<a>').attr('href', e).text(e).appendTo('#URLs').wrap('<li>');
+              $('<li>')
+                .append(
+                  $('<a>')
+                    .addClass('qrButton')
+                    .on('click', function () {
+                      $('#qrcode').empty().qrcode(e);
+                      $('.qrButton').removeClass('Active');
+                      $(this).addClass('Active');
+                    })
+                    .text('QR')
+                    .button()
+                )
+                .append($('<a>').attr('href', e).text(e))
+                .appendTo('#URLs');
             });
+            $('a.qrButton').first().trigger('click');
+          }
         });
         WS.Register(['WS.Device.Id', 'WS.Device.Name', 'ScoreBoard.Clients.Device(*).Comment'], function (k, v) {
           var name = WS.state['WS.Device.Name'];
@@ -134,6 +151,12 @@
         margin-left: 0;
         text-indent: 0;
       }
+      .qrButton {
+        font-size: 60%;
+      }
+      .qrButton.Active {
+        background: #0c0;
+      }
       .footer {
         font-size: 75%;
         padding-top: 10px;
@@ -243,8 +266,9 @@
       <!-- column -->
       <div class="column">
         <div class="btn" style="text-align: left">
-          <h2><span class="fa fa-2x fa-info-circle"></span> INFO</h2>
+          <h2><span class="fa fa-2x fa-wifi"></span> NETWORK</h2>
           <div style="padding: 4px; font-size: 80%">
+            <div id="qrcode"></div>
             <p>To access this scoreboard from other computers on this network, try one of these URLs:</p>
 
             <ul id="URLs"></ul>
