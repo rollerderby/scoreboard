@@ -399,7 +399,7 @@ var WS = {
             }
           }
           if (window[elem.attr('sbModify')] != null) {
-            v = window[elem.attr('sbModify')](path, v);
+            v = window[elem.attr('sbModify')](WS._enrichProp(path), v);
           }
           return v;
         };

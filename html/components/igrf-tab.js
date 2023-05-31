@@ -160,32 +160,40 @@ function createIgrfTab(tab, gameId) {
     }
   );
 
+  WS.Register([
+    gamePrefix + '.Period(*).Team1Points',
+    gamePrefix + '.Period(*).Team1PenaltyCount',
+    gamePrefix + '.Period(*).Team2Points',
+    gamePrefix + '.Period(*).Team2PenaltyCount',
+  ]);
+
   var summaryTable = $('<table>')
     .addClass('Summary')
     .append(
       $('<tr>')
         .attr('nr', 0)
         .addClass('Head')
-        .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Team(1).Name', $('<td colspan="5">').addClass('Value')))
-        .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Team(2).Name', $('<td colspan="5">').addClass('Value')))
+        .append(WSDisplay(gamePrefix + '.Team(1).Name', $('<td colspan="5">').addClass('Value')))
+        .append(WSDisplay(gamePrefix + '.Team(2).Name', $('<td colspan="5">').addClass('Value')))
     )
     .append(
       $('<tr>')
         .addClass('Total')
         .append($('<td colspan="2">').text('TOTAL POINTS:'))
-        .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Team(1).Score', $('<td>').addClass('Value')))
+        .append(WSDisplay(gamePrefix + '.Team(1).Score', $('<td>').addClass('Value')))
         .append($('<td>').text('PENALTIES:'))
-        .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Team(1).TotalPenalties', $('<td>').addClass('Value')))
+        .append(WSDisplay(gamePrefix + '.Team(1).TotalPenalties', $('<td>').addClass('Value')))
         .append($('<td colspan="2">').text('TOTAL POINTS:'))
-        .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Team(2).Score', $('<td>').addClass('Value')))
+        .append(WSDisplay(gamePrefix + '.Team(2).Score', $('<td>').addClass('Value')))
         .append($('<td>').text('PENALTIES:'))
-        .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Team(2).TotalPenalties', $('<td>').addClass('Value')))
+        .append(WSDisplay(gamePrefix + '.Team(2).TotalPenalties', $('<td>').addClass('Value')))
     )
     .appendTo(table.find('tr.Summary>td'));
 
   function addSummaryPeriodRow(nr) {
-    if (nr == 0) {
-      return summaryTable.children('tr[nr=0]');
+    var row = summaryTable.children('tr[nr=' + nr + ']');
+    if (row.length) {
+      return row;
     }
     var previousRow = summaryTable.children('tr[nr=' + (nr - 1) + ']');
     if (!previousRow.length) {
@@ -200,18 +208,18 @@ function createIgrfTab(tab, gameId) {
           .text('Period ' + nr)
       )
       .append($('<td>').addClass('Label Small').text('Points'))
-      .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Period(' + nr + ').Team1Points', $('<td>').addClass('Value')))
+      .append(WSDisplay(gamePrefix + '.Period(' + nr + ').Team1Points', $('<td>').addClass('Value')))
       .append($('<td>').addClass('Label Small').text('Penalties'))
-      .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Period(' + nr + ').Team1PenaltyCount', $('<td>').addClass('Value')))
+      .append(WSDisplay(gamePrefix + '.Period(' + nr + ').Team1PenaltyCount', $('<td>').addClass('Value')))
       .append(
         $('<td>')
           .addClass('Label')
           .text('Period ' + nr)
       )
       .append($('<td>').addClass('Label Small').text('Points'))
-      .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Period(' + nr + ').Team2Points', $('<td>').addClass('Value')))
+      .append(WSDisplay(gamePrefix + '.Period(' + nr + ').Team2Points', $('<td>').addClass('Value')))
       .append($('<td>').addClass('Label Small').text('Penalties'))
-      .append(WSDisplay('ScoreBoard.Game(' + gameId + ').Period(' + nr + ').Team2PenaltyCount', $('<td>').addClass('Value')))
+      .append(WSDisplay(gamePrefix + '.Period(' + nr + ').Team2PenaltyCount', $('<td>').addClass('Value')))
       .insertAfter(previousRow);
   }
 

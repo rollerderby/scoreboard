@@ -106,7 +106,6 @@ function setupPeriodTimePage() {
 
 function toTime(k, v) {
   'use strict';
-  k = WS._enrichProp(k);
   var isCountDown = isTrue(WS.state['ScoreBoard.CurrentGame.Clock(' + k.Clock + ').Direction']);
   return _timeConversions.msToMinSecNoZero(v, isCountDown);
 }
