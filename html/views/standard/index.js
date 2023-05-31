@@ -114,8 +114,8 @@ function initialize() {
           $('.Team' + t + ' .DotTimeouts .Dot').css('background', dotColor);
           $('.Team' + t + ' .Dot.OfficialReview1').css('background', dotColor);
 
-          document.styleSheets[0].addRule('.Team' + t + ' .DotOfficialReviews .Dot.Retained:before', 'background: ' + dotColor + ';');
-          document.styleSheets[0].addRule('.Team' + t + ' .DotOfficialReviews .Dot.Retained:after', 'background: ' + dotColor + ';');
+          document.styleSheets[0].insertRule('.Team' + t + ' .DotOfficialReviews .Dot.Retained:before { background: ' + dotColor + '};');
+          document.styleSheets[0].insertRule('.Team' + t + ' .DotOfficialReviews .Dot.Retained:after { background: ' + dotColor + '};');
           break;
       }
     });
