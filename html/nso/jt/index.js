@@ -54,7 +54,7 @@ function setupJamControlPage() {
     ],
     function (k, v) {
       var name = WS.state['ScoreBoard.CurrentGame.Team(' + k.Team + ').AlternateName(operator)'];
-      name = name || WS.state['ScoreBoard.CurrentGame.Team(' + k.Team + ').UnifromColor'];
+      name = name || WS.state['ScoreBoard.CurrentGame.Team(' + k.Team + ').UniformColor'];
       if (name == null || name === '') {
         name = WS.state['ScoreBoard.CurrentGame.Team(' + k.Team + ').Name'];
       }

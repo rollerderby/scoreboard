@@ -2,27 +2,20 @@ $(initialize);
 
 function initialize() {
   'use strict';
+  var view = 'View';
+  // needs to be set before AutoRegister
+  if (_windowFunctions.checkParam('preview', 'true')) {
+    $('body').attr('sbPrefix', '&ScoreBoard.Settings.Setting(ScoreBoard.Preview_');
+    view = 'Preview';
+  }
+
   WS.Connect();
   WS.AutoRegister();
 
   // Set Styles
-  var view = 'View';
-  if (_windowFunctions.checkParam('preview', 'true')) {
-    view = 'Preview';
-  }
   WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_SwapTeams)', function (k, v) {
-    $('.Team1').toggleClass('Left', !isTrue(v)).toggleClass('Right', isTrue(v));
-    $('.Team2').toggleClass('Left', isTrue(v)).toggleClass('Right', !isTrue(v));
-    $('.Team').toggleClass('Swapped', isTrue(v));
-  });
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_HideLogos)', function (k, v) {
-    $('.Team1').toggleClass('HideLogos', isTrue(v));
-    $('.Team2').toggleClass('HideLogos', isTrue(v));
-    // Update autofit of the names.
-    /* jshint -W117 */
-    logoUpdate('.Team(1)');
-    logoUpdate('.Team(2)');
-    /* jshint +W117 */
+    $('[Team=1]').toggleClass('Left', !isTrue(v)).toggleClass('Right', isTrue(v));
+    $('[Team=2]').toggleClass('Left', isTrue(v)).toggleClass('Right', !isTrue(v));
   });
 
   WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_CurrentView)', function (k, v) {
@@ -36,22 +29,6 @@ function initialize() {
       this.currentTime = 0;
       this.play();
     });
-  });
-
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_Image)', function (k, v) {
-    $('div#image>img').attr('src', v);
-  });
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_ImageScaling)', function (k, v) {
-    $('div#image>img').css('object-fit', v);
-  });
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_Video)', function (k, v) {
-    $('div#video>video').attr('src', v);
-  });
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_VideoScaling)', function (k, v) {
-    $('div#video>video').css('object-fit', v);
-  });
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_CustomHtml)', function (k, v) {
-    $('div#html>iframe').attr('src', v);
   });
 
   WS.Register(
@@ -80,51 +57,6 @@ function initialize() {
       $(window).trigger('resize');
     }
   );
-
-  $.each([1, 2], function (idx, t) {
-    WS.Register(['ScoreBoard.CurrentGame.Team(' + t + ').NoInitial', 'ScoreBoard.InOvertime'], function (k, v) {
-      var invert =
-        isTrue(WS.state['ScoreBoard.CurrentGame.Team(' + t + ').NoInitial']) && !isTrue(WS.state['ScoreBoard.CurrentGame.InOvertime']);
-      $('.Team' + t + ' .JamScore').toggleClass('FlatDark', invert);
-    });
-    WS.Register(['ScoreBoard.CurrentGame.Team(' + t + ').Color'], function (k, v) {
-      if (v == null) {
-        v = '';
-      }
-      switch (String(k)) {
-        case 'ScoreBoard.CurrentGame.Team(' + t + ').Color(scoreboard_fg)':
-          $('.Team' + t + ' .Name').css('color', v);
-          break;
-        case 'ScoreBoard.CurrentGame.Team(' + t + ').Color(scoreboard_bg)':
-          $('.Team' + t + ' .Name').css('background-color', v);
-          break;
-        case 'ScoreBoard.CurrentGame.Team(' + t + ').Color(scoreboard_glow)':
-          var shadow = '0px 0px 0.2em ' + v;
-          var shadowCSS = shadow + ', ' + shadow + ', ' + shadow;
-          if (v === '') {
-            shadowCSS = '';
-          }
-          $('.Team' + t + ' .Name').css('text-shadow', shadowCSS);
-          break;
-        case 'ScoreBoard.CurrentGame.Team(' + t + ').Color(scoreboard_dots_fg)':
-          var dotColor = v;
-          if (dotColor === '') {
-            dotColor = '#000000';
-          }
-          $('.Team' + t + ' .DotTimeouts .Dot').css('background', dotColor);
-          $('.Team' + t + ' .Dot.OfficialReview1').css('background', dotColor);
-
-          document.styleSheets[0].insertRule('.Team' + t + ' .DotOfficialReviews .Dot.Retained:before { background: ' + dotColor + '};');
-          document.styleSheets[0].insertRule('.Team' + t + ' .DotOfficialReviews .Dot.Retained:after { background: ' + dotColor + '};');
-          break;
-      }
-    });
-  });
-
-  WS.Register(['ScoreBoard.CurrentGame.NoMoreJam'], function (k, v) {
-    $('.Clock.Lineup').toggleClass('Red', isTrue(v));
-    $('.Clock.Timeout').toggleClass('Red', isTrue(v));
-  });
 
   (function () {
     var switchTimeMs = 5000;
@@ -177,4 +109,39 @@ function initialize() {
     setNextSrc();
     nextImgFunction();
   })();
+}
+
+function toJammerName(k, v) {
+  'use strict';
+  var id = k.Team;
+  var prefix = 'ScoreBoard.CurrentGame.Team(' + id + ').';
+  var jammerName = WS.state[prefix + 'Position(Jammer).Name'];
+  var pivotName = WS.state[prefix + 'Position(Pivot).Name'];
+  var leadJammer = isTrue(WS.state[prefix + 'DisplayLead']);
+  var starPass = isTrue(WS.state[prefix + 'StarPass']);
+  var inJam = isTrue(WS.state['ScoreBoard.CurrentGame.InJam']);
+
+  if (jammerName == null || jammerName === '') {
+    jammerName = leadJammer ? 'Lead' : '';
+  }
+  if (pivotName == null) {
+    pivotName = '';
+  }
+
+  var jn = !starPass ? jammerName : pivotName;
+  if (!inJam) {
+    jn = ''; // When no clocks are running, do not show jammer names.
+  }
+  $('[Team=' + id + '] .Lead').toggleClass('HasLead', leadJammer && !starPass);
+  $('[Team=' + id + ']').toggleClass('HasJammerName', jn !== '');
+  $('[Team=' + id + '] .Lead').toggleClass('HasStarPass', starPass);
+  return jn;
+}
+
+function toShadow(k, v) {
+  if (v == null || v === '') {
+    return '';
+  }
+  var shadow = '0px 0px 0.2em ' + v;
+  return shadow + ', ' + shadow + ', ' + shadow;
 }

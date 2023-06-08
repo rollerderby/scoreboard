@@ -45,9 +45,7 @@ body.box_flat .Box.Red {background: #EFEFEF;background: -moz-linear-gradient(top
 
 body.box_flat.bright .Box.Red {background: #FF4040; } 
 
-body.box_flat .FlatDark { color: #FFFFFF; } 
-
-body.box_flat .Box.FlatDark { background: #595959; background: -moz-linear-gradient(top, #595959, #474747 100%); background: -webkit-gradient(linear, 0 0, 0 100%, from(#595959), color-stop(100%, #474747)); } 
+body .NoInitial:not(.Overtime) { color: #FFFFFF; background: #595959; background: -moz-linear-gradient(top, #595959, #474747 100%); background: -webkit-gradient(linear, 0 0, 0 100%, from(#595959), color-stop(100%, #474747)); } 
 
 body.box_flat .Box.FlatBottom { border-radius: 5px 5px 0px 0px !important; } 
 body.box_flat .Box.FlatTop { border-radius: 0px 0px 5px 5px !important; } 
@@ -88,13 +86,9 @@ body.box_flat .Box.FlatTop { border-radius: 0px 0px 5px 5px !important; }
 .DotTimeouts .Timeout3 { top: 70%; } 
 .DotOfficialReviews .Dot { position: absolute; width: 60%; height: 60%; left: 20%; top: 20%; } 
 
-.DotOfficialReviews .Dot.Retained {border-radius: 0;background: none; } 
-.DotOfficialReviews .Dot.OfficialReview1.Retained {background: -webkit-gradient(linear, 0 0, 0 100%, from(#E9E9E9), color-stop(100%, #D9D9D9)) !important; } 
-.DotOfficialReviews .Dot.Retained:after {content: "";background: #000000;border-radius: 20%;height: 100%;position: absolute;top: 0%;left: 30%;width: 40%; } 
-.DotOfficialReviews .Dot.Retained:before {content: "";background: #000000;border-radius: 20%;width: 100%;position: absolute;left: 0%;top: 30%;height: 40%; } 
-
-.DotOfficialReviews .Dot.Retained2:after {content: "";background: #FFFFFF;border-radius: 20%;height: 80%;position: absolute;top: 10%;left: 40%;width: 20%; } 
-.DotOfficialReviews .Dot.Retained2:before {content: "";background: #FFFFFF;border-radius: 20%;width: 80%;position: absolute;left: 10%;top: 40%;height: 20%; } 
+.DotOfficialReviews .Dot.OfficialReview1.Retained { border-radius: 20%; width: 24%; left: 38%; }
+.DotOfficialReviews .Dot.OfficialReviewHelper.Retained { border-radius: 20%; height: 24%; top: 38%; }
+.DotOfficialReviews .Dot.OfficialReviewHelper:not(.Retained) { display: none; }
 
 .HasLead a { color: #FF0000; animation: HasLead 1s infinite steps(6); -moz-animation: HasLead 1s infinite steps(6); -webkit-animation: HasLead 1s infinite steps(6); } 
 @-moz-keyframes HasLead { 

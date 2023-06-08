@@ -350,7 +350,7 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
         continue;
       }
       var name = $.trim(cols[1]);
-      var pronouns = $.trim(cols[cols.length - 1]);
+      var pronouns = cols.length > 2 ? $.trim(cols[cols.length - 1]) : '';
       // Assume same number means same skater.
       var id = knownNumbers[number];
       addSkater(number, name, pronouns, '', id);

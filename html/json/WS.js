@@ -1,7 +1,7 @@
 var WS = {
   connectCallback: null,
   connectTimeout: null,
-  callbacks: [],
+  registeredPaths: new Set(),
   callbackTrie: {},
   batchCallbacks: [],
   Connected: false,
@@ -9,7 +9,6 @@ var WS = {
   heartbeat: null,
   debug: false,
 
-  /* jshint -W117 */
   Connect: function (callback) {
     'use strict';
     WS.connectCallback = callback;
@@ -58,9 +57,9 @@ var WS = {
           WS.triggerCallback(k, null);
         });
         WS.state = {};
-        $.each(WS.callbacks, function (idx, c) {
-          req.paths.push(c.path);
-        });
+        for (const path of WS.registeredPaths) {
+          req.paths.push(path);
+        }
         $.each(WS.batchCallbacks, function (idx, c) {
           req.paths.push(c.path);
         });
@@ -265,11 +264,19 @@ var WS = {
         var elem = options.element;
         if (options.css != null) {
           callback = function (k, v) {
-            elem.css(options.css, v);
+            elem.css(options.css, v == null ? '' : v);
           };
         } else if (options.attr != null) {
           callback = function (k, v) {
             elem.attr(options.attr, v);
+          };
+        } else if (options.toggleClass != null) {
+          callback = function (k, v) {
+            elem.toggleClass(options.toggleClass, v);
+          };
+        } else if (options.set) {
+          callback = function (k, v) {
+            elem.val(v);
           };
         } else {
           if (elem.hasClass('AutoFit')) {
@@ -280,19 +287,13 @@ var WS = {
 
             callback = function (k, v) {
               elem.text(v);
-              if (elem.data('lastText') !== v) {
-                elem.data('lastText', v);
-                autofit();
-              }
+              setTimeout(autofit, 50); // delay so other elements are updated first
             };
           } else if (elem.parent().hasClass('AutoFit')) {
             var parenAutofit = _autoFit.enableAutoFitText(elem.parent());
             callback = function (k, v) {
               elem.text(v);
-              if (elem.data('lastText') !== v) {
-                elem.data('lastText', v);
-                parenAutofit();
-              }
+              setTimeout(parenAutofit, 50); // delay so other elements are updated first
             };
           } else {
             callback = function (k, v) {
@@ -314,17 +315,37 @@ var WS = {
       paths = [paths];
     }
 
+    if ($.isFunction(batchCallback)) {
+      $.each(paths, function (idx, path) {
+        WS.batchCallbacks.push({ path: path, callback: batchCallback });
+      });
+    }
+
+    if ($.isFunction(callback)) {
+      $.each(paths, function (idx, path) {
+        WS._addToTrie(WS.callbackTrie, path, callback);
+      });
+      if (options && options.element != null) {
+        if (paths.length) {
+          callback(WS._enrichProp(paths[0]), WS.state[paths[0]]);
+          paths = []; // they have been registered with the backend during pre registration
+        } else {
+          callback();
+        }
+      }
+    }
+
     $.each(paths, function (idx, path) {
-      WS.callbacks.push({ path: path, callback: callback });
-      WS._addToTrie(WS.callbackTrie, path, callback);
-      WS.batchCallbacks.push({ path: path, callback: batchCallback });
+      WS.registeredPaths.add(path);
     });
 
-    var req = {
-      action: 'Register',
-      paths: paths,
-    };
-    WS.send(JSON.stringify(req));
+    if (paths.length) {
+      var req = {
+        action: 'Register',
+        paths: paths,
+      };
+      WS.send(JSON.stringify(req));
+    }
   },
 
   _addToTrie: function (t, key, value) {
@@ -363,79 +384,259 @@ var WS = {
     return matches(trie, key.split(/[.(]/), 0);
   },
 
-  getPaths: function (elem, attr) {
+  _getParameters: function (elem, attr, pathIndex) {
     'use strict';
-    var list = elem.attr(attr).split(',');
-    var path = WS._getContext(elem);
-    var paths = [];
-    $.each(list, function (idx, item) {
-      item = $.trim(item);
-      if (item.startsWith('/')) {
-        item = item.substring(1);
-      } else if (path != null) {
-        item = path + '.' + item;
-      }
-      paths.push(item);
-    });
-    return paths;
-  },
-
-  AutoRegister: function () {
-    'use strict';
-    $.each($('[sbDisplay]'), function (idx, elem) {
-      elem = $(elem);
-      var paths = WS.getPaths(elem, 'sbDisplay');
-      if (paths.length > 0) {
-        // When there's multiple names, use the
-        // first non-empty one.
-        var mf = function () {
-          var v = null;
-          var path;
-          for (var i = 0; i < paths.length; i++) {
-            path = paths[i];
-            if (WS.state[path] != null) {
-              v = WS.state[path];
-              break;
+    pathIndex = pathIndex || 0;
+    return elem
+      .attr(attr)
+      .split('|')
+      .map(function (part) {
+        var list = part.split(':').map($.trim);
+        var basePath = WS._getContext(elem);
+        var prefixes = WS._getPrefixes(elem);
+        list[pathIndex] = list[pathIndex].split(',').map(function (item) {
+          item = $.trim(item);
+          if (item.startsWith('/')) {
+            item = item.substring(1);
+          } else if (prefixes[item[0]]) {
+            item = prefixes[item[0]] + item.substring(1);
+          } else if (attr === 'sbForeach') {
+            item = basePath + '.Id';
+          } else {
+            var restPath = basePath;
+            while (restPath && item.startsWith('^')) {
+              item = item.substring(1);
+              restPath = restPath.substring(0, restPath.lastIndexOf('.'));
+            }
+            if (restPath) {
+              item = restPath + '.' + item;
             }
           }
-          if (window[elem.attr('sbModify')] != null) {
-            v = window[elem.attr('sbModify')](WS._enrichProp(path), v);
+          return item;
+        });
+        return list;
+      });
+  },
+
+  _getAutoFitPaths: function (elem) {
+    'use strict';
+    if (elem.attr('sbAutoFitOn')) {
+      return WS._getParameters(elem, 'sbAutoFitOn')[0][0];
+    } else {
+      return [];
+    }
+  },
+
+  _getElements: function (selector, root) {
+    var filterFunc =
+      selector === '[sbForeach]'
+        ? function () {
+            return !$(this).parent().closest('[sbForeach]').length;
           }
+        : function () {
+            return !$(this).closest('[sbForeach]').length;
+          };
+    return $(selector, root)
+      .add(root ? root.filter(selector) : $())
+      .filter(filterFunc);
+  },
+
+  _getModifyFunc: function (paths, func) {
+    if (!$.isFunction(func)) {
+      func = window[func];
+    }
+    if (paths.length < 2) {
+      return func;
+    } else {
+      return function () {
+        var v = null;
+        var path;
+        for (var i = 0; i < paths.length; i++) {
+          path = paths[i];
+          if (WS.state[path] != null) {
+            v = WS.state[path];
+            break;
+          }
+        }
+        if ($.isFunction(func)) {
+          v = func(WS._enrichProp(path), v);
+        }
+        return v;
+      };
+    }
+  },
+
+  AutoRegister: function (root) {
+    'use strict';
+    if (!root) {
+      WS._preRegister();
+    }
+    $.each(WS._getElements('.AutoFit:not([sbDisplay]):not(:has(*))', root), function (idx, elem) {
+      elem = $(elem);
+      var text = elem.text();
+      var mf = function () {
+        return text;
+      };
+      WS.Register(WS._getAutoFitPaths(elem), { element: elem, modifyFunc: mf });
+    });
+    $.each(WS._getElements('[sbDisplay]', root), function (idx, elem) {
+      elem = $(elem);
+      var [paths, func] = WS._getParameters(elem, 'sbDisplay')[0];
+      WS.Register(paths.concat(WS._getAutoFitPaths(elem)), { element: elem, modifyFunc: WS._getModifyFunc(paths, func) });
+    });
+    $.each(WS._getElements('[sbControl]', root), function (idx, elem) {
+      elem = $(elem);
+      var [paths, readFunc, writeFunc] = WS._getParameters(elem, 'sbControl')[0];
+      writeFunc =
+        window[writeFunc] ||
+        function (v) {
           return v;
         };
-        WS.Register(paths, { element: elem, modifyFunc: mf });
-      }
+      WS.Register(paths, { element: elem, set: true, modifyFunc: WS._getModifyFunc(paths, readFunc) });
+      elem.on('change', function () {
+        WS.Set(paths[0], writeFunc(elem.val()));
+      });
     });
-    $.each($('[sbTrigger]'), function (idx, elem) {
+    $.each(WS._getElements('[sbToggleClass]', root), function (idx, elem) {
       elem = $(elem);
-      var sbTrigger = window[elem.attr('sbTrigger')];
-      if (sbTrigger == null) {
-        return;
-      }
+      WS._getParameters(elem, 'sbToggleClass', 1).map(function (toggle) {
+        var toggledClass = toggle[0];
+        var paths = toggle[1];
+        var func = toggle[2];
+        if ($.isFunction(window[func])) {
+          func = window[func];
+        } else if (func === '!') {
+          func = function (k, v) {
+            return !isTrue(v);
+          };
+        } else if (!func) {
+          func = function (k, v) {
+            return isTrue(v);
+          };
+        } else {
+          func = Function('k', 'v', 'return v' + func);
+        }
 
-      var paths = WS.getPaths(elem, 'sbTriggerOn');
-      if (paths.length > 0) {
-        WS.Register(paths, { triggerFunc: sbTrigger });
+        WS.Register(paths, { element: elem, toggleClass: toggledClass, modifyFunc: WS._getModifyFunc(paths, func) });
+      });
+    });
+    $.each(WS._getElements('[sbCss]', root), function (idx, elem) {
+      elem = $(elem);
+      WS._getParameters(elem, 'sbCss', 1).map(function (entry) {
+        var paths = entry[1];
+
+        WS.Register(paths, { element: elem, css: entry[0], modifyFunc: WS._getModifyFunc(paths, entry[2]) });
+      });
+    });
+    $.each(WS._getElements('[sbAttr]', root), function (idx, elem) {
+      elem = $(elem);
+      WS._getParameters(elem, 'sbAttr', 1).map(function (entry) {
+        var paths = entry[1];
+
+        WS.Register(paths, { element: elem, attr: entry[0], modifyFunc: WS._getModifyFunc(paths, entry[2]) });
+      });
+    });
+    $.each(WS._getElements('[sbForeach]', root), function (idx, elem) {
+      elem = $(elem);
+      var paren = elem.parent();
+      var index = elem.index();
+      var [paths, fixedKeys, sortFunction] = WS._getParameters(elem, 'sbForeach')[0];
+      if (fixedKeys) {
+        fixedKeys = fixedKeys.split(',').map($.trim);
       }
+      elem.detach().removeAttr('sbForeach');
+      $.each(paths, function (idx, path) {
+        var field = path.substring(path.lastIndexOf('.', path.length - 6) + 1, path.length - 6); // cut off (*).Id
+        $.each(fixedKeys, function (idx, key) {
+          var newElem = elem
+            .clone(true)
+            .attr(field, key)
+            .attr('sbContext', (elem.attr('sbContext') ? elem.attr('sbContext') + '.' : '') + field + '(' + key + ')')
+            .addClass('Fixed');
+          if (index === 0) {
+            paren.prepend(newElem);
+          } else {
+            newElem.insertAfter(paren.children(':nth-child(' + index + ')'));
+          }
+          index++;
+          WS.AutoRegister(newElem);
+        });
+        WS.Register(path, function (k, v) {
+          if (v == null) {
+            paren.children(('[' + field + '=' + k[field] + ']:not().Fixed)').remove());
+          } else if (!paren.children('[' + field + '=' + k[field] + ']').length) {
+            var newElem = elem
+              .clone(true)
+              .attr(field, k[field])
+              .attr('sbContext', (elem.attr('sbContext') ? elem.attr('sbContext') + '.' : '') + field + '(' + k[field] + ')')
+              .appendTo(paren);
+            WS.AutoRegister(newElem);
+            newElem.detach();
+            _windowFunctions.appendSorted(
+              paren,
+              newElem,
+              window[sortFunction] ||
+                function (a, b) {
+                  return _windowFunctions.numCompareByAttr(field, a, b);
+                },
+              index
+            );
+          }
+        });
+      });
     });
   },
 
-  _getContext: function (elem, attr) {
-    'use strict';
-    if (attr == null) {
-      attr = 'sbContext';
-    }
+  _preRegister: function () {
+    var paths = [];
+    var preRegisterAttribute = function (attr, pathIndex) {
+      $.each($('[' + attr + ']'), function (idx, elem) {
+        $.each(WS._getParameters($(elem), attr, pathIndex), function (idx, params) {
+          paths = paths.concat(params[pathIndex]);
+        });
+      });
+    };
 
+    $.each(['sbForeach', 'sbDisplay'], function (idx, attr) {
+      preRegisterAttribute(attr, 0);
+    });
+    $.each(['sbToggleClass', 'sbCss', 'sbAttr'], function (idx, attr) {
+      preRegisterAttribute(attr, 1);
+    });
+
+    WS.Register(paths);
+  },
+
+  _getContext: function (elem) {
+    'use strict';
     var parent = elem.parent();
     var ret = '';
     if (parent.length > 0) {
-      ret = WS._getContext(parent, 'sbContext');
+      ret = WS._getContext(parent);
     }
-    var context = elem.attr(attr);
+    var context = elem.attr('sbContext');
+    var foreach = elem.attr('sbForeach');
     if (context != null) {
       ret = (ret !== '' ? ret + '.' : '') + context;
     }
+    if (foreach != null) {
+      ret = (ret !== '' ? ret + '.' : '') + foreach.split(':', 1)[0] + '(*)';
+    }
     return ret;
   },
-  /* jshint +W117 */
+
+  _getPrefixes: function (elem) {
+    'use strict';
+    var prefixes = {};
+    $.each(elem.parents('[sbPrefix]').addBack('[sbPrefix]'), function (idx, paren) {
+      $(paren)
+        .attr('sbPrefix')
+        .split('|')
+        .map(function (entry) {
+          entry = entry.split('=').map($.trim);
+          prefixes[entry[0]] = entry[1];
+        });
+    });
+    return prefixes;
+  },
 };
