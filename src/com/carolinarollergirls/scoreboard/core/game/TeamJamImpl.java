@@ -105,7 +105,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     }
     @Override
     protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
-        if (prop == SCORING_TRIP) {
+        if (prop == SCORING_TRIP && source != Source.RENUMBER) {
             possiblyChangeOsOffset(((ScoringTrip) item).getScore());
             if (item == get(STAR_PASS_TRIP)) {
                 for (ScoringTrip trip = getLast(SCORING_TRIP); trip != null; trip = trip.getPrevious()) {
