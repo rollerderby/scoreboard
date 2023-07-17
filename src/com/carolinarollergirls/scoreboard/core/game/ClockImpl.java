@@ -135,12 +135,9 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
         synchronized (coreLock) {
             if (s.getId() != getId()) { return; }
             setNumber(s.getNumber());
+            stop();
             set(TIME, s.getTime(), Flag.SPECIAL_CASE);
-            if (s.isRunning()) {
-                start();
-            } else {
-                stop();
-            }
+            if (s.isRunning()) { start(); }
         }
     }
 
