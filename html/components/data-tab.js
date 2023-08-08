@@ -314,7 +314,7 @@ function createDataTab(tab) {
           .find('a.Download')
           .attr(
             'href',
-            '/SaveJSON/crg-ruleset-' + val.Name.replace(/[\/|\\:*?"<>\ ]/g, '_') + '.json?path=ScoreBoard.Game(' + val.id + ')'
+            '/SaveJSON/crg-ruleset-' + val.Name.replace(/[\/|\\:*?"<>\ ]/g, '_') + '.json?path=ScoreBoard.Rulesets.Ruleset(' + val.id + ')'
           );
         row
           .find('a.Edit')
