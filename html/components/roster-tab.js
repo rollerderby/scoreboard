@@ -36,6 +36,7 @@ function createRosterTable(element, teamPrefix) {
     .appendTo(teamTable.find('tr.Skaters>td'))
     .append('<col class="RosterNumber">')
     .append('<col class="Name">')
+    .append('<col class="Role">')
     .append('<col class="Pronouns">')
     .append('<col class="Flags">')
     .append('<thead/><tbody/>')
@@ -72,10 +73,12 @@ function createRosterTable(element, teamPrefix) {
         .attr('skaterid', k.Skater)
         .append('<td class="RosterNumber">')
         .append('<td class="Name">')
+        .append('<td class="Role">')
         .append('<td class="Pronouns">')
         .append('<td class="Flags">');
       $('<span>').appendTo(skaterRow.children('td.RosterNumber'));
       $('<span>').appendTo(skaterRow.children('td.Name'));
+      $('<span>').appendTo(skaterRow.children('td.Role'));
       $('<span>').appendTo(skaterRow.children('td.Pronouns'));
       $('<span>').appendTo(skaterRow.children('td.Flags'));
       _windowFunctions.appendAlphaSortedByAttr(skatersTable.children('tbody'), skaterRow, 'skaternum');
@@ -114,6 +117,9 @@ function createRosterTable(element, teamPrefix) {
         skaterRow.attr('skaternum', v);
         _windowFunctions.appendAlphaSortedByAttr(skatersTable.children('tbody'), skaterRow, 'skaternum');
       }
+      if (k.field === 'Role') {
+        skaterRow.attr('role', v);
+      }
     }
   };
 
@@ -122,6 +128,7 @@ function createRosterTable(element, teamPrefix) {
       teamPrefix + '.Skater(*).Flags',
       teamPrefix + '.Skater(*).Name',
       teamPrefix + '.Skater(*).RosterNumber',
+      teamPrefix + '.Skater(*).Role',
       teamPrefix + '.Skater(*).Pronouns',
     ],
     handleSkaterUpdate
