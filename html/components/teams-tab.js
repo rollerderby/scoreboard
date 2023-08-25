@@ -201,19 +201,14 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
   }
 
   var controlTable = _crgUtils.createRowTable(3).appendTo(teamTable.find('tr.Control>td')).addClass('Control');
-  var waitingOnUpload = '';
   var logoSelect = $('<select>').append($('<option value="">No Logo</option>')).appendTo(controlTable.find('td:eq(0)'));
   logoSelect.on('change', function () {
     WS.Set(teamPrefix + '.Logo', logoSelect.val() === '' ? '' : '/images/teamlogo/' + logoSelect.val());
   });
   WS.Register('ScoreBoard.Media.Format(images).Type(teamlogo).File(*).Name', function (k, v) {
-    var val = logoSelect.val(); // Record this before we potentially remove and re-add it.
+    var val = WS.state[teamPrefix + '.Logo'].substring('/images/teamlogo/'.length);
     logoSelect.children('[value="' + k.File + '"]').remove();
     if (v != null) {
-      if (waitingOnUpload === k.File) {
-        val = k.File;
-        waitingOnUpload = '';
-      }
       var option = $('<option>').attr('name', v).attr('value', k.File).text(v);
       _windowFunctions.appendAlphaSortedByAttr(logoSelect, option, 'name', 1);
     }
@@ -234,7 +229,7 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
         fd.append('f', data.files[0], data.files[0].name);
         data.files[0] = fd.get('f');
         data.submit();
-        waitingOnUpload = fd.get('f').name;
+        WS.Set(teamPrefix + '.Logo', '/images/teamlogo/' + fd.get('f').name);
       },
       fail: function (e, data) {
         /* jshint -W117 */
