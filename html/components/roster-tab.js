@@ -36,7 +36,6 @@ function createRosterTable(element, teamPrefix) {
     .appendTo(teamTable.find('tr.Skaters>td'))
     .append('<col class="RosterNumber">')
     .append('<col class="Name">')
-    .append('<col class="Role">')
     .append('<col class="Pronouns">')
     .append('<col class="Flags">')
     .append('<thead/><tbody/>')
@@ -46,7 +45,7 @@ function createRosterTable(element, teamPrefix) {
 
   var updateSkaterCount = function () {
     var count = 0;
-    skatersTable.find('tr.Skater td.Flags span').each(function (_, f) {
+    skatersTable.find('tr.Skater').each(function (_, f) {
       var flag = $(f).attr('flag');
       if (flag === '' || flag === 'C' || flag === 'A') {
         count++;
@@ -73,31 +72,46 @@ function createRosterTable(element, teamPrefix) {
         .attr('skaterid', k.Skater)
         .append('<td class="RosterNumber">')
         .append('<td class="Name">')
-        .append('<td class="Role">')
         .append('<td class="Pronouns">')
         .append('<td class="Flags">');
       $('<span>').appendTo(skaterRow.children('td.RosterNumber'));
       $('<span>').appendTo(skaterRow.children('td.Name'));
-      $('<span>').appendTo(skaterRow.children('td.Role'));
       $('<span>').appendTo(skaterRow.children('td.Pronouns'));
       $('<span>').appendTo(skaterRow.children('td.Flags'));
       _windowFunctions.appendAlphaSortedByAttr(skatersTable.children('tbody'), skaterRow, 'skaternum');
     }
 
-    if (k.field === 'Flags') {
-      var position = v;
-      switch (v) {
+    if (k.field === 'Flags' || k.field === 'Role') {
+      var position = '';
+      var flag = WS.state[teamPrefix + '.Skater(' + k.Skater + ').Flags'];
+      var role = WS.state[teamPrefix + '.Skater(' + k.Skater + ').Role'];
+      switch (flag) {
         case '':
-          position = 'Skater';
+          switch (role) {
+            case 'Jammer': position = 'Jammer'; break;
+            case 'Pivot': position = 'Pivot'; break;
+            case 'Blocker': position = 'Blocker'; break;
+            default: position = 'Skater'; break;
+          }
           break;
         case 'ALT':
           position = 'Not Skating';
           break;
         case 'C':
-          position = 'Captain';
+          switch (role) {
+            case 'Jammer': position = 'Jammer C'; break;
+            case 'Pivot': position = 'Pivot C'; break;
+            case 'Blocker': position = 'Blocker C'; break;
+            default: position = 'Captain'; break;
+          }
           break;
         case 'A':
-          position = 'Alt Captain';
+          switch (role) {
+            case 'Jammer': position = 'Jammer A'; break;
+            case 'Pivot': position = 'Pivot A'; break;
+            case 'Blocker': position = 'Blocker A'; break;
+            default: position = 'Alt Captain'; break;
+          }
           break;
         case 'BA':
           position = 'Bench Alt Captain';
@@ -106,7 +120,7 @@ function createRosterTable(element, teamPrefix) {
           position = 'Bench Staff';
           break;
       }
-      skaterRow.children('td.Flags').children().attr('flag', v).text(position);
+      skaterRow.attr('flag', flag).attr('role', role).children('td.Flags').children().text(position);
       updateSkaterCount();
     } else {
       skaterRow
@@ -116,9 +130,6 @@ function createRosterTable(element, teamPrefix) {
       if (k.field === 'RosterNumber') {
         skaterRow.attr('skaternum', v);
         _windowFunctions.appendAlphaSortedByAttr(skatersTable.children('tbody'), skaterRow, 'skaternum');
-      }
-      if (k.field === 'Role') {
-        skaterRow.attr('role', v);
       }
     }
   };

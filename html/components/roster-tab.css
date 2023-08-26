@@ -26,6 +26,7 @@
 #Teams table.Skaters th.Title { font-size: 150%; } 
 #Teams table.Skaters th#skaterCount { font-size: 100%; font-weight: normal; } 
 
+#Teams table.Skaters tr[flag='ALT'] { display:none; }
 #Teams table.Skaters tr[role='Pivot'] { background-color: #00ee00 !important; } 
 #Teams table.Skaters tr[role='Pivot']>td { background: #00ee00 !important; }
 #Teams table.Skaters tr[role='Jammer'] { background-color: #00cc00 !important; } 
