@@ -413,7 +413,9 @@ function openFieldingEditor(g, p, j, t, pos, upcoming) {
     pos +
     ').';
 
-  fieldingEditor[t].dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' ' + pos);
+  var posName = pos === 'Pivot' ? 'Pivot/Blocker4' : pos;
+
+  fieldingEditor[t].dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' ' + posName);
   fieldingEditor[t].find('#skater').val(WS.state[prefix + 'Skater']);
   fieldingEditor[t].find('#notFielded').attr('checked', isTrue(WS.state[prefix + 'NotFielded']));
   fieldingEditor[t].find('#sitFor3').attr('checked', isTrue(WS.state[prefix + 'SitFor3']));
