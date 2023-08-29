@@ -209,6 +209,7 @@
 				<include name="LICENSES" />
 				<include name="NOTICE" />
 				<include name="scoreboard-Windows.exe" />
+				<include name="scoreboard-mac.command" />
 				<include name="scoreboard.sh" />
 				<include name="start.html" />
 				<include name="html/**" />
