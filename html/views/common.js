@@ -179,17 +179,17 @@ function clockRunner(k, v) {
   var lc = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Running'];
   var tc = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Running'];
   var ic = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Running'];
-  var jc = WS.state['ScoreBoard.CurrentGame.Clock(Jam).Running'];
+  var jc = WS.state['ScoreBoard.CurrentGame.InJam'];
 
   var clock = 'NoClock';
-  if (isTrue(tc)) {
+  if (isTrue(jc)) {
+    clock = 'Jam';
+  } else if (isTrue(tc)) {
     clock = 'Timeout';
   } else if (isTrue(lc)) {
     clock = 'Lineup';
   } else if (isTrue(ic)) {
     clock = 'Intermission';
-  } else if (isTrue(jc)) {
-    clock = 'Jam';
   }
 
   $('.Clock,.SlideDown').removeClass('Show');

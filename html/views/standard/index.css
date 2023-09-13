@@ -9,7 +9,7 @@ user-select: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-s
 .DisplayPane {opacity: 0;position: absolute;left: 0; top: 0;width: 100%;height: 100%; } 
 .DisplayPane.Hide {animation: HidePanel 1s;-moz-animation: HidePanel 1s;-webkit-animation: HidePanel 1s; } 
 .DisplayPane.Show {animation: ShowPanel 1s;-moz-animation: ShowPanel 1s;-webkit-animation: ShowPanel 1s;opacity: 1; } 
-.DisplayPane>.object {width: 100%;height: 100%;scrolling: no; frameborder: 0px; border: 0px; object-fit: contain; } 
+.DisplayPane>.object {width: 100%;height: 100%; scrolling: no;frameborder: 0px; border: 0px; object-fit: contain; } 
 @-moz-keyframes ShowPanel { 
  0% { opacity: 0; } 100% { opacity: 1; } 
  } 
@@ -45,9 +45,9 @@ body.box_flat .Box.Red {background: #EFEFEF;background: -moz-linear-gradient(top
 
 body.box_flat.bright .Box.Red {background: #FF4040; } 
 
-body.box_flat .FlatDark { color: #FFFFFF; } 
+body .FlatDark { color: #FFFFFF; } 
 
-body.box_flat .Box.FlatDark { background: #595959; background: -moz-linear-gradient(top, #595959, #474747 100%); background: -webkit-gradient(linear, 0 0, 0 100%, from(#595959), color-stop(100%, #474747)); } 
+body .Box.FlatDark { background: #595959; background: -moz-linear-gradient(top, #595959, #474747 100%); background: -webkit-gradient(linear, 0 0, 0 100%, from(#595959), color-stop(100%, #474747)) !important; } 
 
 body.box_flat .Box.FlatBottom { border-radius: 5px 5px 0px 0px !important; } 
 body.box_flat .Box.FlatTop { border-radius: 0px 0px 5px 5px !important; } 
