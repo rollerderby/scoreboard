@@ -706,7 +706,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
           <div class="nav-container">
             <div class="nav-inner" id="scroll-spy" style="width: min-content; overflow: auto; top: 60px; bottom: 0; padding 10px 0 10px 0;">
               <span class="toc">Table of contents</span>
-              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the v2023.3 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
+              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the v2023.4 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
 <h3 id="howtos">Howtos</h3>
 <ul class="nav"><li><strong><a href="#Installing-the-Scoreboard-Software">Installing the Scoreboard Software</a></strong><ul class="nav"><li><span>Instructions for getting the software installed and running on a standalone computer to provide a functioning scoreboard.</span></li></ul></li><li><strong><a href="#Quick-Start-Guide">Quick Start Guide</a></strong><ul class="nav"><li><span>Basic information to run a game with only what is mandatory for a regulation game. See the pages below for the full feature set.</span></li></ul></li><li><strong><a href="#Preparing-a-Game">Preparing a Game</a></strong></li><li><strong><a href="#Scoreboard-Operation">Scoreboard Operation</a></strong></li><li><strong><a href="#Configuring-Hotkeys">Configuring Hotkeys</a></strong></li><li><strong><a href="#Using-the-Scoreboard-on-a-Network">Using the Scoreboard on a Network</a></strong></li><li><strong><a href="#Penalty-Tracking">Penalty Tracking</a></strong></li><li><strong><a href="#Lineup-Tracking">Lineup Tracking</a></strong></li><li><span>The </span><strong>Penalty Lineup Tracking</strong> interface combines the PT and LT inputs for one team on a single screen. See those pages for info how to operate it.</li></ul><h3 id="tips-tricks">Tips &amp; Tricks</h3>
 <ul class="nav"><li><strong><a href="#Scoreboard-Best-Practices">Scoreboard Best Practices</a></strong></li><li><strong><a href="#Graphics">Graphics</a></strong><ul class="nav"><li><span>Information on graphics for use with CRG, such as team logos and sponsor banners.</span></li></ul></li><li><strong><a href="#External-Links">External Links</a></strong><ul class="nav"><li><span>Links to other sites with information about CRG Scoreboard.</span></li></ul></li></ul><h3 id="details-about-screens-tabs">Details about Screens / Tabs</h3>
@@ -803,7 +803,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 <li>Fill in the info on the IGRF tab.</li>
 <li>Switch to the Teams tab.</li>
 <li>If one or both teams for the game are already in CRG as stored teams, select them in the dropdowns at the top. Else fill in the team info.<ul>
-<li>If you have the sakter roster in a table with numbers in column 1 and names in column 2 you can simply paste that into either the new name or new number field and all skaters will be added.</li>
+<li>If you have the skater roster in a table with numbers in column 1 and names in column 2 you can simply paste that into either the new name or new number field and all skaters will be added.</li>
 </ul>
 </li>
 <li>If there are skaters that are listed but will not participate in the game mark them as &quot;Not Skating&quot; in the &quot;Flags&quot; column.</li>
@@ -838,7 +838,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 <ul>
 <li>Set up your hotkeys if you are using them. (<a href="#Configuring-Hotkeys">Configuring Hotkeys</a>) Best practice is to <em>always</em> define hotkeys for &quot;Start Jam&quot;, &quot;Stop Jam/End Timeout/Lineup&quot; (all the same button; the text changes based on the current function), and &quot;Timeout,&quot; even if you intend to use the mouse for all other functions.</li>
 <li>Check that the options at the top are set the way you expect them. Adjust them if necessary.<ul>
-<li>Be especially aware of &quot;Auto End Jam&quot; as this is not stored per user for technical reasons.</li>
+<li>Be especially aware of &quot;Auto End Jams&quot; as this is not stored per user for technical reasons.</li>
 </ul>
 </li>
 <li>Select &quot;Start New Game&quot;</li>
@@ -921,7 +921,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 <li>In the SK sheet put the Jam you want to change into edit mode.</li>
 <li>Use the &quot;+&quot; or &quot;-&quot; button on the scoring trip you want to change to adjust the score.</li>
 <li>Click the edit button again to turn off edit mode.</li>
-<li>Note that if you are using the WFTDA ruleset (or any other ruleset with the WFTDA late score rule active) changes will only affect the jam and toal scores if they are made before the following jam ends (or starts if in the last two minutes of the game). Otherwise a corresponding OS offset will be added to the jam.<ul>
+<li>Note that if you are using the WFTDA ruleset (or any other ruleset with the WFTDA late score rule active) changes will only affect the jam and total scores if they are made before the following jam ends (or starts if in the last two minutes of the game). Otherwise a corresponding OS offset will be added to the jam.<ul>
 <li>If an OS offset has been added click on the Jam score (there should be a red dot in the cell indicating that this jam has an offset) and in the popup enter the reason the adjustment was necessary.</li>
 <li>In the popup you can also edit or remove the offset.<ul>
 <li>There is one scenario where this is needed: If you notice a scoring mistake during the following jam and adjust the score of the running jam in order to fix the total score with as little interruption of your workflow as possible. If you then move the points to the correct jam later (e.g. during the next timeout) both jams will get an OS offset. These offsets are in error and should be removed.</li>
@@ -990,7 +990,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 </ul>
 <h3 id="adding-a-missed-timeout-adjusting-timeout-or-numbers-2-">Adding a missed timeout (Adjusting timeout/OR numbers 2)</h3>
 <ul>
-<li>Put the jam or tiemout prior to the missed one into edit mode.</li>
+<li>Put the jam or timeout prior to the missed one into edit mode.</li>
 <li>Click &quot;Insert Timeout&quot;.</li>
 </ul>
 <h3 id="removing-a-timeout-recorded-in-error-adjusting-timeout-or-numbers-3-">Removing a timeout recorded in error (Adjusting timeout/OR numbers 3)</h3>
@@ -1104,10 +1104,10 @@ take care that you are careful how you use this feature.</p>
 </ul>
 <h2 id="important-considerations-when-assigning-hotkeys">Important Considerations when Assigning Hotkeys</h2>
 <ol>
-<li><p>The space bar and any keys that don&#39;t produce a character (Shift, Control, Alt, Arrows, Function Keys, ...) can not be used as hotkeys.</p>
+<li><p>Keys that don&#39;t produce a character (Shift, Control, Alt, Arrows, Function Keys, ...) can not be used as hotkeys.</p>
 </li>
 <li><p>Hotkeys are case sensitive - &quot;a&quot; and &quot;A&quot; are different hotkeys and may be assigned to different actions.
-One common use for this feature is to assign lower case keys to &quot;Points +1&quot; and &quot;Add Trip&quot; and the corresponding upper case keys to the inverse actions &quot;Points -1&quot; and &quot;Remove Trip&quot;.</p>
+One common use for this feature is to assign lower case keys (key pressed alone) to &quot;Points +1&quot; and &quot;Add Trip&quot; and the corresponding upper case keys (Shift + key) to the inverse actions &quot;Points -1&quot; and &quot;Remove Trip&quot;.</p>
 </li>
 <li><p>In a situation with multiple operators using the same computer, <em>always</em> log out and log back in as a different
 user before changing hotkeys. It is impolite and confusing to redefine the hotkeys for another operator.</p>
@@ -1253,7 +1253,7 @@ user before changing hotkeys. It is impolite and confusing to redefine the hotke
 </li>
 </ul>
 <h3 id="at-jam-end">At Jam end</h3>
-<p>Once the scorebaord operator marks the jam end, the column next to the &quot;Box&quot; buttons will turn orange with the text &quot;Go To Next Jam&quot;</p>
+<p>Once the scoreboard operator marks the jam end, the column next to the &quot;Box&quot; buttons will turn orange with the text &quot;Go To Next Jam&quot;</p>
 <ul>
 <li>Make sure you are done recording the ending jam&#39;s lineup and have recorded all box entries and leaves that happened before he jam was over.<ul>
 <li>For skaters that sit down close to the whistle, agreeing on a hand signal with the penalty box officials can help getting a quick clarification.</li>
@@ -1331,10 +1331,10 @@ user before changing hotkeys. It is impolite and confusing to redefine the hotke
 <li><p><strong>Use Hotkeys</strong> at least for clock controls as you want your clocks to be as accurate as possible. Pressing a key is almost always faster then clicking with the mouse. Especially if your finger is already resting on the key.</p>
 </li>
 <li><p><strong>Enable Replace on Undo</strong>. Without Replace pressing the wrong one of the clock controls is a huge pressure situation as every second you don&#39;t fix it the clocks run further away and you will have to fix them manually, if that is possible at all. Plus you may have messed up other data, e.g created another jam, which will take more effort to clean up. With Replace you have the time to first think for a moment what just happened and what you can do to fix it and then fix it completely with two clicks/button presses.
-(This setting will be enabled by default in CRG 6 after people had sufficient time to learn about it.)</p>
+(This setting will be enabled by default in CRG 2023 after people had sufficient time to learn about it.)</p>
 </li>
 <li><p><strong>Disable Auto-End Jam</strong>. Simply reacting to the jam ending whistles when they happen takes less effort than checking the jam duration first. And if Jams are not called off on time (Jam Timers are human), your lineups will still last 30s from the end of the jam instead of being shortened (or requiring the jam timer to ignore the publicly visible lineup clock).
-(The setting is enabled by default in CRG 4.x and 5.x because it has been this way for a very long time and there are a substantial number of people out there that have trained themselves to explicitly rely on it. The default will change in CRG 6.)</p>
+(The setting is enabled by default in CRG 4.x and 5.x/2023.x because it has been this way for a very long time and there are a substantial number of people out there that have trained themselves to explicitly rely on it. The default will change in CRG 2025.)</p>
 </li>
 <li><p><strong>Delete old games</strong> from time to time. Each game will increase the size of the internal data notably which will eventually lead to performance impacts if the data grows too large. Note that deleting a game from the internal list does not delete any exported statsbooks or data files from the game (and there is no need to clean up those).</p>
 </li>
@@ -1687,11 +1687,8 @@ The editor for stored teams will always be a screen with a single team while the
 </li>
 <li>After the first manual update the json file is only updated when &quot;Update&quot; is pressed again. It is recommended to do a manual update once you are done processing the sheets to protect the data file from accidental changes.</li>
 <li>The statsbook file will only be generated on manual updates and only if a blank WFTDA statsbook has been set up.<ul>
-<li>In order to generate statsbooks you have to download a blank copy of the January 2019 version of the WFTDA statsbook (US letter and A4 both work) and tell CRG where to find it in the settings tab/page.<ul>
-<li>If you put the statsbook file in the base folder of your CRG installation you can simply enter the filename in the setting. If it is in a subfolder you have to give a relative path (without leading / or \).</li>
-</ul>
-</li>
-<li>Generating a statsbook may take a few seconds. The &quot;Last Updated&quot; field will be updated after generation is complete so you can use this to check if it&#39;s done.</li>
+<li>In order to generate statsbooks you have to download a blank copy of the January 2019 version of the WFTDA statsbook (US letter and A4 both work) and upload it to CRG on the &quot;Games / Teams / Rulesets&quot; screen.</li>
+<li>Generating a statsbook may take a few seconds. There will be a spinner indicating that the operation is still in progress.</li>
 <li>While statsbook generation has been implemented in a way that should minimize interference with other operation, it may still cause some lag on slower computers simply due to the processor load it causes. On such computers it is recommended to only generate statsbooks during stoppages of gameplay. If you still want to update the JSON file before that, you can temporarily unset the path to the blank statsbook.</li>
 </ul>
 </li>
@@ -1980,9 +1977,13 @@ The editor for stored teams will always be a screen with a single team while the
 <li>When you open the LT or PLT screen and lineup tracking is disabled, you will get a button to enable it from there.</li>
 </ul>
 </li>
-<li><em>Blank Statsbook File</em> - Path to a blank WFTDA statsbook file (2019 version, both A4 and US Letter will work). The path is relative to your CRG folder. (E.g. &quot;config/wftda-statsbook-full-A4.xlsx&quot; for the A4 version placed in the config subfolder.) Default: Unset, as you will have to download the file yourself. <em>Note</em>: If you upload a blank statsbook through the &quot;Games / Teams / Rulesets&quot; page, this will be set automatically.</li>
+<li><em>Blank Statsbook File</em> - Path to a blank WFTDA statsbook file (2019 version, both A4 and US Letter will work). The path is relative to your CRG folder. (E.g. &quot;config/wftda-statsbook-full-A4.xlsx&quot; for the A4 version placed in the config subfolder.) Default: Unset, as you will have to download the file yourself.<ul>
+<li>There is a checkmark or X next to the field indicating if the file can be used for exports.</li>
+<li><em>Note</em>: If you upload a blank statsbook through the &quot;Games / Teams / Rulesets&quot; page, this will be set automatically.</li>
+</ul>
+</li>
 <li><em>Team Name for Display</em> - The preferred name of a team to be used in most of CRG. See the <a href="#Team-Editor">Team Editor</a> page for a detailed explanation of which names CRG uses where for teams and how they are determined. Default: &quot;League Name&quot;</li>
-<li><em>Team Name for Files</em> - The name of a team to be used in statsbook files. <em>Note</em>: This must be &quot;League Name&quot; (default) when exporting statsbooks for WFTDA sanctioned games.</li>
+<li><em>Team Name for Files</em> - The name of a team to be used in statsbook files. <em>Note</em>: This must be &quot;Full Name&quot; (default) when exporting statsbooks for WFTDA sanctioned games.</li>
 <li><em>Name Format for new games</em> - The name format string used when creating a game. Default: &quot;%G %d %1 vs. %2 (%s: %S)&quot;<ul>
 <li>Supports the following variables:
 | Variable | Meaning                                                        |
@@ -2000,7 +2001,7 @@ The editor for stored teams will always be a screen with a single team while the
 </ul>
 <h2 id="main-display-settings">Main Display Settings</h2>
 <p>The controls on this page are set up to allow you to preview changes to the scoreboard before you actually display them to the world.  When the page first loads, click both <em>Show Preview</em> buttons at the bottom of the page.  The left side of the page will now display what&#39;s currently visible on the scoreboard, and the right side will display a preview of what will be displayed next.</p>
-<p>If you want to live dangerously and apply changes directly to the scoreboard, you can switch the <em>Edit</em> dropdown to read &quot;Live ScoreBoard&quot;  Now any changes you make will be instantly visible to the entire venue.</p>
+<p>If you want to live dangerously and apply changes directly to the scoreboard, you can switch the <em>Edit</em> dropdown to read &quot;Live ScoreBoard&quot;.  Now any changes you make will be instantly visible to the entire venue.</p>
 <p>When you edit the preview the usual work flow is as follows:</p>
 <ul>
 <li>Under <em>Current View</em> select the type of screen you wish to display next:<ul>
@@ -2017,7 +2018,7 @@ The editor for stored teams will always be a screen with a single team while the
 <p>Details on customizing each type of screen are below.</p>
 <h3 id="scoreboard">ScoreBoard</h3>
 <ul>
-<li><em>Hide Logos</em> - When active hides team logos from the main scorebaord view in favor of larger names. Logos will still appear on the overlay. Default: Off</li>
+<li><em>Hide Logos</em> - When active hides team logos from the main scoreboard view in favor of larger names. Logos will still appear on the overlay. Default: Off</li>
 <li><em>Swap Team Sides</em> - When active swaps which side the teams appear on the scoreboard.  This will not affect the operator controls. Default: Off</li>
 <li><em>Box Style</em> - This dropdown changes the appearance of the boxes on the scoreboard</li>
 <li><em>Side Padding</em> - This adds padding to the side of the scoreboard.  Useful if your projector isn&#39;t matching the aspect ratio of the screen well.</li>
@@ -2719,10 +2720,10 @@ manageScore(k, v) {
 </tr>
 <tr>
 <td><code>BlankStatsbookFound</code></td>
-<td>bool</td>
+<td>string</td>
 <td>yes</td>
 <td>from 5.0.6</td>
-<td></td>
+<td>bool before 2023.4. Possible values: <code>none</code>, <code>checking</code>, <code>broken</code>, <code>true</code></td>
 </tr>
 <tr>
 <td><code>ImportsInProgress</code></td>

@@ -1,6 +1,6 @@
 The CRG ScoreBoard is a browser-based scoreboard solution that also provides overlays for video production and the ability to track full game data and export it to a WFTDA statsbook.
 
-The topics on the [Scoreboard Wiki Main Page](https://github.com/rollerderby/scoreboard/wiki/) are the primary documentation for the scoreboard. In addition to the wiki topics, the [Derby Scoreboard Facebook group](https://www.facebook.com/groups/derbyscoreboard/) is very active and currently the best way to reach other users. However, currently no developer is on Facebook. In order to reach out to them, it's best to use the [Github Issues Page](https://github.com/rollerderby/scoreboard/issues).
+The topics on the [Scoreboard Wiki Main Page](https://github.com/rollerderby/scoreboard/wiki/) are the primary documentation for the scoreboard. In order to reach out to the developers, it's best to use the [Github Issues Page](https://github.com/rollerderby/scoreboard/issues).
 
 A mailing list and wiki were available on SourceForge (the original location for this project) but they are not currently used. Subscribing to the SourceForge mailing list and consulting the wiki there is not recommended.
 
