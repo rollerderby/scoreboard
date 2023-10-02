@@ -418,8 +418,7 @@ public class StatsbookExporter extends Thread {
         });
 
         for (Timeout t : timeouts) {
-            String endTime =
-                ClockConversion.toHumanReadable(t.get(Timeout.PRECEDING_JAM).get(Jam.PERIOD_CLOCK_DISPLAY_END));
+            String endTime = ClockConversion.toHumanReadable(t.get(Timeout.PERIOD_CLOCK_END));
             if (t.getOwner() instanceof Team) {
                 int i = (t.getOwner() == game.get(Game.TEAM, Team.ID_1) ? 0 : 1);
                 Row toRow = toRows[i];
