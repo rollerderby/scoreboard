@@ -53,12 +53,13 @@ public class StatsbookExporter extends Thread {
         start();
     }
 
-    public static void preload(String blankStatsbookPath) {
+    public static void preload(String blankStatsbookPath, ScoreBoard sb) {
         if ("".equals(blankStatsbookPath)) { return; }
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
+                    sb.set(ScoreBoard.BLANK_STATSBOOK_FOUND, "checking");
                     FileInputStream in = new FileInputStream(Paths.get(blankStatsbookPath).toFile());
                     Workbook wb = WorkbookFactory.create(in);
                     in.close();
@@ -85,7 +86,11 @@ public class StatsbookExporter extends Thread {
                     wb.close();
 
                     Files.delete(tmpPath);
-                } catch (Exception e) { Logger.printStackTrace(e); }
+                    sb.set(ScoreBoard.BLANK_STATSBOOK_FOUND, "true");
+                } catch (Exception e) {
+                    sb.set(ScoreBoard.BLANK_STATSBOOK_FOUND, "broken");
+                    Logger.printStackTrace(e);
+                }
             }
         }).start();
     }

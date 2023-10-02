@@ -77,7 +77,15 @@ function createIgrfTab(tab, gameId) {
   $('<span>').text(' Last Updated: ').appendTo(table.find('tr.Files>td:eq(0)'));
   var downloadDate = $('<span>').appendTo(table.find('tr.Files>td:eq(0)'));
   var noBlankStatsbookWarning = $('<span>')
-    .text('  Blank Statsbook not set up.')
+    .text('  Blank Statsbook not found.')
+    .addClass('Warning')
+    .appendTo(table.find('tr.Files>td:eq(0)'));
+  var brokenBlankStatsbookWarning = $('<span>')
+    .text('  Blank Statsbook not readable.')
+    .addClass('Warning')
+    .appendTo(table.find('tr.Files>td:eq(0)'));
+  var checkingBlankStatsbookWarning = $('<span>')
+    .text('  Checking Blank Statsbook.')
     .addClass('Warning')
     .appendTo(table.find('tr.Files>td:eq(0)'));
 
@@ -104,7 +112,9 @@ function createIgrfTab(tab, gameId) {
     downloadDate.text(v);
   });
   WS.Register('ScoreBoard.BlankStatsbookFound', function (k, v) {
-    noBlankStatsbookWarning.toggle(!isTrue(v));
+    noBlankStatsbookWarning.toggle(v === 'none');
+    brokenBlankStatsbookWarning.toggle(v === 'broken');
+    checkingBlankStatsbookWarning.toggle(v === 'checking');
   });
 
   $('<span>').text('Tournament: ').appendTo(table.find('tr.Event>td:eq(0)'));

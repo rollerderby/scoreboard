@@ -76,7 +76,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
             get(CURRENT_GAME, "").postAutosaveUpdate();
             get(CLIENTS, "").postAutosaveUpdate();
             initialLoadDone = true;
-            StatsbookExporter.preload(getSettings().get(SETTING_STATSBOOK_INPUT));
+            StatsbookExporter.preload(getSettings().get(SETTING_STATSBOOK_INPUT), this);
         }
     }
 
