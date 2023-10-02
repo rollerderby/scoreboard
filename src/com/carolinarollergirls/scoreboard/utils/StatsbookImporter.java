@@ -2,6 +2,7 @@ package com.carolinarollergirls.scoreboard.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -59,13 +60,19 @@ public class StatsbookImporter {
         readEventInfoCell(row, 1, Game.INFO_TOURNAMENT);
         readEventInfoCell(row, 8, Game.INFO_HOST);
         row = igrf.getRow(6);
-        readEventInfoCell(row, 1, Game.INFO_DATE);
-        String timeString = readCell(row, 8);
         try {
+            String dateString = readCell(row, 1);
+            // fail on malformed dates
+            dateString =
+                LocalDate.parse(dateString, DateTimeFormatter.ISO_LOCAL_DATE).format(DateTimeFormatter.ISO_LOCAL_DATE);
+            game.add(Game.EVENT_INFO, new ValWithId(Game.INFO_DATE, dateString));
+        } catch (DateTimeParseException e) {}
+        try {
+            String timeString = readCell(row, 8);
             // convert from format used in statsbook to HH:mm
             timeString = LocalTime.parse(timeString, DateTimeFormatter.ofPattern("h:mm a")).toString();
+            game.add(Game.EVENT_INFO, new ValWithId(Game.INFO_START_TIME, timeString));
         } catch (DateTimeParseException e) {}
-        game.add(Game.EVENT_INFO, new ValWithId(Game.INFO_START_TIME, timeString));
     }
 
     private void readTeam(Sheet igrf, String teamId) {
