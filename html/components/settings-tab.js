@@ -122,11 +122,15 @@ function createNonViewRows(table) {
     'ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)',
     $('<button>').text('CRG Tracks Lineups').button()
   );
-  var statsbookFile = $('<label>Blank Statsbook File: </label>').add(
-    WSControl('ScoreBoard.Settings.Setting(ScoreBoard.Stats.InputFile)', $('<input type="text" size="40">'))
-  );
+  var statsbookFile = $('<label>Blank Statsbook File: </label>')
+    .add(WSControl('ScoreBoard.Settings.Setting(ScoreBoard.Stats.InputFile)', $('<input type="text" size="40">')))
+    .add($('<div>').addClass('spin'));
   WS.Register('ScoreBoard.BlankStatsbookFound', function (k, v) {
-    statsbookFile.parent().addClass('StatsFile').toggleClass('Readable', isTrue(v));
+    statsbookFile
+      .parent()
+      .addClass('StatsFile')
+      .toggleClass('Readable', v === 'true')
+      .toggleClass('Progress', v === 'checking');
   });
   var teamDisplayName = $('<label>Team Name for Display: </label>').add(
     WSControl(
