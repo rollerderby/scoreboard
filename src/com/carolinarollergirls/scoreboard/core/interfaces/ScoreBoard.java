@@ -37,8 +37,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public static Collection<Property<?>> props = new ArrayList<>();
 
-    public static final Value<Boolean> BLANK_STATSBOOK_FOUND =
-        new Value<>(Boolean.class, "BlankStatsbookFound", false, props);
+    public static final Value<String> BLANK_STATSBOOK_FOUND =
+        new Value<>(String.class, "BlankStatsbookFound", "false", props);
     public static final Value<Integer> IMPORTS_IN_PROGRESS = new Value<>(Integer.class, "ImportsInProgress", 0, props);
 
     public static final Child<ValWithId> VERSION = new Child<>(ValWithId.class, "Version", props);

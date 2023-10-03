@@ -24,8 +24,11 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
     protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
         if (item != null && ScoreBoard.SETTING_STATSBOOK_INPUT.equals(item.getId())) {
             boolean found = Paths.get(item.getValue()).toFile().canRead();
-            getScoreBoard().set(ScoreBoard.BLANK_STATSBOOK_FOUND, found);
-            if (found && scoreBoard.isInitialLoadDone()) { StatsbookExporter.preload(item.getValue()); }
+            if (found && scoreBoard.isInitialLoadDone()) {
+                StatsbookExporter.preload(item.getValue(), getScoreBoard());
+            } else if (!found) {
+                getScoreBoard().set(ScoreBoard.BLANK_STATSBOOK_FOUND, "none");
+            }
         }
     }
 

@@ -55,8 +55,8 @@ function createSheetsTab(tab, gameId) {
   var ae2 = $('<div>').attr('id', 'AnnotationEditor2').appendTo(tab);
   var fe1 = $('<div>').attr('id', 'FieldingEditor').appendTo(tab);
   var fe2 = $('<div>').attr('id', 'FieldingEditor').appendTo(tab);
-  prepareSkSheetTable(sk1, gameId, '1', 'edit');
-  prepareSkSheetTable(sk2, gameId, '2', 'edit');
+  prepareSkSheetTable(sk1, gameId, 1, 'edit');
+  prepareSkSheetTable(sk2, gameId, 2, 'edit');
   preparePltInputTable(pt1, gameId, '1', 'edit');
   preparePltInputTable(pt2, gameId, '2', 'edit');
   prepareLtSheetTable(lt1, gameId, '1', 'edit');
