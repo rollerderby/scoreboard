@@ -109,7 +109,7 @@
           </div>
         </div>
 
-        <div class="PPJBox Wrapper PanelHideLeft OverlayPanel LargePanel AnimatedPanel NoLogo">
+        <div class="PPJBox Wrapper PanelHideLeft OverlayPanel LargePanel AnimatedPanel NoLogo" sbToggleClass="Show: $Panel): ==='PPJBox'">
           <h1>Points Per Jam</h1>
           <h4
             class="htop"
@@ -154,12 +154,18 @@
         </div>
 
         <div sbForeach="Team">
-          <div class="RosterTeam PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel" sbToggleClass="NoLogo: Logo: empty">
+          <div
+            class="RosterTeam PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel"
+            sbToggleClass="NoLogo: Logo: empty | Show1: $Panel): ==='RosterTeam1' | Show2: $Panel): ==='RosterTeam2'"
+          >
             <img class="TeamLogo" sbAttr="src: Logo" />
             <h1 sbDisplay="AlternateName(overlay),Name" sbCss="color: Color(overlay_fg) | background: Color(overlay_bg)"></h1>
             <h2>Team Roster</h2>
           </div>
-          <div class="RosterTeam LowerPart AnimationDelay PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel">
+          <div
+            class="RosterTeam LowerPart AnimationDelay PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel"
+            sbToggleClass="Show1: $Panel): ==='RosterTeam1' | Show2: $Panel): ==='RosterTeam2'"
+          >
             <div class="Wrapper Team Team1 SortBox">
               <div
                 class="Skater"
@@ -178,12 +184,18 @@
             </div>
           </div>
 
-          <div class="PenaltyTeam PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel" sbToggleClass="NoLogo: Logo: empty">
+          <div
+            class="PenaltyTeam PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel"
+            sbToggleClass="NoLogo: Logo: empty | Show1: $Panel): ==='PenaltyTeam1' | Show2: $Panel): ==='PenaltyTeam2'"
+          >
             <img class="TeamLogo" sbAttr="src: Logo" />
             <h1>Penalty Board</h1>
             <h2 sbDisplay="AlternateName(overlay),Name" sbCss="color: Color(overlay_fg) | background: Color(overlay_bg)"></h2>
           </div>
-          <div class="PenaltyTeam AnimationDelay LowerPart PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel">
+          <div
+            class="PenaltyTeam AnimationDelay LowerPart PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel"
+            sbToggleClass="Show1: $Panel): ==='PenaltyTeam1' | Show2: $Panel): ==='PenaltyTeam2'"
+          >
             <div class="Wrapper Team Team1 SortBox">
               <div
                 class="Skater"
@@ -205,7 +217,7 @@
           </div>
         </div>
 
-        <div class="Upcoming PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel">
+        <div class="Upcoming PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel" sbToggleClass="Show: $Panel): ==='Upcoming'">
           <div sbContext="Team(1)" sbToggleClass="NoLogo: Logo: empty">
             <img class="TeamLogo" sbAttr="src: Logo" style="float: left" />
             <h1
@@ -227,7 +239,7 @@
       </div>
 
       <div class="PanelWrapperLeft">
-        <div class="LowerThird Wrapper OverlayPanel AnimatedPanel PanelHideLeft">
+        <div class="LowerThird Wrapper OverlayPanel AnimatedPanel PanelHideLeft" sbToggleClass="Show: $Panel): ==='LowerThird'">
           <h4 class="Line1" sbDisplay="$LowerThird.Line1)" />
           <h5
             class="Line2"

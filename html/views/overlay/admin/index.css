@@ -3,8 +3,8 @@ body { margin: 0; }
 label { font-variant: small-caps; } 
 
 .current { background: red; color: white; } 
-#Controls { float: left; width: 10%; } 
-#Preview { float: left; width: 89%; height: 98%; } 
+#Controls { float: left; width: 15%; } 
+#Preview { float: left; width: 84%; height: 98%; } 
 
 #Preview > iframe { border: 3px solid black; margin: 10px; width: 1080px; height: 720px; }
 #Preview.Wide > iframe { width: 1100px; }
@@ -15,14 +15,17 @@ h2 { margin: 0 0 10px 0; padding: 4px 4px; display: block; border-radius: 6px; t
 .ExtraForm { margin: 20px 0; } 
 .ExtraForm .in { margin: 6px; text-align: center; } 
 
-
+.Hide { display: none; }
 
 button, input, select { outline: none; cursor: pointer; padding: 8px 8px; border-radius: 8px; font-size: .8em; width: 100%; color: white; background: #666; margin-bottom: 2px; } 
+input[type=range] { width: 95%; }
 input[type=number] { width: 50%; }
+input[type=text] { width: 95%; }
+#TeamOptions input[type=text] { width: 45%; }
 
-input[type="color"] { padding: 0; width: 75%; } 
-input[type="color"][cleared="true"] + button { background-color: #ff0000; } 
-button.ClearPrev { padding: 0; width: 20%; } 
+input[type="color"] { padding: 0; width: 15%; } 
+input[type="color"].Cleared + button { background-color: #ff0000; } 
+button.ClearPrev { padding: 0; width: 7%; } 
 
 select { display: inline-block; appearance:none; } 
 

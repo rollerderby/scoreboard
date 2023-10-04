@@ -471,22 +471,41 @@ var WS = {
     if (!root) {
       WS._preRegister();
     }
+    $.each(WS._getElements('[sbInclude]', root), function (idx, elem) {
+      elem = $(elem);
+      elem.load(elem.attr('sbInclude'), function () {
+        elem.attr('sbInclude', null);
+        AutoRegister(elem);
+      });
+    });
     $.each(WS._getElements('.AutoFit:not([sbDisplay]):not(:has(*))', root), function (idx, elem) {
       elem = $(elem);
-      var text = elem.text();
-      var mf = function () {
+      const text = elem.text();
+      const mf = function () {
         return text;
       };
       WS.Register(WS._getAutoFitPaths(elem), { element: elem, modifyFunc: mf });
     });
     $.each(WS._getElements('[sbDisplay]', root), function (idx, elem) {
       elem = $(elem);
-      var [paths, func] = WS._getParameters(elem, 'sbDisplay')[0];
+      const [paths, func] = WS._getParameters(elem, 'sbDisplay')[0];
       WS.Register(paths.concat(WS._getAutoFitPaths(elem)), { element: elem, modifyFunc: WS._getModifyFunc(paths, func) });
+    });
+    $.each(WS._getElements('[sbSet]', root), function (idx, elem) {
+      elem = $(elem);
+      const entries = WS._getParameters(elem, 'sbSet');
+      elem.on('click', function () {
+        entries.map(function (entry) {
+          const writeFunc = window[entry[1]] || Function('k', 'return ' + entry[1]);
+          entry[0].map(function (path) {
+            WS.Set(path, writeFunc(WS._enrichProp(path)));
+          });
+        });
+      });
     });
     $.each(WS._getElements('[sbControl]', root), function (idx, elem) {
       elem = $(elem);
-      var [paths, readFunc, writeFunc] = WS._getParameters(elem, 'sbControl')[0];
+      let [paths, readFunc, writeFunc] = WS._getParameters(elem, 'sbControl')[0];
       writeFunc =
         window[writeFunc] ||
         function (v) {
@@ -500,9 +519,9 @@ var WS = {
     $.each(WS._getElements('[sbToggleClass]', root), function (idx, elem) {
       elem = $(elem);
       WS._getParameters(elem, 'sbToggleClass', 1).map(function (toggle) {
-        var toggledClass = toggle[0];
-        var paths = toggle[1];
-        var func = toggle[2];
+        const toggledClass = toggle[0];
+        const paths = toggle[1];
+        let func = toggle[2];
         if ($.isFunction(window[func])) {
           func = window[func];
         } else if (func === '!') {
@@ -523,7 +542,7 @@ var WS = {
     $.each(WS._getElements('[sbCss]', root), function (idx, elem) {
       elem = $(elem);
       WS._getParameters(elem, 'sbCss', 1).map(function (entry) {
-        var paths = entry[1];
+        const paths = entry[1];
 
         WS.Register(paths, { element: elem, css: entry[0], modifyFunc: WS._getModifyFunc(paths, entry[2]) });
       });
@@ -531,24 +550,24 @@ var WS = {
     $.each(WS._getElements('[sbAttr]', root), function (idx, elem) {
       elem = $(elem);
       WS._getParameters(elem, 'sbAttr', 1).map(function (entry) {
-        var paths = entry[1];
+        const paths = entry[1];
 
         WS.Register(paths, { element: elem, attr: entry[0], modifyFunc: WS._getModifyFunc(paths, entry[2]) });
       });
     });
     $.each(WS._getElements('[sbForeach]', root), function (idx, elem) {
       elem = $(elem);
-      var paren = elem.parent();
-      var index = elem.index();
-      var [paths, fixedKeys, sortFunction] = WS._getParameters(elem, 'sbForeach')[0];
+      let paren = elem.parent();
+      let index = elem.index();
+      let [paths, fixedKeys, sortFunction] = WS._getParameters(elem, 'sbForeach')[0];
       if (fixedKeys) {
         fixedKeys = fixedKeys.split(',').map($.trim);
       }
       elem.detach().removeAttr('sbForeach');
       $.each(paths, function (idx, path) {
-        var field = path.substring(path.lastIndexOf('.', path.length - 6) + 1, path.length - 6); // cut off (*).Id
+        const field = path.substring(path.lastIndexOf('.', path.length - 6) + 1, path.length - 6); // cut off (*).Id
         $.each(fixedKeys, function (idx, key) {
-          var newElem = elem
+          const newElem = elem
             .clone(true)
             .attr(field, key)
             .attr('sbContext', (elem.attr('sbContext') ? elem.attr('sbContext') + '.' : '') + field + '(' + key + ')')
@@ -565,7 +584,7 @@ var WS = {
           if (v == null) {
             paren.children(('[' + field + '=' + k[field] + ']:not().Fixed)').remove());
           } else if (!paren.children('[' + field + '=' + k[field] + ']').length) {
-            var newElem = elem
+            const newElem = elem
               .clone(true)
               .attr(field, k[field])
               .attr('sbContext', (elem.attr('sbContext') ? elem.attr('sbContext') + '.' : '') + field + '(' + k[field] + ')')
@@ -588,8 +607,8 @@ var WS = {
   },
 
   _preRegister: function () {
-    var paths = [];
-    var preRegisterAttribute = function (attr, pathIndex) {
+    let paths = [];
+    const preRegisterAttribute = function (attr, pathIndex) {
       $.each($('[' + attr + ']'), function (idx, elem) {
         $.each(WS._getParameters($(elem), attr, pathIndex), function (idx, params) {
           paths = paths.concat(params[pathIndex]);
@@ -597,7 +616,7 @@ var WS = {
       });
     };
 
-    $.each(['sbForeach', 'sbDisplay'], function (idx, attr) {
+    $.each(['sbForeach', 'sbDisplay', 'sbControl'], function (idx, attr) {
       preRegisterAttribute(attr, 0);
     });
     $.each(['sbToggleClass', 'sbCss', 'sbAttr'], function (idx, attr) {
@@ -609,13 +628,13 @@ var WS = {
 
   _getContext: function (elem) {
     'use strict';
-    var parent = elem.parent();
-    var ret = '';
+    const parent = elem.parent();
+    let ret = '';
     if (parent.length > 0) {
       ret = WS._getContext(parent);
     }
-    var context = elem.attr('sbContext');
-    var foreach = elem.attr('sbForeach');
+    const context = elem.attr('sbContext');
+    const foreach = elem.attr('sbForeach');
     if (context != null) {
       ret = (ret !== '' ? ret + '.' : '') + context;
     }
@@ -627,7 +646,7 @@ var WS = {
 
   _getPrefixes: function (elem) {
     'use strict';
-    var prefixes = {};
+    let prefixes = {};
     $.each(elem.parents('[sbPrefix]').addBack('[sbPrefix]'), function (idx, paren) {
       $(paren)
         .attr('sbPrefix')

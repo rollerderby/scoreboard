@@ -8,27 +8,6 @@ function initialize() {
     $('[Team=' + k.Team + '] [Position="Pivot"]').toggleClass('Jamming', isTrue(v));
   });
 
-  WS.Register('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', function (k, v) {
-    $('.OverlayPanel').removeClass('Show');
-    switch (v) {
-      case 'RosterTeam1':
-        $('[Team="1"] .OverlayPanel.RosterTeam').addClass('Show');
-        break;
-      case 'RosterTeam2':
-        $('[Team="2"] .OverlayPanel.RosterTeam').addClass('Show');
-        break;
-      case 'PenaltyTeam1':
-        $('[Team="1"] .OverlayPanel.PenaltyTeam').addClass('Show');
-        break;
-      case 'PenaltyTeam2':
-        $('[Team="2"] .OverlayPanel.PenaltyTeam').addClass('Show');
-        break;
-      default:
-        $('.OverlayPanel.' + v).addClass('Show');
-        break;
-    }
-  });
-
   $(document).keyup(function (e) {
     switch (e.which) {
       case 74: // j
@@ -75,6 +54,27 @@ function initialize() {
 
   WS.AutoRegister();
   WS.Connect();
+
+  /*  WS.Register('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', function (k, v) {
+    $('.OverlayPanel').removeClass('Show');
+    switch (v) {
+      case 'RosterTeam1':
+        $('[Team="1"] .OverlayPanel.RosterTeam').addClass('Show');
+        break;
+      case 'RosterTeam2':
+        $('[Team="2"] .OverlayPanel.RosterTeam').addClass('Show');
+        break;
+      case 'PenaltyTeam1':
+        $('[Team="1"] .OverlayPanel.PenaltyTeam').addClass('Show');
+        break;
+      case 'PenaltyTeam2':
+        $('[Team="2"] .OverlayPanel.PenaltyTeam').addClass('Show');
+        break;
+      default:
+        $('.OverlayPanel.' + v).addClass('Show');
+        break;
+    }
+  });*/
 
   setTimeout(function () {
     $('body').removeClass('preload');
@@ -167,7 +167,7 @@ function toClockType(k, v) {
   var tc = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Running'];
   var lc = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Running'];
   var ic = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Running'];
-  var jc = WS.state['ScoreBoard.CurrentGame.Clock(Jam).Running'];
+  var jc = WS.state['ScoreBoard.CurrentGame.InJam'];
 
   if (tc) {
     ret = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Name'];

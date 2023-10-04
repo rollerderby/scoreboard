@@ -1,22 +1,28 @@
-function str_sort(a, b) {
+function sktr_sort(a, b) {
   'use strict';
-  return $(b).text() < $(a).text() ? 1 : -1;
+  return $(b).attr('data-team') === $(a).attr('data-team')
+    ? $(b).text() < $(a).text()
+      ? 1
+      : -1
+    : $(b).attr('data-team') < $(a).attr('data-team')
+    ? 1
+    : -1;
 }
 jQuery.fn.sortOptions = function sortOptions() {
   'use strict';
-  $('> option', this[0]).sort(str_sort).appendTo(this[0]);
+  $('> option', this[0]).sort(sktr_sort).appendTo(this[0]);
 };
 
-var Skaters = new DataSet();
+let Skaters = new DataSet();
 Skaters.AddTrigger('UPDATE', '*', {}, function (n, o, k) {
   'use strict';
   if (this.Name && this.Team && this.Id) {
-    var att = { 'data-name': this.Name, 'data-team': this.Team, value: this.Skater };
-    var $s = $('#Skaters option[value="' + this.Skater + '"]');
-    if ($s.length === 0) {
-      $s = $('<option>').attr(att).appendTo('#Skaters');
+    const att = { 'data-name': this.Name, 'data-team': this.Team, value: this.Skater };
+    let option = $('#Skaters option[value="' + this.Skater + '"]');
+    if (option.length === 0) {
+      option = $('<option>').attr(att).appendTo('#Skaters');
     }
-    $s.attr(att).text(this.Name);
+    option.attr(att).text(this.Name);
     $('#Skaters').sortOptions();
   }
 });
@@ -25,38 +31,13 @@ Skaters.AddTrigger('DELETE', '*', {}, function (n, o, k) {
   $('#Skaters option[value="' + this.Skater + '"]').remove();
 });
 
+let nextPanel = '';
+let currrentPanel = '';
+
 $(initialize);
 
 function initialize() {
   'use strict';
-  WS.Register(
-    [
-      'ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)',
-      'ScoreBoard.Settings.Setting(Overlay.Interactive.Score)',
-      'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)',
-      'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowLineups)',
-      'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)',
-      'ScoreBoard.Settings.Setting(Overlay.Interactive.BackgroundColor)',
-      'ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)',
-    ],
-    function (k, v) {
-      $('[data-setting="' + k + '"]').each(function (i) {
-        var $t = $(this);
-        if ($t.hasClass('ToggleSwitch')) {
-          $t.val(v).toggleClass('current', v != null && v !== '');
-        } else {
-          if ($t.prop('tagName') === 'SELECT') {
-            $('option[value="' + v + '"]', $t).attr('selected', 'selected');
-          } else {
-            if (!$t.hasClass('NoToggle')) {
-              $t.toggleClass('current', $t.val() === v);
-            }
-          }
-        }
-      });
-    }
-  );
-
   WS.Register(
     [
       'ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)',
@@ -65,10 +46,10 @@ function initialize() {
       'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)',
     ],
     function (k, v) {
-      var useLineups = isTrue(WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)']);
-      var showLineups = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowLineups)'] === 'On';
-      var showJammerNames = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)'] === 'On';
-      var showAllNames = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)'] === 'On';
+      const useLineups = isTrue(WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)']);
+      const showLineups = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowLineups)'] === 'On';
+      const showJammerNames = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)'] === 'On';
+      const showAllNames = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)'] === 'On';
       $('[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.ShowLineups)').toggleClass('disabled', !useLineups);
       $('[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)').toggleClass(
         'disabled',
@@ -84,150 +65,66 @@ function initialize() {
     }
   );
 
-  var skaterRegEx = /^ScoreBoard\.CurrentGame\.Team\((.+)\)\.Skater\((.+?)\)\.(.+)$/;
-  WS.Register('ScoreBoard.CurrentGame.Team', function (k, v) {
-    var m = k.match(skaterRegEx);
-    if (m) {
-      var key = m[3];
-      if (!(key === 'Id' || key === 'Name' || key === 'RosterNumber' || key === 'Flags')) {
-        return;
-      }
-
-      var d = {};
-      d[key] = v;
-      d.Team = m[1];
-      if (key === 'Id' && v == null) {
-        Skaters.Delete({ Skater: m[2] });
-      } else {
-        Skaters.Upsert(d, { Skater: m[2] });
-      }
+  const skaterPrefix = 'ScoreBoard.CurrentGame.Team(*).Skater(*).';
+  WS.Register([skaterPrefix + 'Id', skaterPrefix + 'Name', skaterPrefix + 'RosterNumber', skaterPrefix + 'Flags'], function (k, v) {
+    let d = {};
+    d[k.field] = v;
+    d.Team = k.Team;
+    if (k.field === 'Id' && v == null) {
+      Skaters.Delete({ Skater: k.Skater });
+    } else {
+      Skaters.Upsert(d, { Skater: k.Skater });
     }
   });
 
-  WS.Register(
-    [
-      'ScoreBoard.Settings.Setting(Overlay.Interactive.Scaling)',
-      'ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)',
-      'ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)',
-      'ScoreBoard.CurrentGame.Team(1).AlternateName(overlay)',
-      'ScoreBoard.CurrentGame.Team(2).AlternateName(overlay)',
-    ],
-    function (k, v) {
-      $('input[data-setting="' + k + '"]').val(v);
-    }
-  );
-
-  WS.Register(
-    [
-      'ScoreBoard.CurrentGame.Team(1).Color(overlay_fg)',
-      'ScoreBoard.CurrentGame.Team(1).Color(overlay_bg)',
-      'ScoreBoard.CurrentGame.Team(2).Color(overlay_fg)',
-      'ScoreBoard.CurrentGame.Team(2).Color(overlay_bg)',
-    ],
-    function (k, v) {
-      if (v == null || v === '') {
-        $('input[data-setting="' + k + '"]').attr('cleared', 'true');
-        $('input[data-setting="' + k + '"]').val(k.Color === 'overlay_fg' ? '#FFFFFF' : '#333333');
-      } else {
-        $('input[data-setting="' + k + '"]').attr('cleared', 'false');
-        $('input[data-setting="' + k + '"]').val(v);
-      }
-    }
-  );
-
-  WS.Register('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)', function (k, v) {
-    $('#LowerThirdStyle option[value="' + v + '"]').attr('selected', 'selected');
+  WS.Register('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', function (k, v) {
+    currrentPanel = v;
+    $('#PanelSet').toggleClass('changed', currrentPanel !== nextPanel);
+    $('#PanelSet').toggleClass('current', currrentPanel !== '');
   });
+  $('#PanelSelect').val('');
+
+  WS.Register('ScoreBoard.CurrentGame.Team(*).Name');
 
   WS.Connect();
   WS.AutoRegister();
 }
 
-$('#Controls input, #Controls .Selector').on('change', function () {
+$('#PanelSelect').on('change', function () {
   'use strict';
-  var t = $(this).attr('data-setting');
-  var v = $(this).val();
-  if ($(this).attr('type') === 'color') {
-    $(this).attr('cleared', 'false');
-  }
-  if (v === '' && t.endsWith('AlternateName(overlay)')) {
-    // Delete the AlternateName
-    WS.Set(t, null);
-  } else if (t) {
-    WS.Set(t, v);
-  }
-});
-
-$('.SelectUpdator').on('change', function () {
-  'use strict';
-  var $t = $(this);
-  var v = $t.val();
-
-  // if we have an element target, update it
-  var target = $t.attr('data-target');
-  var field = $t.attr('data-field');
-
-  if (target) {
-    // we have a target element to write to not data
-    var ov = $(target).attr(field);
-    if (field) {
-      $(target).attr(field, v);
-    } else {
-      $(target).val(v).trigger('change');
-    }
-
-    // flag it as changed
-    if (ov !== v) {
-      $(target).addClass('changed');
-    }
-  }
-
-  $($t.attr('data-subforms')).hide();
-  var forms = $('option[value=' + v + ']', $t).attr('data-form');
-  if (forms) {
-    $(forms).show();
-    $('input[type=text],textarea', $(forms)).eq(0).select().focus();
+  const v = $(this).val();
+  if (v !== nextPanel) {
+    nextPanel = v;
+    $('#PanelSet').toggleClass('changed', nextPanel !== currrentPanel);
+    $('#LowerThirdControls').toggleClass('Hide', nextPanel !== 'LowerThird');
   }
 });
 
 $('select#Skaters').on('change', function (e) {
   'use strict';
-  var $t = $(this);
-  var v = $t.val();
-  var team = $('option[value=' + v + ']', $t).attr('data-team');
-  var name = $('option[value=' + v + ']', $t).attr('data-name');
-  var tnam = WS.state['ScoreBoard.CurrentGame.Team(' + team + ').AlternateName(overlay)'];
-  tnam = tnam ? tnam : WS.state['ScoreBoard.CurrentGame.Team(' + team + ').Name'];
-  $('#LowerThirdStyle option[value=ColourTeam' + team + ']')
-    .attr('selected', 'selected')
-    .trigger('change');
-  $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)"]').val(name).trigger('change');
-  $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)"]').val(tnam).trigger('change');
+  const option = $('option[value=' + $(this).val() + ']', this);
+  const team = option.attr('data-team');
+  const name = option.attr('data-name');
+  const tnam = WS.state['ScoreBoard.CurrentGame.Team(' + team + ').Name'];
+
+  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)', name);
+  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)', tnam);
+  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)', 'ColourTeam' + team);
 });
 
 $('select#Keepers').on('change', function (e) {
   'use strict';
-  var $t = $(this);
-  var v = $t.val();
-
-  var $d = $('option[value="' + v + '"]', this);
-  var line1 = $d.attr('data-line1');
-  var line2 = $d.attr('data-line2');
-  var style = $d.attr('data-style');
-
-  $('#LowerThirdStyle option[value=' + style + ']')
-    .attr('selected', 'selected')
-    .trigger('change');
-  $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)"]').val(line1).trigger('change');
-  $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)"]').val(line2).trigger('change');
+  const option = $('option[value="' + $(this).val() + '"]', this);
+  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)', option.attr('data-line1'));
+  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)', option.attr('data-line2'));
+  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)', option.attr('data-style'));
 });
 
 $('#KeeperAdd').on('click', function () {
   'use strict';
-  $('#LowerThirdStyle').trigger('change');
-  var line1 = $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)"]').val();
-  var line2 = $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)"]').val();
-  var style = $('#LowerStyle').val();
+  const line1 = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)'];
+  const line2 = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)'];
+  const style = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)'];
 
   $('<option>')
     .attr('data-line1', line1)
@@ -236,31 +133,6 @@ $('#KeeperAdd').on('click', function () {
     .attr('value', '_' + Math.random().toString(36).substr(2, 9))
     .text(line1 + '/' + line2 + ' (' + style + ')')
     .appendTo('#Keepers');
-});
-
-$('#Controls button').on('click', function () {
-  'use strict';
-  var $t = $(this);
-  var v = $t.val();
-  $t.removeClass('changed');
-  if ($t.hasClass('ClearPrev')) {
-    $t = $t.prev();
-    $t.attr('cleared', true);
-  } else if ($t.hasClass('ToggleSwitch')) {
-    if ($t.hasClass('NoAuto')) {
-      var nv = $t.attr('data-next');
-      if (nv === v) {
-        nv = null;
-      }
-      v = nv ? nv : null;
-      if (v) {
-        $t.val(v).attr('data-next', v);
-      }
-    } else {
-      v = v === 'On' ? null : 'On';
-    }
-  }
-  WS.Set($t.attr('data-setting'), v);
 });
 
 $(function () {
@@ -287,3 +159,23 @@ $(function () {
     }
   });
 });
+
+function invert(k) {
+  return WS.state[k] === 'On' ? 'Off' : 'On';
+}
+
+function getNextPanel() {
+  return nextPanel === currrentPanel ? '' : nextPanel;
+}
+
+function toNullIfEmpty(v) {
+  return v === '' ? null : v;
+}
+
+function defaultFgIfNull(k, v) {
+  return v || '#FFFFFF';
+}
+
+function defaultBgIfNull(k, v) {
+  return v || '#333333';
+}

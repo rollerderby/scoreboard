@@ -278,7 +278,7 @@ div.AnimatedPanel { -webkit-transition: -webkit-transform 1s ease-in-out, width 
 [Team="2"] div.AnimatedPanel.PanelHideLeft { -webkit-transform: translateX(200%); transform: translateX(200%); } 
 div.AnimatedPanel.PanelHideLeft { -webkit-transform: translateX(-200%); transform: translateX(-200%); } 
 
-div.AnimatedPanel.PanelHideLeft.Show { -webkit-transform: translateX(-50%); transform: translateX(-50%); } 
+div.AnimatedPanel.PanelHideLeft.Show, [Team="1"] div.AnimatedPanel.PanelHideLeft.Show1, [Team="2"] div.AnimatedPanel.PanelHideLeft.Show2 { -webkit-transform: translateX(-50%); transform: translateX(-50%); } 
 
 div.PanelWrapperLeft .AnimatedPanel.Show { -webkit-transform: translateY(0); transform: translateY(0); } 
 
@@ -307,8 +307,7 @@ div.PanelWrapperTop .AnimatedPanel.PanelHideTop.Show { -webkit-transform: transl
 
 .AnimatedPanel.Show img { height: 200px; } 
 
-.PenaltyTeam.AnimatedPanel.Show img.TeamLogo { height: 164px; } 
-.RosterTeam.AnimatedPanel.Show img.TeamLogo { height: 164px; } 
+[Team="1"] .AnimatedPanel.Show1 img.TeamLogo, [Team="2"] .AnimatedPanel.Show2 img.TeamLogo { height: 164px; } 
 
 .PanelWrapperCenter .AnimatedPanel.LowerPart { margin-top: 10em; } 
 .PanelWrapperCenter .RosterTeam.AnimatedPanel.LowerPart { margin-top: 10.5em; } 
