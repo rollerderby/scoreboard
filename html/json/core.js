@@ -36,6 +36,17 @@ function _include(dir, files) {
   });
 }
 
+function _includeJsAndCss(path) {
+  'use strict';
+  if (/\.html$/.test(path)) {
+    _include(path.replace(/\.html$/, '.css'));
+    _include(path.replace(/\.html$/, '.js'));
+  } else if (/\/$/.test(path)) {
+    _include(path + 'index.css');
+    _include(path + 'index.js');
+  }
+}
+
 _include('/external/jquery-ui', ['jquery-ui.min.js', 'jquery-ui.min.css']);
 
 _include('/external/jquery-plugins/isjquery/jquery.isjquery.js');
@@ -43,19 +54,13 @@ _include('/external/jquery-plugins/string/jquery.string.js');
 _include('/external/jquery-plugins/fileupload/jquery.fileupload.js');
 
 /* Core functionality */
-_include('/javascript', ['timeconversions.js', 'windowfunctions.js', 'autofit.js']);
+_include('/javascript', ['timeconversions.js', 'windowfunctions.js', 'autofit.js', 'conversions.js']);
 _include('/styles', ['fonts.css']);
 _include('/json', ['WS.js']);
 
 $(function () {
   'use strict';
-  if (/\.html$/.test(window.location.pathname)) {
-    _include(window.location.pathname.replace(/\.html$/, '.css'));
-    _include(window.location.pathname.replace(/\.html$/, '.js'));
-  } else if (/\/$/.test(window.location.pathname)) {
-    _include(window.location.pathname + 'index.css');
-    _include(window.location.pathname + 'index.js');
-  }
+  _includeJsAndCss(window.location.pathname);
 });
 
 function isTrue(value) {

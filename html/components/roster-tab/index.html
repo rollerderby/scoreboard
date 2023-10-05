@@ -1,0 +1,55 @@
+<table id="RosterTab" sbContext="ScoreBoard.CurrentGame">
+  <tr>
+    <td sbForeach="Team">
+      <table class="Team">
+        <tr class="Name">
+          <td colspan="3" sbDisplay="Name" />
+        </tr>
+        <tr class="League">
+          <td><span>League: </span></td>
+          <td sbDisplay="LeagueName" />
+          <td rowspan="3"><img class="Logo" sbAttr="src: Logo" /></td>
+        </tr>
+        <tr class="LTeam">
+          <td><span>Team: </span></td>
+          <td sbDisplay="TeamName" />
+        </tr>
+        <tr class="Color">
+          <td><span>Uniform Color: </span></td>
+          <td sbDisplay="UniformColor" />
+        </tr>
+        <tr class="Skaters">
+          <td colspan="3">
+            <table class="Skaters">
+              <col class="RosterNumber" />
+              <col class="Name" />
+              <col class="Pronouns" />
+              <col class="Flags" />
+              <thead>
+                <tr>
+                  <th></th>
+                  <th class="Title">Skaters</th>
+                  <th></th>
+                  <th id="skaterCount" />
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  class="Skater"
+                  sbForeach="Skater:: compareRosterNumber"
+                  sbAttr="flag: Flags: updateSkaterCount | role: Role | rosterNumber: RosterNumber"
+                >
+                  <td class="RosterNumber" sbDisplay="RosterNumber" />
+                  <td class="Name" sbDisplay="Name" />
+                  <td class="Pronouns" sbDisplay="Pronouns" />
+                  <td class="Flags" sbDisplay="Flags,Role: toPositionDisplay"></td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>

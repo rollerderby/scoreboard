@@ -474,8 +474,10 @@ var WS = {
     $.each(WS._getElements('[sbInclude]', root), function (idx, elem) {
       elem = $(elem);
       elem.load(elem.attr('sbInclude'), function () {
+        _includeJsAndCss(elem.attr('sbInclude'));
         elem.attr('sbInclude', null);
-        AutoRegister(elem);
+        WS._preRegister(elem);
+        WS.AutoRegister(elem);
       });
     });
     $.each(WS._getElements('.AutoFit:not([sbDisplay]):not(:has(*))', root), function (idx, elem) {
@@ -606,10 +608,10 @@ var WS = {
     });
   },
 
-  _preRegister: function () {
+  _preRegister: function (root) {
     let paths = [];
     const preRegisterAttribute = function (attr, pathIndex) {
-      $.each($('[' + attr + ']'), function (idx, elem) {
+      $.each($('[' + attr + ']', root), function (idx, elem) {
         $.each(WS._getParameters($(elem), attr, pathIndex), function (idx, params) {
           paths = paths.concat(params[pathIndex]);
         });
