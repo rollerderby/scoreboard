@@ -34,12 +34,12 @@ div { white-space: nowrap; display: block; padding: 0; margin: 0; overflow: hidd
 .Team .DotTimeouts { width: 3%; padding-top: 2px; } 
 
 .Dot { width: .15em; height: .15em; margin: .05em 0 0 0; } 
-.Dot, .Dot.Active { border-radius: 100%; } 
+.Dot, .Dot.Current { border-radius: 100%; } 
 
 .Dot { background: #333; } 
 .Dot.OfficialReview1 { background: #fff; } 
 .Dot.OfficialReview1.Retained { margin-left: .2em; } 
-.Dot.Active { opacity: 0; animation: DotActive 0.75s infinite steps(6); -moz-animation: DotActive 0.75s infinite steps(6); -webkit-animation: DotActive 0.75s infinite steps(6); } 
+.Dot.Current { opacity: 0; animation: DotActive 0.75s infinite steps(6); -moz-animation: DotActive 0.75s infinite steps(6); -webkit-animation: DotActive 0.75s infinite steps(6); } 
 .Dot.Used { opacity: 0; } 
 
 @-moz-keyframes DotActive { 
@@ -57,7 +57,7 @@ div { white-space: nowrap; display: block; padding: 0; margin: 0; overflow: hidd
 .ClockBox .Name { width: 49%; } 
 .ClockBox .Time { width: 49%; } 
 .ClockBox .Time.ShowInIntermission { width: 100%; } 
-.ClockBox .Time.Hide { display: none; }
+.ClockBox .Time.Hidden { display: none; }
 
 .BottomClock .Name { width: 100%; text-align: center; height: 2em; } 
 .BottomClock .Time { width: 100%; text-align: center; height: 5em; } 

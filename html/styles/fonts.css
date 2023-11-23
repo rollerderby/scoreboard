@@ -2,4 +2,4 @@
 @font-face {font-family: 'LiberationSans'; src: url("/fonts/LiberationSans-Bold.ttf") format("truetype"); font-weight: bold;} 
 
 body { font-family: 'LiberationSans', sans-serif; } 
-.ui-button, .ui-widget, .ui-widget * { font-family: 'LiberationSans', sans-serif; } 
+.ui-button, .ui-widget, .ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family: 'LiberationSans', sans-serif; } 

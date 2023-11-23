@@ -7,24 +7,24 @@
     <script type="text/javascript" src="/json/WS.js"></script>
     <script type="text/javascript" src="/views/common.js"></script>
   </head>
-  <body sbPrefix="& = ScoreBoard.Settings.Setting(ScoreBoard.View_">
+  <body sbPrefix="&: ScoreBoard.Settings.Setting(ScoreBoard.View : )">
     <div class="ConnectionError">Not connected</div>
-    <div class="DisplayPane" id="image"><img class="object" sbAttr="src: &Image)" sbCss="object-fit: &ImageScaling)" /></div>
+    <div class="DisplayPane" id="image"><img class="object" sbAttr="src: &.Image" sbCss="object-fit: &.ImageScaling" /></div>
     <div class="DisplayPane" id="video">
-      <video class="object" onended="this.play();" sbAttr="src: &Video)" sbCss="object-fit: &VideoScaling)"></video>
+      <video class="object" onended="this.play();" sbAttr="src: &.Video" sbCss="object-fit: &.VideoScaling"></video>
     </div>
-    <div class="DisplayPane" id="html"><iframe class="object" sbAttr="src: &CustomHtml)"></iframe></div>
+    <div class="DisplayPane" id="html"><iframe class="object" sbAttr="src: &.CustomHtml"></iframe></div>
     <div class="DisplayPane" id="whiteboard"><iframe class="object" src="../wb/?"></iframe></div>
     <div class="DisplayPane Show" id="scoreboard" sbContext="ScoreBoard.CurrentGame" class="JamScore">
       <div
         class="Team"
-        sbForeach="Team"
-        sbToggleClass="HasName: AlternateName(scoreboard),Name: notEmpty | HasLogo: Logo: notEmpty | HideLogos: &HideLogos)"
+        sbForeach="Team: 1,2: only"
+        sbClass="HasName: AlternateName(scoreboard),Name: notEmpty | HasLogo: Logo: notEmpty | HideLogos: &.HideLogos"
       >
         <div
           class="Name AutoFit"
           sbDisplay="AlternateName(scoreboard),Name"
-          sbAutoFitOn="Logo, &HideLogos)"
+          sbAutoFitOn="Logo, &.HideLogos"
           sbCss="color: Color(scoreboard_fg) | background-color: Color(scoreboard_bg) | text-shadow: Color(scoreboard_glow): toShadow"
         ></div>
         <div class="Logo" sbCss="background-image: Logo: toCssUrl">&nbsp;</div>
@@ -32,23 +32,23 @@
         <div
           class="JamScore Box AutoFit"
           sbDisplay="JamScore"
-          sbToggleClass="NoInitial: NoInitial | Overtime: /ScoreBoard.CurrentGame.InOvertime"
+          sbClass="NoInitial: NoInitial | Overtime: /ScoreBoard.CurrentGame.InOvertime"
         ></div>
         <div class="ShowInJam Clock StarPass AutoFit" sbDisplay="StarPass: toSP"></div>
         <div class="DotTimeouts Box" sbCss="background: Color(scoreboard_dots_bg)">
-          <div class="Dot Timeout1" sbToggleClass="Used: Timeouts: <1" sbCss="background: Color(scoreboard_dots_fg)"></div>
-          <div class="Dot Timeout2" sbToggleClass="Used: Timeouts: <2" sbCss="background: Color(scoreboard_dots_fg)"></div>
-          <div class="Dot Timeout3" sbToggleClass="Used: Timeouts: <3" sbCss="background: Color(scoreboard_dots_fg)"></div>
+          <div class="Dot Timeout1" sbClass="Used: Timeouts: <1" sbCss="background: Color(scoreboard_dots_fg)"></div>
+          <div class="Dot Timeout2" sbClass="Used: Timeouts: <2" sbCss="background: Color(scoreboard_dots_fg)"></div>
+          <div class="Dot Timeout3" sbClass="Used: Timeouts: <3" sbCss="background: Color(scoreboard_dots_fg)"></div>
         </div>
         <div class="DotOfficialReviews Box" sbCss="background: Color(scoreboard_dots_bg)">
           <div
             class="Dot OfficialReview1"
-            sbToggleClass="Retained: RetainedOfficialReview | Used: OfficialReviews: <1"
+            sbClass="Retained: RetainedOfficialReview | Used: OfficialReviews: <1"
             sbCss="background: Color(scoreboard_dots_fg)"
           ></div>
           <div
             class="Dot OfficialReviewHelper"
-            sbToggleClass="Retained: RetainedOfficialReview | Used: OfficialReviews: <1"
+            sbClass="Retained: RetainedOfficialReview | Used: OfficialReviews: <1"
             sbCss="background: Color(scoreboard_dots_fg)"
           ></div>
         </div>
@@ -95,12 +95,12 @@
       <div
         class="ShowInLineup Clock Lineup Small Box AutoFit"
         sbDisplay="Clock(Lineup).Time, Clock(Lineup).Direction: toTime"
-        sbToggleClass="Red: NoMoreJam"
+        sbClass="Red: NoMoreJam"
       ></div>
       <div
         class="ShowInTimeout Clock Timeout Small Box AutoFit"
         sbDisplay="Clock(Timeout).Time, Clock(Timeout).Direction: toTime"
-        sbToggleClass="Red: NoMoreJam"
+        sbClass="Red: NoMoreJam"
       ></div>
       <div class="ShowInNoClock Clock None Small Box AutoFit">Coming Up</div>
 
@@ -121,8 +121,8 @@
       <div class="ShowInIntermission Clock Intermission">
         <div
           class="Message Box AutoFit"
-          sbPrefix="# = ScoreBoard.Settings.Setting(ScoreBoard.Intermission."
-          sbDisplay="#PreGame), #Intermission), #Unofficial), #Official), #OfficialWithClock), OfficialScore, ClockDuringFinalScore, Clock(Intermission).Number, Rule(Period.Number): intermissionDisplay"
+          sbPrefix="#: ScoreBoard.Settings.Setting(ScoreBoard.Intermission : )"
+          sbDisplay="#.PreGame, #.Intermission, #.Unofficial, #.Official, #.OfficialWithClock, OfficialScore, ClockDuringFinalScore, Clock(Intermission).Number, Rule(Period.Number): intermissionDisplay"
         ></div>
         <div class="Time Box AutoFit" sbContext="Clock(Intermission)" sbDisplay="Time, Direction: toTime"></div>
       </div>

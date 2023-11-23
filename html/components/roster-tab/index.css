@@ -4,8 +4,6 @@
 #RosterTab>tbody>tr:last-of-type>td { border-radius: 0px 0px 12px 12px; } 
 #RosterTab>tbody>tr:only-of-type>td { border-radius: 12px; } 
 
-#RosterTab .Hide { display: none; } 
-
 #RosterTab table.Team { width: 100%; border-spacing: 0px; } 
 #RosterTab table.Team tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; font-size: 200%; font-weight: bold; } 
 #RosterTab table.Team tr.League>td, #RosterTab table.Team tr.LTeam>td, #RosterTab table.Team tr.Color>td { text-align: left; }

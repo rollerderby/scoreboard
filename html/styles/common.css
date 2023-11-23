@@ -1,0 +1,10 @@
+.Hide { display: none; } 
+
+.Active { background: #70ff70; }
+.ClickMe { background: #ff9010; }
+
+[context="pt"] .ShowSome:not(.ShowOnPt):not(.ShowOnPurePt) { display: none; }
+[context="lt"] .ShowSome:not(.ShowOnLt):not(.ShowOnPureLt) { display: none; }
+[context="plt"] .ShowSome:not(.ShowOnPlt):not(.ShowOnPt):not(.ShowOnLt) { display: none; }
+[context="sheet"] .ShowSome:not(.ShowOnSheet):not(.ShowOnPt) { display: none; }
+[context="whiteboard"] .ShowSome:not(.ShowOnWhiteboard):not(.ShowOnPt) { display: none; }

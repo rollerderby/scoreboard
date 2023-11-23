@@ -37,7 +37,7 @@ function intermissionDisplay() {
   }
 
   $('.Clock.Intermission .Time, .Clock.Intermission.Time').toggleClass(
-    'Hide',
+    'Hidden',
     (num == max || isOfficial) && !(isOfficial && showDuringOfficial)
   );
   return ret;
@@ -90,7 +90,7 @@ function setActiveTimeout(k, v) {
   var to = WS.state['ScoreBoard.CurrentGame.TimeoutOwner'].slice(-1);
   var or = WS.state['ScoreBoard.CurrentGame.OfficialReview'];
 
-  $('.Team .Dot').removeClass('Active');
+  $('.Team .Dot').removeClass('Current');
 
   if (to && to !== 'O') {
     var dotSel;
@@ -99,7 +99,7 @@ function setActiveTimeout(k, v) {
     } else {
       dotSel = '[Team=' + to + '] .Timeout' + (WS.state['ScoreBoard.CurrentGame.Team(' + to + ').Timeouts'] + 1);
     }
-    $(dotSel).addClass('Active');
+    $(dotSel).addClass('Current');
   }
 }
 

@@ -7,7 +7,7 @@ user-select: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-s
 #scoreboard {position: absolute;left: 0px; top: 0px; width: 100%; height: 100%; } 
 
 .DisplayPane {opacity: 0;position: absolute;left: 0; top: 0;width: 100%;height: 100%; } 
-.DisplayPane.Hide {animation: HidePanel 1s;-moz-animation: HidePanel 1s;-webkit-animation: HidePanel 1s; } 
+.DisplayPane.SlideOut {animation: HidePanel 1s;-moz-animation: HidePanel 1s;-webkit-animation: HidePanel 1s; } 
 .DisplayPane.Show {animation: ShowPanel 1s;-moz-animation: ShowPanel 1s;-webkit-animation: ShowPanel 1s;opacity: 1; } 
 .DisplayPane>.object {width: 100%;height: 100%; scrolling: no;frameborder: 0px; border: 0px; object-fit: contain; } 
 @-moz-keyframes ShowPanel { 
@@ -187,11 +187,11 @@ body.box_flat .Clock.Jam.Large>.Name { left: 0%; width: 100%; height: 40% }
 .Clock.Intermission.Show { top: 60%; } 
 .Clock.Intermission .Message { position: absolute; top: 0%; height: 35%; left: 0%; width: 100%; font-size: 11vh; line-height: 0.8; } 
 .Clock.Intermission .Time { position: absolute; top: 40%; height: 60%; left: 0%; width: 100%; font-size: 21vh; line-height: 0.8; } 
-.Clock.Intermission .Time.Hide { opacity: 0; } 
+.Clock.Intermission .Time.Hidden { opacity: 0; } 
 
-.Dot, .Dot.Active { border-radius: 100%; } 
+.Dot, .Dot.Current { border-radius: 100%; } 
 .Dot { background: #000000; } 
-.Dot.Active { background: #000000; opacity: 0; animation: DotActive 0.75s infinite steps(6); -moz-animation: DotActive 0.75s infinite steps(6); -webkit-animation: DotActive 0.75s infinite steps(6); } 
+.Dot.Current { background: #000000; opacity: 0; animation: DotActive 0.75s infinite steps(6); -moz-animation: DotActive 0.75s infinite steps(6); -webkit-animation: DotActive 0.75s infinite steps(6); } 
 .Dot.Used { opacity: 0; } 
 @-moz-keyframes DotActive { 
  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } 

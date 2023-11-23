@@ -15,8 +15,6 @@ h2 { margin: 0 0 10px 0; padding: 4px 4px; display: block; border-radius: 6px; t
 .ExtraForm { margin: 20px 0; } 
 .ExtraForm .in { margin: 6px; text-align: center; } 
 
-.Hide { display: none; }
-
 button, input, select { outline: none; cursor: pointer; padding: 8px 8px; border-radius: 8px; font-size: .8em; width: 100%; color: white; background: #666; margin-bottom: 2px; } 
 input[type=range] { width: 95%; }
 input[type=number] { width: 50%; }

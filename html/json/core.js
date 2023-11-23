@@ -12,13 +12,13 @@ function _includeUrl(url) {
   var filename = url.replace(/^.*[\/]/g, '');
   if (/\.[cC][sS][sS](\?.*)?$/.test(url) && !$('head link[href="' + url + '"],head link[href="' + filename + '"]').length) {
     $('<link>').attr({ href: url, type: 'text/css', rel: 'stylesheet' }).appendTo('head');
-  } else if (/\.[jJ][sS](\?.*)?$/.test(url) && _alreadyIncludedScripts[url] == null) {
+  } else if (/\.[jJ][sS](\?.*)?$/.test(url) && !_alreadyIncludedScripts[url]) {
+    _alreadyIncludedScripts[url] = true;
     $.ajax(url, { dataType: 'script', cache: true, async: false }).fail(function (e, s, x) {
       /* jshint -W117 */
       console.error(s + ' for ' + url + ': ' + x);
       /* jshint +W117 */
     });
-    _alreadyIncludedScripts[url] = true;
   }
 }
 
@@ -55,7 +55,7 @@ _include('/external/jquery-plugins/fileupload/jquery.fileupload.js');
 
 /* Core functionality */
 _include('/javascript', ['timeconversions.js', 'windowfunctions.js', 'autofit.js', 'conversions.js']);
-_include('/styles', ['fonts.css']);
+_include('/styles', ['fonts.css', 'common.css']);
 _include('/json', ['WS.js']);
 
 $(function () {

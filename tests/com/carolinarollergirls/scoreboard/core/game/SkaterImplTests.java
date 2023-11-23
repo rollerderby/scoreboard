@@ -10,10 +10,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
-import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
@@ -22,6 +22,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.prepared.PreparedTeamImpl.PreparedTeamSkaterImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class SkaterImplTests {
 
@@ -33,21 +34,32 @@ public class SkaterImplTests {
 
     @Before
     public void setup() {
+        ScoreBoardClock.getInstance().stop();
         GameImpl.setQuickClockThreshold(0L);
         sb = new ScoreBoardImpl();
         sb.postAutosaveUpdate();
         g = sb.getCurrentGame().get(CurrentGame.GAME);
         team = g.getTeam(Team.ID_1);
         skaterId = UUID.randomUUID();
-
         skater = new SkaterImpl(team, skaterId.toString());
-        g.getOrCreatePeriod(1).getOrCreate(Period.JAM, "2");
-        g.getOrCreatePeriod(1).getOrCreate(Period.JAM, "3");
-        g.getOrCreatePeriod(1).getOrCreate(Period.JAM, "4");
-        g.getOrCreatePeriod(1).getOrCreate(Period.JAM, "5");
-        g.getOrCreatePeriod(2).getOrCreate(Period.JAM, "1");
-        g.getOrCreatePeriod(2).getOrCreate(Period.JAM, "2");
-        g.getOrCreatePeriod(2).getOrCreate(Period.JAM, "3");
+
+        fastForwardJams(5);
+        fastForwardPeriod();
+        fastForwardJams(3);
+    }
+
+    private void fastForwardJams(int number) {
+        for (int i = 0; i < number; i++) {
+            g.startJam();
+            g.stopJamTO();
+        }
+    }
+
+    private void fastForwardPeriod() {
+        g.getClock(Clock.ID_PERIOD).setTime(0);
+        ScoreBoardClock.getInstance().advance(1000);
+        g.getClock(Clock.ID_INTERMISSION).setTime(0);
+        ScoreBoardClock.getInstance().advance(1000);
     }
 
     @Test
@@ -110,8 +122,11 @@ public class SkaterImplTests {
     @Test
     public void add_ooo_penalty_diff_period() {
         Penalty p = skater.getOrCreate(Skater.PENALTY, "1");
-        p.set(Penalty.JAM, g.getOrCreatePeriod(2).getJam(3));
+        //        p.set(Penalty.JAM, g.getOrCreatePeriod(2).getJam(3));
         p.set(Penalty.CODE, "C");
+        assertEquals("C", p.getCode());
+        assertEquals(3, p.getJamNumber());
+        assertEquals(2, p.getPeriodNumber());
 
         p = skater.getOrCreate(Skater.PENALTY, "2");
         p.set(Penalty.JAM, g.getOrCreatePeriod(1).getJam(3));
@@ -251,6 +266,8 @@ public class SkaterImplTests {
         p2.set(Penalty.JAM, g.getOrCreatePeriod(1).getJam(3));
         p2.set(Penalty.CODE, "C");
 
+        assertEquals(1, p2.getNumber());
+        assertEquals(2, p.getNumber());
         assertEquals(g.getOrCreatePeriod(1).getJam(5), skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.JAM));
         assertEquals("FO", skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.CODE));
 
@@ -264,12 +281,12 @@ public class SkaterImplTests {
 
     @Test
     public void penalty_between_jams_fields_skater() {
+        team.execute(Team.ADVANCE_FIELDINGS);
         team.field(skater, Role.BLOCKER);
         g.startJam();
         g.stopJamTO();
 
         Penalty p = skater.getOrCreate(Skater.PENALTY, "1");
-        p.set(Penalty.JAM, g.getOrCreatePeriod(1).getJam(1));
         p.set(Penalty.CODE, "C");
 
         assertEquals(Role.BLOCKER, skater.getRole(team.getRunningOrUpcomingTeamJam()));

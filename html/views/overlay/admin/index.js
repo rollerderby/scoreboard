@@ -90,51 +90,6 @@ function initialize() {
   WS.AutoRegister();
 }
 
-$('#PanelSelect').on('change', function () {
-  'use strict';
-  const v = $(this).val();
-  if (v !== nextPanel) {
-    nextPanel = v;
-    $('#PanelSet').toggleClass('changed', nextPanel !== currrentPanel);
-    $('#LowerThirdControls').toggleClass('Hide', nextPanel !== 'LowerThird');
-  }
-});
-
-$('select#Skaters').on('change', function (e) {
-  'use strict';
-  const option = $('option[value=' + $(this).val() + ']', this);
-  const team = option.attr('data-team');
-  const name = option.attr('data-name');
-  const tnam = WS.state['ScoreBoard.CurrentGame.Team(' + team + ').Name'];
-
-  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)', name);
-  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)', tnam);
-  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)', 'ColourTeam' + team);
-});
-
-$('select#Keepers').on('change', function (e) {
-  'use strict';
-  const option = $('option[value="' + $(this).val() + '"]', this);
-  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)', option.attr('data-line1'));
-  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)', option.attr('data-line2'));
-  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)', option.attr('data-style'));
-});
-
-$('#KeeperAdd').on('click', function () {
-  'use strict';
-  const line1 = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)'];
-  const line2 = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)'];
-  const style = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)'];
-
-  $('<option>')
-    .attr('data-line1', line1)
-    .attr('data-line2', line2)
-    .attr('data-style', style)
-    .attr('value', '_' + Math.random().toString(36).substr(2, 9))
-    .text(line1 + '/' + line2 + ' (' + style + ')')
-    .appendTo('#Keepers');
-});
-
 $(function () {
   'use strict';
   $(document).on('keyup', function (e) {
@@ -160,16 +115,56 @@ $(function () {
   });
 });
 
+function selectPanel(v) {
+  'use strict';
+  if (v !== nextPanel) {
+    nextPanel = v;
+    $('#PanelSet').toggleClass('changed', nextPanel !== currrentPanel);
+    $('#LowerThirdControls').toggleClass('Hide', nextPanel !== 'LowerThird');
+  }
+}
+
+function selectSkater(v) {
+  'use strict';
+  const option = $('option[value=' + v + ']', $('select#Skaters'));
+  const team = option.attr('data-team');
+  const name = option.attr('data-name');
+  const tnam = WS.state['ScoreBoard.CurrentGame.Team(' + team + ').Name'];
+
+  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)', name);
+  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)', tnam);
+  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)', 'ColourTeam' + team);
+}
+
+function selectKeeper(v) {
+  'use strict';
+  const option = $('option[value="' + v + '"]', $('select#Keepers'));
+  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)', option.attr('data-line1'));
+  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)', option.attr('data-line2'));
+  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)', option.attr('data-style'));
+}
+
+function addKeeper() {
+  'use strict';
+  const line1 = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)'];
+  const line2 = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)'];
+  const style = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)'];
+
+  $('<option>')
+    .attr('data-line1', line1)
+    .attr('data-line2', line2)
+    .attr('data-style', style)
+    .attr('value', '_' + Math.random().toString(36).substr(2, 9))
+    .text(line1 + '/' + line2 + ' (' + style + ')')
+    .appendTo('#Keepers');
+}
+
 function invert(k) {
   return WS.state[k] === 'On' ? 'Off' : 'On';
 }
 
 function getNextPanel() {
   return nextPanel === currrentPanel ? '' : nextPanel;
-}
-
-function toNullIfEmpty(v) {
-  return v === '' ? null : v;
 }
 
 function defaultFgIfNull(k, v) {

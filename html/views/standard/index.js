@@ -5,7 +5,7 @@ function initialize() {
   var view = 'View';
   // needs to be set before AutoRegister
   if (_windowFunctions.checkParam('preview', 'true')) {
-    $('body').attr('sbPrefix', '&ScoreBoard.Settings.Setting(ScoreBoard.Preview_');
+    $('body').attr('sbPrefix', '&: ScoreBoard.Settings.Setting(ScoreBoard.Preview_ : )');
     view = 'Preview';
   }
 
@@ -22,7 +22,7 @@ function initialize() {
     $('div#video>video').each(function () {
       this.pause();
     });
-    $('.DisplayPane.Show').addClass('Hide');
+    $('.DisplayPane.Show').addClass('SlideOut');
     $('.DisplayPane').removeClass('Show');
     $('div#' + v + '.DisplayPane').addClass('Show');
     $('div#' + v + '.DisplayPane>video').each(function () {
@@ -136,12 +136,4 @@ function toJammerName(k, v) {
   $('[Team=' + id + ']').toggleClass('HasJammerName', jn !== '');
   $('[Team=' + id + '] .Lead').toggleClass('HasStarPass', starPass);
   return jn;
-}
-
-function toShadow(k, v) {
-  if (v == null || v === '') {
-    return '';
-  }
-  var shadow = '0px 0px 0.2em ' + v;
-  return shadow + ', ' + shadow + ', ' + shadow;
 }

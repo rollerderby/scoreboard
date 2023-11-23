@@ -12,7 +12,6 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
-import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
@@ -237,11 +236,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         }
         if (prop == TOTAL_PENALTIES) {
             int count = 0;
-            for (Skater s : getAll(SKATER)) {
-                for (Penalty p : s.getAll(Skater.PENALTY)) {
-                    if (!Skater.FO_EXP_ID.equals(p.getProviderId())) { count++; }
-                }
-            }
+            for (Skater s : getAll(SKATER)) { count += s.get(Skater.PENALTY_COUNT); }
             return count;
         }
         return value;
@@ -312,7 +307,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
         if (prop == TIME_OUT) { recountTimeouts(); }
         if (prop == SCORE_ADJUSTMENT) { scoreListener.addSource(((ScoreAdjustment) item), ScoreAdjustment.AMOUNT); }
-        if (prop == SKATER) { penaltyListener.addSource((Skater) item, Skater.PENALTY); }
+        if (prop == SKATER) { penaltyListener.addSource((Skater) item, Skater.PENALTY_COUNT); }
     }
 
     @Override

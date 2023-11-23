@@ -1,0 +1,100 @@
+<table cellpadding="0" cellspacing="0" border="1" class="PLT Team">
+  <thead>
+    <tr>
+      <td
+        colspan="5"
+        id="head"
+        class="ShowSome ShowOnPureLt"
+        sbDisplay="AlternateName(operator),UniformColor,Name"
+        sbCss="color: Color(operator_fg) | background-color: Color(operator_bg) | text-shadow: Color(operator_glow): toShadow"
+        sbCall="openOptionsDialog"
+      />
+      <td class="ShowSome ShowOnPlt">Bench</td>
+      <td class="ShowSome ShowOnPlt">Jammer</td>
+      <td class="ShowSome ShowOnPlt">Pivot</td>
+      <td class="ShowSome ShowOnPlt">Blocker</td>
+      <td class="ShowSome ShowOnPlt">Box</td>
+      <td class="ShowSome ShowOnLt" id="StarPass" sbToggle="StarPass">SP</td>
+      <td class="ShowSome ShowOnPt">#</td>
+      <td
+        colspan="9"
+        id="head"
+        class="ShowSome ShowOnPurePt ShowOnPlt ShowOnSheet"
+        sbDisplay="AlternateName(operator),UniformColor,Name"
+        sbCss="color: Color(operator_fg) | background-color: Color(operator_bg) | text-shadow: Color(operator_glow): toShadow"
+        sbCall="openOptionsDialog"
+      />
+      <td
+        colspan="9"
+        id="head"
+        class="ShowSome ShowOnWhiteboard"
+        sbDisplay="AlternateName(whiteboard),Name"
+        sbCss="color: Color(whiteboard_fg) | background-color: Color(whiteboard_bg) | text-shadow: Color(whiteboard_glow): toShadow"
+      />
+      <td class="ShowSome ShowOnPt">FO_Ex</td>
+      <td id="totalPenalties" sbDisplay="TotalPenalties: prefixSigma" />
+    </tr>
+  </thead>
+  <tbody>
+    <tr
+      class="Skater Penalty"
+      sbForeach="Skater:: compareRosterNumber"
+      sbAttr="role: Role: updatePtRowColor | rosterNumber: RosterNumber | warn: PenaltyCount: toWarnLevel"
+      sbClass="Captain: Flags: ==='C'"
+    >
+      <td class="Role Bench ShowSome ShowOnLt" rowspan="2" sbClass="OnTrack: Role: ==='Bench'" sbSet="Role: 'Bench'">
+        <span class="Num" sbDisplay="RosterNumber" /><span class="Pos">Bench</span>
+      </td>
+      <td class="Role Jammer ShowSome ShowOnLt" rowspan="2" sbClass="OnTrack: Role: ==='Jammer'" sbSet="Role: 'Jammer'">
+        <span class="Num" sbDisplay="RosterNumber" /><span class="Pos">J</span>
+      </td>
+      <td class="Role Pivot ShowSome ShowOnLt" rowspan="2" sbClass="OnTrack: Role: ==='Pivot'" sbSet="Role: 'Pivot'">
+        <span class="Num" sbDisplay="RosterNumber" /><span class="Pos">P</span>
+      </td>
+      <td class="Role Blocker ShowSome ShowOnLt" rowspan="2" sbClass="OnTrack: Role: ==='Blocker'" sbSet="Role: 'Blocker'">
+        <span class="Num" sbDisplay="RosterNumber" /><span class="Pos">B</span>
+      </td>
+      <td class="Sitting ShowSome ShowOnLt" rowspan="2" sbToggle="PenaltyBox: inBox">Box</td>
+      <td
+        class="Advance ShowSome ShowOnLt"
+        rowspan="2"
+        sbClass="OnTrack: Role: isOnTrackRole | Active: ^FieldingAdvancePending"
+        sbCall="advanceOrAnnotation"
+      />
+      <td
+        class="Number ShowSome ShowOnPt"
+        rowspan="2"
+        sbClass="OnTrack: Role: isOnTrackRole"
+        sbDisplay="RosterNumber"
+        sbCall="addPenalty"
+      />
+      <td
+        sbForeach="Penalty: 1,2,3,4,5,6,7,8,9,0: only"
+        class="Box ShowSome ShowOnPt ShowWarn"
+        sbDisplay="Code: toNbspIfEmpty"
+        sbAttr="period: PeriodNumber | jam: JamNumber"
+        sbClass="Serving: Serving | Unserved: Served: updateSkaterUnserved"
+        sbCall="editPenalty"
+      >
+        &nbsp;
+      </td>
+      <td rowspan="2" class="Total ShowWarn" sbDisplay="PenaltyCount" />
+    </tr>
+    <tr
+      class="Skater Jam"
+      sbForeach="Skater:: compareRosterNumber"
+      sbAttr="role: Role | rosterNumber: RosterNumber | warn: PenaltyCount: toWarnLevel"
+    >
+      <td
+        sbForeach="Penalty: 1,2,3,4,5,6,7,8,9,0: only"
+        class="Box ShowSome ShowOnPt ShowWarn"
+        sbDisplay="PeriodNumber,JamNumber: toPeriodJam"
+        sbAttr="period: PeriodNumber | jam: JamNumber"
+        sbClass="Serving: Serving | Unserved: Served: setAndFalse"
+        sbCall="editPenalty"
+      >
+        &nbsp;
+      </td>
+    </tr>
+  </tbody>
+</table>

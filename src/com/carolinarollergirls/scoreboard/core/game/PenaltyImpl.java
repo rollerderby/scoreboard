@@ -27,6 +27,8 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
         setCopy(PERIOD_NUMBER, this, JAM, Jam.PERIOD_NUMBER, true);
         if (s.isPenaltyBox()) { set(BOX_TRIP, s.getCurrentFielding().getCurrentBoxTrip()); }
         set(SERVED, get(BOX_TRIP) != null);
+        set(CODE, "?");
+        set(JAM, game.getCurrentPeriod().getCurrentJam(), Flag.SPECIAL_CASE);
     }
 
     @Override
@@ -46,7 +48,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     }
     @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == JAM && !Skater.FO_EXP_ID.equals(getProviderId())) {
+        if (prop == JAM && !Skater.FO_EXP_ID.equals(getProviderId()) && flag != Flag.SPECIAL_CASE) {
             int newPos = getNumber();
             if (value == null || ((Jam) value).compareTo((Jam) last) > 0) {
                 Penalty comp = getNext();

@@ -121,8 +121,12 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
             add(BOX_TRIP, bt);
             requestBatchEnd();
         }
-        if (prop == UNEND_BOX_TRIP && getCurrentBoxTrip() != null && !getCurrentBoxTrip().isCurrent()) {
-            getCurrentBoxTrip().unend();
+        if (prop == UNEND_BOX_TRIP) {
+            if (getCurrentBoxTrip() != null && !getCurrentBoxTrip().isCurrent()) {
+                getCurrentBoxTrip().unend();
+            } else if (!game.isInJam() && getTeamJam().isRunningOrUpcoming() && hasPrevious()) {
+                getPrevious().execute(prop, source);
+            }
         }
     }
 

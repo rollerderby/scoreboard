@@ -1,46 +1,33 @@
 (function () {
   'use strict';
+  _windowFunctions.configureZoom();
+
   var teamId = _windowFunctions.getParam('team');
   var gameId = _windowFunctions.getParam('game');
 
-  setupGameAdvance($('#gameAdvance'), gameId, false);
+  if (gameId && teamId) {
+    WS.Register(
+      [
+        'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name',
+        'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor',
+        'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)',
+      ],
+      function () {
+        var teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name'];
 
-  preparePltInputTable($('#input'), gameId, teamId, 'lt');
+        if (WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor'] != null) {
+          teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor'];
+        }
 
-  prepareLtSheetTable($('#sheet'), gameId, teamId, 'plt');
+        if (WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)'] != null) {
+          teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)'];
+        }
 
-  prepareAnnotationEditor($('#AnnotationEditor'), gameId, teamId);
-
-  prepareFieldingEditor($('#FieldingEditor'), gameId, teamId);
-
-  prepareOptionsDialog(gameId, teamId);
-  _windowFunctions.configureZoom();
-
-  WS.Register(
-    [
-      'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name',
-      'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor',
-      'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)',
-    ],
-    function () {
-      var teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name'];
-
-      if (WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor'] != null) {
-        teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor'];
+        document.title = 'LT ' + teamName + ' | CRG ScoreBoard';
       }
-
-      if (WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)'] != null) {
-        teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)'];
-      }
-
-      document.title = 'LT ' + teamName + ' | CRG ScoreBoard';
-    }
-  );
-
-  WS.AutoRegister();
-  WS.Connect();
-
-  if (!teamId) {
-    openOptionsDialog();
+    );
   }
+
+  WS.Connect();
+  WS.AutoRegister();
 })();

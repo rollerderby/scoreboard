@@ -10,20 +10,20 @@
 
 	<body>
 
-	<div id="Controls" sbPrefix="$ = ScoreBoard.Settings.Setting(Overlay.Interactive.">
+	<div id="Controls" sbPrefix="$: ScoreBoard.Settings.Setting(Overlay.Interactive : )">
 
 		<p id="Core" class="Panel">
 			<h2>Elements</h2>
-			<button data-key="C" sbSet="$Clock): invert" sbToggleClass="current: $Clock): ==='On'" class="ToggleSwitch">Clock [C]</button> 
-			<button data-key="S" sbSet="$Score): invert" sbToggleClass="current: $Score): ==='On'" class="ToggleSwitch">Score [S]</button>
-			<button data-key="J" sbSet="$ShowJammers): invert" sbToggleClass="current: $ShowJammers): ==='On'" class="ToggleSwitch">Jammer Names [J]</button><br/>
-			<button data-key="L" sbSet="$ShowLineups): invert" sbToggleClass="current: $ShowLineups): ==='On'" class="ToggleSwitch">Lineups [L]</button><br/>
-			<button data-key="N" sbSet="$ShowAllNames): invert" sbToggleClass="current: $ShowAllNames): ==='On'" class="ToggleSwitch">All Names [N]</button><br/>
+			<button data-key="C" sbSet="$.Clock: invert" sbClass="current: $.Clock: ==='On'" class="ToggleSwitch">Clock [C]</button> 
+			<button data-key="S" sbSet="$.Score: invert" sbClass="current: $.Score: ==='On'" class="ToggleSwitch">Score [S]</button>
+			<button data-key="J" sbSet="$.ShowJammers: invert" sbClass="current: $.ShowJammers: ==='On'" class="ToggleSwitch">Jammer Names [J]</button><br/>
+			<button data-key="L" sbSet="$.ShowLineups: invert" sbClass="current: $.ShowLineups: ==='On'" class="ToggleSwitch">Lineups [L]</button><br/>
+			<button data-key="N" sbSet="$.ShowAllNames: invert" sbClass="current: $.ShowAllNames: ==='On'" class="ToggleSwitch">All Names [N]</button><br/>
 		</p>
 
 		<p id="Panel">
 			<h2>Panels</h2>
-			<select id="PanelSelect">
+			<select id="PanelSelect" sbCall="selectPanel">
 				<option data-key="X" value="">--- No Panel --- [X]</option>
 				<option data-key="0" value="PPJBox">Points per Jam  [0]</option>
 				<option data-key="1" value="RosterTeam1">Roster (T1)  [1]</option>
@@ -35,15 +35,15 @@
 			</select>
 
 
-			<button id="PanelSet" sbSet="$Panel): getNextPanel" class="ToggleSwitch Reverse"> </button>
+			<button id="PanelSet" sbSet="$.Panel: getNextPanel" class="ToggleSwitch Reverse"> </button>
 
 			<div id="LowerThirdControls" class="Hide">
 				<h2>Lower Third</h2>
 				<div class="in">
 					<label>Line 1/Line 2/Style</label>
-					<input sbControl="$LowerThird.Line1)" type="text"/><br/>
-					<input sbControl="$LowerThird.Line2)" type="text"/><br/>
-					<select sbControl="$LowerThird.Style)">
+					<input sbControl="$.LowerThird.Line1" type="text"/><br/>
+					<input sbControl="$.LowerThird.Line2" type="text"/><br/>
+					<select sbControl="$.LowerThird.Style">
 						<option value="ColourDefault">--- Default --- </option>
 						<option value="ColourTeam1">Team 1</option>
 						<option value="ColourTeam2">Team 2</option>
@@ -51,13 +51,13 @@
 
 	
 					<label>Auto Skater Generator</label>
-					<select id="Skaters">
+					<select id="Skaters" sbCall="selectSkater">
 					</select>
 
-					<select id="Keepers" style="width: 80%; float: left;">
+					<select id="Keepers" style="width: 80%; float: left;" sbCall="selectKeeper">
 						<option data-line1="" data-line2="" data-style="ColourDefault">--- Clear ---</option>
 					</select>
-					<button id="KeeperAdd" style="width: 15%; ">+</button>
+					<button id="KeeperAdd" style="width: 15%; " sbCall="addKeeper">+</button>
 
 				</div>
 			</div>
@@ -65,22 +65,22 @@
 		</p>
 		<div id="Scaling" class="Panel">
 			<h2>Scaling</h2>
-			<input sbControl="$Scaling)" type="range" min="50" max="200"/><br/>
-			<input sbControl="$Scaling)" type="number"/> %
+			<input sbControl="$.Scaling" type="range" min="50" max="200"/><br/>
+			<input sbControl="$.Scaling" type="number"/> %
 		</div>
 		<div id="Background" class="Panel">
 			<h2>Background</h2>
-			<select sbControl="$BackgroundColor)">
+			<select sbControl="$.BackgroundColor">
 				<option value="transparent">Transparent</option>
 				<option value="#00ff00">Green</option>
 			</select>
 		</div>
 		<div id="TeamOptions" class="Panel" sbContext="ScoreBoard.CurrentGame">
 			<h2>Team Display</h2>
-			<div sbForeach="Team">
+			<div sbForeach="Team: 1,2: only">
 			<input sbControl="AlternateName(overlay),Name:: toNullIfEmpty" type="text"/>
-			<input sbControl="Color(overlay_fg): defaultFgIfNull" type="color" sbToggleClass="Cleared: Color(overlay_fg): ==null"/><button class="ClearPrev" sbSet="Color(overlay_fg): null">X</button>
-			<input sbControl="Color(overlay_bg): defaultBgIfNull" type="color" sbToggleClass="Cleared: Color(overlay_bg): ==null"/><button class="ClearPrev" sbSet="Color(overlay_bg): null">X</button>
+			<input sbControl="Color(overlay_fg): defaultFgIfNull" type="color" sbClass="Cleared: Color(overlay_fg): ==null"/><button class="ClearPrev" sbSet="Color(overlay_fg): null">X</button>
+			<input sbControl="Color(overlay_bg): defaultBgIfNull" type="color" sbClass="Cleared: Color(overlay_bg): ==null"/><button class="ClearPrev" sbSet="Color(overlay_bg): null">X</button>
 			</div>
 		</div>
 
