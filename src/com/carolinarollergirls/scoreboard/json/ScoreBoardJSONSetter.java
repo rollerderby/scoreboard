@@ -216,7 +216,7 @@ public class ScoreBoardJSONSetter {
                             }
                             // filter out elements that we intentionally drop
                             if (p.getProviderClass() == CurrentGame.class) { return; }
-                            if (prop == Clients.CLIENT) { return; }
+                            if (prop == Clients.Device.CLIENT) { return; }
                         }
                         Logger.printMessage("Could not get or create property " + readable);
                         return;
@@ -251,7 +251,9 @@ public class ScoreBoardJSONSetter {
         public final Flag flag;
     }
 
-    protected static interface PropertySet { public void process(); }
+    protected static interface PropertySet {
+        public void process();
+    }
 
     protected static class ValueSet<T> implements PropertySet {
         protected ValueSet(ScoreBoardEventProvider sbe, Value<T> prop, String value, Source source, Flag flag) {

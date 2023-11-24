@@ -16,14 +16,13 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
     public ClientsImpl(ScoreBoard parent) {
         super(parent, "", ScoreBoard.CLIENTS);
         addProperties(props);
-        addWriteProtectionOverride(CLIENT, Source.ANY_INTERNAL);
         addWriteProtectionOverride(DEVICE, Source.ANY_INTERNAL);
     }
 
     @Override
     public void postAutosaveUpdate() {
         if (get(NEW_DEVICE_WRITE)) { return; }
-        Boolean hasWritableClient = false;
+        boolean hasWritableClient = false;
         for (Device d : getAll(DEVICE)) {
             if (d.mayWrite()) { hasWritableClient = true; }
         }
@@ -37,14 +36,13 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
     public Client addClient(String deviceId, String remoteAddr, String source, String platform) {
         synchronized (coreLock) {
             requestBatchStart();
-            ClientImpl c = new ClientImpl(this, UUID.randomUUID().toString());
             Device d = get(DEVICE, deviceId);
-            c.set(Client.DEVICE, d);
+            ClientImpl c = new ClientImpl(d, UUID.randomUUID().toString());
             c.set(Client.SOURCE, source);
             c.set(Client.REMOTE_ADDR, remoteAddr);
             d.set(Device.REMOTE_ADDR, remoteAddr);
             c.set(Client.PLATFORM, platform);
-            add(CLIENT, c);
+            d.add(Device.CLIENT, c);
             if (platform != null) { d.set(Device.PLATFORM, platform); }
             c.set(Client.CREATED, System.currentTimeMillis());
             requestBatchEnd();
@@ -136,11 +134,9 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
     }
 
     public class ClientImpl extends ScoreBoardEventProviderImpl<Client> implements Client {
-        ClientImpl(Clients parent, String id) {
-            super(parent, id, Clients.CLIENT);
+        ClientImpl(Device parent, String id) {
+            super(parent, id, Device.CLIENT);
             addProperties(props);
-            setInverseReference(DEVICE, Device.CLIENT);
-            addWriteProtectionOverride(DEVICE, Source.ANY_INTERNAL);
             addWriteProtectionOverride(REMOTE_ADDR, Source.ANY_INTERNAL);
             addWriteProtectionOverride(PLATFORM, Source.ANY_INTERNAL);
             addWriteProtectionOverride(SOURCE, Source.ANY_INTERNAL);
@@ -153,7 +149,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
             synchronized (coreLock) {
                 long now = System.currentTimeMillis();
                 set(WROTE, now);
-                get(DEVICE).set(Device.WROTE, now);
+                getParent().set(Device.WROTE, now);
             }
         }
     }
@@ -164,6 +160,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
             addProperties(props);
             set(MAY_WRITE, parent.get(NEW_DEVICE_WRITE));
             addWriteProtectionOverride(CLIENT, Source.ANY_INTERNAL);
+            setRecalculated(NUM_CLIENTS).addSource(this, CLIENT);
         }
 
         @Override
@@ -202,7 +199,9 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
 
         @Override
         protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-            if (!source.isInternal() && prop != COMMENT && prop != MAY_WRITE) {
+            if (prop == NUM_CLIENTS) {
+                return numberOf(CLIENT);
+            } else if (!source.isInternal() && prop != COMMENT && prop != MAY_WRITE) {
                 // Only allow changing values from WS/load if they didn't already have one.
                 if (!Objects.equals(last, prop.getDefaultValue())) { return last; }
             }

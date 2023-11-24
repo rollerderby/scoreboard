@@ -48,7 +48,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     }
     @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == JAM && !Skater.FO_EXP_ID.equals(getProviderId()) && flag != Flag.SPECIAL_CASE) {
+        if (prop == JAM && !Skater.FO_EXP_ID.equals(getProviderId()) && flag != Flag.SPECIAL_CASE && !source.isFile()) {
             int newPos = getNumber();
             if (value == null || ((Jam) value).compareTo((Jam) last) > 0) {
                 Penalty comp = getNext();

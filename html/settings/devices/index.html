@@ -8,15 +8,20 @@
     <script type="text/javascript" src="/json/core.js"></script>
     <script type="text/javascript" src="/json/WSutils.js"></script>
   </head>
-  <body>
+  <body sbContext="ScoreBoard.Clients">
     <a id="indexLink" href="/" class="ui-widget ui-widget-content" style="float: right; border: none">Back to index page</a>
-    <div class="Buttons"></div>
+    <div class="Buttons">
+      <button class="Active" sbCall="toggleSelection">Comments</button>
+      <button class="Active" sbCall="toggleSelection">Writers</button>
+      <button class="Active" sbCall="toggleSelection">Active</button>
+      <button sbCall="toggleSelection">Inactive</button>
+    </div>
+    <div>
+      <button sbToggle="NewDeviceWrite">Write access for new Devices</button>
+      <button sbToggle="AllLocalDevicesWrite">Override for the computer running CRG</button>
+    </div>
     <br />
-    <div id="writeAccess">Write access for new devices:</div>
-    <br />
-    <div id="writeAccessLocal">Devices appearing to be on the computer running CRG:</div>
-    <br />
-    <table class="Devices">
+    <table class="Devices ShowComments ShowWriters ShowActive" sbClass="ForceLocal: AllLocalDevicesWrite">
       <thead>
         <tr>
           <th rowspan="2">Name</th>
@@ -32,6 +37,36 @@
           <th>Page</th>
         </tr>
       </thead>
+      <tbody
+        sbForeach="Device:: compareDeviceName"
+        sbAttr="name: Name"
+        sbClass="HasComment: Comment: !== '' | HasWritten: Wrote: !== 0 | HasClients: NumClients: > 0 | Own: Id: isOwnId"
+      >
+        <tr sbClass="Local: RemoteAddr: isLocalAddr">
+          <td class="Name" sbDisplay="Name" sbAttr="rowspan: NumClients: plus1"></td>
+          <td class="Access" sbAttr="rowspan: NumClients: plus1">
+            <span class="ForcedWrite">Read + Write</span>
+            <span class="RegularWrite">
+              <span class="OwnAccess" sbDisplay="MayWrite: toRwStatus"></span>
+              <button class="OtherAccess" sbToggle="MayWrite">Write</button>
+            </span>
+          </td>
+          <td class="Comment"><input type="text" sbControl="Comment" /></td>
+          <td class="Platform" sbDisplay="Platform"></td>
+          <td class="RemoteAddr" sbDisplay="RemoteAddr"></td>
+          <td class="LastSeenActive" sbAttr="rowspan: NumClients: plus1">0s</td>
+          <td class="LastSeenInactive" sbAttr="rowspan: NumClients: plus1 | age: Accessed | title: Accessed: toDate"></td>
+          <td class="LastWrite" sbAttr="age: Wrote | title: Wrote: toDate"></td>
+          <td class="Created" sbAttr="age: Created | title: Created: toDate"></td>
+        </tr>
+        <tr sbForeach="Client:: compareCreated" sbAttr="created: Created">
+          <td class="Source" sbDisplay="Source"></td>
+          <td class="Platform" sbDisplay="Platform"></td>
+          <td class="RemoteAddr" sbDisplay="RemoteAddr"></td>
+          <td class="LastWrite" sbAttr="age: Wrote | title: Wrote: toDate"></td>
+          <td class="Created" sbAttr="age: Created | title: Created: toDate"></td>
+        </tr>
+      </tbody>
     </table>
     <p>Page and Platform are provided by the client.</p>
   </body>

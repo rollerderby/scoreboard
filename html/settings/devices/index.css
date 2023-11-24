@@ -27,3 +27,5 @@ table.Devices, .Devices thead, .Devices tbody, .Devices tr, .Devices td, .Device
 
 .Devices:not(.ForceLocal) .Local .ForcedWrite { display: none; } 
 .Devices.ForceLocal .Local .RegularWrite { display: none; } 
+.Devices tbody.Own .OtherAccess { display: none; }
+.Devices tbody:not(.Own) .OwnAccess { display: none; }

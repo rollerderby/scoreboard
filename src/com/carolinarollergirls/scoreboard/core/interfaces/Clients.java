@@ -16,7 +16,6 @@ public interface Clients extends ScoreBoardEventProvider {
     public static final Value<Boolean> ALL_LOCAL_DEVICES_WRITE =
         new Value<>(Boolean.class, "AllLocalDevicesWrite", true, props);
 
-    public static final Child<Client> CLIENT = new Child<>(Client.class, "Client", props);
     public static final Child<Device> DEVICE = new Child<>(Device.class, "Device", props);
 
     public void postAutosaveUpdate();
@@ -35,8 +34,6 @@ public interface Clients extends ScoreBoardEventProvider {
         @SuppressWarnings("hiding")
         public static Collection<Property<?>> props = new ArrayList<>();
 
-        @SuppressWarnings("hiding")
-        public static final Value<Device> DEVICE = new Value<>(Device.class, "Device", null, props);
         public static final Value<String> REMOTE_ADDR = new Value<>(String.class, "RemoteAddr", "", props);
         public static final Value<String> PLATFORM = new Value<>(String.class, "Platform", "", props);
         public static final Value<String> SOURCE = new Value<>(String.class, "Source", "", props);
@@ -67,8 +64,8 @@ public interface Clients extends ScoreBoardEventProvider {
         public static final Value<Long> WROTE = new Value<>(Long.class, "Wrote", 0L, props);
         public static final Value<Long> ACCESSED = new Value<>(Long.class, "Accessed", 0L, props);
         public static final Value<Boolean> MAY_WRITE = new Value<>(Boolean.class, "MayWrite", false, props);
+        public static final Value<Integer> NUM_CLIENTS = new Value<>(Integer.class, "NumClients", 0, props);
 
-        @SuppressWarnings("hiding")
         public static final Child<Client> CLIENT = new Child<>(Client.class, "Client", props);
     }
 }
