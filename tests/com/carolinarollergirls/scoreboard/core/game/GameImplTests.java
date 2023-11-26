@@ -666,8 +666,6 @@ public class GameImplTests {
         assertFalse(ic.isRunning());
         ic.setMaximumTime(90000000);
         ic.setTime(784000);
-        g.setInPeriod(true);
-        g.setOfficialScore(true);
 
         g.stopJamTO();
 
