@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -125,10 +127,7 @@ public class WS extends WebSocketServlet {
                     if (jsonPaths != null) {
                         Set<String> newPaths = new TreeSet<>();
                         for (Object p : jsonPaths) { newPaths.add((String) p); }
-                        // Send on updates for the newly registered paths.
-                        PathTrie pt = new PathTrie();
-                        pt.addAll(newPaths);
-                        sendWSUpdatesForPaths(pt, state.keySet());
+                        sendWSUpdatesForRegister(newPaths);
                         this.paths.addAll(newPaths);
                     }
                     break;
@@ -313,6 +312,29 @@ public class WS extends WebSocketServlet {
             json.put("state", updates);
             send(json);
             updates.clear();
+        }
+
+        private synchronized void sendWSUpdatesForRegister(Set<String> registeredPaths) {
+            if (registeredPaths.size() > 5) {
+                // for larger sets this is faster
+                PathTrie pt = new PathTrie();
+                pt.addAll(registeredPaths);
+                sendWSUpdatesForPaths(pt, state.keySet());
+            } else {
+                String pattern =
+                    registeredPaths.stream()
+                        .map(path -> "^" + path.replace("(", "\\(").replace(")", "\\)").replace("*", "[^)]*"))
+                        .collect(Collectors.joining("|"));
+                Pattern pat = Pattern.compile(pattern);
+                Map<String, Object> updates = new HashMap<>();
+                for (String k : state.keySet()) {
+                    if (pat.matcher(k).find() && !k.endsWith("Secret")) { updates.put(k, state.get(k)); }
+                }
+                if (updates.size() == 0) { return; }
+                Map<String, Object> json = new HashMap<>();
+                json.put("state", updates);
+                send(json);
+            }
         }
 
         protected Client sbClient;
