@@ -25,6 +25,11 @@ function compareRosterNumber(a, b) {
   return compareAttrThenSubId('rosterNumber', a, b);
 }
 
+function compareName(a, b) {
+  'use strict';
+  return compareAttrThenSubId('name', a, b);
+}
+
 function comparePeriod(a, b) {
   'use strict';
   const comp = numCompareAttrThenSubId('Period', a, b);

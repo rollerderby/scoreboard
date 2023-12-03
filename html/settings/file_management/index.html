@@ -13,6 +13,62 @@
 
   <body>
     <a id="indexLink" href="/" class="ui-widget ui-widget-content" style="float: right; border: none">Back to index page</a><br />
-    <div id="tabsDiv"></div>
+    <div id="tabsDiv" sbContext="ScoreBoard.Media">
+      <ul id="fileTabBar">
+        <li><a href="#images">Image</a></li>
+        <li><a href="#videos">Video</a></li>
+        <li><a href="#custom">Custom Screens</a></li>
+        <li><a href="#game-data">Game Files</a></li>
+      </ul>
+      <div
+        sbForeach="Format: images, videos, custom, game-data: only"
+        sbAttr="id: Id | aria-hidden: Id: isNotImages"
+        sbCss="display: Id: noneIfNotImages"
+      >
+        <table sbForeach="Type" class="Type">
+          <col />
+          <col />
+          <col />
+          <col />
+          <thead>
+            <tr class="Type">
+              <th colspan="4">
+                <button class="ShowTable" sbCall="showTable">Show</button> <button class="HideTable" sbCall="hideTable">Hide</button>
+                <a class="Type"><span class="Label">Type: </span><span class="Type" sbDisplay="Id: getSubId"></span></a>
+                <button class="Upload Right" sbCall="createUploadDialog">Upload</button>
+              </th>
+            </tr>
+            <tr class="Controls">
+              <th class="Remove" />
+              <th class="Name">Name</th>
+              <th class="Preview" />
+              <th class="Download" />
+            </tr>
+          </thead>
+          <tbody>
+            <tr sbForeach="File:: compareName" sbAttr="name: Name" class="Item">
+              <td class="Remove"><button class="Remove" sbCall="createRemoveDialog">Remove</button></td>
+              <td class="Name" sbClass="Hide: Id: gameData"><input type="text" class="Name" sbControl="Name" /></td>
+              <td class="Preview" sbClass="Hide: Id: gameData" sbDisplay="Id: toPreviewElem: html"></td>
+              <td colspan="2" class="Src" sbClass="Hide: Id: noGameData" sbDisplay="Id"></td>
+              <td class="Download"><a download class="Download" sbAttr="href: Id: toDlPath" sbButton>Download</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id="Templates">
+      <div class="UploadMediaDialog">
+        <div class="Upload"></div>
+        <p><a class="File">File: </a><input type="file" multiple class="File" /></p>
+        <p><a class="Status"></a></p>
+      </div>
+      <div class="RemoveMediaDialog">
+        <p>Media File : <a class="File"></a></p>
+        <p class="Warning">This will delete the media file from your system. You cannot undo this operation.</p>
+        <p class="Confirm">Are you sure?</p>
+        <p class="Status"></p>
+      </div>
+    </div>
   </body>
 </html>

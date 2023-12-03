@@ -544,6 +544,9 @@ let WS = {
       };
       WS.Register(WS._getAutoFitPaths(elem), { preRegistered: true, element: elem, modifyFunc: mf });
     });
+    $.each(WS._getElements('[sbButton]', root), function (idx, elem) {
+      $(elem).button();
+    });
     $.each(WS._getElements('[sbCall]', root), function (idx, elem) {
       elem = $(elem);
       const entries = elem.attr('sbCall').split('|').map($.trim);
