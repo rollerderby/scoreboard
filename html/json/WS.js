@@ -462,7 +462,7 @@ let WS = {
     const filterFunc =
       selector === '[sbForeach]'
         ? function () {
-            return !$(this).parent().closest('[sbForeach],[sbInclude]').length;
+            return !$(this).parent().closest('[sbForeach],[sbInclude]').length && $(this).attr('sbInclude') == null;
           }
         : function () {
             return !$(this).closest('[sbForeach],[sbInclude]').length;
@@ -512,9 +512,9 @@ let WS = {
       elem = $(elem);
       const postFunc = elem.attr('sbAfterInclude');
       const selector = elem.attr('sbInclude');
-      elem.attr('sbInclude', null).attr('sbAfterInclude', null);
       elem.load(selector, function () {
         _includeJsAndCss(selector.split(' ', 1)[0]);
+        elem.attr('sbInclude', null).attr('sbAfterInclude', null);
         WS.AutoRegister(elem, true);
         if (postFunc) {
           window[postFunc]();
@@ -525,7 +525,7 @@ let WS = {
       elem = $(elem);
       elem.attr(
         'sbContext',
-        elem.attr('sbContext').replace('TeamJam(auto)', 'TeamJam(' + (elem.closest('[Team]').attr('Team') || auto) + ')')
+        elem.attr('sbContext').replace('TeamJam(auto)', 'TeamJam(' + (elem.closest('[Team]').attr('Team') || 'auto') + ')')
       );
     });
     $.each(WS._getElements('[sbPrefix]', root), function (idx, elem) {

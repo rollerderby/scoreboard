@@ -9,7 +9,7 @@
   </head>
   <body class="GameContext BothTeams">
     <div sbInclude="/components/game-advance/"></div>
-    <div sbForeach="Team: 1,2: only" sbInclude="/components/plt-input/" context="pt" style="width: 50%; float: left"></div>
+    <div class="TeamContext" sbInclude="/components/plt-input/" context="pt" style="width: 50%; float: left"></div>
     <div sbInclude="/components/sheet-dialogs/ .Dialog.Pt" sbAfterInclude="initDialogs"></div>
   </body>
 </html>
