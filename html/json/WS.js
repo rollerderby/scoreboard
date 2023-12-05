@@ -332,8 +332,10 @@ let WS = {
                 return false;
               }
             });
-          } else if (paths[0].includes('(*)')) {
-            const regexp = new RegExp(paths[0].replaceAll('(', '\\(').replaceAll(')', '\\)').replaceAll('*', '[^)]*'));
+          } else if (paths[0].includes('*)')) {
+            const regexp = new RegExp(
+              paths[0].replaceAll('.', '\\.').replaceAll('(', '\\(').replaceAll(')', '\\)').replaceAll('*', '[^)]*')
+            );
             $.each(WS.state, function (k, v) {
               if (regexp.test(k)) {
                 callback(WS._enrichProp(k), v);
@@ -550,7 +552,7 @@ let WS = {
     $.each(WS._getElements('[sbCall]', root), function (idx, elem) {
       elem = $(elem);
       const entries = elem.attr('sbCall').split('|').map($.trim);
-      if (elem.prop('tagName') === 'input' || elem.prop('tagName') === 'select') {
+      if (elem.prop('tagName') === 'INPUT' || elem.prop('tagName') === 'SELECT') {
         elem.on('change', function () {
           entries.map(function (entry) {
             window[entry](elem.val(), elem);
@@ -578,10 +580,10 @@ let WS = {
     $.each(WS._getElements('[sbSet]', root), function (idx, elem) {
       elem = $(elem);
       const entries = WS._getParameters(elem, 'sbSet');
-      if (elem.prop('tagName') === 'input' || elem.prop('tagName') === 'select') {
+      if (elem.prop('tagName') === 'INPUT' || elem.prop('tagName') === 'SELECT') {
         elem.on('change', function () {
           entries.map(function (entry) {
-            const writeFunc = window[entry[1]] || Function('k', 'elem', 'return ' + (entry[1] || elem.val()));
+            const writeFunc = window[entry[1]] || Function('k', 'elem', 'return ' + (entry[1] || '"' + elem.val() + '"'));
             const [prefix, suffix] = WS._getPrefixes(elem);
             entry[0].map(function (path) {
               if (prefix[path[0]]) {
@@ -695,7 +697,7 @@ let WS = {
       if (optionsString) {
         optionsString.split(',').map(function (option) {
           option = option.split('=', 2);
-          options[option[0]] = option[1] || true;
+          options[$.trim(option[0])] = $.trim(option[1]) || true;
         });
       }
       let context = elem.attr('sbContext') ? (elem.attr('sbContext') + ':').split(':', 2) : ['', ''];
@@ -712,11 +714,13 @@ let WS = {
           if (key.startsWith('-')) {
             blockedKeys[key.substring(1)] = true;
           } else {
-            const newElem = elem
-              .clone(true)
-              .attr(field, key)
-              .attr('sbContext', context[0] + field + '(' + key + ')' + context[1])
-              .addClass('Fixed');
+            if (options.part && paren.closest('[' + field + ']').length) {
+              key = paren.closest('[' + field + ']').attr(field) + '.' + key;
+            }
+            const newElem = elem.clone(true).attr(field, key).addClass('Fixed');
+            if (!options.noContext) {
+              newElem.attr('sbContext', context[0] + field + '(' + key + ')' + context[1]);
+            }
             if (subId > 0) {
               newElem.insertAfter(paren.children('[' + field + '="' + key + '"][subId="' + (subId - 1) + '"]'));
             } else if (index === 0) {
@@ -729,19 +733,38 @@ let WS = {
           }
         });
         if (sortFunction !== 'only') {
-          WS.Register(options.noId ? path.substring(0, path.length - 3) : path, {
+          if (options.part && paren.closest('[' + field + ']').length) {
+            path = path.substring(0, path.length - 5) + paren.closest('[' + field + ']').attr(field) + '.*).Id';
+          }
+          if (options.noId) {
+            path = path.substring(0, path.length - 3);
+          }
+          WS.Register(path, {
             preRegistered: true,
             triggerFunc: function (k, v) {
-              if (blockedKeys[k[field]]) {
+              const key = options.part && options.part !== '*' ? k[field].split('.').slice(0, options.part).join('.') : k[field];
+              const subfieldId = 'subfield-' + k[field].replaceAll('.', '-');
+              if (blockedKeys[key]) {
                 return;
               } else if (v == null) {
-                paren.children('[' + field + '=' + k[field] + ']:not(.Fixed)').remove();
-              } else if (!paren.children('[' + field + '="' + k[field] + '"][subId="' + subId + '"]').length) {
-                const newElem = elem
-                  .clone(true)
-                  .attr(field, k[field])
-                  .attr('sbContext', context[0] + field + '(' + k[field] + ')' + context[1])
-                  .appendTo(paren);
+                if (key !== k[field]) {
+                  const target = paren.children('[' + field + '="' + key + '"][' + subfieldId + '][subId="' + subId + '"]:not(.Fixed)');
+                  target
+                    .attr(subfieldId, null)
+                    .attr('sbCount', target.attr('sbCount') - 1)
+                    .filter('[sbCount="0"]')
+                    .remove();
+                } else {
+                  paren.children('[' + field + '="' + key + '"][subId="' + subId + '"]:not(.Fixed)').remove();
+                }
+              } else if (!paren.children('[' + field + '="' + key + '"][subId="' + subId + '"]').length) {
+                const newElem = elem.clone(true).attr(field, key).appendTo(paren);
+                if (!options.noContext) {
+                  newElem.attr('sbContext', context[0] + field + '(' + key + ')' + context[1]);
+                }
+                if (key !== k[field]) {
+                  newElem.attr('sbCount', 1).attr(subfieldId, true);
+                }
                 WS.AutoRegister(newElem);
                 newElem.detach();
                 _windowFunctions.appendSorted(
@@ -753,6 +776,14 @@ let WS = {
                     },
                   index
                 );
+              } else if (
+                key !== k[field] &&
+                !paren.children('[' + field + '="' + key + '"][' + subfieldId + '][subId="' + subId + '"]').length
+              ) {
+                const target = paren.children('[' + field + '="' + key + '"][subId="' + subId + '"]:not(.Fixed)');
+                if (target.length) {
+                  target.attr(subfieldId, true).attr('sbCount', Number(target.attr('sbCount')) + 1);
+                }
               }
             },
           });
@@ -814,7 +845,7 @@ let WS = {
         ret = ret + (ret !== '' && context !== '' ? '.' : '') + context;
       }
     }
-    if (foreach != null) {
+    if (foreach != null && (!foreach.includes('noContext') || skipSuffix)) {
       ret = (ret !== '' ? ret + '.' : '') + foreach.split(':', 1)[0] + '(*)';
     }
     if (suffix && !skipSuffix) {

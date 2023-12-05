@@ -6,14 +6,11 @@
     <script type="text/javascript" src="/json/core.js"></script>
     <script type="text/javascript" src="/javascript/utils.js"></script>
     <script type="text/javascript" src="/json/WSutils.js"></script>
-    <script type="text/javascript" src="/components/rulesets-tab.js"></script>
-
-    <link rel="stylesheet" href="/components/rulesets-tab.css" type="text/css" />
   </head>
   <body>
     <a id="indexLink" href="/settings/sb_data/" class="ui-widget ui-widget-content" style="float: right; border: none"
       >Back to overview page</a
     >
-    <div id="RulesetsTab" class="ui-widget"></div>
+    <div id="RulesetsTab" class="ui-widget" sbInclude="/components/ruleset-tab/" sbAfterInclude="rulesetPostLoad"></div>
   </body>
 </html>

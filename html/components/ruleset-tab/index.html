@@ -1,0 +1,37 @@
+<div class="definitions" sbContext="ScoreBoard.Rulesets">
+  <div class="selection">
+    <span>Current Ruleset: </span>
+    <select id="select" sbSet="Ruleset">
+      <option value="">Custom</option>
+      <option sbForeach="Ruleset:: orderRsAsTree" sbAttr="value: Id" sbDisplay="Name: indentByParents: html"></option>
+    </select>
+  </div>
+  <div class="buttons top"></div>
+  <div class="metadata">
+    <span>Name: </span><input type="text" id="name" size="20" sbSet="§.Name" /> <span> Parent: </span>
+    <select id="parent" sbSet="§.Parent">
+      <option sbForeach="Ruleset:: orderRsAsTree" sbAttr="value: Id" sbDisplay="Name: indentByParents: html"></option>
+    </select>
+  </div>
+  <div class="rules">
+    <div sbForeach="RuleDefinition:: compareChildIndex: part=1, noContext" class="section folded">
+      <div class="header" sbCall="triggerFold"></div>
+      <div sbForeach="RuleDefinition:: compareIndex: part=*" class="definition" sbAttr="index: Index">
+        <div class="name">
+          <label><input type="checkbox" checked class="Selector" sbCall="definitionOverride" /></label>
+          <span sbDisplay="Name: part2"></span>
+          <span class="tooltiptext" sbDisplay="Description"></span>
+        </div>
+        <div class="value">
+          <span class="inherit"> </span>
+          <input type="text" class="override" sbClass="Hide: Type: === 'Boolean'" sbCall="setRule" />
+          <select class="override" sbClass="Hide: Type: !== 'Boolean'" sbCall="setRule">
+            <option value="true" sbDisplay="TrueValue"></option>
+            <option value="false" sbDisplay="FalseValue"></option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="buttons bottom"></div>
+  </div>
+</div>

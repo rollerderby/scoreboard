@@ -1,9 +1,6 @@
 $(function () {
   'use strict';
-  var rulesetId = _windowFunctions.getParam('ruleset');
-  createRulesetsTab($('#RulesetsTab'), rulesetId, false);
-
-  WS.Register('ScoreBoard.Rulesets.Ruleset(' + rulesetId + ').Name', function (k, v) {
+  WS.Register('ScoreBoard.Rulesets.Ruleset(' + _windowFunctions.getParam('ruleset') + ').Name', function (k, v) {
     if (v == null) {
       window.close();
     } else {
@@ -11,6 +8,6 @@ $(function () {
     }
   });
 
-  WS.AutoRegister();
   WS.Connect();
+  WS.AutoRegister();
 });
