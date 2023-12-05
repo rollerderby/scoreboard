@@ -122,7 +122,7 @@ function createMetaControlTable(gameId) {
       setReplaceButton(value);
       var operator = $('#operatorId').text();
       if (operator) {
-        WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + operator + '.ReplaceButton)', value);
+        WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + operator + '.ReplaceButton)', value);
       }
     });
 
@@ -140,7 +140,7 @@ function createMetaControlTable(gameId) {
       setClockControls(value);
       var operator = $('#operatorId').text();
       if (operator) {
-        WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + operator + '.StartStopButtons)', value);
+        WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + operator + '.StartStopButtons)', value);
       }
     });
 
@@ -158,7 +158,7 @@ function createMetaControlTable(gameId) {
       setScoreAdjustments(value);
       var operator = $('#operatorId').text();
       if (operator) {
-        WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + operator + '.ScoreAdjustments)', value);
+        WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + operator + '.ScoreAdjustments)', value);
       }
     });
 
@@ -172,7 +172,7 @@ function createMetaControlTable(gameId) {
       setTabBar(value);
       var operator = $('#operatorId').text();
       if (operator) {
-        WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + operator + '.TabBar)', value);
+        WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + operator + '.TabBar)', value);
       }
     });
 

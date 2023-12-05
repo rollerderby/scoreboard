@@ -50,7 +50,7 @@ var _crgKeyControls = {
       .end()
       .each(function () {
         var btn = $(this);
-        var prop = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + operator + '.KeyControl.' + btn.attr('id') + ')';
+        var prop = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + operator + '.KeyControl.' + btn.attr('id') + ')';
         var key = WS.state[prop];
         btn.attr('_crgKeyControls_prop', prop).toggleClass('HasControlKey', key ? true : false);
         btn
@@ -120,7 +120,7 @@ var _crgKeyControls = {
       $(document).on('keydown', _crgKeyControls._keyControlDown);
 
       WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.*)', function (k, v) {
-        if (!k.startsWith('ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + _crgKeyControls.operator + '.KeyControl.')) {
+        if (!k.startsWith('ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + _crgKeyControls.operator + '.KeyControl.')) {
           return;
         }
         var button = $('#' + k.substring(k.lastIndexOf('.') + 1, k.length - 1));

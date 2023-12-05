@@ -131,3 +131,33 @@ function isCurrentPeriod(k, v) {
   'use strict';
   return k.field === 'Number' && v === WS.state['ScoreBoard.Game(' + k.Game + ').CurrentPeriodNumber'];
 }
+
+function getParents(rs) {
+  'use strict';
+  const parent = WS.state['ScoreBoard.Rulesets.Ruleset(' + rs + ').Parent'];
+  if (!parent) {
+    return [rs];
+  } else {
+    return getParents(parent).concat([rs]);
+  }
+}
+
+function indentByParents(k, v) {
+  'use strict';
+  return '&nbsp;'.repeat(3 * (getParents(k.Ruleset).length - 1)) + v;
+}
+
+function orderRsAsTree(a, b) {
+  'use strict';
+  const rsA = $(a).attr('value');
+  const rsB = $(b).attr('value');
+  const setA = getParents(rsA);
+  const setB = getParents(rsB);
+
+  for (let i = 0; i < Math.min(setA.length, setB.length); i++) {
+    if (setA[i] !== setB[i]) {
+      return WS.state['ScoreBoard.Rulesets.Ruleset(' + setA[i] + ').Name'] > WS.state['ScoreBoard.Rulesets.Ruleset(' + setB[i] + ').Name'];
+    }
+  }
+  return setA.length > setB.length;
+}

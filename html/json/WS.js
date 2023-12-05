@@ -263,6 +263,10 @@ let WS = {
           callback = function (k, v) {
             elem.attr(options.attr, v);
           };
+        } else if (options.prop != null) {
+          callback = function (k, v) {
+            elem.prop(options.prop, v);
+          };
         } else if (options.toggleClass != null) {
           callback = function (k, v) {
             elem.toggleClass(options.toggleClass, v);
@@ -676,7 +680,34 @@ let WS = {
       WS._getParameters(elem, 'sbAttr', 1).map(function (entry) {
         const paths = entry[1];
 
-        WS.Register(paths, { preRegistered: true, element: elem, attr: entry[0], modifyFunc: WS._getModifyFunc(paths, entry[2]) });
+        WS.Register(paths, {
+          preRegistered: true,
+          element: elem,
+          attr: entry[0],
+          modifyFunc: WS._getModifyFunc(paths, entry[2]),
+        });
+      });
+    });
+    $.each(WS._getElements('[sbProp]', root), function (idx, elem) {
+      elem = $(elem);
+      WS._getParameters(elem, 'sbProp', 1).map(function (entry) {
+        const paths = entry[1];
+        let func = entry[2];
+        if ($.isFunction(window[func])) {
+          func = window[func];
+        } else if (func === '!') {
+          func = function (k, v) {
+            return !isTrue(v);
+          };
+        } else if (!func) {
+          func = function (k, v) {
+            return isTrue(v);
+          };
+        } else {
+          func = Function('k', 'v', 'return v' + func);
+        }
+
+        WS.Register(paths, { preRegistered: true, element: elem, prop: entry[0], modifyFunc: WS._getModifyFunc(paths, func) });
       });
     });
     let lastForeach;
@@ -710,12 +741,15 @@ let WS = {
       elem.detach().removeAttr('sbForeach').attr('subId', subId);
       $.each(paths, function (idx, path) {
         const field = path.substring(path.lastIndexOf('.', path.length - 6) + 1, path.length - 6); // cut off (*).Id
+        if (options.filter === '^') {
+          options.filter = paren.closest('[' + field + ']').attr(field);
+        }
         $.each(fixedKeys, function (idx, key) {
           if (key.startsWith('-')) {
             blockedKeys[key.substring(1)] = true;
           } else {
-            if (options.part && paren.closest('[' + field + ']').length) {
-              key = paren.closest('[' + field + ']').attr(field) + '.' + key;
+            if (options.filter) {
+              key = options.filter + '.' + key;
             }
             const newElem = elem.clone(true).attr(field, key).addClass('Fixed');
             if (!options.noContext) {
@@ -733,8 +767,8 @@ let WS = {
           }
         });
         if (sortFunction !== 'only') {
-          if (options.part && paren.closest('[' + field + ']').length) {
-            path = path.substring(0, path.length - 5) + paren.closest('[' + field + ']').attr(field) + '.*).Id';
+          if (options.filter) {
+            path = path.substring(0, path.length - 5) + options.filter + '.*).Id';
           }
           if (options.noId) {
             path = path.substring(0, path.length - 3);
@@ -742,8 +776,8 @@ let WS = {
           WS.Register(path, {
             preRegistered: true,
             triggerFunc: function (k, v) {
-              const key = options.part && options.part !== '*' ? k[field].split('.').slice(0, options.part).join('.') : k[field];
-              const subfieldId = 'subfield-' + k[field].replaceAll('.', '-');
+              const key = options.part && options.part !== '*' ? k[field].split('.').slice(0, options.part).join('.') + '.*' : k[field];
+              const subfieldId = 'data-' + k[field].replaceAll('.', '-');
               if (blockedKeys[key]) {
                 return;
               } else if (v == null) {
@@ -763,7 +797,7 @@ let WS = {
                   newElem.attr('sbContext', context[0] + field + '(' + key + ')' + context[1]);
                 }
                 if (key !== k[field]) {
-                  newElem.attr('sbCount', 1).attr(subfieldId, true);
+                  newElem.attr('sbCount', 1).attr(subfieldId, k[field]);
                 }
                 WS.AutoRegister(newElem);
                 newElem.detach();
@@ -781,9 +815,7 @@ let WS = {
                 !paren.children('[' + field + '="' + key + '"][' + subfieldId + '][subId="' + subId + '"]').length
               ) {
                 const target = paren.children('[' + field + '="' + key + '"][subId="' + subId + '"]:not(.Fixed)');
-                if (target.length) {
-                  target.attr(subfieldId, true).attr('sbCount', Number(target.attr('sbCount')) + 1);
-                }
+                target.attr(subfieldId, k[field]).attr('sbCount', Number(target.attr('sbCount')) + 1);
               }
             },
           });
@@ -809,7 +841,7 @@ let WS = {
     $.each(['sbForeach', 'sbDisplay', 'sbSet', 'sbControl', 'sbToggle'], function (idx, attr) {
       preRegisterAttribute(attr, 0);
     });
-    $.each(['sbClass', 'sbCss', 'sbAttr'], function (idx, attr) {
+    $.each(['sbClass', 'sbCss', 'sbAttr', 'sbProp'], function (idx, attr) {
       preRegisterAttribute(attr, 1);
     });
 

@@ -39,5 +39,3 @@ table.Type.Hide tr:not(.Type) > td { display: none; }
 /* Preview elements */
 table.Type tr.Item > td.Preview > * { max-width: 400px; max-height: 100px; } 
 /* End Type groups */
-
-#Templates { display: none; }

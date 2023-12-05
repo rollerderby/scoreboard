@@ -38,7 +38,7 @@ function createDataTab(tab) {
       paths = paths + ',ScoreBoard.Rulesets.Ruleset(' + $(this).attr('id') + ')';
     });
     operators.find('tr.Content.Selected').each(function () {
-      paths = paths + ',ScoreBoard.Settings.Setting(Operator__' + $(this).attr('id') + '.';
+      paths = paths + ',ScoreBoard.Settings.Setting(Operator.' + $(this).attr('id') + '.';
     });
     var d = new Date();
     var name = $.datepicker.formatDate('yy-mm-dd_', d);
@@ -133,7 +133,7 @@ function createDataTab(tab) {
           operators.find(selector).each(function () {
             var op = $(this).attr('id');
             for (const setting of operatorSettings[op]) {
-              WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + op + '.' + setting + ')', null);
+              WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + op + '.' + setting + ')', null);
             }
           });
           tab.find('.ToDelete').removeClass('ToDelete');
@@ -340,7 +340,7 @@ function createDataTab(tab) {
   );
 
   WS.Register('ScoreBoard.Settings.Setting(*)', function (k, v) {
-    if (!k.Setting.startsWith('ScoreBoard.Operator__')) {
+    if (!k.Setting.startsWith('ScoreBoard.Operator.')) {
       return;
     }
     var dotPos = k.Setting.indexOf('.', 21);
@@ -368,7 +368,7 @@ function createDataTab(tab) {
             'href',
             '/SaveJSON/crg-operator-' +
               op.replace(/[\/|\\:*?"<>\ ]/g, '_') +
-              '.json?path=ScoreBoard.Settings.Setting(ScoreBoard.Operator__' +
+              '.json?path=ScoreBoard.Settings.Setting(ScoreBoard.Operator.' +
               op +
               '.'
           );

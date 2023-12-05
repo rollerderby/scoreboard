@@ -57,36 +57,6 @@ function updateRuleset(rs) {
   });
 }
 
-function getParents(rs) {
-  'use strict';
-  const parent = WS.state['ScoreBoard.Rulesets.Ruleset(' + rs + ').Parent'];
-  if (!parent) {
-    return [rs];
-  } else {
-    return getParents(parent).concat([rs]);
-  }
-}
-
-function indentByParents(k, v) {
-  'use strict';
-  return '&nbsp;'.repeat(getParents(k.Ruleset).length) + v;
-}
-
-function orderRsAsTree(a, b) {
-  'use strict';
-  const rsA = $(a).attr('value');
-  const rsB = $(b).attr('value');
-  const setA = getParents(rsA).concat([rsA]);
-  const setB = getParents(rsB).concat([rsB]);
-
-  for (let i = 0; i < Math.min(setA.length, setB.length); i++) {
-    if (setA[i] !== setB[i]) {
-      return WS.state['ScoreBoard.Rulesets.Ruleset(' + setA[i] + ').Name'] > WS.state['ScoreBoard.Rulesets.Ruleset(' + setB[i] + ').Name'];
-    }
-  }
-  return setA.length > setB.length;
-}
-
 function compareIndex(a, b) {
   'use strict';
   return compareAttrThenSubId('index', a, b);

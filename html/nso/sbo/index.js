@@ -44,7 +44,7 @@ $(function () {
 
 function setOperatorSettings(op) {
   'use strict';
-  var opPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + op + '.';
+  var opPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + op + '.';
   // Default settings are intentionally separate from settings of the default operator
   // This ensures users logging in for the first time always get the former and not whatever
   // the latter currently happens to be.

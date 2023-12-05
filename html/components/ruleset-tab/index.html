@@ -16,7 +16,7 @@
   <div class="rules">
     <div sbForeach="RuleDefinition:: compareChildIndex: part=1, noContext" class="section folded">
       <div class="header" sbCall="triggerFold"></div>
-      <div sbForeach="RuleDefinition:: compareIndex: part=*" class="definition" sbAttr="index: Index">
+      <div sbForeach="RuleDefinition:: compareIndex: part=*, filter=^" class="definition" sbAttr="index: Index">
         <div class="name">
           <label><input type="checkbox" checked class="Selector" sbCall="definitionOverride" /></label>
           <span sbDisplay="Name: part2"></span>
