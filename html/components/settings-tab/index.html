@@ -1,0 +1,222 @@
+<table class="UsePreview" id="ScoreBoardSettings">
+  <tr>
+    <td class="Header"><span>General Settings</span></td>
+  </tr>
+  <tr>
+    <td class="Footer">
+      <table sbContext="ScoreBoard" sbPrefix="$:ScoreBoard.Settings.Setting(ScoreBoard:)">
+        <tr class="ScoreBoardOptions EndSubSection">
+          <td><button class="ui-button-small" sbCall="openIntermissionDialog">Intermission Labels</button></td>
+          <td><button sbToggle="$.Clock.Sync">Sync Clocks</button></td>
+          <td>
+            <label>Clock shown after Timeout: </label>
+            <select sbControl="$.ClockAfterTimeout">
+              <option value="Lineup">Lineup</option>
+              <option value="Timeout">Timeout</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="ScoreBoardOptions">
+          <td>
+            <label>Auto Start: </label>
+            <select sbControl="$.AutoStart">
+              <option value="">Off</option>
+              <option value="Jam">Jam</option>
+              <option value="Timeout">Timeout</option>
+            </select>
+          </td>
+          <td colspan="2">
+            <label>Time between end of Lineup and auto start being applied: </label>
+            <input type="text" size="5" sbControl="$.AutoStartBuffer" />
+          </td>
+        </tr>
+        <tr class="ScoreBoardOptions EndSubSection">
+          <td></td>
+          <td><button sbToggle="$.AutoEndJam">Auto End Jams</button></td>
+          <td><button sbToggle="$.AutoEndTTO">Auto End Team Timeouts</button></td>
+        </tr>
+        <tr>
+          <td><button sbToggle="$.Penalties.UseLT">CRG Tracks Lineups</button></td>
+          <td colspan="2" class="StatsFile" sbClass="Readable: BlankStatsbookFound | Progress: BlanStatsbookFound: === 'checking'">
+            <label>Blank Statsbook File: </label>
+            <input type="text" size="40" sbControl="$.Stats.InputFile" />
+            <div class="spinner" sbClass="Hide: BlankStatsbookFound: !== 'checking'"></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label>Team Name for Display: </label>
+            <select sbControl="$.Teams.DisplayName">
+              <option value="League">League Name</option>
+              <option value="Team">Team Name</option>
+              <option value="Full">Full Name</option>
+            </select>
+          </td>
+          <td>
+            <label>Team Name for Files: </label>
+            <select sbControl="$.Teams.FileName">
+              <option value="League">League Name</option>
+              <option value="Team">Team Name</option>
+              <option value="Full">Full Name</option>
+            </select>
+          </td>
+          <td><label>Name format for new games: </label> <input type="text" size="25" sbControl="$.Game.DefaultNameFormat" /></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td class="Header"><span>Main Display Settings</span></td>
+  </tr>
+  <tr>
+    <td class="PreviewControl SubHeader">
+      <table>
+        <tr>
+          <td></td>
+          <td>
+            <span>Edit:</span>
+            <select id="usePreviewDropdown" sbCall="setUsePreview">
+              <option value="preview">Preview</option>
+              <option value="live">Live ScoreBoard</option>
+            </select>
+          </td>
+          <td><button sbCall="applyPreview">Apply Preview</button></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr class="View EndSubSection" sbPrefix="$:ScoreBoard.Settings.Setting(ScoreBoard.View:)">
+    <td class="NoChildren CurrentView" ApplyPreview="CurrentView">
+      <span>Current View: </span>
+      <select sbControl="$_CurrentView">
+        <option value="scoreboard">ScoreBoard</option>
+        <option value="whiteboard">WhiteBoard</option>
+        <option value="image">Image</option>
+        <option value="video">Video</option>
+        <option value="html">Custom Page</option>
+      </select>
+    </td>
+  </tr>
+  <tr class="View" sbPrefix="$:ScoreBoard.Settings.Setting(ScoreBoard.View:)">
+    <td>
+      <table>
+        <tr class="ScoreBoardOptions">
+          <td><button sbToggle="$_HideLogos" ApplyPreview="HideLogos">Hide Logos</button></td>
+          <td>
+            <label>Box Style: </label>
+            <select sbControl="$_BoxStyle" ApplyPreview="BoxStyle">
+              <option value="">Rounded</option>
+              <option value="box_flat">Flat</option>
+              <option value="box_flat_bright">Flat & Bright</option>
+            </select>
+          </td>
+          <td sbContext="ScoreBoard.Media.Format(images).Type(fullscreen)">
+            <label>Image View: </label>
+            <select sbControl="$_Image" ApplyPreview="Image">
+              <option value="">No Image</option>
+              <option sbForeach="File:: compareName" sbAttr="name: Name | value: Name: toMediaPath" sbDisplay="Name"></option>
+            </select>
+          </td>
+          <td>
+            <label>Image Scaling: </label>
+            <select sbControl="$_ImageScaling" ApplyPreview="ImageScaling">
+              <option value="contain">Scale to fit</option>
+              <option value="cover">Scale to fill</option>
+              <option value="fill">Stretch</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="ScoreBoardOptions">
+          <td><button sbToggle="$_SwapTeams" ApplyPreview="SwapTeams">Swap Team sides</button></td>
+          <td>
+            <label>Side Padding: </label>
+            <select sbControl="$_SidePadding" ApplyPreview="SidePadding">
+              <option value="">None</option>
+              <option value="2">2%</option>
+              <option value="4">4%</option>
+              <option value="6">6%</option>
+              <option value="8">8%</option>
+              <option value="10">10%</option>
+            </select>
+          </td>
+          <td sbContext="ScoreBoard.Media.Format(videos).Type(fullscreen)">
+            <label>Video View: </label>
+            <select sbControl="$_Video" ApplyPreview="Video">
+              <option value="">No Video</option>
+              <option sbForeach="File:: compareName" sbAttr="name: Name | value: Name: toMediaPath" sbDisplay="Name"></option>
+            </select>
+          </td>
+          <td>
+            <label>Video Scaling: </label>
+            <select sbControl="$_VideoScaling" ApplyPreview="VideoScaling">
+              <option value="contain">Scale to fit</option>
+              <option value="cover">Scale to fill</option>
+              <option value="fill">Stretch</option>
+            </select>
+          </td>
+        </tr>
+        <tr class="ScoreBoardOptions EndSubSection Footer">
+          <td></td>
+          <td></td>
+          <td></td>
+          <td sbContext="ScoreBoard.Media.Format(custom).Type(view)">
+            <label>Custom Page View: </label>
+            <select sbControl="$_CustomHtml" ApplyPreview="CustomHtml">
+              <option value="">No Page</option>
+              <option sbForeach="File:: compareName" sbAttr="name: Name | value: Name: toMediaPath" sbDisplay="Name"></option>
+            </select>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr class="ViewFrames">
+    <td class="SubHeader">
+      <table>
+        <tr>
+          <td><span>Current</span></td>
+          <td><span>Preview</span></td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td class="ViewFrames Footer">
+      <table>
+        <tr>
+          <td><button src="/views/standard/index.html?videomuted=true&videocontrol=true" sbCall="showPreview">Show View</button></td>
+          <td>
+            <button src="/views/standard/index.html?videomuted=true&videocontrol=true&preview=true" sbCall="showPreview">
+              Show Preview
+            </button>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+
+<div>
+  <table id="IntermissionControlDialog" sbPrefix="$:ScoreBoard.Settings.Setting(ScoreBoard.Intermission:)">
+    <tr>
+      <td class="Name">Pre Game</td>
+      <td class="Value"><input type="text" sbControl="$.PreGame" /></td>
+    </tr>
+    <tr>
+      <td class="Name">Intermission</td>
+      <td class="Value"><input type="text" sbControl="$.Intermission" /></td>
+    </tr>
+    <tr>
+      <td class="Name">Unofficial Score</td>
+      <td class="Value"><input type="text" sbControl="$.Unofficial" /></td>
+    </tr>
+    <tr>
+      <td class="Name">Official Score</td>
+      <td class="Value"><input type="text" sbControl="$.Official" /></td>
+    </tr>
+    <tr>
+      <td class="Name">Official Score with Clock</td>
+      <td class="Value"><input type="text" sbControl="$.OfficialWithClock" /></td>
+    </tr>
+  </table>
+</div>

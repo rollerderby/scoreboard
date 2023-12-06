@@ -1,8 +1,8 @@
 .Hide, .spinner.Hide { display: none; } 
 #Templates { display: none; }
 
-.Active, .ui-button.Active, .ui-button:hover.Active { background: #70ff70; }
-.ClickMe, .ui-button.ClickMe, .ui-button:hover.ClickMe { background: #ff9010; }
+.Active, .ui-button.Active, .ui-button:hover.Active { background: #70ff70; color: #000; }
+.ClickMe, .ui-button.ClickMe, .ui-button:hover.ClickMe { background: #ff9010; color: #000; }
 
 [context="pt"] .ShowSome:not(.ShowOnPt):not(.ShowOnPurePt) { display: none; }
 [context="lt"] .ShowSome:not(.ShowOnLt):not(.ShowOnPureLt) { display: none; }

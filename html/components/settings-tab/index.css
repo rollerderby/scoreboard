@@ -1,0 +1,29 @@
+#ScoreBoardSettings { width: 100%; border-spacing: 0px; } 
+#ScoreBoardSettings.UsePreview>tbody>tr.View { display: none; } 
+#ScoreBoardSettings:not(.UsePreview)>tbody>tr.Preview { display: none; } 
+#ScoreBoardSettings>tbody>tr>td { text-align: center; width: 100%; background: #eee; }
+#ScoreBoardSettings>tbody>tr>td.SubHeader { background: #ddd; }
+#ScoreBoardSettings>tbody>tr>td.CurrentView>span { font-weight: bold; font-size: 110%; }
+#ScoreBoardSettings>tbody>tr>td.Header { background: #ccc; border-radius: 12px 12px 0px 0px; font-style: bold; font-size: 150%; } 
+#ScoreBoardSettings>tbody>tr>td.Header.NoChildren { border-radius: 12px; } 
+#ScoreBoardSettings>tbody>tr>td.Footer { border-radius: 0px 0px 12px 12px; } 
+#ScoreBoardSettings>tbody>tr>td.PreviewControl a { font-size: 150%; font-weight: bold; } 
+#ScoreBoardSettings>tbody>tr>td.PreviewControl table td { width: 33.3333%; }
+#ScoreBoardSettings>tbody>tr>td.Header>span { font-size: 150%; font-weight: bold; } 
+#ScoreBoardSettings .ViewFrames table td { width: 50%;} 
+#ScoreBoardSettings .ViewFrames iframe { width: 100%; height: 300px; } 
+#ScoreBoardSettings>tbody>tr>td>table { width: 100%; }
+#ScoreBoardSettings .EndSubSection>td { padding-bottom: 10px; }
+#ScoreBoardSettings .StatsFile.Readable::after { content: "✓"; color: green; font-size: 150%; }
+#ScoreBoardSettings .StatsFile:not(.Readable):not(.Progress)::after { content: "❌"; color: red; }
+
+/* Intermission Control Dialog */
+#IntermissionControlDialog { width: 100%; border-spacing: 0px; } 
+#IntermissionControlDialog>tbody>tr>td { text-align: center; } 
+#IntermissionControlDialog>tbody>tr:first-child>td:first-child { border-top-left-radius: 12px; } 
+#IntermissionControlDialog>tbody>tr:first-child>td:last-child { border-top-right-radius: 12px; } 
+#IntermissionControlDialog>tbody>tr>td { background: #eee; width: 33%; } 
+#IntermissionControlDialog>tbody>tr>td:nth-of-type(1) { width: 34%; } 
+#IntermissionControlDialog>tbody>tr:last-child>td:first-child { border-bottom-left-radius: 12px; } 
+#IntermissionControlDialog>tbody>tr:last-child>td:last-child { border-bottom-right-radius: 12px; } 
+/* End Intermission Control Dialog */

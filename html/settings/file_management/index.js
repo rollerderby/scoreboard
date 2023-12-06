@@ -56,11 +56,6 @@ function toPreviewElem(k, v) {
         '">';
 }
 
-function toDlPath(k, v) {
-  'use strict';
-  return '/' + k.Format + '/' + k.Type + '/' + k.File;
-}
-
 function createRemoveDialog(elem) {
   'use struct';
   const k = WS._enrichProp(WS._getContext(elem));

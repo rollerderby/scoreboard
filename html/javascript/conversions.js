@@ -161,3 +161,8 @@ function orderRsAsTree(a, b) {
   }
   return setA.length > setB.length;
 }
+
+function toMediaPath(k, v) {
+  'use strict';
+  return '/' + k.Format + '/' + k.Type + '/' + k.File;
+}
