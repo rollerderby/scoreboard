@@ -1,9 +1,6 @@
 $(function () {
   'use strict';
-  var teamId = _windowFunctions.getParam('team');
-  createTeamsTab($('#TeamsTab'), null, teamId);
-
-  WS.Register('ScoreBoard.PreparedTeam(' + teamId + ').Name', function (k, v) {
+  WS.Register('ScoreBoard.PreparedTeam(' + _windowFunctions.getParam('team') + ').Name', function (k, v) {
     if (v == null) {
       window.close();
     } else {
@@ -11,6 +8,6 @@ $(function () {
     }
   });
 
-  WS.AutoRegister();
   WS.Connect();
+  WS.AutoRegister();
 });

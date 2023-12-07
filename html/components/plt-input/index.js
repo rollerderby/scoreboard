@@ -19,7 +19,7 @@ function initPltInput() {
 }
 initPltInput();
 
-function updateRowColor(k, v) {
+function updatePtRowColor(k, v) {
   const dark = $('[context="Sheet"]').length ? $('.LT.Period tr:visible').length % 2 : 1;
   $('.LT.Period tr:visible').each(function (idx) {
     $(this).toggleClass('Darker', idx % 2 === dark);
@@ -40,6 +40,7 @@ function prefixSigma(k, v) {
 function toWarnLevel(k, v) {
   'use strict';
   const limit = WS.state['ScoreBoard.Game(' + k.Game + ').Rule(Penalties.NumberToFoulout)'];
+  console.log(k, WS.state['ScoreBoard.Game(' + k.Game + ').Team(' + k.Team + ').Skater(' + k.Skater + ').Penalty(0).Code'], limit);
   if (WS.state['ScoreBoard.Game(' + k.Game + ').Team(' + k.Team + ').Skater(' + k.Skater + ').Penalty(0).Code'] || v >= limit) {
     return 3;
   } else if (v == limit - 1) {
@@ -61,26 +62,22 @@ function updateSkaterUnserved(k, v) {
   return v != null && !isTrue(v);
 }
 
-function advanceOrAnnotation(elem) {
+function advanceOrAnnotation(k, v, elem) {
   'use strict';
-  const context = WS._getContext(elem);
   if (elem.hasClass('Active')) {
-    WS.Set(context.substring(0, context.lastIndexOf('.')) + '.AdvanceFieldings', true);
+    WS.Set(k.substring(0, k.lastIndexOf('.')) + '.AdvanceFieldings', true);
   } else if (elem.hasClass('OnTrack')) {
-    const k = WS._enrichProp(context);
     openAnnotationEditor(k.Game, k.Team, k.Skater);
   }
 }
 
-function addPenalty(elem) {
+function addPenalty(k, v, elem) {
   'use strict';
-  const k = WS._enrichProp(WS._getContext(elem));
   openPenaltyEditor(k.Game, k.Team, k.Skater, 99);
 }
 
-function editPenalty(elem) {
+function editPenalty(k, v, elem) {
   'use strict';
-  const k = WS._enrichProp(WS._getContext(elem));
   openPenaltyEditor(k.Game, k.Team, k.Skater, k.Penalty);
 }
 

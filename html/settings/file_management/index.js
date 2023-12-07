@@ -22,12 +22,12 @@ function getSubId(k, v) {
   return v.split('_')[1];
 }
 
-function showTable(elem) {
+function showTable(k, v, elem) {
   'use strict';
   elem.closest('table').removeClass('Hide');
 }
 
-function hideTable(elem) {
+function hideTable(k, v, elem) {
   'use strict';
   elem.closest('table').addClass('Hide');
 }
@@ -56,9 +56,8 @@ function toPreviewElem(k, v) {
         '">';
 }
 
-function createRemoveDialog(elem) {
+function createRemoveDialog(k, v, elem) {
   'use struct';
-  const k = WS._enrichProp(WS._getContext(elem));
   var div = $('div.RemoveMediaDialog').clone(true);
   div.find('a.File').text(k.Format + '/' + k.Type + '/' + k.File);
   div.dialog({
@@ -96,8 +95,7 @@ function createRemoveDialog(elem) {
   });
 }
 
-function createUploadDialog(elem) {
-  const k = WS._enrichProp(WS._getContext(elem));
+function createUploadDialog(k, v, elem) {
   var div = $('div.UploadMediaDialog').clone(true);
   var uploader = div.find('div.Upload').fileupload({
     url: '/Media/upload',

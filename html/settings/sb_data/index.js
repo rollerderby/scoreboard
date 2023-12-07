@@ -55,22 +55,22 @@ function createRemoveSelectedDialog() {
   createRemoveDialog('selected');
 }
 
-function uploadJson(elem) {
+function uploadJson(k, v, elem) {
   'use strict';
   elem.closest('form').attr('action', 'Load/JSON').submit();
 }
 
-function uploadXlsx(elem) {
+function uploadXlsx(k, v, elem) {
   'use strict';
   elem.closest('form').attr('action', 'Load/xlsx').submit();
 }
 
-function uploadBlankXlsx(elem) {
+function uploadBlankXlsx(k, v, elem) {
   'use strict';
   elem.closest('form').attr('action', 'Load/blank_xlsx').submit();
 }
 
-function updateUploadButtons(elem) {
+function updateUploadButtons(k, v, elem) {
   'use strict';
   $('UploadButton').button(elem.val() ? 'enable' : 'disable');
 }
@@ -113,7 +113,7 @@ function createRemoveDialog(type) {
   });
 }
 
-function selectAll(elem) {
+function selectAll(k, v, elem) {
   'use strict';
   const turnOn = elem.closest('table').find('tr.Content:not(.Selected)').length > 0;
   elem.closest('table').find('tr.Content').toggleClass('Selected', turnOn);
@@ -140,13 +140,13 @@ function newRuleset() {
   window.open('/settings/rulesets?ruleset=' + rulesetid, '_blank');
 }
 
-function select(elem) {
+function select(k, v, elem) {
   'use strict';
   elem.closest('tr.Content').toggleClass('Selected');
   updateSelectedUrl();
 }
 
-function deleteElem(elem) {
+function deleteElem(k, v, elem) {
   'use strict';
   elem.closest('tr.Content').addClass('ToDelete');
   createRemoveDialog('singleElement');
@@ -196,7 +196,7 @@ function toEditButtonLabel(k, v) {
   return isTrue(v) ? 'View' : 'Edit';
 }
 
-function toOperatorName(k, v) {
+function toOperatorName(k) {
   'use strict';
   return k.Setting.split('.')[2];
 }

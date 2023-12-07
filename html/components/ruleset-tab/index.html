@@ -3,20 +3,20 @@
     <span>Current Ruleset: </span>
     <select id="select" sbSet="Ruleset">
       <option value="">Custom</option>
-      <option sbForeach="Ruleset:: orderRsAsTree" sbAttr="value: Id" sbDisplay="Name: indentByParents: html"></option>
+      <option sbForeach="Ruleset:: orderRsAsTree: resort=Parent" sbAttr="value: Id" sbDisplay="Name: indentByParents: html"></option>
     </select>
   </div>
   <div class="buttons top"></div>
   <div class="metadata">
     <span>Name: </span><input type="text" id="name" size="20" sbSet="§.Name" /> <span> Parent: </span>
     <select id="parent" sbSet="§.Parent">
-      <option sbForeach="Ruleset:: orderRsAsTree" sbAttr="value: Id" sbDisplay="Name: indentByParents: html"></option>
+      <option sbForeach="Ruleset:: orderRsAsTree: resort=Parent" sbAttr="value: Id" sbDisplay="Name: indentByParents: html"></option>
     </select>
   </div>
   <div class="rules">
     <div sbForeach="RuleDefinition:: compareChildIndex: part=1, noContext" class="section folded">
       <div class="header" sbCall="triggerFold"></div>
-      <div sbForeach="RuleDefinition:: compareIndex: part=*, filter=^" class="definition" sbAttr="index: Index">
+      <div sbForeach="RuleDefinition:: compareIndex: filter=^" class="definition" sbAttr="index: Index">
         <div class="name">
           <label><input type="checkbox" checked class="Selector" sbCall="definitionOverride" /></label>
           <span sbDisplay="Name: part2"></span>

@@ -30,6 +30,11 @@ function compareName(a, b) {
   return compareAttrThenSubId('name', a, b);
 }
 
+function compareValue(a, b) {
+  'use strict';
+  return compareAttrThenSubId('value', a, b);
+}
+
 function comparePeriod(a, b) {
   'use strict';
   const comp = numCompareAttrThenSubId('Period', a, b);
@@ -80,14 +85,9 @@ function toNbspIfEmpty(k, v) {
   return v || '\xa0';
 }
 
-function toNullIfEmpty(v) {
+function toNullIfEmpty(k, v) {
   'use strict';
   return v === '' ? null : v;
-}
-
-function toNullIfEmptyVal(k, elem) {
-  'use strict';
-  return elem.val() === '' ? null : elem.val();
 }
 
 function toX(k, v) {
@@ -162,7 +162,7 @@ function orderRsAsTree(a, b) {
   return setA.length > setB.length;
 }
 
-function toMediaPath(k, v) {
+function toMediaPath(k) {
   'use strict';
   return '/' + k.Format + '/' + k.Type + '/' + k.File;
 }

@@ -128,8 +128,8 @@ function setURL() {
   optionsDialog.dialog('close');
 }
 
-function setTeam(elem) {
-  $('[team]').removeClass('Active');
+function setTeam(k, v, elem) {
+  $('#OptionsDialog [team]').removeClass('Active');
   elem.addClass('Active');
   setURL();
 }
@@ -183,7 +183,7 @@ function openPenaltyEditor(g, t, s, p) {
   $('#PenaltyEditor').dialog('open');
 }
 
-function adjust(elem) {
+function adjust(k, v, elem) {
   'use strict';
   const which = elem.attr('sel');
   const inc = elem.attr('inc');
@@ -244,7 +244,7 @@ function closePenEd() {
   $('#PenaltyEditor').dialog('close');
 }
 
-function toPenaltyCodeDisplay(k, v, suffix) {
+function toPenaltyCodeDisplay(k, v, elem, suffix) {
   'use strict';
   suffix = suffix || '';
   let output = '<div class="Code">' + k.PenaltyCode + suffix + '</div><div class="Description">';
@@ -255,9 +255,9 @@ function toPenaltyCodeDisplay(k, v, suffix) {
   return output;
 }
 
-function toExpCodeDisplay(k, v) {
+function toExpCodeDisplay(k, v, elem) {
   'use strict';
-  return toPenaltyCodeDisplay(k, v, '(EXP)');
+  return toPenaltyCodeDisplay(k, v, elem, '(EXP)');
 }
 
 //###################################################################
@@ -314,7 +314,7 @@ function closeAnnEd() {
   $('#AnnotationEditor').dialog('close');
 }
 
-function append(k, elem) {
+function append(k, v, elem) {
   'use strict';
   const old = WS.state[k];
   closeAnnEd();
@@ -373,18 +373,18 @@ function closeFieldEd() {
   $('#FieldingEditor').dialog('close');
 }
 
-function toggle(k, elem) {
+function toggle(k, v, elem) {
   return elem.toggleClass('Active').hasClass('Active');
 }
 
-function toBtStartText(k, v) {
+function toBtStartText(k) {
   const prefix = 'ScoreBoard.Game(' + k.Game + ').Team(' + k.Team + ').BoxTrip(' + k.BoxTrip + ').';
   const between = isTrue(WS.state[prefix + 'StartBetweenJams']);
   const afterSP = isTrue(WS.state[prefix + 'StartAfterSP']);
   return (between ? 'Before ' : '') + 'Jam ' + WS.state[prefix + 'StartJamNumber'] + (afterSP ? ' after SP' : '');
 }
 
-function toBtEndText(k, v) {
+function toBtEndText(k) {
   const prefix = 'ScoreBoard.Game(' + k.Game + ').Team(' + k.Team + ').BoxTrip(' + k.BoxTrip + ').';
   const between = isTrue(WS.state[prefix + 'EndBetweenJams']);
   const afterSP = isTrue(WS.state[prefix + 'EndAfterSP']);

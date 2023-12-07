@@ -23,7 +23,7 @@
           sbClass="InJam: InJam | Show: $.Score: === 'On' | JammerNames: $.ShowJammers: === 'On' | AllNames: $.ShowAllNames: === 'On' | Lineups: $.ShowLineups: === 'On' | UseLT: /ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)"
         >
           <div sbForeach="Team: 1,2: only" sbClass="Lead: DisplayLead">
-            <div class="Indicator Box" sbCss="color: Color(overlay_fg) | background: Color(overlay_bg)">
+            <div class="Indicator Box" sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)">
               <div class="Clock ShowInJam" sbDisplay="StarPass, Lead, Lost: toIndicator"></div>
             </div>
             <div class="Team Row barBackground">
@@ -40,7 +40,7 @@
               </div>
             </div>
             <div class="JammerWrapper">
-              <div class="JammerBox ShowInJam Clock" sbCss="color: Color(overlay_fg) | background: Color(overlay_bg)">
+              <div class="JammerBox ShowInJam Clock" sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)">
                 <div
                   sbForeach="Position: Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
                   sbClass="InBox: PenaltyBox | Penalized: CurrentPenalties: !== ''"
@@ -115,7 +115,7 @@
             class="htop"
             sbContext="Team(1)"
             sbDisplay="AlternateName(overlay),Name"
-            sbCss="color: Color(overlay_fg) | background: Color(overlay_bg)"
+            sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)"
           ></h4>
           <div class="PPJContainer Wrapper" sbPrefix="t: ScoreBoard.CurrentGame.Team">
             <div class="Wrapper Team Team1">
@@ -124,7 +124,7 @@
                   class="ColumnWidth GraphBlock"
                   sbForeach="Jam"
                   sbClass="Lead: TeamJam(1).Lead | Lost: TeamJam(1).Lost"
-                  sbCss="height: TeamJam(1).JamScore: toPpjColumnHeight | width: ScoreBoard.CurrentGame.Clock(Jam).Number: toPpjColumnWidth | margin-top: TeamJam(1).JamScore: toPpjMargin | background: t(1).Color(overlay_bg)"
+                  sbCss="height: TeamJam(1).JamScore: toPpjColumnHeight | width: ScoreBoard.CurrentGame.Clock(Jam).Number: toPpjColumnWidth | margin-top: TeamJam(1).JamScore: toPpjMargin | background: t(1).Color(overlay.bg)"
                 >
                   <div class="JammerStar ColumnWidth"></div>
                   <div class="Points ColumnWidth" sbDisplay="TeamJam(1).JamScore"></div>
@@ -137,7 +137,7 @@
                   class="ColumnWidth GraphBlock"
                   sbForeach="Jam"
                   sbClass="Lead: TeamJam(2).Lead | Lost: TeamJam(2).Lost"
-                  sbCss="height: TeamJam(2).JamScore: toPpjColumnHeight | width: ScoreBoard.CurrentGame.Clock(Jam).Number: toPpjColumnWidth | background: t(2).Color(overlay_bg)"
+                  sbCss="height: TeamJam(2).JamScore: toPpjColumnHeight | width: ScoreBoard.CurrentGame.Clock(Jam).Number: toPpjColumnWidth | background: t(2).Color(overlay.bg)"
                 >
                   <div class="JammerStar ColumnWidth"></div>
                   <div class="Points ColumnWidth" sbDisplay="TeamJam(2).JamScore"></div>
@@ -149,7 +149,7 @@
             class="hbottom"
             sbContext="Team(2)"
             sbDisplay="AlternateName(overlay),Name"
-            sbCss="color: Color(overlay_fg) | background: Color(overlay_bg)"
+            sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)"
           ></h4>
         </div>
 
@@ -159,7 +159,7 @@
             sbClass="NoLogo: Logo: empty | Show1: $.Panel: ==='RosterTeam1' | Show2: $.Panel: ==='RosterTeam2'"
           >
             <img class="TeamLogo" sbAttr="src: Logo" />
-            <h1 sbDisplay="AlternateName(overlay),Name" sbCss="color: Color(overlay_fg) | background: Color(overlay_bg)"></h1>
+            <h1 sbDisplay="AlternateName(overlay),Name" sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)"></h1>
             <h2>Team Roster</h2>
           </div>
           <div
@@ -169,14 +169,14 @@
             <div class="Wrapper Team Team1 SortBox">
               <div
                 class="Skater"
-                sbForeach="Skater:: compareRosterNumber"
+                sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"
                 sbClass="NoShow: Role: ==='NotInGame'"
                 sbAttr="rosterNumber: RosterNumber"
               >
                 <div
                   class="Number"
                   sbDisplay="RosterNumber: toNbspIfEmpty"
-                  sbCss="color: ^Color(overlay_fg) | background: ^Color(overlay_bg)"
+                  sbCss="color: ^Color(overlay.fg) | background: ^Color(overlay.bg)"
                 ></div>
                 <div class="Name" sbDisplay="Name: toNbspIfEmpty">&nbsp;</div>
                 <div class="Flags" sbAttr="data-flag: Flag">&nbsp;</div>
@@ -190,7 +190,7 @@
           >
             <img class="TeamLogo" sbAttr="src: Logo" />
             <h1>Penalty Board</h1>
-            <h2 sbDisplay="AlternateName(overlay),Name" sbCss="color: Color(overlay_fg) | background: Color(overlay_bg)"></h2>
+            <h2 sbDisplay="AlternateName(overlay),Name" sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)"></h2>
           </div>
           <div
             class="PenaltyTeam AnimationDelay LowerPart PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel"
@@ -199,14 +199,14 @@
             <div class="Wrapper Team Team1 SortBox">
               <div
                 class="Skater"
-                sbForeach="Skater:: compareRosterNumber"
+                sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"
                 sbClass="NoShow: Role: ==='NotInGame'"
                 sbAttr="rosterNumber: RosterNumber"
               >
                 <div
                   class="Number"
                   sbDisplay="RosterNumber: toNbspIfEmpty"
-                  sbCss="color: ^Color(overlay_fg) | background: ^Color(overlay_bg)"
+                  sbCss="color: ^Color(overlay.fg) | background: ^Color(overlay.bg)"
                 ></div>
                 <div class="Name" sbDisplay="Name: toNbspIfEmpty">&nbsp;</div>
                 <div class="Penalties">
@@ -222,7 +222,7 @@
             <img class="TeamLogo" sbAttr="src: Logo" style="float: left" />
             <h1
               sbDisplay="AlternateName(overlay),Name"
-              sbCss="color: Color(overlay_fg) | background: Color(overlay_bg)"
+              sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)"
               style="margin-top: 2em; margin-left: 4em; margin-right: 0"
             ></h1>
           </div>
@@ -231,7 +231,7 @@
             <img class="TeamLogo" sbAttr="src: Logo" style="float: right" />
             <h1
               sbDisplay="AlternateName(overlay),Name"
-              sbCss="color: Color(overlay_fg) | background: Color(overlay_bg)"
+              sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)"
               style="margin-top: 2em; margin-left: 0; margin-right: 4em"
             ></h1>
           </div>
@@ -244,7 +244,7 @@
           <h5
             class="Line2"
             sbDisplay="$.LowerThird.Line2"
-            sbCss="color: $.LowerThird.Style,Team(*).Color(overlay_fg): toLowerThirdColorFg | background: $.LowerThird.Style,Team(*).Color(overlay_bg): toLowerThirdColorBg"
+            sbCss="color: $.LowerThird.Style,Team(*).Color(overlay.fg): toLowerThirdColorFg | background: $.LowerThird.Style,Team(*).Color(overlay.bg): toLowerThirdColorBg"
           />
         </div>
       </div>

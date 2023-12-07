@@ -1,0 +1,74 @@
+.OneTeam #Team, .PreparedTeam #Team { width: 100%; } 
+.BothTeams #Team { width: 50%; }
+#Team { text-align: center; vertical-align: top; background: #eee; } 
+
+#Team table.Team { width: 100%; border-spacing: 0px; } 
+#Team table.Team tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; font-size: 200%; font-weight: bold; } 
+#Team table.Team tr.Name>td select { font-size: 50%; } 
+#Team table.Team tr.Name>td button { font-size: 50%; margin: 2px 5px; } 
+#Team table.Team .LogoPreview>img { max-width: 95%; max-height: 6em; display: block; margin: auto; }
+#Team table.Team tr.Control>td>div { display: flex; justify-content: space-around; } 
+#Team table.Team td.Value { text-align: left; }
+#Team table.Team td.Label { text-align: right; }
+#Team table.Team .RemoveColor button { font-size: 80%; margin-left: 5px; padding: 2px 5px; } 
+#Team table.Team .RemoveColor { margin: 0px 5px; border-right: 1px solid black; }
+
+#Team table.Skaters { width: 100%; border-spacing: 0px; } 
+#Team table.Skaters.Empty tr:last-of-type>th:first-of-type { border-radius: 0px 0px 0px 12px; } 
+#Team table.Skaters.Empty tr:last-of-type>th:last-of-type { border-radius: 0px 0px 12px 0px; } 
+#Team table.Skaters tr:last-of-type>td:first-of-type { border-radius: 0px 0px 0px 12px; } 
+#Team table.Skaters tr:last-of-type>td:last-of-type { border-radius: 0px 0px 12px 0px; } 
+#Team table.Skaters tbody tr:nth-of-type(2n)>td { background: #ddd; } 
+#Team table.Skaters col.Name { width: 40%; } 
+#Team table.Skaters col.RosterNumber { width: 15%; } 
+#Team table.Skaters col.Button { width: 15%; } 
+#Team table.Skaters col.Pronoun { width: 15%; } 
+
+#Team table.Skaters th.Title { font-size: 150%; } 
+#Team table.Skaters th#skaterCount { font-size: 100%; font-weight: normal; } 
+#Team table.Skaters button.AddSkater>span { padding-top: 0em; padding-bottom: 0em; } 
+#Team table.Skaters button.RemoveSkater>span { padding-top: 0em; padding-bottom: 0em; } 
+
+/* Alternate Names Dialog */
+#AlternateNamesDialog { text-align: center; } 
+#AlternateNamesDialog table { width: 100%; border-spacing: 0px; } 
+#AlternateNamesDialog table tr>th.X { width: 10%; } 
+#AlternateNamesDialog table tr>th.Id { width: 45%; } 
+#AlternateNamesDialog table tr>th.Name { width: 45%; } 
+#AlternateNamesDialog table tr>th { background: #ccc; } 
+#AlternateNamesDialog table tr>th:first-of-type { border-radius: 5px 0px 0px 0px; } 
+#AlternateNamesDialog table tr>th:last-of-type { border-radius: 0px 5px 0px 0px; } 
+#AlternateNamesDialog table tr:last-of-type>td:first-of-type { border-radius: 0px 0px 0px 5px; } 
+#AlternateNamesDialog table tr:last-of-type>td:last-of-type { border-radius: 0px 0px 5px 0px; } 
+#AlternateNamesDialog table tr>td { text-align: center; } 
+#AlternateNamesDialog table tr:nth-of-type(odd)>td { background: #eee; } 
+#AlternateNamesDialog table tr:nth-of-type(even)>td { background: #ddd; } 
+/* End Alternate Names Dialog */
+
+/* Colors Dialog */
+#ColorsDialog { text-align: center; } 
+#ColorsDialog table { width: 100%; border-spacing: 0px; } 
+#ColorsDialog table thead tr>th.X { width: 10%; } 
+#ColorsDialog table thead tr>th.Id { width: 30%; } 
+#ColorsDialog table thead tr>th.Color { width: 20%; } 
+#ColorsDialog table thead tr>th { background: #ccc; } 
+#ColorsDialog table thead tr>th:first-of-type { border-radius: 5px 0px 0px 0px; } 
+#ColorsDialog table thead tr>th:last-of-type { border-radius: 0px 5px 0px 0px; } 
+#ColorsDialog table thead tr:last-of-type>td:first-of-type { border-radius: 0px 0px 0px 5px; } 
+#ColorsDialog table thead tr:last-of-type>td:last-of-type { border-radius: 0px 0px 5px 0px; } 
+#ColorsDialog table tr>td { text-align: center; } 
+#ColorsDialog table tr>td.Id { text-align: left; } 
+#ColorsDialog table tbody tr:nth-of-type(odd)>td { background: #eee; } 
+#ColorsDialog table tbody tr:nth-of-type(even)>td { background: #ddd; } 
+#ColorsDialog table tbody tr input[type="color"] { padding: 0; width: 75%; } 
+#ColorsDialog table tbody tr input[type="color"].cleared + button { background: #ff0000; } 
+#ColorsDialog table tbody tr button.ClearPrev { padding: 0; width: 20%; } 
+/* End Colors Dialog */
+
+/* Teams Remove Dialog */
+#RemoveSkaterDialog { text-align: center; } 
+#RemoveSkaterDialog span.Title { font-size: 125%; } 
+#RemoveSkaterDialog span.Remove { font-size: 150%; } 
+#RemoveSkaterDialog span.Target { font-weight: bold; font-size: 250%; } 
+#RemoveSkaterDialog span.AreYouSure { font-weight: bold; font-size: 300%; } 
+/* End Teams Remove Dialog */

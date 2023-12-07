@@ -34,7 +34,7 @@ $(function () {
   }, 1000);
 });
 
-function toggleSelection(elem) {
+function toggleSelection(k, v, elem) {
   'use strict';
   elem = $(elem);
   elem.toggleClass('Active');

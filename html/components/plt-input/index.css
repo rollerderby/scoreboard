@@ -37,8 +37,8 @@ body:not(.AllowSelect) .PLT {user-select: none;-webkit-user-select: none;-khtml-
 .PLT.Team [warn="3"] .ShowWarn { background-color: #ff2828; } 
 .PLT.Team [warn="3"].Darker .ShowWarn { background-color: #e80808; } 
 
-.PLT.Team .Unserved { background-color: #0FF; } 
-.PLT.Team .Serving { background-color: #70ff70; } 
+.PLT.Team .Unserved, .PLT.Team [warn] .Unserved { background-color: #0FF; } 
+.PLT.Team .Serving, .PLT.Team [warn] .Serving { background-color: #70ff70; } 
 .PLT.Team .Penalty .Sitting, .PLT.Team .Penalty .Box { position: relative; } 
 .PLT.Team .Penalty .Sitting::before, .PLT.Team .Penalty .Box::before { font-weight: normal; position: absolute; left: .2em; top: .15em; } 
 .PLT.Team .Penalty .Sitting.Unserved::before, .PLT.Team .Penalty .Box.Unserved::before { content: "!"; } 

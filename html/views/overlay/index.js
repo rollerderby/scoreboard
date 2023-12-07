@@ -141,11 +141,11 @@ function toPpjMargin(k, v) {
 }
 
 function toLowerThirdColorFg(k, v) {
-  return toLowerThirdColor('overlay_fg');
+  return toLowerThirdColor('overlay.fg');
 }
 
 function toLowerThirdColorBg(k, v) {
-  return toLowerThirdColor('overlay_bg');
+  return toLowerThirdColor('overlay.bg');
 }
 
 function toLowerThirdColor(type) {

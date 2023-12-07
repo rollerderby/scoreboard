@@ -115,7 +115,7 @@ $(function () {
   });
 });
 
-function selectPanel(v) {
+function selectPanel(k, v) {
   'use strict';
   if (v !== nextPanel) {
     nextPanel = v;
@@ -124,7 +124,7 @@ function selectPanel(v) {
   }
 }
 
-function selectSkater(v) {
+function selectSkater(k, v) {
   'use strict';
   const option = $('option[value=' + v + ']', $('select#Skaters'));
   const team = option.attr('data-team');
@@ -136,7 +136,7 @@ function selectSkater(v) {
   WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)', 'ColourTeam' + team);
 }
 
-function selectKeeper(v) {
+function selectKeeper(k, v) {
   'use strict';
   const option = $('option[value="' + v + '"]', $('select#Keepers'));
   WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)', option.attr('data-line1'));

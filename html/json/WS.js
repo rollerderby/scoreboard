@@ -53,7 +53,6 @@ let WS = {
           action: 'Register',
           paths: WS.registerOnConnect,
         };
-        WS.registerOnConnect = [];
         $.each(Object.keys(WS.state), function (idx, k) {
           WS._nullCallbacks(k);
         });
@@ -134,9 +133,9 @@ let WS = {
   _nullCallbacks: function (k) {
     'use strict';
     k = WS._enrichProp(k);
-    WS._getMatchesFromTrie(WS.callbackTrie, k).plain.forEach(function (el) {
+    WS._getMatchesFromTrie(WS.callbackTrie, k).plain.forEach(function (v) {
       try {
-        el(k, null);
+        v.func(k, null, v.elem);
       } catch (err) {
         console.error(err.message);
         console.log(err.stack);
@@ -161,14 +160,14 @@ let WS = {
       if (v == null) {
         delete WS.state[k];
         callbacks.plain.forEach(function (c) {
-          plainNull.push({ callback: c, path: k });
+          plainNull.push({ callback: c.func, path: k, elem: c.elem });
         });
         // Clean cache to avoid a memory leak for long running screens.
         delete WS._enrichPropCache[k];
       } else {
         WS.state[k] = v;
         callbacks.plain.forEach(function (c) {
-          plain.push({ callback: c, path: k, value: v });
+          plain.push({ callback: c.func, path: k, value: v, elem: c.elem });
         });
       }
       callbacks.batched.forEach(function (c) {
@@ -177,7 +176,7 @@ let WS = {
     });
     plainNull.forEach(function (el) {
       try {
-        el.callback(el.path, null);
+        el.callback(el.path, null, el.elem);
       } catch (err) {
         console.error(err.message);
         console.log(err.stack);
@@ -185,7 +184,7 @@ let WS = {
     });
     plain.forEach(function (el) {
       try {
-        el.callback(el.path, el.value);
+        el.callback(el.path, el.value, el.elem);
       } catch (err) {
         console.error(err.message);
         console.log(err.stack);
@@ -246,15 +245,16 @@ let WS = {
 
     let callback = null;
     let batchCallback = null;
+    let elem = null;
     if (options == null) {
       callback = null;
     } else {
+      elem = options.element;
       if (options.triggerFunc != null) {
         callback = options.triggerFunc;
       } else if (options.triggerBatchFunc != null) {
         batchCallback = options.triggerBatchFunc;
       } else {
-        const elem = options.element;
         if (options.css != null) {
           callback = function (k, v) {
             elem.css(options.css, v == null ? '' : v);
@@ -306,8 +306,8 @@ let WS = {
 
       if (options.modifyFunc != null) {
         const origCallback = callback;
-        callback = function (k, v) {
-          origCallback(k, options.modifyFunc(k, v));
+        callback = function (k, v, el) {
+          origCallback(k, options.modifyFunc(k, v, el), el);
         };
       }
     }
@@ -324,7 +324,7 @@ let WS = {
 
     if ($.isFunction(callback)) {
       $.each(paths, function (idx, path) {
-        WS._addToTrie(WS.callbackTrie, path, callback, 'plain');
+        WS._addToTrie(WS.callbackTrie, path, { func: callback, elem: elem }, 'plain');
       });
       if (options && options.preRegistered) {
         if (paths.length) {
@@ -332,7 +332,7 @@ let WS = {
             $.each(paths, function (i, path) {
               const val = WS.state[path];
               if (val != null) {
-                callback(WS._enrichProp(path), val);
+                callback(WS._enrichProp(path), val, elem);
                 return false;
               }
             });
@@ -342,11 +342,11 @@ let WS = {
             );
             $.each(WS.state, function (k, v) {
               if (regexp.test(k)) {
-                callback(WS._enrichProp(k), v);
+                callback(WS._enrichProp(k), v, elem);
               }
             });
           } else {
-            callback(WS._enrichProp(paths[0]), WS.state[paths[0]]);
+            callback(WS._enrichProp(paths[0]), WS.state[paths[0]], elem);
           }
           paths = []; // they have been registered with the backend during pre registration
         } else {
@@ -356,14 +356,13 @@ let WS = {
     }
 
     if (paths.length) {
+      WS.registerOnConnect.push(...paths);
       if (WS.Connected) {
         const req = {
           action: 'Register',
           paths: paths,
         };
         WS.send(JSON.stringify(req));
-      } else {
-        WS.registerOnConnect.push(...paths);
       }
     }
   },
@@ -414,6 +413,24 @@ let WS = {
     };
     findMatches(trie, key.split(/[.(]/), 0, result);
     return result;
+  },
+
+  _removeFromTrie: function (trie, elements) {
+    'use strict';
+    function filter(trie, elem) {
+      if (trie._values && trie._values.plain) {
+        trie._values.plain = trie._values.plain.filter(function (v) {
+          return !elements.is(v.elem);
+        });
+      }
+      Object.entries(trie).forEach(function (entry) {
+        if (entry[0] !== '_values') {
+          filter(entry[1], elem);
+        }
+      });
+    }
+
+    filter(trie, elements.find('*').add(elements));
   },
 
   _getParameters: function (elem, attr, pathIndex) {
@@ -478,17 +495,32 @@ let WS = {
       .filter(filterFunc);
   },
 
-  _getModifyFunc: function (paths, func) {
+  _getModifyFunc: function (paths, func, isBool) {
     'use strict';
     if (!$.isFunction(func)) {
-      func = window[func];
+      if (isBool) {
+        if ($.isFunction(window[func])) {
+          func = window[func];
+        } else if (func === '!') {
+          func = function (k, v) {
+            return !isTrue(v);
+          };
+        } else if (!func) {
+          func = function (k, v) {
+            return isTrue(v);
+          };
+        } else {
+          func = Function('k', 'v', 'elem', 'return v' + func);
+        }
+      } else {
+        func = window[func] || Function('k', 'v', 'elem', 'return ' + (func || 'v'));
+      }
     }
     if (paths.length < 2) {
       return func;
     } else {
-      return function () {
-        let v = null;
-        let path;
+      return function (path, v, elem) {
+        v = null;
         for (let i = 0; i < paths.length; i++) {
           path = paths[i];
           if (WS.state[path] != null) {
@@ -497,7 +529,7 @@ let WS = {
           }
         }
         if ($.isFunction(func)) {
-          v = func(WS._enrichProp(path), v);
+          v = func(WS._enrichProp(path), v, elem);
         }
         return v;
       };
@@ -514,6 +546,10 @@ let WS = {
       .attr('Team', _windowFunctions.getParam('team'))
       .removeClass('TeamContext');
     $('.BothTeams .TeamContext').attr('sbForeach', 'Team: 1,2: only').removeClass('TeamContext');
+    $('.PreparedTeam .TeamContext')
+      .attr('sbContext', 'PreparedTeam(' + _windowFunctions.getParam('team') + ')')
+      .attr('PreparedTeam', _windowFunctions.getParam('team'))
+      .removeClass('TeamContext');
     $('[sbInclude]', root).each(function (idx, elem) {
       elem = $(elem);
       const postFunc = elem.attr('sbAfterInclude');
@@ -559,13 +595,13 @@ let WS = {
       if (elem.prop('tagName') === 'INPUT' || elem.prop('tagName') === 'SELECT') {
         elem.on('change', function () {
           entries.map(function (entry) {
-            window[entry](elem.val(), elem);
+            window[entry](WS._getContext(elem), elem.val(), elem);
           });
         });
       } else {
         elem.on('click', function () {
           entries.map(function (entry) {
-            window[entry](elem);
+            window[entry](WS._getContext(elem), null, elem);
           });
         });
         elem.filter('button:not(.ToggleSwitch)').button();
@@ -578,7 +614,7 @@ let WS = {
         preRegistered: true,
         element: elem,
         html: attr === 'html',
-        modifyFunc: WS._getModifyFunc(paths, func),
+        modifyFunc: WS._getModifyFunc(paths, func, false),
       });
     });
     $.each(WS._getElements('[sbSet]', root), function (idx, elem) {
@@ -587,26 +623,26 @@ let WS = {
       if (elem.prop('tagName') === 'INPUT' || elem.prop('tagName') === 'SELECT') {
         elem.on('change', function () {
           entries.map(function (entry) {
-            const writeFunc = window[entry[1]] || Function('k', 'elem', 'return ' + (entry[1] || '"' + elem.val() + '"'));
+            const writeFunc = WS._getModifyFunc([], entry[1], false);
             const [prefix, suffix] = WS._getPrefixes(elem);
             entry[0].map(function (path) {
               if (prefix[path[0]]) {
                 path = prefix[path[0]] + path.substring(1) + (suffix[path[0]] || '');
               }
-              WS.Set(path, writeFunc(WS._enrichProp(path), elem));
+              WS.Set(path, writeFunc(WS._enrichProp(path), elem.val(), elem));
             });
           });
         });
       } else {
         elem.on('click', function () {
           entries.map(function (entry) {
-            const writeFunc = window[entry[1]] || Function('k', 'elem', 'return ' + (entry[1] || true));
+            const writeFunc = WS._getModifyFunc([], entry[1], false);
             const [prefix, suffix] = WS._getPrefixes(elem);
             entry[0].map(function (path) {
               if (prefix[path[0]]) {
                 path = prefix[path[0]] + path.substring(1) + (suffix[path[0]] || '');
               }
-              WS.Set(path, writeFunc(WS._enrichProp(path), elem));
+              WS.Set(path, writeFunc(WS._enrichProp(path), true, elem));
             });
           });
         });
@@ -616,26 +652,22 @@ let WS = {
     $.each(WS._getElements('[sbControl]', root), function (idx, elem) {
       elem = $(elem);
       let [paths, readFunc, writeFunc] = WS._getParameters(elem, 'sbControl')[0];
-      writeFunc =
-        window[writeFunc] ||
-        function (v) {
-          return v;
-        };
-      WS.Register(paths, { preRegistered: true, element: elem, set: true, modifyFunc: WS._getModifyFunc(paths, readFunc) });
+      writeFunc = WS._getModifyFunc([], writeFunc, false);
+      WS.Register(paths, { preRegistered: true, element: elem, set: true, modifyFunc: WS._getModifyFunc(paths, readFunc, false) });
       elem.on('change', function () {
-        WS.Set(paths[0], writeFunc(elem.val()));
+        WS.Set(paths[0], writeFunc(paths[0], elem.val(), elem));
       });
       elem.filter('button:not(.ToggleSwitch)').button();
     });
     $.each(WS._getElements('[sbToggle]', root), function (idx, elem) {
       elem = $(elem);
-      let [paths, usedClass] = WS._getParameters(elem, 'sbToggle')[0];
+      let [paths, usedClass, func] = WS._getParameters(elem, 'sbToggle')[0];
       usedClass = usedClass || 'Active';
       WS.Register(paths, {
         preRegistered: true,
         element: elem,
         toggleClass: usedClass,
-        modifyFunc: function (k, v) {
+        modifyFunc: function (k, v, elem) {
           return isTrue(v);
         },
       });
@@ -647,24 +679,14 @@ let WS = {
     $.each(WS._getElements('[sbClass]', root), function (idx, elem) {
       elem = $(elem);
       WS._getParameters(elem, 'sbClass', 1).map(function (toggle) {
-        const toggledClass = toggle[0];
         const paths = toggle[1];
-        let func = toggle[2];
-        if ($.isFunction(window[func])) {
-          func = window[func];
-        } else if (func === '!') {
-          func = function (k, v) {
-            return !isTrue(v);
-          };
-        } else if (!func) {
-          func = function (k, v) {
-            return isTrue(v);
-          };
-        } else {
-          func = Function('k', 'v', 'return v' + func);
-        }
 
-        WS.Register(paths, { preRegistered: true, element: elem, toggleClass: toggledClass, modifyFunc: WS._getModifyFunc(paths, func) });
+        WS.Register(paths, {
+          preRegistered: true,
+          element: elem,
+          toggleClass: toggle[0],
+          modifyFunc: WS._getModifyFunc(paths, toggle[2], true),
+        });
       });
     });
     $.each(WS._getElements('[sbCss]', root), function (idx, elem) {
@@ -672,7 +694,7 @@ let WS = {
       WS._getParameters(elem, 'sbCss', 1).map(function (entry) {
         const paths = entry[1];
 
-        WS.Register(paths, { preRegistered: true, element: elem, css: entry[0], modifyFunc: WS._getModifyFunc(paths, entry[2]) });
+        WS.Register(paths, { preRegistered: true, element: elem, css: entry[0], modifyFunc: WS._getModifyFunc(paths, entry[2], false) });
       });
     });
     $.each(WS._getElements('[sbAttr]', root), function (idx, elem) {
@@ -684,7 +706,7 @@ let WS = {
           preRegistered: true,
           element: elem,
           attr: entry[0],
-          modifyFunc: WS._getModifyFunc(paths, entry[2]),
+          modifyFunc: WS._getModifyFunc(paths, entry[2], false),
         });
       });
     });
@@ -692,22 +714,8 @@ let WS = {
       elem = $(elem);
       WS._getParameters(elem, 'sbProp', 1).map(function (entry) {
         const paths = entry[1];
-        let func = entry[2];
-        if ($.isFunction(window[func])) {
-          func = window[func];
-        } else if (func === '!') {
-          func = function (k, v) {
-            return !isTrue(v);
-          };
-        } else if (!func) {
-          func = function (k, v) {
-            return isTrue(v);
-          };
-        } else {
-          func = Function('k', 'v', 'return v' + func);
-        }
 
-        WS.Register(paths, { preRegistered: true, element: elem, prop: entry[0], modifyFunc: WS._getModifyFunc(paths, func) });
+        WS.Register(paths, { preRegistered: true, element: elem, prop: entry[0], modifyFunc: WS._getModifyFunc(paths, entry[2], true) });
       });
     });
     let lastForeach;
@@ -740,9 +748,12 @@ let WS = {
       }
       elem.detach().removeAttr('sbForeach').attr('subId', subId);
       $.each(paths, function (idx, path) {
-        const field = path.substring(path.lastIndexOf('.', path.length - 6) + 1, path.length - 6); // cut off (*).Id
+        const field = path.slice(path.lastIndexOf('.', path.length - 6) + 1, -6); // cut off (*).Id
         if (options.filter === '^') {
-          options.filter = paren.closest('[' + field + ']').attr(field);
+          options.filter = paren
+            .closest('[' + field + ']')
+            .attr(field)
+            .slice(0, -2);
         }
         $.each(fixedKeys, function (idx, key) {
           if (key.startsWith('-')) {
@@ -768,28 +779,36 @@ let WS = {
         });
         if (sortFunction !== 'only') {
           if (options.filter) {
-            path = path.substring(0, path.length - 5) + options.filter + '.*).Id';
+            path = path.slice(0, -5) + options.filter + '.*).Id';
           }
           if (options.noId) {
-            path = path.substring(0, path.length - 3);
+            path = path.slice(0, -3);
           }
           WS.Register(path, {
             preRegistered: true,
+            element: elem,
             triggerFunc: function (k, v) {
-              const key = options.part && options.part !== '*' ? k[field].split('.').slice(0, options.part).join('.') + '.*' : k[field];
+              const key = options.part ? k[field].split('.').slice(0, options.part).join('.') + '.*' : k[field];
               const subfieldId = 'data-' + k[field].replaceAll('.', '-');
               if (blockedKeys[key]) {
                 return;
               } else if (v == null) {
                 if (key !== k[field]) {
                   const target = paren.children('[' + field + '="' + key + '"][' + subfieldId + '][subId="' + subId + '"]:not(.Fixed)');
-                  target
+                  const removed = target
                     .attr(subfieldId, null)
                     .attr('sbCount', target.attr('sbCount') - 1)
-                    .filter('[sbCount="0"]')
-                    .remove();
+                    .filter('[sbCount="0"]');
+                  if (removed.length) {
+                    WS._removeFromTrie(WS.callbackTrie, removed);
+                    removed.remove();
+                  }
                 } else {
-                  paren.children('[' + field + '="' + key + '"][subId="' + subId + '"]:not(.Fixed)').remove();
+                  const removed = paren.children('[' + field + '="' + key + '"][subId="' + subId + '"]:not(.Fixed)');
+                  if (removed.length) {
+                    WS._removeFromTrie(WS.callbackTrie, removed);
+                    removed.remove();
+                  }
                 }
               } else if (!paren.children('[' + field + '="' + key + '"][subId="' + subId + '"]').length) {
                 const newElem = elem.clone(true).attr(field, key).appendTo(paren);
@@ -800,16 +819,29 @@ let WS = {
                   newElem.attr('sbCount', 1).attr(subfieldId, k[field]);
                 }
                 WS.AutoRegister(newElem);
-                newElem.detach();
-                _windowFunctions.appendSorted(
-                  paren,
-                  newElem,
-                  window[sortFunction] ||
-                    function (a, b) {
-                      return compareAttrThenSubId(field, a, b);
+                if (options.resort) {
+                  WS.Register(WS._getContext(newElem) + '.' + options.resort, {
+                    preRegistered: true,
+                    element: newElem,
+                    triggerFunc: function (k, v, elem) {
+                      if (v != null) {
+                        elem.detach();
+                        _windowFunctions.appendSorted(paren, elem, window[sortFunction], index);
+                      }
                     },
-                  index
-                );
+                  });
+                } else {
+                  newElem.detach();
+                  _windowFunctions.appendSorted(
+                    paren,
+                    newElem,
+                    window[sortFunction] ||
+                      function (a, b) {
+                        return compareAttrThenSubId(field, a, b);
+                      },
+                    index
+                  );
+                }
               } else if (
                 key !== k[field] &&
                 !paren.children('[' + field + '="' + key + '"][' + subfieldId + '][subId="' + subId + '"]').length

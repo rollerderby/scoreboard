@@ -67,7 +67,7 @@ function compareChildIndex(a, b) {
   return compareAttrThenSubId('index', $(a).children('[index]'), $(b).children('[index]'));
 }
 
-function triggerFold(elem) {
+function triggerFold(k, v, elem) {
   'use strict';
   elem.parent().toggleClass('folded');
 }
@@ -77,13 +77,23 @@ function part2(k, v) {
   return v ? v.split('.', 2)[1] : '';
 }
 
-function definitionOverride(v, elem) {
+function definitionOverride(k, v, elem) {
   'use strict';
   elem.parents('.definition').toggleClass('Inherited', !elem.prop('checked'));
-  setRule(null, elem);
+  if (elem.prop('checked')) {
+    let value = null;
+    let parent = WS.state[WS._getPrefixes(elem)[0]['§'] + '.Parent'];
+    while (value == null && parent != null) {
+      value = WS.state['ScoreBoard.Rulesets.Ruleset(' + parent + ').' + rule];
+      parent = WS.state['ScoreBoard.Rulesets.Ruleset(' + parent + ').Parent'];
+    }
+    setRule(k, value, elem);
+  } else {
+    setRule(k, null, elem);
+  }
 }
 
-function setRule(v, elem) {
+function setRule(k, v, elem) {
   'use strict';
   WS.Set(WS._getPrefixes(elem)[0]['§'] + '.Rule(' + elem.closest('[RuleDefinition]').attr('RuleDefinition') + ')', v);
 }

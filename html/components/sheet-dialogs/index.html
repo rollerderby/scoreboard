@@ -72,7 +72,7 @@
   <table>
     <tr class="Box">
       <td><button class="Past" sbSet="d.UnendBoxTrip" sbCall="closeAnnEd">Unend Box Trip</button></td>
-      <td><button sbSet="d.Annotation: append | d.Penalty: false">No Penalty</button></td>
+      <td><button sbSet="d.Annotation: append | d.Penalty: false">Self Report</button></td>
       <td><button sbSet="d.Annotation: append | d.Penalty: false">Penalty Overturned</button></td>
     </tr>
     <tr class="Box">
@@ -80,7 +80,7 @@
         <span>Substitute: </span>
         <span id="skaterList" class="TeamContext">
           <button
-            sbForeach="Skater:: compareRosterNumber"
+            sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"
             sbAttr="rosterNumber: RosterNumber"
             sbDisplay="RosterNumber"
             sbSet="d.Annotation: subAnn | d.Skater: elem.attr('Skater')"
@@ -89,7 +89,7 @@
       </td>
     </tr>
     <tr>
-      <td colspan="3"><input type="text" size="60" id="annotation" sbSet="d.Annotation: toNullIfEmptyVal" /></td>
+      <td colspan="3"><input type="text" size="60" id="annotation" sbSet="d.Annotation: toNullIfEmpty" /></td>
     </tr>
   </table>
 </div>
@@ -102,7 +102,7 @@
           <button Skater="" sbSet="d.Skater: elem.attr('Skater')" sbCall="closeFieldEd">?</button>
           <button id="notFielded" sbSet="d.NotFielded: toggle" sbCall="closeFieldEd">None</button>
           <button
-            sbForeach="Skater:: compareRosterNumber"
+            sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"
             sbAttr="rosterNumber: RosterNumber"
             sbDisplay="RosterNumber"
             sbSet="d.Skater: elem.attr('Skater')"
@@ -113,10 +113,10 @@
       <td class="ButtonCell"><button id="sitFor3" sbSet="d.SitFor3: toggle" sbCall="closeFieldEd">Sit out next 3</button></td>
     </tr>
     <tr class="Skater">
-      <td colspan="3"><input type="text" size="60" id="annotation" sbSet="d.Annotation: toNullIfEmptyVal" /></td>
+      <td colspan="3"><input type="text" size="60" id="annotation" sbSet="d.Annotation: toNullIfEmpty" /></td>
     </tr>
     <tr class="Skater BoxTripComments">
-      <td><button sbSet="d.Annotation: append">No Penalty</button></td>
+      <td><button sbSet="d.Annotation: append">Self Report</button></td>
       <td><button sbSet="d.Annotation: append">Penalty Overturned</button></td>
     </tr>
     <tr class="tripHeader">

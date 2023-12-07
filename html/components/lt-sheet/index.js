@@ -13,15 +13,13 @@ function initLtSheet() {
   });
 }
 
-function editFielding(elem) {
+function editFielding(k, v, elem) {
   'use strict';
-  const k = WS._enrichProp(WS._getContext(elem));
   openFieldingEditor(k.Game, k.Period, k.Jam, k.TeamJam, k.Fielding, false);
 }
 
-function editUpcomingFielding(elem) {
+function editUpcomingFielding(k, v, elem) {
   'use strict';
-  const k = WS._enrichProp(WS._getContext(elem));
   openFieldingEditor(k.Game, undefined, WS.state['ScoreBoard.Game(' + k.Game + ').UpcomingJamNumber'], k.Team, k.Position, true);
 }
 

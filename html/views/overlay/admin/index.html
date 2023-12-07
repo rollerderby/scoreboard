@@ -79,8 +79,8 @@
 			<h2>Team Display</h2>
 			<div sbForeach="Team: 1,2: only">
 			<input sbControl="AlternateName(overlay),Name:: toNullIfEmpty" type="text"/>
-			<input sbControl="Color(overlay_fg): defaultFgIfNull" type="color" sbClass="Cleared: Color(overlay_fg): ==null"/><button class="ClearPrev" sbSet="Color(overlay_fg): null">X</button>
-			<input sbControl="Color(overlay_bg): defaultBgIfNull" type="color" sbClass="Cleared: Color(overlay_bg): ==null"/><button class="ClearPrev" sbSet="Color(overlay_bg): null">X</button>
+			<input sbControl="Color(overlay.fg): defaultFgIfNull" type="color" sbClass="Cleared: Color(overlay.fg): ==null"/><button class="ClearPrev" sbSet="Color(overlay.fg): null">X</button>
+			<input sbControl="Color(overlay.bg): defaultBgIfNull" type="color" sbClass="Cleared: Color(overlay.bg): ==null"/><button class="ClearPrev" sbSet="Color(overlay.bg): null">X</button>
 			</div>
 		</div>
 

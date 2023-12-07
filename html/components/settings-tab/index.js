@@ -26,7 +26,7 @@ function openIntermissionDialog() {
   $('#IntermissionControlDialog').parent().dialog('open');
 }
 
-function setUsePreview(v) {
+function setUsePreview(k, v) {
   'use strict';
   $('#ScoreBoardSettings').toggleClass('UsePreview', v === 'preview');
 }
@@ -47,7 +47,7 @@ function applyPreview() {
   });
 }
 
-function showPreview(elem) {
+function showPreview(k, v, elem) {
   'use struct';
   $('<iframe>Your browser does not support iframes.</iframe>')
     .attr({ scrolling: 'no', frameborder: '0', src: elem.attr('src') })
