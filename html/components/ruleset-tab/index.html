@@ -1,37 +1,68 @@
-<div class="definitions" sbContext="ScoreBoard.Rulesets">
-  <div class="selection">
-    <span>Current Ruleset: </span>
-    <select id="select" sbSet="Ruleset">
-      <option value="">Custom</option>
-      <option sbForeach="Ruleset:: orderRsAsTree: resort=Parent" sbAttr="value: Id" sbDisplay="Name: indentByParents: html"></option>
-    </select>
-  </div>
+<div class="definitions" sbPrefix="§:[*]">
   <div class="buttons top"></div>
-  <div class="metadata">
-    <span>Name: </span><input type="text" id="name" size="20" sbSet="§.Name" /> <span> Parent: </span>
-    <select id="parent" sbSet="§.Parent">
-      <option sbForeach="Ruleset:: orderRsAsTree: resort=Parent" sbAttr="value: Id" sbDisplay="Name: indentByParents: html"></option>
+  <div class="selection" sbClass="Hide::noGame">
+    <span>Current Ruleset: </span>
+    <select id="select" sbProp="disabled: State: !== 'Prepared'" sbControl="Ruleset: updateActiveRs">
+      <option value="">Custom</option>
+      <option
+        sbForeach="Ruleset:: orderRsAsTree: resort=Parent"
+        sbContext="/ScoreBoard.Rulesets"
+        sbAttr="value: Id"
+        sbDisplay="Name: indentByParents: html"
+      ></option>
     </select>
   </div>
-  <div class="rules">
+  <div class="metadata" sbClass="Hide::isGame">
+    <span>Name: </span><input type="text" id="name" size="20" sbProp="disabled: §.Readonly" sbControl="§.Name" /> <span> Parent: </span
+    ><select id="parent" sbProp="disabled: §.Readonly" sbControl="§.Parent">
+      <option
+        sbForeach="Ruleset:: orderRsAsTree: resort=Parent"
+        sbContext="/ScoreBoard.Rulesets"
+        sbAttr="value: Id"
+        sbDisplay="Name: indentByParents: html"
+      ></option>
+    </select>
+  </div>
+  <div class="rules" sbContext="/ScoreBoard.Rulesets">
     <div sbForeach="RuleDefinition:: compareChildIndex: part=1, noContext" class="section folded">
-      <div class="header" sbCall="triggerFold"></div>
-      <div sbForeach="RuleDefinition:: compareIndex: filter=^" class="definition" sbAttr="index: Index">
+      <div class="header" sbCall="triggerFold" sbDisplay=": sectionName"></div>
+      <div
+        sbForeach="RuleDefinition:: compareIndex: filter=^"
+        class="definition"
+        sbAttr="index: Index"
+        sbClass="Inherited: §.Rule([RuleDefinition]): == null"
+      >
         <div class="name">
-          <label><input type="checkbox" checked class="Selector" sbCall="definitionOverride" /></label>
+          <input
+            type="checkbox"
+            class="Selector"
+            sbProp="checked: §.Rule([RuleDefinition]): != null | disabled: §.Readonly, §.Ruleset: disableToggle"
+            sbSet="§.Rule([RuleDefinition]): definitionOverride"
+          />
           <span sbDisplay="Name: part2"></span>
           <span class="tooltiptext" sbDisplay="Description"></span>
         </div>
         <div class="value">
-          <span class="inherit"> </span>
-          <input type="text" class="override" sbClass="Hide: Type: === 'Boolean'" sbCall="setRule" />
-          <select class="override" sbClass="Hide: Type: !== 'Boolean'" sbCall="setRule">
+          <input
+            type="text"
+            class="override"
+            sbClass="Hide: Type: === 'Boolean'"
+            sbProp="disabled: §.Readonly, §.Ruleset: disableSetter"
+            sbControl="§.Rule([RuleDefinition])"
+          />
+          <select
+            class="override"
+            sbClass="Hide: Type: !== 'Boolean'"
+            sbProp="disabled: §.Readonly, §.Ruleset: disableSetter"
+            sbControl="§.Rule([RuleDefinition])"
+          >
             <option value="true" sbDisplay="TrueValue"></option>
             <option value="false" sbDisplay="FalseValue"></option>
           </select>
+          <span class="inherit" sbDisplay="/ScoreBoard.Rulesets.Ruleset(*).Rule([RuleDefinition]): getDisplayValue"> </span>
         </div>
       </div>
     </div>
-    <div class="buttons bottom"></div>
   </div>
+  <div class="buttons bottom"></div>
 </div>

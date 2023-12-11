@@ -1,28 +1,26 @@
 if (typeof $ === 'undefined') {
-  /* jshint -W117 */
   alert('You MUST include jQuery before this file!');
-  /* jshint +W117 */
   throw 'You MUST include jQuery before this file!';
 }
 
 var _alreadyIncludedScripts = {};
 
-function _includeUrl(url) {
+function _includeUrl(url, callback) {
   'use strict';
   var filename = url.replace(/^.*[\/]/g, '');
   if (/\.[cC][sS][sS](\?.*)?$/.test(url) && !$('head link[href="' + url + '"],head link[href="' + filename + '"]').length) {
     $('<link>').attr({ href: url, type: 'text/css', rel: 'stylesheet' }).appendTo('head');
   } else if (/\.[jJ][sS](\?.*)?$/.test(url) && !_alreadyIncludedScripts[url]) {
     _alreadyIncludedScripts[url] = true;
-    $.ajax(url, { dataType: 'script', cache: true, async: false }).fail(function (e, s, x) {
-      /* jshint -W117 */
-      console.error(s + ' for ' + url + ': ' + x);
-      /* jshint +W117 */
-    });
+    $.ajax(url, { dataType: 'script', cache: true })
+      .fail(function (x, s, e) {
+        console.error(s + ' for ' + url + ': ' + e);
+      })
+      .always(callback);
   }
 }
 
-function _include(dir, files) {
+function _include(dir, files, callback) {
   'use strict';
   if (!files) {
     files = dir;
@@ -32,18 +30,20 @@ function _include(dir, files) {
     files = [files];
   }
   $.each(files, function () {
-    _includeUrl((dir ? dir + '/' : '') + this);
+    _includeUrl((dir ? dir + '/' : '') + this, callback);
   });
 }
 
-function _includeJsAndCss(path) {
+function _includeJsAndCss(path, callback) {
   'use strict';
   if (/\.html$/.test(path)) {
     _include(path.replace(/\.html$/, '.css'));
-    _include(path.replace(/\.html$/, '.js'));
+    _include(path.replace(/\.html$/, '.js'), null, callback);
   } else if (/\/$/.test(path)) {
     _include(path + 'index.css');
-    _include(path + 'index.js');
+    _include(path + 'index.js', null, callback);
+  } else {
+    callback();
   }
 }
 
@@ -56,11 +56,10 @@ _include('/external/jquery-plugins/fileupload/jquery.fileupload.js');
 /* Core functionality */
 _include('/javascript', ['timeconversions.js', 'windowfunctions.js', 'autofit.js', 'conversions.js']);
 _include('/styles', ['fonts.css', 'common.css']);
-_include('/json', ['WS.js']);
-
-$(function () {
+_include('/json', ['WS.js'], function () {
   'use strict';
-  _includeJsAndCss(window.location.pathname);
+  WS.Connect();
+  WS.Process(window.location.pathname);
 });
 
 function isTrue(value) {

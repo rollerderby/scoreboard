@@ -4,10 +4,8 @@
     <title>Display | CRG ScoreBoard</title>
     <script type="text/javascript" src="/external/jquery/jquery.js"></script>
     <script type="text/javascript" src="/json/core.js"></script>
-    <script type="text/javascript" src="/views/common.js"></script>
   </head>
   <body sbPrefix="&: ScoreBoard.Settings.Setting(ScoreBoard.View : )">
-    <div class="ConnectionError">Not connected</div>
     <div class="DisplayPane" id="image"><img class="object" sbAttr="src: &.Image" sbCss="object-fit: &.ImageScaling" /></div>
     <div class="DisplayPane" id="video">
       <video class="object" onended="this.play();" sbAttr="src: &.Video" sbCss="object-fit: &.VideoScaling"></video>
@@ -124,6 +122,12 @@
           sbDisplay="#.PreGame, #.Intermission, #.Unofficial, #.Official, #.OfficialWithClock, OfficialScore, ClockDuringFinalScore, Clock(Intermission).Number, Rule(Period.Number): intermissionDisplay"
         ></div>
         <div class="Time Box AutoFit" sbContext="Clock(Intermission)" sbDisplay="Time, Direction: toTime"></div>
+      </div>
+    </div>
+
+    <div id="Templates">
+      <div id="Banners" sbContext="ScoreBoard.Media.Format(images).Type(sponsor_banner)">
+        <div sbForeach="File" sbAttr="src: Src"></div>
       </div>
     </div>
   </body>

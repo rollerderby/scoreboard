@@ -2,9 +2,11 @@ let WS = {
   connectCallback: null,
   connectTimeout: null,
   registerOnConnect: [],
-  callbackTrie: {},
-  batchCallbacks: [],
+  _afterLoadCallbacks: [],
   Connected: false,
+  _connectionStatus: $('<div>').attr('id', 'ConnectionStatus').attr('status', 'loading').text('Loading'),
+  _started: false,
+  _preRegisterDone: false,
   state: {},
   heartbeat: null,
   debug: false,
@@ -13,6 +15,10 @@ let WS = {
     'use strict';
     WS.connectCallback = callback;
     WS._connect();
+    if (!WS._started) {
+      WS._started = true;
+      WS._connectionStatus.appendTo('body');
+    }
   },
 
   _connect: function () {
@@ -48,16 +54,16 @@ let WS = {
         if (WS.debug) {
           console.log('WS', 'Websocket: Open');
         }
-        $('.ConnectionError').addClass('Connected');
-        let req = {
-          action: 'Register',
-          paths: WS.registerOnConnect,
-        };
+        WS._connectionStatus.attr('status', 'loading').text('Loading...');
         $.each(Object.keys(WS.state), function (idx, k) {
           WS._nullCallbacks(k);
         });
         WS.state = {};
-        if (req.paths.length > 0) {
+        if (WS._preRegisterDone) {
+          let req = {
+            action: 'Register',
+            paths: WS.registerOnConnect,
+          };
           WS.send(JSON.stringify(req));
         }
         if (WS.connectCallback != null) {
@@ -77,11 +83,17 @@ let WS = {
         if (json.state != null) {
           WS.processUpdate(json.state);
         }
+        WS._connectionStatus.attr('status', 'ready').text('');
+        if (WS._afterLoadCallbacks.length) {
+          $.each(WS._afterLoadCallbacks, function (idx, func) {
+            func();
+          });
+        }
       };
       WS.socket.onclose = function (e) {
         WS.Connected = false;
         console.log('WS', 'Websocket: Close', e);
-        $('.ConnectionError').removeClass('Connected');
+        WS._connectionStatus.attr('status', 'error').text('Not connected');
         if (WS.connectTimeout == null) {
           WS.connectTimeout = setTimeout(WS._connect, 1000);
         }
@@ -89,18 +101,22 @@ let WS = {
       };
       WS.socket.onerror = function (e) {
         console.log('WS', 'Websocket: Error', e);
-        $('.ConnectionError').removeClass('Connected');
+        WS._connectionStatus.attr('status', 'error').text('Not connected');
         if (WS.connectTimeout == null) {
           WS.connectTimeout = setTimeout(WS._connect, 1000);
         }
         clearInterval(WS.heartbeat);
       };
     } else {
-      // better run the callback on post connect if we didn't need to connect
+      // run the post connect callback if we didn't need to connect
       if (WS.connectCallback != null) {
         WS.connectCallback();
       }
     }
+  },
+
+  AfterLoad: function (func) {
+    WS._afterLoadCallbacks.push(func);
   },
 
   send: function (data) {
@@ -133,7 +149,7 @@ let WS = {
   _nullCallbacks: function (k) {
     'use strict';
     k = WS._enrichProp(k);
-    WS._getMatchesFromTrie(WS.callbackTrie, k).plain.forEach(function (v) {
+    WS._getMatchesFromTrie(k).plain.forEach(function (v) {
       try {
         v.func(k, null, v.elem);
       } catch (err) {
@@ -155,7 +171,7 @@ let WS = {
     let batched = new Set();
     $.each(state, function (k, v) {
       k = WS._enrichProp(k);
-      const callbacks = WS._getMatchesFromTrie(WS.callbackTrie, k);
+      const callbacks = WS._getMatchesFromTrie(k);
 
       if (v == null) {
         delete WS.state[k];
@@ -208,9 +224,7 @@ let WS = {
     if (WS._enrichPropCache[prop] != null) {
       return WS._enrichPropCache[prop];
     }
-    /* jshint -W053 */
     prop = new String(prop);
-    /* jshint +W053 */
     let i = prop.length - 1;
     let parts = [];
     while (i >= 0) {
@@ -233,11 +247,14 @@ let WS = {
     prop.field = parts[0];
     parts.reverse();
     prop.parts = parts;
+    prop.upTo = function (key) {
+      return prop.substring(0, prop.indexOf('.', prop.indexOf(key)));
+    };
     WS._enrichPropCache[prop] = prop;
     return prop;
   },
 
-  Register: function (paths, options) {
+  Register: function (paths, options, isPreRegister) {
     'use strict';
     if ($.isFunction(options)) {
       options = { triggerFunc: options };
@@ -265,7 +282,11 @@ let WS = {
           };
         } else if (options.prop != null) {
           callback = function (k, v) {
-            elem.prop(options.prop, v);
+            if (options.prop === 'disabled' && elem.hasClass('ui-button')) {
+              elem.button('option', 'disabled', v);
+            } else {
+              elem.prop(options.prop, v);
+            }
           };
         } else if (options.toggleClass != null) {
           callback = function (k, v) {
@@ -318,25 +339,17 @@ let WS = {
 
     if ($.isFunction(batchCallback)) {
       $.each(paths, function (idx, path) {
-        WS._addToTrie(WS.callbackTrie, path, batchCallback, 'batched');
+        WS._addToTrie(path, batchCallback, 'batched');
       });
     }
 
     if ($.isFunction(callback)) {
       $.each(paths, function (idx, path) {
-        WS._addToTrie(WS.callbackTrie, path, { func: callback, elem: elem }, 'plain');
+        WS._addToTrie(path, { func: callback, elem: elem }, 'plain');
       });
       if (options && options.preRegistered) {
         if (paths.length) {
-          if (paths.length > 1) {
-            $.each(paths, function (i, path) {
-              const val = WS.state[path];
-              if (val != null) {
-                callback(WS._enrichProp(path), val, elem);
-                return false;
-              }
-            });
-          } else if (paths[0].includes('*)')) {
+          if (paths.length === 1 && paths[0].includes('*)')) {
             const regexp = new RegExp(
               paths[0].replaceAll('.', '\\.').replaceAll('(', '\\(').replaceAll(')', '\\)').replaceAll('*', '[^)]*')
             );
@@ -355,20 +368,23 @@ let WS = {
       }
     }
 
+    WS._preRegisterDone = WS._preRegisterDone || isPreRegister;
     if (paths.length) {
       WS.registerOnConnect.push(...paths);
-      if (WS.Connected) {
+      if (WS.Connected && WS._preRegisterDone) {
         const req = {
           action: 'Register',
-          paths: paths,
+          paths: isPreRegister ? WS.registerOnConnect : paths,
         };
         WS.send(JSON.stringify(req));
       }
     }
   },
 
-  _addToTrie: function (t, key, value, type) {
+  _callbackTrie: {},
+  _addToTrie: function (key, value, type) {
     'use strict';
+    let t = WS._callbackTrie;
     const p = key.split(/[.(]/);
     for (let i = 0; i < p.length; i++) {
       const c = p[i];
@@ -379,7 +395,7 @@ let WS = {
     t._values[type].push(value);
   },
 
-  _getMatchesFromTrie: function (trie, key) {
+  _getMatchesFromTrie: function (key) {
     'use strict';
     function findMatches(t, p, i, result) {
       result.merge(t._values);
@@ -411,11 +427,11 @@ let WS = {
         }
       },
     };
-    findMatches(trie, key.split(/[.(]/), 0, result);
+    findMatches(WS._callbackTrie, key.split(/[.(]/), 0, result);
     return result;
   },
 
-  _removeFromTrie: function (trie, elements) {
+  Forget: function (elements) {
     'use strict';
     function filter(trie, elem) {
       if (trie._values && trie._values.plain) {
@@ -430,43 +446,34 @@ let WS = {
       });
     }
 
-    filter(trie, elements.find('*').add(elements));
+    filter(
+      WS._callbackTrie,
+      elements
+        .find('*')
+        .add(elements)
+        .each(function () {
+          WS._pathCache.delete(this);
+          WS._prefixCache.delete(this);
+        })
+    );
   },
 
-  _getParameters: function (elem, attr, pathIndex) {
+  _getParameters: function (elem, attr, pathIndex, isPreRegister) {
     'use strict';
     pathIndex = pathIndex || 0;
-    return elem
-      .attr(attr)
+    return WS._replacePathComponents(elem, attr, isPreRegister)[0]
       .split('|')
       .map(function (part) {
-        let list = part.split(':').map($.trim);
-        const basePath = WS._getContext(elem, attr === 'sbForeach');
-        const [prefixes, suffixes] = WS._getPrefixes(elem);
-        list[pathIndex] = list[pathIndex].split(',').map(function (item) {
-          item = $.trim(item);
-          if (item === '') {
-            item = basePath;
-          } else if (attr === 'sbForeach') {
-            item = basePath + '.Id';
-          } else if (item.startsWith('/')) {
-            item = item.substring(1);
-          } else if (prefixes[item[0]]) {
-            item = prefixes[item[0]] + item.substring(1) + (suffixes[item[0]] || '');
-          } else if (item[1] === '.') {
-            // using a dynamic prefix that's not set yet
-          } else {
-            let restPath = basePath;
-            while (restPath && item.startsWith('^')) {
-              item = item.substring(1);
-              restPath = restPath.substring(0, restPath.lastIndexOf('.'));
-            }
-            if (restPath) {
-              item = restPath + '.' + item;
-            }
-          }
-          return item;
-        });
+        let list = part.split(':').map((s) => s.trim());
+        const basePath = WS._getContext(elem, attr === 'sbForeach', isPreRegister);
+        const prefixes = WS._getPrefixes(elem, isPreRegister);
+        list[pathIndex] = list[pathIndex]
+          .split(',')
+          .map((item) =>
+            attr === 'sbForeach'
+              ? basePath + (list[3] && list[3].includes('noId') && isPreRegister ? '' : '.Id')
+              : WS._combinePaths(basePath, item.trim(), prefixes)
+          );
         return list;
       });
   },
@@ -485,10 +492,10 @@ let WS = {
     const filterFunc =
       selector === '[sbForeach]'
         ? function () {
-            return !$(this).parent().closest('[sbForeach],[sbInclude]').length && $(this).attr('sbInclude') == null;
+            return !$(this).parent().closest('[sbForeach], #Templates').length;
           }
         : function () {
-            return !$(this).closest('[sbForeach],[sbInclude]').length;
+            return !$(this).closest('[sbForeach], #Templates').length;
           };
     return $(selector, root)
       .add(root ? root.filter(selector) : $())
@@ -536,46 +543,40 @@ let WS = {
     }
   },
 
-  AutoRegister: function (root, doPreRegister) {
+  _isInputElement: function (elem) {
     'use strict';
-    $('.GameContext')
-      .attr('sbContext', 'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ')')
-      .removeClass('GameContext');
-    $('.OneTeam .TeamContext')
-      .attr('sbContext', 'Team(' + _windowFunctions.getParam('team') + ')')
-      .attr('Team', _windowFunctions.getParam('team'))
-      .removeClass('TeamContext');
-    $('.BothTeams .TeamContext').attr('sbForeach', 'Team: 1,2: only').removeClass('TeamContext');
-    $('.PreparedTeam .TeamContext')
-      .attr('sbContext', 'PreparedTeam(' + _windowFunctions.getParam('team') + ')')
-      .attr('PreparedTeam', _windowFunctions.getParam('team'))
-      .removeClass('TeamContext');
+    return elem.prop('tagName') === 'INPUT' || elem.prop('tagName') === 'SELECT';
+  },
+
+  _runningIncludes: 1, // core.js includes
+  _loadIncludes: function (root) {
+    'use strict';
     $('[sbInclude]', root).each(function (idx, elem) {
+      WS._runningIncludes++;
       elem = $(elem);
-      const postFunc = elem.attr('sbAfterInclude');
       const selector = elem.attr('sbInclude');
+      elem.attr('sbInclude', null);
       elem.load(selector, function () {
-        _includeJsAndCss(selector.split(' ', 1)[0]);
-        elem.attr('sbInclude', null).attr('sbAfterInclude', null);
-        WS.AutoRegister(elem, true);
-        if (postFunc) {
-          window[postFunc]();
-        }
+        WS.Process(selector.split(' ', 1)[0], elem);
       });
     });
-    $('[sbContext*="(auto)"]', root).each(function (idx, elem) {
-      elem = $(elem);
-      elem.attr(
-        'sbContext',
-        elem.attr('sbContext').replace('TeamJam(auto)', 'TeamJam(' + (elem.closest('[Team]').attr('Team') || 'auto') + ')')
-      );
+  },
+
+  Process: function (url, elem) {
+    'use strict';
+    _includeJsAndCss(url, function () {
+      WS._loadIncludes(elem);
+      WS._runningIncludes--;
+      if (WS._runningIncludes === 0) {
+        WS.AutoRegister();
+      }
     });
-    $.each(WS._getElements('[sbPrefix]', root), function (idx, elem) {
-      elem = $(elem);
-      elem.attr('sbPrefix', elem.attr('sbPrefix').replace(':cur', ':' + WS._getContext(elem)));
-    });
-    if (!root || doPreRegister) {
-      WS._preRegister(root);
+  },
+
+  AutoRegister: function (root) {
+    'use strict';
+    if (!root) {
+      WS._preRegister();
     }
 
     $.each(WS._getElements('.AutoFit:not([sbDisplay]):not([sbControl]):not(:has(*))', root), function (idx, elem) {
@@ -589,23 +590,20 @@ let WS = {
     $.each(WS._getElements('[sbButton]', root), function (idx, elem) {
       $(elem).button();
     });
-    $.each(WS._getElements('[sbCall]', root), function (idx, elem) {
+    $.each(WS._getElements('[sbOn]', root), function (idx, elem) {
       elem = $(elem);
-      const entries = elem.attr('sbCall').split('|').map($.trim);
-      if (elem.prop('tagName') === 'INPUT' || elem.prop('tagName') === 'SELECT') {
-        elem.on('change', function () {
-          entries.map(function (entry) {
-            window[entry](WS._getContext(elem), elem.val(), elem);
+      elem
+        .attr('sbOn')
+        .split('|')
+        .map(function (entry) {
+          const [event, listener] = entry
+            .trim()
+            .split(':')
+            .map((s) => s.trim());
+          elem.on(event, function (e) {
+            return window[listener](WS._enrichProp(WS._getContext(elem)), elem.val(), elem, e);
           });
         });
-      } else {
-        elem.on('click', function () {
-          entries.map(function (entry) {
-            window[entry](WS._getContext(elem), null, elem);
-          });
-        });
-        elem.filter('button:not(.ToggleSwitch)').button();
-      }
     });
     $.each(WS._getElements('[sbDisplay]', root), function (idx, elem) {
       elem = $(elem);
@@ -620,33 +618,18 @@ let WS = {
     $.each(WS._getElements('[sbSet]', root), function (idx, elem) {
       elem = $(elem);
       const entries = WS._getParameters(elem, 'sbSet');
-      if (elem.prop('tagName') === 'INPUT' || elem.prop('tagName') === 'SELECT') {
-        elem.on('change', function () {
-          entries.map(function (entry) {
-            const writeFunc = WS._getModifyFunc([], entry[1], false);
-            const [prefix, suffix] = WS._getPrefixes(elem);
-            entry[0].map(function (path) {
-              if (prefix[path[0]]) {
-                path = prefix[path[0]] + path.substring(1) + (suffix[path[0]] || '');
-              }
-              WS.Set(path, writeFunc(WS._enrichProp(path), elem.val(), elem));
-            });
+      elem.on(WS._isInputElement(elem) ? 'change' : 'click', function (event) {
+        entries.map(function (entry) {
+          const writeFunc = WS._getModifyFunc([], entry[1], false);
+          const [prefix, suffix] = WS._getPrefixes(elem);
+          entry[0].map(function (path) {
+            if (prefix[path[0]]) {
+              path = prefix[path[0]] + path.substring(1) + (suffix[path[0]] || '');
+            }
+            WS.Set(path, writeFunc(WS._enrichProp(path), WS._isInputElement(elem) ? elem.val() : true, elem, event), entry[2]);
           });
         });
-      } else {
-        elem.on('click', function () {
-          entries.map(function (entry) {
-            const writeFunc = WS._getModifyFunc([], entry[1], false);
-            const [prefix, suffix] = WS._getPrefixes(elem);
-            entry[0].map(function (path) {
-              if (prefix[path[0]]) {
-                path = prefix[path[0]] + path.substring(1) + (suffix[path[0]] || '');
-              }
-              WS.Set(path, writeFunc(WS._enrichProp(path), true, elem));
-            });
-          });
-        });
-      }
+      });
       elem.filter('button:not(.ToggleSwitch)').button();
     });
     $.each(WS._getElements('[sbControl]', root), function (idx, elem) {
@@ -654,8 +637,8 @@ let WS = {
       let [paths, readFunc, writeFunc] = WS._getParameters(elem, 'sbControl')[0];
       writeFunc = WS._getModifyFunc([], writeFunc, false);
       WS.Register(paths, { preRegistered: true, element: elem, set: true, modifyFunc: WS._getModifyFunc(paths, readFunc, false) });
-      elem.on('change', function () {
-        WS.Set(paths[0], writeFunc(paths[0], elem.val(), elem));
+      elem.on('change', function (event) {
+        WS.Set(paths[0], writeFunc(paths[0], elem.val(), elem, event));
       });
       elem.filter('button:not(.ToggleSwitch)').button();
     });
@@ -718,6 +701,19 @@ let WS = {
         WS.Register(paths, { preRegistered: true, element: elem, prop: entry[0], modifyFunc: WS._getModifyFunc(paths, entry[2], true) });
       });
     });
+    $.each(WS._getElements('[sbCall]', root), function (idx, elem) {
+      elem = $(elem);
+      const entries = elem
+        .attr('sbCall')
+        .split('|')
+        .map((s) => s.trim());
+      elem.on(WS._isInputElement(elem) ? 'change' : 'click', function (event) {
+        entries.map(function (entry) {
+          window[entry](WS._enrichProp(WS._getContext(elem)), elem.val(), elem, event);
+        });
+      });
+      elem.filter('button:not(.ToggleSwitch)').button();
+    });
     let lastForeach;
     let lastSubId = 0;
     $.each(WS._getElements('[sbForeach]', root), function (idx, elem) {
@@ -729,14 +725,14 @@ let WS = {
       lastForeach = elem.attr('sbForeach');
       lastSubId = subId;
       if (fixedKeys) {
-        fixedKeys = fixedKeys.split(',').map($.trim);
+        fixedKeys = fixedKeys.split(',').map((s) => s.trim());
       }
       let blockedKeys = {};
       let options = {};
       if (optionsString) {
         optionsString.split(',').map(function (option) {
-          option = option.split('=', 2);
-          options[$.trim(option[0])] = $.trim(option[1]) || true;
+          option = option.split('=', 2).map((s) => s.trim());
+          options[option[0]] = option[1] || true;
         });
       }
       let context = elem.attr('sbContext') ? (elem.attr('sbContext') + ':').split(':', 2) : ['', ''];
@@ -800,13 +796,13 @@ let WS = {
                     .attr('sbCount', target.attr('sbCount') - 1)
                     .filter('[sbCount="0"]');
                   if (removed.length) {
-                    WS._removeFromTrie(WS.callbackTrie, removed);
+                    WS.Forget(WS.callbackTrie, removed);
                     removed.remove();
                   }
                 } else {
                   const removed = paren.children('[' + field + '="' + key + '"][subId="' + subId + '"]:not(.Fixed)');
                   if (removed.length) {
-                    WS._removeFromTrie(WS.callbackTrie, removed);
+                    WS.Forget(WS.callbackTrie, removed);
                     removed.remove();
                   }
                 }
@@ -856,82 +852,153 @@ let WS = {
     });
   },
 
-  _preRegister: function (root) {
+  _preRegister: function () {
+    'use strict';
     let paths = [];
     const preRegisterAttribute = function (attr, pathIndex) {
-      $.each($('[' + attr + ']', root), function (idx, elem) {
-        $.each(WS._getParameters($(elem), attr, pathIndex), function (idx, params) {
-          paths = paths.concat(
-            params[pathIndex].map(function (path) {
-              return path.replace('TeamJam(auto)', 'TeamJam(*)');
-            })
-          );
+      $('[' + attr + ']').each(function (idx, elem) {
+        $.each(WS._getParameters($(elem), attr, pathIndex, true), function (idx, params) {
+          paths = paths.concat(params[pathIndex]);
         });
       });
     };
 
-    $.each(['sbForeach', 'sbDisplay', 'sbSet', 'sbControl', 'sbToggle'], function (idx, attr) {
+    $.each(['sbForeach', 'sbDisplay', 'sbControl', 'sbToggle'], function (idx, attr) {
       preRegisterAttribute(attr, 0);
     });
     $.each(['sbClass', 'sbCss', 'sbAttr', 'sbProp'], function (idx, attr) {
       preRegisterAttribute(attr, 1);
     });
 
-    WS.Register(paths);
+    WS.Register(paths, null, true);
   },
 
-  _getContext: function (elem, skipSuffix) {
+  _replacePathRe: /\[([^\]]*)\]/g,
+  _replacePathComponents: function (elem, attr, isPreRegister, skipCopyContext) {
     'use strict';
-    const parent = elem.parent();
-    let ret = '';
-    if (parent.length > 0) {
-      ret = WS._getContext(parent);
+    let clean = true;
+    elem = $(elem);
+    if (!elem.attr(attr)) {
+      return [null, true];
     }
-    let context = elem.attr('sbContext');
+    elem.attr(
+      attr,
+      elem.attr(attr).replaceAll(WS._replacePathRe, function (match, field) {
+        if (field === '*') {
+          if (skipCopyContext) {
+            // we're trying to determine the proper replacement
+            return match;
+          }
+          let cached = WS._pathCache.get(elem[0]);
+          if (!cached) {
+            WS._getContext(elem, false, isPreRegister, attr === 'sbPrefix');
+            cached = WS._pathCache.get(elem[0]);
+          }
+          return cached.reevaluate ? match : cached.path;
+        } else {
+          const src = elem.closest(match + ', [sbForeach^="' + match + '"]:not([sbForeach*="noContext"])');
+          return src.length ? src.attr(field) || match : _windowFunctions.getParam(field) || match;
+        }
+      })
+    );
+
+    const result = elem.attr(attr).replaceAll(WS._replacePathRe, function (match, field) {
+      clean = false;
+      return field === '*' ? (skipCopyContext ? '[*]' : WS._pathCache.get(elem[0]).path) : '*';
+    });
+    return [result, clean];
+  },
+
+  _pathCache: new Map(),
+  _getContext: function (elem, skipSuffix, isPreRegister, skipCopyContext) {
+    'use strict';
+    const cached = WS._pathCache.get(elem[0]);
+    if (cached && (!cached.reevaluate || isPreRegister)) {
+      return skipSuffix ? cached.noSuffixPath : cached.path;
+    }
+    let reevaluate = false;
+    let path = '';
+    const parent = elem.parent();
+    if (parent.length > 0) {
+      path = WS._getContext(parent);
+      reevaluate = WS._pathCache.get(parent[0]).reevaluate;
+    }
+    let [value, clean] = WS._replacePathComponents(elem, 'sbContext', isPreRegister);
+    reevaluate = reevaluate || !clean;
     let suffix;
-    if (context) {
-      const parts = context.split(':', 2);
-      context = parts[0];
+    const prefixes = WS._getPrefixes(elem, isPreRegister, skipCopyContext);
+    if (value) {
+      const parts = value.split(':', 2);
+      path = WS._combinePaths(path, parts[0], prefixes);
       suffix = parts[1];
     }
     const foreach = elem.attr('sbForeach');
-    const [prefixes, suffixes] = WS._getPrefixes(elem);
-    if (context != null) {
-      if (context.startsWith('/')) {
-        ret = context.substring(1);
-      } else if (prefixes[context[0]]) {
-        ret = prefixes[context[0]] + context.substring(1) + (suffixes[context[0]] || '');
-      } else {
-        while (ret && context.startsWith('^')) {
-          context = context.substring(1);
-          ret = ret.substring(0, ret.lastIndexOf('.'));
-        }
-        ret = ret + (ret !== '' && context !== '' ? '.' : '') + context;
-      }
-    }
     if (foreach != null && (!foreach.includes('noContext') || skipSuffix)) {
-      ret = (ret !== '' ? ret + '.' : '') + foreach.split(':', 1)[0] + '(*)';
+      reevaluate = true;
+      path = (path !== '' ? path + '.' : '') + foreach.split(':', 1)[0].trim() + '(*)';
     }
-    if (suffix && !skipSuffix) {
-      ret = ret + '.' + suffix;
+    const noSuffixPath = path;
+    if (suffix) {
+      path = WS._combinePaths(path, suffix, prefixes);
     }
-    return ret;
+    WS._pathCache.set(elem[0], { reevaluate: reevaluate, path: path, noSuffixPath: noSuffixPath });
+    return skipSuffix ? noSuffixPath : path;
   },
 
-  _getPrefixes: function (elem) {
+  _combinePaths: function (basePath, subPath, prefixes) {
+    if (subPath === '') {
+      return basePath;
+    } else if (subPath.startsWith('/')) {
+      return subPath.substring(1);
+    } else if (prefixes[0][subPath[0]]) {
+      return prefixes[0][subPath[0]] + subPath.substring(1) + (prefixes[1][subPath[0]] || '');
+    } else if (subPath[1] === '.') {
+      // using a dynamic prefix that's not set yet
+    } else {
+      while (basePath && subPath.startsWith('^')) {
+        subPath = subPath.substring(1);
+        basePath = basePath.substring(0, basePath.lastIndexOf('.'));
+      }
+      return basePath + (basePath && subPath ? '.' : '') + subPath;
+    }
+  },
+
+  _prefixCache: new Map(),
+  _getPrefixes: function (elem, isPreRegister, skipCopyContext) {
     'use strict';
+    const cached = WS._prefixCache.get(elem[0]);
+    if (cached && (!cached.reevaluate || isPreRegister)) {
+      return [cached.prefixes, cached.suffixes];
+    }
+    let reevaluate = false;
     let prefixes = {};
     let suffixes = {};
     $.each(elem.parents('[sbPrefix]').addBack('[sbPrefix]'), function (idx, paren) {
-      $(paren)
-        .attr('sbPrefix')
-        .split('|')
-        .map(function (entry) {
-          entry = entry.split(':').map($.trim);
-          prefixes[entry[0]] = entry[1];
-          suffixes[entry[0]] = entry[2];
-        });
+      const [value, clean] = WS._replacePathComponents(paren, 'sbPrefix', isPreRegister, skipCopyContext);
+      reevaluate = reevaluate || !clean;
+      value.split('|').map(function (entry) {
+        entry = entry.split(':').map((s) => s.trim());
+        prefixes[entry[0]] = entry[1];
+        suffixes[entry[0]] = entry[2];
+      });
     });
+    WS._prefixCache.set(elem[0], { reevaluate: reevaluate, prefixes: prefixes, suffixes: suffixes });
     return [prefixes, suffixes];
+  },
+
+  OpenDialog: function (elem, context, options) {
+    'use strict';
+    elem = elem.clone().attr('sbContext', '/' + context);
+    options = options || {};
+    WS.AutoRegister(elem);
+    const origCloseHandler = options.close;
+    options.close = function (event, ui) {
+      WS.Forget(elem);
+      if (origCloseHandler) {
+        origCloseHandler(event, ui, elem);
+      }
+      elem.dialog('destroy').remove();
+    };
+    elem.dialog(options).dialog('open');
   },
 };

@@ -1,61 +1,6 @@
-function rulesetPostLoad() {
-  $('#RulesetsTab .selection').toggleClass('Hide', _windowFunctions.hasParam('ruleset'));
-
-  if (_windowFunctions.hasParam('ruleset')) {
-    const rs = _windowFunctions.getParam('ruleset');
-    WS.Register('ScoreBoard.Rulesets.Ruleset(*)', {
-      triggerBatchFunc: function () {
-        updateRuleset(rs);
-      },
-    });
-  } else if (_windowFunctions.hasParam('game')) {
-    const game = _windowFunctions.getParam('game');
-    WS.Register(['ScoreBoard.Game(' + game + ').Ruleset', 'ScoreBoard.Rulesets.Ruleset'], {
-      triggerBatchFunc: function () {
-        updateRuleset(WS.state['ScoreBoard.Game(' + game + ').Ruleset']);
-      },
-    });
-    WS.Register('ScoreBoard.Game(' + game + ').State', function (k, v) {
-      $('#RulesetsTab .selection #select').prop('disabled', v !== 'Prepared');
-    });
-  }
-}
-
-function updateRuleset(rs) {
-  const prefix = rs ? 'ScoreBoard.Rulesets.Ruleset(' + rs + ')' : 'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ')';
-  const readOnly = isTrue(WS.state[prefix + '.Readonly']);
-  $('#RulesetsTab .definitions').attr('sbPrefix', '§: ' + prefix);
-  $('#RulesetsTab #select').val(rs);
-  $('#RulesetsTab #name')
-    .val(rs ? WS.state[prefix + '.Name'] : 'Custom Ruleset')
-    .prop('disabled', !rs);
-  $('#RulesetsTab #parent')
-    .val(WS.state[prefix + '.Parent'])
-    .prop('disabled', readOnly || !rs);
-  $('#RulesetsTab > .definitions .section').each(function (idx, elem) {
-    elem = $(elem);
-    elem.children('.header').text(elem.attr('RuleDefinition'));
-  });
-  $('#RulesetsTab > .definitions .definition *').prop('disabled', readOnly);
-  $('#RulesetsTab > .definitions .definition .Selector').prop('disabled', readOnly || !rs);
-  $('#RulesetsTab > .definitions .Update').toggleClass('Hide', readOnly);
-  $('#RulesetsTab > .definitions .definition').each(function (idx, elem) {
-    elem = $(elem);
-    const rule = 'Rule(' + elem.attr('RuleDefinition') + ')';
-    let value = WS.state[prefix + '.' + rule];
-    let inherited = false;
-    let parent = WS.state[prefix + '.Parent'];
-    while (value == null && parent != null) {
-      value = WS.state['ScoreBoard.Rulesets.Ruleset(' + parent + ').' + rule];
-      inherited = true;
-      parent = WS.state['ScoreBoard.Rulesets.Ruleset(' + parent + ').Parent'];
-    }
-    elem.find('.value>input, .value>select').val(value);
-    elem.find('.value .inherit').text(elem.find('.value>select>option:selected').text() || value);
-    elem.find('.name input').prop('checked', !inherited);
-    elem.toggleClass('Inherited', inherited);
-  });
-}
+let activeRsPrefix = _windowFunctions.hasParam('ruleset')
+  ? 'ScoreBoard.Rulesets.Ruleset(' + _windowFunctions.getParam('ruleset') + ')'
+  : 'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ')';
 
 function compareIndex(a, b) {
   'use strict';
@@ -67,9 +12,32 @@ function compareChildIndex(a, b) {
   return compareAttrThenSubId('index', $(a).children('[index]'), $(b).children('[index]'));
 }
 
+function updateActiveRs(k, v) {
+  'use strict';
+  if (k.Game) {
+    activeRsPrefix = v ? 'ScoreBoard.Rulesets.Ruleset(' + v + ')' : 'ScoreBoard.Game(' + k.Game + ')';
+  }
+  return v;
+}
+
+function noGame(k) {
+  'use strict';
+  return !k.Game;
+}
+
+function isGame(k) {
+  'use strict';
+  return k.Game != null;
+}
+
 function triggerFold(k, v, elem) {
   'use strict';
   elem.parent().toggleClass('folded');
+}
+
+function sectionName(k, v, elem) {
+  'use strict';
+  return elem.parent().attr('RuleDefinition').slice(0, -2);
 }
 
 function part2(k, v) {
@@ -77,23 +45,38 @@ function part2(k, v) {
   return v ? v.split('.', 2)[1] : '';
 }
 
-function definitionOverride(k, v, elem) {
+function disableToggle() {
   'use strict';
-  elem.parents('.definition').toggleClass('Inherited', !elem.prop('checked'));
-  if (elem.prop('checked')) {
-    let value = null;
-    let parent = WS.state[WS._getPrefixes(elem)[0]['§'] + '.Parent'];
-    while (value == null && parent != null) {
-      value = WS.state['ScoreBoard.Rulesets.Ruleset(' + parent + ').' + rule];
-      parent = WS.state['ScoreBoard.Rulesets.Ruleset(' + parent + ').Parent'];
-    }
-    setRule(k, value, elem);
-  } else {
-    setRule(k, null, elem);
-  }
+  return isTrue(WS.state[activeRsPrefix + '.Readonly']) || WS.state[activeRsPrefix + '.Ruleset'] == null;
 }
 
-function setRule(k, v, elem) {
+function disableSetter() {
   'use strict';
-  WS.Set(WS._getPrefixes(elem)[0]['§'] + '.Rule(' + elem.closest('[RuleDefinition]').attr('RuleDefinition') + ')', v);
+  return isTrue(WS.state[activeRsPrefix + '.Readonly']);
+}
+
+function definitionOverride(k, v, elem) {
+  'use strict';
+  return elem.prop('checked') ? _getEffectiveValue(k.Ruleset, k.Rule) : null;
+}
+
+function _getEffectiveValue(rs, rule) {
+  'use strict';
+  let value = null;
+  while (value == null && rs != null) {
+    value = WS.state['ScoreBoard.Rulesets.Ruleset(' + rs + ').Rule(' + rule + ')'];
+    rs = WS.state['ScoreBoard.Rulesets.Ruleset(' + rs + ').Parent'];
+  }
+  return value;
+}
+
+function getDisplayValue(k, v, elem) {
+  'use strict';
+  const value = WS.state[activeRsPrefix + '.Rule(' + k.Rule + ')'] || _getEffectiveValue(activeRsPrefix.split('(')[1].slice(0, -1), k.Rule);
+  return (
+    elem
+      .parent()
+      .find('select>option[value="' + value + '"]')
+      .text() || value
+  );
 }

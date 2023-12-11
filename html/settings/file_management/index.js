@@ -1,9 +1,5 @@
-$(function () {
+WS.AfterLoad(function () {
   'use strict';
-
-  WS.Connect();
-  WS.AutoRegister();
-
   $('#tabsDiv').tabs();
 });
 

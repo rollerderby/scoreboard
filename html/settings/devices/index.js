@@ -1,10 +1,7 @@
 WS.Register('WS.Device.Id');
 
-$(function () {
+WS.AfterLoad(function () {
   'use strict';
-  WS.Connect();
-  WS.AutoRegister();
-
   function updateAge(e, now) {
     if (!now) {
       now = new Date().getTime();

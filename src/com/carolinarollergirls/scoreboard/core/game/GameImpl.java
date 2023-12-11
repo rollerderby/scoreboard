@@ -381,6 +381,15 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     }
 
     @Override
+    protected <T extends ValueWithId> boolean mayAdd(Child<T> prop, T item, Source source) {
+        if (prop == RULE && getRuleset() != null && source == Source.WS) {
+            getRuleset().add(Ruleset.RULE, (ValWithId) item);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
         if (prop == RULE) {
             if (Rule.PENALTIES_FILE.toString().equals(item.getId())) {

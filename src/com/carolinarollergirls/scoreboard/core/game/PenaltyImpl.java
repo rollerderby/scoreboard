@@ -4,6 +4,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
@@ -25,6 +26,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
         setCopy(SERVING, this, BOX_TRIP, BoxTrip.IS_CURRENT, true);
         setCopy(JAM_NUMBER, this, JAM, Jam.NUMBER, true);
         setCopy(PERIOD_NUMBER, this, JAM, Jam.PERIOD_NUMBER, true);
+        set(FORCE_SERVED, !Boolean.valueOf(scoreBoard.getSettings().get(ScoreBoard.SETTING_USE_LT)));
         if (s.isPenaltyBox()) { set(BOX_TRIP, s.getCurrentFielding().getCurrentBoxTrip()); }
         set(SERVED, get(BOX_TRIP) != null);
         set(CODE, "?");

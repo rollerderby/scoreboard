@@ -7,9 +7,12 @@
     <script type="text/javascript" src="/json/core.js"></script>
   </head>
   <body>
-    <div class="GameContext BothTeams">
-      <div sbInclude="/components/game-advance/" class="Auto"></div>
-      <div class="TeamContext" sbInclude="/components/plt-input/" context="whiteboard" style="width: 50%; float: left"></div>
-    </div>
+    <div
+      sbForeach="Team: 1,2: only"
+      sbContext="ScoreBoard.CurrentGame"
+      sbInclude="/components/plt-input/"
+      context="whiteboard"
+      style="width: 50%; float: left"
+    ></div>
   </body>
 </html>

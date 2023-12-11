@@ -18,7 +18,7 @@ public enum Rule {
         new IntegerRule("Jam.SuddenScoringMinPointsDifference",
                         "Minimal score difference at halftime at which sudden scoring is activated.", 150)),
     SUDDEN_SCORING_MAX_TRAILING_POINTS(
-        new IntegerRule("Jam.SuddenScoringMaxTrainingPoints",
+        new IntegerRule("Jam.SuddenScoringMaxTrailingPoints",
                         "Maximum points the trailing team may have at halftime to trigger sudden scoring.", 25)),
     SUDDEN_SCORING_JAM_DURATION(new TimeRule("Jam.SuddenScoringDuration",
                                              "Maximum duration of a jam when sudden scoring is in effect", "1:00")),

@@ -535,6 +535,7 @@ public class ClockImplTests {
         assertFalse(clock.isCountDirectionDown());
         assertEquals(0, clock.getTime());
 
+        g.setRuleset(null);
         g.set(Rule.LINEUP_DIRECTION, String.valueOf(true));
         clock.rulesetChangeListener.scoreBoardChange(null);
         assertTrue(clock.isCountDirectionDown());

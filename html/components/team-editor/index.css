@@ -1,17 +1,15 @@
-.OneTeam #Team, .PreparedTeam #Team { width: 100%; } 
-.BothTeams #Team { width: 50%; }
 #Team { text-align: center; vertical-align: top; background: #eee; } 
 
-#Team table.Team { width: 100%; border-spacing: 0px; } 
-#Team table.Team tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; font-size: 200%; font-weight: bold; } 
-#Team table.Team tr.Name>td select { font-size: 50%; } 
-#Team table.Team tr.Name>td button { font-size: 50%; margin: 2px 5px; } 
-#Team table.Team .LogoPreview>img { max-width: 95%; max-height: 6em; display: block; margin: auto; }
-#Team table.Team tr.Control>td>div { display: flex; justify-content: space-around; } 
-#Team table.Team td.Value { text-align: left; }
-#Team table.Team td.Label { text-align: right; }
-#Team table.Team .RemoveColor button { font-size: 80%; margin-left: 5px; padding: 2px 5px; } 
-#Team table.Team .RemoveColor { margin: 0px 5px; border-right: 1px solid black; }
+#Team { width: 100%; border-spacing: 0px; } 
+#Team tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; font-size: 200%; font-weight: bold; } 
+#Team tr.Name>td select { font-size: 50%; } 
+#Team tr.Name>td button { font-size: 50%; margin: 2px 5px; } 
+#Team tr.Control>td>div { display: flex; justify-content: space-around; } 
+#Team .LogoPreview>img { max-width: 95%; max-height: 6em; display: block; margin: auto; }
+#Team td.Value { text-align: left; }
+#Team td.Label { text-align: right; }
+#Team .RemoveColor button { font-size: 80%; margin-left: 5px; padding: 2px 5px; } 
+#Team .RemoveColor { margin: 0px 5px; border-right: 1px solid black; }
 
 #Team table.Skaters { width: 100%; border-spacing: 0px; } 
 #Team table.Skaters.Empty tr:last-of-type>th:first-of-type { border-radius: 0px 0px 0px 12px; } 

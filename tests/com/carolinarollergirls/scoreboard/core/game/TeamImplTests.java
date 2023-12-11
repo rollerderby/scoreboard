@@ -512,6 +512,7 @@ public class TeamImplTests {
 
     @Test
     public void testLostOnJammerPenalty() {
+        sb.getSettings().set(ScoreBoard.SETTING_USE_LT, "true");
         team.execute(Team.ADVANCE_FIELDINGS);
         Skater skater1 = new SkaterImpl(team, "S1");
         team.addSkater(skater1);

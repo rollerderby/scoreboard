@@ -1,12 +1,23 @@
-$(initialize);
-
-function initialize() {
+(function () {
   'use strict';
 
   WS.Register('ScoreBoard.CurrentGame.Team(*).StarPass', function (k, v) {
     $('[Team=' + k.Team + '] [Position="Jammer"]').toggleClass('Jamming', !isTrue(v));
     $('[Team=' + k.Team + '] [Position="Pivot"]').toggleClass('Jamming', isTrue(v));
   });
+
+  WS.Register(
+    [
+      'ScoreBoard.CurrentGame.Clock(Timeout).Running',
+      'ScoreBoard.CurrentGame.TimeoutOwner',
+      'ScoreBoard.CurrentGame.OfficialReview',
+      'ScoreBoard.CurrentGame.Team(*).Timeouts',
+    ],
+    setActiveTimeout
+  );
+
+  // Show Clocks
+  WS.Register(['ScoreBoard.CurrentGame.Clock(*).Running', 'ScoreBoard.CurrentGame.InJam'], clockSelect);
 
   $(document).keyup(function (e) {
     switch (e.which) {
@@ -52,34 +63,10 @@ function initialize() {
     }
   });
 
-  WS.AutoRegister();
-  WS.Connect();
-
-  /*  WS.Register('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', function (k, v) {
-    $('.OverlayPanel').removeClass('Show');
-    switch (v) {
-      case 'RosterTeam1':
-        $('[Team="1"] .OverlayPanel.RosterTeam').addClass('Show');
-        break;
-      case 'RosterTeam2':
-        $('[Team="2"] .OverlayPanel.RosterTeam').addClass('Show');
-        break;
-      case 'PenaltyTeam1':
-        $('[Team="1"] .OverlayPanel.PenaltyTeam').addClass('Show');
-        break;
-      case 'PenaltyTeam2':
-        $('[Team="2"] .OverlayPanel.PenaltyTeam').addClass('Show');
-        break;
-      default:
-        $('.OverlayPanel.' + v).addClass('Show');
-        break;
-    }
-  });*/
-
   setTimeout(function () {
     $('body').removeClass('preload');
   }, 1000);
-}
+})();
 
 function toggleSetting(s) {
   WS.Set(
@@ -161,13 +148,13 @@ function toLowerThirdColor(type) {
 
 function toClockType(k, v) {
   'use strict';
-  var ret;
-  var to = WS.state['ScoreBoard.CurrentGame.TimeoutOwner'];
-  var or = WS.state['ScoreBoard.CurrentGame.OfficialReview'];
-  var tc = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Running'];
-  var lc = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Running'];
-  var ic = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Running'];
-  var jc = WS.state['ScoreBoard.CurrentGame.InJam'];
+  let ret;
+  const to = WS.state['ScoreBoard.CurrentGame.TimeoutOwner'];
+  const or = WS.state['ScoreBoard.CurrentGame.OfficialReview'];
+  const tc = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Running'];
+  const lc = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Running'];
+  const ic = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Running'];
+  const jc = WS.state['ScoreBoard.CurrentGame.InJam'];
 
   if (tc) {
     ret = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Name'];
@@ -185,10 +172,10 @@ function toClockType(k, v) {
     ret = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Name'];
     $('.ClockDescription').css('backgroundColor', '#888');
   } else if (ic) {
-    var num = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Number'];
-    var max = WS.state['ScoreBoard.CurrentGame.Rule(Period.Number)'];
-    var isOfficial = WS.state['ScoreBoard.CurrentGame.OfficialScore'];
-    var showDuringOfficial = WS.state['ScoreBoard.CurrentGame.ClockDuringFinalScore'];
+    const num = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Number'];
+    const max = WS.state['ScoreBoard.CurrentGame.Rule(Period.Number)'];
+    const isOfficial = WS.state['ScoreBoard.CurrentGame.OfficialScore'];
+    const showDuringOfficial = WS.state['ScoreBoard.CurrentGame.ClockDuringFinalScore'];
     if (isOfficial) {
       if (showDuringOfficial) {
         ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.OfficialWithClock)'];

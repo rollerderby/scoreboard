@@ -1,9 +1,7 @@
-$(function () {
-  'use strict';
+WS.Register('ScoreBoard.Rulesets.Ruleset(*).Parent');
 
-  WS.Register('ScoreBoard.Rulesets.Ruleset(*).Parent');
-  WS.Connect();
-  WS.AutoRegister();
+WS.AfterLoad(function () {
+  'use strict';
 
   setInterval(updateAllUrl, 1000);
   updateSelectedUrl();
@@ -20,25 +18,17 @@ function updateAllUrl() {
 
 function updateSelectedUrl() {
   const paths = $('#games tr.Content.Selected')
-    .map(function () {
-      return 'ScoreBoard.Game(' + $(this).attr('game') + ')';
-    })
+    .map((elem) => 'ScoreBoard.Game(' + elem.attr('game') + ')')
     .get()
     .concat(
       $('#teams tr.Content.Selected')
-        .map(function () {
-          return 'ScoreBoard.PreparedTeam(' + $(this).attr('preparedTeam') + ')';
-        })
+        .map((elem) => 'ScoreBoard.PreparedTeam(' + elem.attr('preparedTeam') + ')')
         .get(),
       $('#rulesets tr.Content.Selected')
-        .map(function () {
-          return 'ScoreBoard.Rulesets.Ruleset(' + $(this).attr('Ruleset') + ')';
-        })
+        .map((elem) => 'ScoreBoard.Rulesets.Ruleset(' + elem.attr('Ruleset') + ')')
         .get(),
       $('#operators tr.Content.Selected')
-        .map(function () {
-          return 'ScoreBoard.Settings.Setting(' + $(this).attr('Setting') + ')';
-        })
+        .map((elem) => 'ScoreBoard.Settings.Setting(' + elem.attr('Setting') + ')')
         .get()
     )
     .join();

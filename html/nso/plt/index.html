@@ -1,16 +1,61 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Penalty Lineup Tracker | CRG ScoreBoard</title>
+    <title sbContext="ScoreBoard.Game([game]).Team(*)" sbDisplay="AlternateName(operator), UnifomrColor, Name: toTitle">
+      Penalty Lineup Tracker | CRG ScoreBoard
+    </title>
 
     <script type="text/javascript" src="/external/jquery/jquery.js"></script>
     <script type="text/javascript" src="/json/core.js"></script>
-    <script type="text/javascript" src="/javascript/windowfunctions.js"></script>
   </head>
-  <body class="GameContext OneTeam">
+  <body sbContext="ScoreBoard.Game([game])">
     <div sbInclude="/components/game-advance/"></div>
-    <div class="TeamContext" sbInclude="/components/plt-input/" context="plt"></div>
-    <div class="TeamContext" sbInclude="/components/lt-sheet/" sbAfterInclude="initLtSheet" context="plt" width="100%"></div>
-    <div sbInclude="/components/sheet-dialogs/ .Dialog.Plt" sbAfterInclude="initDialogs"></div>
+    <div class="Content">
+      <div sbForeach="Team: 1,2: only" sbInclude="/components/plt-input/" class="Input"></div>
+      <div class="ShowSome ShowOnLt Sheet" sbForeach="Team: 1,2: only" sbInclude="/components/lt-sheet/"></div>
+    </div>
+
+    <div id="Templates">
+      <div id="OptionsDialog" sbPrefix="$: ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)">
+        <table>
+          <tr>
+            <th>Select Team</th>
+          </tr>
+          <tr>
+            <td>
+              <button team="1" sbCall="setTeam" sbContext="Team(1)" sbDisplay="AlternateName(operator),UniformColor,Name">Team 1</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button team="2" sbCall="setTeam" sbContext="Team(2)" sbDisplay="AlternateName(operator),UniformColor,Name">Team 2</button>
+            </td>
+          </tr>
+          <tr>
+            <td><button team="both" sbCall="setTeam">Both Teams</button></td>
+          </tr>
+          <tr>
+            <th>Select Position</th>
+          </tr>
+          <tr>
+            <td>
+              <button pos="pt" sbCall="setPos">PT</button><button pos="plt" sbProp="disabled: $: !" sbCall="setPos">PLT</button>
+              <button pos="lt" sbProp="disabled: $: !" sbCall="setPos">LT</button>
+            </td>
+          </tr>
+          <tr>
+            <th>Options</th>
+          </tr>
+          <tr>
+            <td><button sbToggle="$">Enable Lineup Tracking</button></td>
+          </tr>
+          <tr>
+            <td><button sbCall="setZoom">Allow Pinch Zoom</button></td>
+          </tr>
+        </table>
+      </div>
+
+      <div id="UseLTDialog">Use of Lineup Tracking is disabled.</div>
+    </div>
   </body>
 </html>

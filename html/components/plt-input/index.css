@@ -57,3 +57,20 @@ body:not(.AllowSelect) .PLT {user-select: none;-webkit-user-select: none;-khtml-
 .PLT.Team .Advance:not(.Active):not(.OnTrack) { border: none; }
 .PLT.Team .Advance:not(.Active).OnTrack::after { content: "☰"; } 
 .PLT.Team tr[warn="3"] .Advance:not(.Active).OnTrack { background-color: #ff9010; }
+
+#PenaltyEditor .Codes>div { float: left; width: 150px; height: 90px; margin: 10px; border: 1px solid black; font-size: 11pt; font-weight: bold; } 
+#PenaltyEditor .Codes>div.Selected { background-color: #F00; color: #FFF; } 
+#PenaltyEditor .Codes>div div { text-align: center; } 
+#PenaltyEditor .Codes>div .Code { font-size: 1.2em; background-color: #FAA; color: #000; } 
+#PenaltyEditor .Codes>div .Description { font-size: 0.75em; } 
+#PenaltyEditor .ui-button.small { font-size: 75%; } 
+#PenaltyEditor td { text-align: center; } 
+
+#AnnotationEditor tr.Box > td { width:33%; }
+#AnnotationEditor .ui-button { font-size: 75%; } 
+#AnnotationEditor .ui-controlgroup { text-align: center; } 
+#AnnotationEditor .ui-controlgroup>button { border-radius: 0; margin: 0; } 
+#AnnotationEditor .ui-controlgroup>button:first-of-type { border-radius: 6px 0px 0px 6px; } 
+#AnnotationEditor .ui-controlgroup>button:last-of-type { border-radius: 0px 6px 6px 0px; } 
+#AnnotationEditor .ui-controlgroup>button:only-of-type { border-radius: 6px; } 
+#AnnotationEditor .ui-controlgroup>button { padding: 0.4em 0.5em; } 

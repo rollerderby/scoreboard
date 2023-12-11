@@ -1,16 +1,7 @@
-$(initialize);
-
-function initialize() {
+(function () {
   'use strict';
-  var view = 'View';
-  // needs to be set before AutoRegister
-  if (_windowFunctions.checkParam('preview', 'true')) {
-    $('body').attr('sbPrefix', '&: ScoreBoard.Settings.Setting(ScoreBoard.Preview_ : )');
-    view = 'Preview';
-  }
-
-  WS.Connect();
-  WS.AutoRegister();
+  const view = _windowFunctions.checkParam('preview', 'true') ? 'Preview' : 'View';
+  $('body').attr('sbPrefix', '&: ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_ : )');
 
   // Set Styles
   WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_SwapTeams)', function (k, v) {
@@ -34,21 +25,21 @@ function initialize() {
   WS.Register(
     ['ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_BoxStyle)', 'ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_SidePadding)'],
     function (k, v) {
-      var boxStyle = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_BoxStyle)'];
-      var sidePadding = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_SidePadding)'];
+      const boxStyle = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_BoxStyle)'];
+      const sidePadding = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_SidePadding)'];
 
       // change box_flat_bright to two separate classes in order to reuse much of the css
       if (boxStyle === 'box_flat_bright') {
         boxStyle = 'box_flat bright';
       }
 
-      $('body').removeClass();
-      if (boxStyle !== '' && boxStyle != null) {
+      $('body').removeClass('box_flat bright');
+      if (boxStyle) {
         $('body').addClass(boxStyle);
       }
 
-      var left = 0;
-      var right = 0;
+      let left = 0;
+      let right = 0;
       if (sidePadding !== '' && sidePadding != null) {
         left = sidePadding;
         right = left;
@@ -58,68 +49,62 @@ function initialize() {
     }
   );
 
-  (function () {
-    var switchTimeMs = 5000;
-    var banners = [];
-    var div = $('#SponsorBox');
-    var setNextSrc = function () {
-      if (banners.length === 0) {
-        div.find('.NextImg>img').prop('src', '').toggle(false);
-      } else {
-        // Use time so different scoreboards will be using the same images.
-        var index = Math.round((new Date().getTime() / switchTimeMs) % banners.length);
-        div.find('.NextImg>img').prop('src', banners[index].Src).toggle(true);
+  WS.Register(
+    [
+      'ScoreBoard.CurrentGame.Clock(Timeout).Running',
+      'ScoreBoard.CurrentGame.TimeoutOwner',
+      'ScoreBoard.CurrentGame.OfficialReview',
+      'ScoreBoard.CurrentGame.Team(*).Timeouts',
+    ],
+    setActiveTimeout
+  );
 
-        // Also set the current image. This gets a banner up when the page is loaded,
-        // and is otherwise a noop.
-        div.find('.CurrentImg>img').prop('src', banners[index].Src).toggle(true);
-      }
-    };
-    var nextImgFunction = function () {
-      var cur = $(div.find('.CurrentImg')[0]);
-      var nex = $(div.find('.NextImg')[0]);
-      var fin = $(div.find('.FinishedImg')[0]);
-      cur.removeClass('CurrentImg').addClass('FinishedImg');
-      nex.removeClass('NextImg').addClass('CurrentImg');
-      fin.removeClass('FinishedImg').addClass('NextImg');
-      setNextSrc();
-      // Align to clock, so different scoreboards will be synced.
-      setTimeout(nextImgFunction, switchTimeMs - (new Date().getTime() % switchTimeMs));
-    };
-    WS.Register(['ScoreBoard.Media.Format(images).Type(sponsor_banner)'], {
-      triggerBatchFunc: function () {
-        var images = {};
-        for (var prop in WS.state) {
-          if (WS.state[prop] == null) {
-            continue;
-          }
-          var re = /ScoreBoard.Media.Format\(images\).Type\(sponsor_banner\)\.File\((.*)\)\.(\w+)/;
-          var m = prop.match(re);
-          if (m != null) {
-            images[m[1]] = images[m[1]] || {};
-            images[m[1]][m[2]] = WS.state[prop];
-          }
-        }
-        banners = Object.values(images).sort(function (a, b) {
-          a.Id.localeCompare(b.Id, 'en');
-        });
-      },
-    });
+  // Show Clocks
+  WS.Register(['ScoreBoard.CurrentGame.Clock(*).Running', 'ScoreBoard.CurrentGame.InJam'], clockSelect);
+})();
 
+WS.AfterLoad(function () {
+  const switchTimeMs = 5000;
+  const div = $('#SponsorBox');
+  function setNextSrc() {
+    const banners = $('#Banners [File]');
+    if (banners.length === 0) {
+      div.find('.NextImg>img').attr('src', '').toggle(false);
+    } else {
+      // Use time so different scoreboards will be using the same images.
+      const index = Math.round((new Date().getTime() / switchTimeMs) % banners.length);
+      div.find('.NextImg>img').attr('src', $(banners[index]).attr('src')).toggle(true);
+
+      // Also set the current image. This gets a banner up when the page is loaded,
+      // and is otherwise a noop.
+      div.find('.CurrentImg>img').attr('src', $(banners[index]).attr('src')).toggle(true);
+    }
+  }
+  function nextImgFunction() {
+    var cur = $(div.find('.CurrentImg')[0]);
+    var nex = $(div.find('.NextImg')[0]);
+    var fin = $(div.find('.FinishedImg')[0]);
+    cur.removeClass('CurrentImg').addClass('FinishedImg');
+    nex.removeClass('NextImg').addClass('CurrentImg');
+    fin.removeClass('FinishedImg').addClass('NextImg');
     setNextSrc();
-    nextImgFunction();
-  })();
-}
+    // Align to clock, so different scoreboards will be synced.
+    setTimeout(nextImgFunction, switchTimeMs - (new Date().getTime() % switchTimeMs));
+  }
+
+  setNextSrc();
+  nextImgFunction();
+});
 
 function toJammerName(k, v) {
   'use strict';
-  var id = k.Team;
-  var prefix = 'ScoreBoard.CurrentGame.Team(' + id + ').';
-  var jammerName = WS.state[prefix + 'Position(Jammer).Name'];
-  var pivotName = WS.state[prefix + 'Position(Pivot).Name'];
-  var leadJammer = isTrue(WS.state[prefix + 'DisplayLead']);
-  var starPass = isTrue(WS.state[prefix + 'StarPass']);
-  var inJam = isTrue(WS.state['ScoreBoard.CurrentGame.InJam']);
+  const id = k.Team;
+  const prefix = 'ScoreBoard.CurrentGame.Team(' + id + ').';
+  let jammerName = WS.state[prefix + 'Position(Jammer).Name'];
+  let pivotName = WS.state[prefix + 'Position(Pivot).Name'];
+  const leadJammer = isTrue(WS.state[prefix + 'DisplayLead']);
+  const starPass = isTrue(WS.state[prefix + 'StarPass']);
+  const inJam = isTrue(WS.state['ScoreBoard.CurrentGame.InJam']);
 
   if (jammerName == null || jammerName === '') {
     jammerName = leadJammer ? 'Lead' : '';

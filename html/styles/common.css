@@ -10,6 +10,12 @@
 [context="sheet"] .ShowSome:not(.ShowOnSheet):not(.ShowOnPt) { display: none; }
 [context="whiteboard"] .ShowSome:not(.ShowOnWhiteboard):not(.ShowOnPt) { display: none; }
 
+#indexLink { float: right; border: none; }
+
+#ConnectionStatus { position: absolute; display: none; z-index: 9999; background-color: #A00000; font-size: 40px; width: 100%; height: 100%; opacity: 0.5; top: 0; left: 0; } 
+#ConnectionStatus:not([status="ready"]) { display: block; } 
+#ConnectionStatus[status="loading"] { background-color: #A0A000; }
+
 @keyframes spinner {
     0%   { transform: translate3d(-50%, -50%, 0) rotate(0deg);   }
     100% { transform: translate3d(-50%, -50%, 0) rotate(360deg); }

@@ -1,26 +1,26 @@
-function initLtSheet() {
-  WS.Register('ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Period(*).Jam(*).StarPass', {
-    triggerBatchFunc: function () {
-      $('.LT.Period').each(function (i, e) {
-        const dark = $('[context="Sheet"]').length ? 1 : $(e).find('tr:visible').length % 2;
-        $(e)
-          .find('tr:visible')
-          .each(function (idx) {
-            $(this).toggleClass('Darker', idx % 2 === dark);
-          });
-      });
-    },
-  });
-}
+WS.Register('ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Period(*).Jam(*).StarPass', {
+  triggerBatchFunc: function () {
+    $('.LT.Period').each(function (i, e) {
+      const dark = $(e).closest('[context="Sheet"]').length ? 1 : $(e).find('tr:visible').length % 2;
+      $(e)
+        .find('tr:visible')
+        .each(function (idx) {
+          $(this).toggleClass('Darker', idx % 2 === dark);
+        });
+    });
+  },
+});
+
+$('#FieldingEditor').find('#skaterList').controlgroup();
 
 function editFielding(k, v, elem) {
   'use strict';
-  openFieldingEditor(k.Game, k.Period, k.Jam, k.TeamJam, k.Fielding, false);
+  _openFieldingEditor(k.Game, k.Period, k.Jam, k.TeamJam, k.Fielding, false);
 }
 
 function editUpcomingFielding(k, v, elem) {
   'use strict';
-  openFieldingEditor(k.Game, undefined, WS.state['ScoreBoard.Game(' + k.Game + ').UpcomingJamNumber'], k.Team, k.Position, true);
+  _openFieldingEditor(k.Game, undefined, WS.state['ScoreBoard.Game(' + k.Game + ').UpcomingJamNumber'], k.Team, k.Position, true);
 }
 
 function emptyIfInjAst(k, v) {
@@ -35,4 +35,53 @@ function emptyIfInjAst(k, v) {
   } else {
     return v;
   }
+}
+
+function _openFieldingEditor(g, p, j, t, pos, upcoming) {
+  'use strict';
+  const prefix =
+    'ScoreBoard.Game(' +
+    g +
+    ').' +
+    (isTrue(upcoming) ? '' : 'Period(' + p + ').') +
+    'Jam(' +
+    j +
+    ').TeamJam(' +
+    t +
+    ').Fielding(' +
+    pos +
+    ')';
+
+  const posName = pos === 'Pivot' ? 'Pivot/Blocker4' : pos;
+
+  WS.OpenDialog($('#FieldingEditor'), prefix, {
+    modal: true,
+    title: (upcoming ? 'Upcoming Jam' : 'Period ' + p + ' Jam ' + j) + ' ' + posName,
+    width: '700px',
+  });
+
+  editor.find('[BoxTrip]').addClass('Hide');
+  editor.find('[BoxTrip]:has([Fielding="' + WS.state[prefix + '.Id'] + '"])').removeClass('Hide');
+}
+
+function isUpcoming(k) {
+  'use strict';
+  return k.Period == null;
+}
+
+function toBtStartText(k) {
+  'use strict';
+  const prefix = 'ScoreBoard.Game(' + k.Game + ').Team(' + k.Team + ').BoxTrip(' + k.BoxTrip + ').';
+  const between = isTrue(WS.state[prefix + 'StartBetweenJams']);
+  const afterSP = isTrue(WS.state[prefix + 'StartAfterSP']);
+  return (between ? 'Before ' : '') + 'Jam ' + WS.state[prefix + 'StartJamNumber'] + (afterSP ? ' after SP' : '');
+}
+
+function toBtEndText(k) {
+  'use strict';
+  const prefix = 'ScoreBoard.Game(' + k.Game + ').Team(' + k.Team + ').BoxTrip(' + k.BoxTrip + ').';
+  const between = isTrue(WS.state[prefix + 'EndBetweenJams']);
+  const afterSP = isTrue(WS.state[prefix + 'EndAfterSP']);
+  const jam = WS.state[prefix + 'EndJamNumber'];
+  return (between ? ' After ' : ' ') + (jam === 0 ? 'ongoing' : 'Jam ' + jam) + (afterSP && !between ? ' after SP ' : ' ');
 }

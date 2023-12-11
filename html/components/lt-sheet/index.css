@@ -20,3 +20,19 @@ div.LT { font-size: 200%; text-align: center; background-color: #cccccc; color: 
 .LT.Period .hasAnnotation { position: relative; } 
 .LT.Period .hasAnnotation::after { position: absolute; right: 2px; top: 2px; height: 5px; width: 5px; background-color: red; content: ""; } 
 .LT.Period:Not(.Current) .Upcoming { display: none; }
+
+#FieldingEditor { font-size: 11pt; } 
+table#FieldingEditor, #FieldingEditor tr, #FieldingEditor td { border-collapse: collapse; border-color:#777; } 
+#FieldingEditor .tripHeader { text-align: center; font-size: 95%; background-color: #222; color: #FFF; } 
+#FieldingEditor .ButtonCell { text-align: center; } 
+#FieldingEditor .ui-button { font-size: 75%; } 
+#FieldingEditor .ui-controlgroup { text-align: center; } 
+#FieldingEditor .ui-controlgroup>button { border-radius: 0; margin: 0; } 
+#FieldingEditor .ui-controlgroup>button:first-of-type { border-radius: 6px 0px 0px 6px; } 
+#FieldingEditor .ui-controlgroup>button:last-of-type { border-radius: 0px 6px 6px 0px; } 
+#FieldingEditor .ui-controlgroup>button:only-of-type { border-radius: 6px; } 
+#FieldingEditor .ui-controlgroup>button { padding: 0.4em 0.5em; } 
+
+#FieldingEditor .BoxTrip>td, #FieldingEditor .Skater>td { padding: 0.5em 0em; } 
+
+#sitFor3, #notFielded { color: #000; padding: .3em .6em; } 

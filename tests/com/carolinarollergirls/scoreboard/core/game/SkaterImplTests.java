@@ -281,6 +281,7 @@ public class SkaterImplTests {
 
     @Test
     public void penalty_between_jams_fields_skater() {
+        sb.getSettings().set(ScoreBoard.SETTING_USE_LT, "true");
         team.execute(Team.ADVANCE_FIELDINGS);
         team.field(skater, Role.BLOCKER);
         g.startJam();
