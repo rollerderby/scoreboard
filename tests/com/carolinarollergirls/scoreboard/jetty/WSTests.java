@@ -6,12 +6,14 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.carolinarollergirls.scoreboard.json.JSONStateListener.PathTrie;
+
 public class WSTests {
-    private WS.PathTrie pt;
+    private PathTrie pt;
 
     @Before
     public void setup() {
-        pt = new WS.PathTrie();
+        pt = new PathTrie();
     }
 
     @Test

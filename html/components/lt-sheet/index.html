@@ -10,7 +10,7 @@
   >
     <thead class="ShowSome ShowOnSheet">
       <tr>
-        <td colspan="12"><span sbDisplay="t.AlternateName(operator), t.UniformColor, t.Name"></span></td>
+        <td colspan="12"><span sbDisplay="t.UniformColor, t.Name"></span></td>
       </tr>
       <tr>
         <td class="JamNumber">Jam</td>
@@ -28,7 +28,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr class="ShowSome ShowOnLt Jam Upcoming" sbContext="t" sbClass="Hide: ^InJam">
+      <tr class="Jam Upcoming" sbContext="t" sbClass="Hide: ^InJam">
         <td class="JamNumber Darker" sbDisplay="^UpcomingJamNumber"></td>
         <td class="NP Darker" sbDisplay="NoPivot: toX"></td>
         <td
@@ -45,7 +45,7 @@
           sbCall="editUpcomingFielding"
         ></td>
       </tr>
-      <tr class="ShowSome ShowOnLt Jam" sbContext=":TeamJam([Team])" sbForeach="Jam:: compareJam" sbClass="INJ: ^InjuryContinuation">
+      <tr class="Jam" sbContext=":TeamJam([Team])" sbForeach="Jam:: compareJam" sbClass="INJ: ^InjuryContinuation">
         <td
           class="JamNumber Darker"
           sbClass="CopyArrow: ^InjuryContinuation: !"
@@ -67,7 +67,7 @@
           sbCall="editFielding"
         ></td>
       </tr>
-      <tr class="ShowSome ShowOnLt SP" sbContext=":TeamJam([Team])" sbForeach="Jam:: compareJam" sbClass="Hide: ^StarPass: !">
+      <tr class="SP" sbContext=":TeamJam([Team])" sbForeach="Jam:: compareJam" sbClass="Hide: ^StarPass: !">
         <td class="JamNumber Darker" sbDisplay="StarPass: toSpJamNo"></td>
         <td class="NP Darker" sbDisplay="StarPass: toX"></td>
         <td
@@ -93,7 +93,7 @@
       <td colspan="2">
         <span id="skaterList" sbPrefix="f:[*]">
           <button sbSet="Skater: null">?</button>
-          <button sbClass="Hide:: isUpcoming" sbSet="Skater: null" sbToggle="NotFielded">n/a</button>
+          <button sbClass="Hide:-: isUpcoming" sbSet="Skater: null" sbToggle="NotFielded">n/a</button>
           <button
             sbContext="/ScoreBoard.Game([Game]).Team([TeamJam])"
             sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"

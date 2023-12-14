@@ -7,15 +7,7 @@
   WS.Register([prefix + 'Clock(Period).Number'], updateCurrentPeriodStyle());
   WS.Register([prefix + 'Clock(Jam).Number'], updateCurrentJamStyle());
   WS.Register(prefix + 'Team(*).Skater(*).Role', {
-    triggerBatchFunc: function () {
-      $('.PLT.Team').each(function (i, e) {
-        $(e)
-          .find('tr:visible')
-          .each(function (idx) {
-            $(this).toggleClass('Darker', idx % 4 === 0 || idx % 4 === 3);
-          });
-      });
-    },
+    triggerBatchFunc: updatePtRowColor,
   });
 
   WS.Register([
@@ -28,12 +20,14 @@
   $('#AnnotationEditor #skaterList').controlgroup();
 })();
 
-function updatePtRowColor(k, v) {
-  const dark = $('[context="Sheet"]').length ? $('.LT.Period tr:visible').length % 2 : 1;
-  $('.LT.Period tr:visible').each(function (idx) {
-    $(this).toggleClass('Darker', idx % 2 === dark);
+function updatePtRowColor() {
+  $('.PLT.Team').each(function (i, e) {
+    $(e)
+      .find('tr.Skater:not([role="NotInGame])')
+      .each(function (idx) {
+        $(this).toggleClass('Darker', idx % 4 === 2 || idx % 4 === 3);
+      });
   });
-  return !isTrue(v);
 }
 
 function isOnTrackRole(k, v) {
@@ -65,13 +59,11 @@ function toWarnLevel(k, v) {
   }
 }
 
-function updateSkaterUnserved(k, v) {
+function updateSkaterUnserved(k, v, elem) {
   'use strict';
-  $('[Skater="' + k.Skater + '"] .Sitting').toggleClass(
-    'Unserved',
-    (v != null && !isTrue(v)) ||
-      $('[Skater="' + k.Skater + '"] .Box:not([Penalty="0"]):not([Penalty="' + k.Penalty + '"]).Unserved').length > 0
-  );
+  elem
+    .siblings('.Sitting')
+    .toggleClass('Unserved', (v != null && !isTrue(v)) || elem.siblings('.Box:not([Penalty="0"]).Unserved').length > 0);
   return v != null && !isTrue(v);
 }
 
@@ -168,7 +160,7 @@ function _openPenaltyEditor(g, t, s, p) {
     p--;
   }
 
-  WS.OpenDialog($('#PenaltyEditor'), prefix + '.Penalty(' + p + ')', {
+  WS.SetupDialog($('#PenaltyEditor'), prefix + '.Penalty(' + p + ')', {
     modal: true,
     title: teamName + ' ' + skaterNumber + ' (' + skaterName + ')',
     width: '80%',
@@ -242,7 +234,7 @@ function _openAnnotationEditor(gameId, teamId, skaterId) {
     fieldingPrefix =
       'ScoreBoard.Game(' + gameId + ').Jam(' + WS.state['ScoreBoard.Game(' + gameId + ').UpcomingJamNumber'] + fieldingPrefix;
   }
-  WS.OpenDialog($('#AnnotationEditor'), fieldingPrefix, {
+  WS.SetupDialog($('#AnnotationEditor'), fieldingPrefix, {
     modal: true,
     title: 'Annotation & Box Trip Editor',
     width: '700px',

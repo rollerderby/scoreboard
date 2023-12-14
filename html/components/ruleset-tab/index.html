@@ -1,6 +1,6 @@
 <div class="definitions" sbPrefix="§:[*]">
   <div class="buttons top"></div>
-  <div class="selection" sbClass="Hide::noGame">
+  <div class="selection" sbClass="Hide:-:noGame">
     <span>Current Ruleset: </span>
     <select id="select" sbProp="disabled: State: !== 'Prepared'" sbControl="Ruleset: updateActiveRs">
       <option value="">Custom</option>
@@ -12,7 +12,7 @@
       ></option>
     </select>
   </div>
-  <div class="metadata" sbClass="Hide::isGame">
+  <div class="metadata" sbClass="Hide:-:isGame">
     <span>Name: </span><input type="text" id="name" size="20" sbProp="disabled: §.Readonly" sbControl="§.Name" /> <span> Parent: </span
     ><select id="parent" sbProp="disabled: §.Readonly" sbControl="§.Parent">
       <option
@@ -25,7 +25,7 @@
   </div>
   <div class="rules" sbContext="/ScoreBoard.Rulesets">
     <div sbForeach="RuleDefinition:: compareChildIndex: part=1, noContext" class="section folded">
-      <div class="header" sbCall="triggerFold" sbDisplay=": sectionName"></div>
+      <div class="header" sbCall="triggerFold" sbDisplay="-: sectionName"></div>
       <div
         sbForeach="RuleDefinition:: compareIndex: filter=^"
         class="definition"

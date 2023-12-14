@@ -1,9 +1,10 @@
 WS.Register('ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Period(*).Jam(*).StarPass', {
   triggerBatchFunc: function () {
+    const selector = 'tr.Jam, tr.SP:not(.Hide)';
     $('.LT.Period').each(function (i, e) {
-      const dark = $(e).closest('[context="Sheet"]').length ? 1 : $(e).find('tr:visible').length % 2;
+      const dark = $(e).closest('[context="sheet"]').length ? 1 : $(e).find(selector).length % 2;
       $(e)
-        .find('tr:visible')
+        .find(selector)
         .each(function (idx) {
           $(this).toggleClass('Darker', idx % 2 === dark);
         });
@@ -54,14 +55,11 @@ function _openFieldingEditor(g, p, j, t, pos, upcoming) {
 
   const posName = pos === 'Pivot' ? 'Pivot/Blocker4' : pos;
 
-  WS.OpenDialog($('#FieldingEditor'), prefix, {
+  WS.SetupDialog($('#FieldingEditor'), prefix, {
     modal: true,
     title: (upcoming ? 'Upcoming Jam' : 'Period ' + p + ' Jam ' + j) + ' ' + posName,
     width: '700px',
   });
-
-  editor.find('[BoxTrip]').addClass('Hide');
-  editor.find('[BoxTrip]:has([Fielding="' + WS.state[prefix + '.Id'] + '"])').removeClass('Hide');
 }
 
 function isUpcoming(k) {

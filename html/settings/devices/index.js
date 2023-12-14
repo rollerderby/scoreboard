@@ -40,7 +40,7 @@ function toggleSelection(k, v, elem) {
 
 function compareDeviceName(a, b) {
   'use strict';
-  return compareAttrThenSubId('name', a, b);
+  return _compareAttrThenSubId('name', a, b);
 }
 
 function compareCreated(a, b) {

@@ -1,0 +1,224 @@
+<div sbPrefix="t:[*]">
+  <table sbContext="^" sbForeach="Period: -0: comparePeriod" class="SK Period" cellpadding="0" cellspacing="0" border="1">
+    <col class="EditButton" />
+    <col class="JamNumber" />
+    <col class="Jammer" />
+    <col class="Narrow" />
+    <col class="Narrow" />
+    <col class="Narrow" />
+    <col class="Narrow" />
+    <col class="Narrow" />
+    <col class="Trip" />
+    <col class="Trip" />
+    <col class="Trip" />
+    <col class="Trip" />
+    <col class="Trip" />
+    <col class="Trip" />
+    <col class="Trip" />
+    <col class="Trip" />
+    <col class="Trip" />
+    <col class="JamTotal" />
+    <col class="GameTotal" />
+    <thead class="ShowSome ShowOnSheet">
+      <tr>
+        <td class="EditButton">EDIT</td>
+        <td class="JamNumber">JAM</td>
+        <td class="Jammer">JAMMER</td>
+        <td class="SmallHead"><div>LOST</div></td>
+        <td class="SmallHead"><div>LEAD</div></td>
+        <td class="SmallHead"><div>CALL</div></td>
+        <td class="SmallHead"><div>INJ</div></td>
+        <td class="SmallHead"><div>NI</div></td>
+        <td colspan="9" id="head"><span class="Team" sbDisplay="t.Name"></span></td>
+        <td class="JamTotal">JAM</td>
+        <td class="Gametotal">TOTAL</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr sbForeach="Jam:: compareJam" class="Edits Before">
+        <td class="EditButton"></td>
+        <td colspan="18" class="Buttons Darker">
+          <button
+            class="RemoveJam"
+            sbClass="Hide: TeamJam(*).JamScore, TeamJam(*).OsOffset, WalltimeStart, WalltimeEnd: notRemovable"
+            sbSet="Delete: toggleEdit"
+          >
+            Remove Jam
+          </button>
+          <span class="NoRemoveJamPoints" sbClass="Hide: TeamJam(*).JamScore, TeamJam(*).OsOffset: noPoints"
+            >Can't delete jam with points</span
+          >
+          <span class="NoRemoveRunning" sbClass="Hide: WalltimeStart, WalltimeEnd: notRunning">Can't delete running jam</span>
+          <button class="AddJam" sbSet="InsertBefore: toggleEdit" sbDisplay="Number: 'Insert New Jam Before Jam ' + v"></button>
+        </td>
+      </tr>
+      <tr class="Jam" sbContext=":TeamJam([Team])" sbForeach="Jam:: compareJam" sbClass="INJ: ^InjuryContinuation | Overtime: ^Overtime">
+        <td class="EditButton"><button sbCall="toggleEdit">✎</button></td>
+        <td class="JamNumber Darker" sbDisplay="Lead, ^Number, ^InjuryContinuation: checkInj"></td>
+        <td class="Jammer">
+          <span class="NoEditOnly" sbDisplay="Fielding(Jammer).SkaterNumber"></span>
+          <select class="EditOnly" sbControl="Fielding(Jammer).Skater">
+            <option value="">?</option>
+            <option
+              sbContext="t"
+              sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"
+              sbClass="Hide: Role: === 'NotInGame'"
+              sbAttr="value: Id | rosterNumber: RosterNumber"
+              sbDisplay="RosterNumber"
+            ></option>
+          </select>
+        </td>
+        <td class="Lost Narrow Darker" sbControl="Lost: toX: fromX"></td>
+        <td class="Lead Narrow Darker" sbControl="Lead: toX: fromX"></td>
+        <td class="Calloff Narrow Darker" sbControl="Calloff, StarPass: toXnoSP: fromX"></td>
+        <td class="Injury Narrow Darker" sbControl="Injury, StarPass: toXnoSP: fromX"></td>
+        <td
+          class="NoInitial Narrow Darker"
+          sbContext="ScoringTrip(1)"
+          sbClass="hasAnnotation: Annotation: notEmpty | Used: AfterSP: setAndFalse | OtherUsed: AfterSP"
+          sbDisplay="^NoInitial, AfterSP: toNiPreSp"
+          sbCall="openTripEditor"
+        ></td>
+        <td
+          class="Trip"
+          sbForeach="ScoringTrip: 2,3,4,5,6,7,8,9,10: only"
+          sbClass="hasAnnotation: Annotation: notEmpty | Used: AfterSP: setAndFalse | OtherUsed: AfterSP"
+          sbCall="openTripEditor"
+        >
+          <button class="EditOnly UsedOnly" sbSet="Score: 1: change">+</button><br class="EditOnly UsedOnly" />
+          <span sbDisplay="Score, AfterSP, Current: toTripPoints"></span><br class="EditOnly UsedOnly" />
+          <button class="EditOnly UsedOnly" sbSet="Score: -1: change">-</button><br class="EditOnly UsedOnly" />
+          <button class="EditOnly UsedOnly" sbSet="Remove">X</button>
+          <button class="EditOnly OtherUsedOnly" sbSet="AfterSp: false" sbDisplay="-:toArrow"></button>
+          <button class="EditOnly FirstUnusedOnly" sbSet="Score: 0">Add</button>
+        </td>
+        <td
+          class="JamTotal"
+          sbClass="hasAnnotation: OsOffset, OsOffsetReason: hasOffset | ClickMe: OsOffset, OsOffsetReason: hasUnexplainedOffset"
+          sbCall="showOffsetEditor"
+          sbDisplay="JamScore, AfterSPScore: toPreSpScore"
+        ></td>
+        <td class="GameTotal" sbDisplay="TotalScore, AfterSPScore: toPreSpScore"></td>
+      </tr>
+      <tr class="Jam SP" sbContext=":TeamJam([Team])" sbForeach="Jam:: compareJam" sbClass="Hide: ^StarPass: ! | IgnoreEdit: StarPass: !">
+        <td class="EditButton"></td>
+        <td class="JamNumber Darker" sbDisplay="StarPass: toSpJamNo"></td>
+        <td class="Jammer">
+          <span class="NoEditOnly" sbDisplay="Fielding(Pivot).SkaterNumber, StarPass: emptyIfNoSp"></span>
+          <select class="EditOnly" sbClass="Hide: StarPass: !" sbControl="Fielding(Pivot).Skater">
+            <option value="">?</option>
+            <option
+              sbContext="t"
+              sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"
+              sbClass="Hide: Role: === 'NotInGame'"
+              sbAttr="value: Id | rosterNumber: RosterNumber"
+              sbDisplay="RosterNumber"
+            ></option>
+          </select>
+        </td>
+        <td class="Lost Narrow Darker" sbControl="Lost: toX: fromX"></td>
+        <td class="Lead Narrow Darker" sbControl="Lead: toX: fromX"></td>
+        <td class="Calloff Narrow Darker" sbControl="Calloff, StarPass: toXifSP: fromX"></td>
+        <td class="Injury Narrow Darker" sbControl="Injury, StarPass: toXifSP: fromX"></td>
+        <td
+          class="NoInitial Narrow Darker"
+          sbContext="ScoringTrip(1)"
+          sbClass="Used: AfterSP | OtherUsed: AfterSP: setAndFalse"
+          sbDisplay="^NoInitial, ^StarPass: toXifSP"
+          sbCall="openTripEditor"
+        ></td>
+        <td class="Trip" sbForeach="ScoringTrip: 2,3,4,5,6,7,8,9,10: only" sbClass="Used: AfterSP | OtherUsed: AfterSP: setAndFalse">
+          <button class="EditOnly UsedOnly" sbSet="Score: 1: change">+</button><br class="EditOnly UsedOnly" />
+          <span sbDisplay="Score, AfterSP, Current: toTripSpPoints" sbCall="openTripEditor"></span><br class="EditOnly UsedOnly" />
+          <button class="EditOnly UsedOnly" sbSet="Score: -1: change">-</button><br class="EditOnly UsedOnly" />
+          <button class="EditOnly UsedOnly" sbSet="Remove">X</button>
+          <button class="EditOnly OtherUsedOnly" sbSet="AfterSp" sbDisplay="-:toArrow"></button>
+          <button class="EditOnly FirstUnusedOnly" sbSet="Score: 0">Add</button>
+        </td>
+        <td class="JamTotal" sbCall="showOffsetEditor" sbDisplay="AfterSPScore"></td>
+        <td class="GameTotal" sbDisplay="TotalScore"></td>
+      </tr>
+      <tr sbContext=":TeamJam([Team])" sbForeach="Jam:: compareJam" class="Edits" sbClass="HasSP: StarPass">
+        <td class="EditButton"></td>
+        <td colspan="18" class="Buttons Darker">
+          <button class="AddSP" sbSet="StarPass">Add SP</button>
+          <button class="InitialSP" sbToggle="ScoringTrip(1).AfterSP">SP on Initial</button>
+          <button class="AddTO" sbSet="InsertTimeoutAfter: toggleEdit" sbDisplay="^Number: 'Insert Timeout After Jam ' + v"></button>
+        </td>
+      </tr>
+
+      <tr
+        class="Timeout"
+        sbForeach="Timeout:: compareJam"
+        sbAttr="Jam: PrecedingJamNumber, WalltimeStart: toToJamNumber"
+        sbClass="IsOR: Review, Owner: isOrThisTeam"
+      >
+        <td class="EditButton"><button sbCall="toggleEdit">✎</button></td>
+        <td colspan="9" class="Type">
+          <span class="NoEditOnly" sbDisplay="Owner, Review: toToTypeName"></span>
+          <select class="EditOnly" sbControl="Review, Owner: toToTypeVal: fromToTypeVal">
+            <option value=".false">Untyped Timeout</option>
+            <option value="O.false">Official Timeout</option>
+            <option
+              sbContext="^^"
+              sbForeach="Team: 1,2: only"
+              sbAttr="value: Id: v + '.false'"
+              sbDisplay="UniformColor, Name: 'Team TO ' + v"
+            ></option>
+            <option
+              sbContext="^^"
+              sbForeach="Team: 1,2: only"
+              sbAttr="value: Id: v + '.true'"
+              sbDisplay="UniformColor, Name: 'Off. Review ' + v"
+            ></option>
+          </select>
+        </td>
+        <td colspan="4" class="Retained"><button class="OROnly" sbControl="RetainedReview">Retained</button></td>
+        <td colspan="5" class="Duration" sbDisplay="Running, Duration: toDuration"></td>
+      </tr>
+      <tr class="Edits Timeout" sbForeach="Timeout:: compareJam" sbAttr="Jam: PrecedingJamNumber, WalltimeStart: toToJamNumber">
+        <td class="EditButton"></td>
+        <td colspan="18" class="Buttons">
+          <button class="RemoveTO" sbSet="Delete">Remove Timeout</button> <button class="AddTO" sbSet="InsertAfter">Insert Timeout</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="Templates">
+  <div id="TripEditor" sbContext="^Period(*).Jam(*).TeamJam([Team]).ScoringTrip(*)" sbClass="A: Id: closeIfNull">
+    <table>
+      <tr>
+        <td><input type="number" min="0" sbControl="Score" sbOn="keydown: remove" /></td>
+        <td><button sbToggle="AfterSP">After SP</button></td>
+      </tr>
+      <tr class="buttons">
+        <td><button sbSet="Remove">Remove Trip</button></td>
+        <td><button sbSet="InsertBefore">Insert Trip</button></td>
+      </tr>
+      <tr>
+        <td colspan="2"><hr /></td>
+      </tr>
+      <tr class="Annotation">
+        <td class="header">Notes:</td>
+        <td><button sbSet="Annotation: ''">Clear Notes</button></td>
+      </tr>
+      <tr class="Annotation">
+        <td colspan="2"><textarea cols="25" rows="4" sbControl="Annotation"></textarea></td>
+      </tr>
+      <tr>
+        <td colspan="2"><hr /></td>
+      </tr>
+      <tr class="buttons nav">
+        <td><button sbCall="openPrevTrip">⬅ Prev</button><button sbCall="openNextTrip">Next ➡</button></td>
+        <td class="close"><button sbCall="closeDialog">Close</button></td>
+      </tr>
+    </table>
+  </div>
+
+  <div id="osOffsetEditor" sbContext="^Period(*).Jam(*).TeamJam([Team])">
+    <input type="number" size="2" class="Offset" sbControl="OsOffset" />
+    <input type="text" size="40" class="Reason" sbControl="OsOffsetReason" />
+  </div>
+</div>

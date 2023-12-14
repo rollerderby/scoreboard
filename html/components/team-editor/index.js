@@ -1,29 +1,3 @@
-WS.AfterLoad(function () {
-  $('#AlternateNamesDialog').dialog({
-    title: 'Alternate Names',
-    modal: true,
-    width: 700,
-    autoOpen: false,
-    buttons: {
-      Close: function () {
-        $(this).dialog('close');
-      },
-    },
-  });
-
-  $('#ColorsDialog').dialog({
-    title: 'Team Colors',
-    modal: true,
-    width: 800,
-    autoOpen: false,
-    buttons: {
-      Close: function () {
-        $(this).dialog('close');
-      },
-    },
-  });
-});
-
 $('#teamLogoUpload').fileupload({
   url: '/Media/upload',
   formData: [
@@ -44,29 +18,9 @@ $('#teamLogoUpload').fileupload({
   },
 });
 
-$('#AlternateNamesDialog #newType').autocomplete({
-  minLength: 0,
-  source: [
-    { label: 'operator (Operator Controls)', value: 'operator' },
-    { label: 'overlay (Video Overlay)', value: 'overlay' },
-    { label: 'scoreboard (Scoreboard Display)', value: 'scoreboard' },
-    { label: 'whiteboard (Penalty Whiteboard)', value: 'whiteboard' },
-  ],
-});
-
-$('#ColorsDialog #newType').autocomplete({
-  minLength: 0,
-  source: [
-    { label: 'operator (Operator Colors)', value: 'operator' },
-    { label: 'overlay (Video Overlay Colors)', value: 'overlay' },
-    { label: 'scoreboard (Scoreboard Colors)', value: 'scoreboard' },
-    { label: 'scoreboard_dots (Scoreboard Dot Colors)', value: 'scoreboard_dots' },
-  ],
-});
-
 function openStoreDialog(k) {
   'use strict';
-  WS.OpenDialog($('#StoreTeamDialog'), k, {
+  WS.SetupDialog($('#StoreTeamDialog'), k, {
     title: 'Store Team',
     width: '500px',
     modal: true,
@@ -86,28 +40,62 @@ function triggerUpload() {
 
 function openAlternateNamesDialog(k) {
   'use strict';
-  if (k.Team) {
-    $('#AlternateNamesDialog[team="' + k.Team + '"]').dialog('open');
-  } else {
-    $('#AlternateNamesDialog').dialog('open');
-  }
+  WS.SetupDialog($('#AlternateNamesDialog'), k, {
+    title: 'Alternate Names',
+    width: 700,
+    autoOpen: false,
+    buttons: {
+      Close: function () {
+        $(this).dialog('close');
+      },
+    },
+  })
+    .children('#newType')
+    .autocomplete({
+      minLength: 0,
+      source: [
+        { label: 'operator (Operator Controls)', value: 'operator' },
+        { label: 'overlay (Video Overlay)', value: 'overlay' },
+        { label: 'scoreboard (Scoreboard Display)', value: 'scoreboard' },
+        { label: 'whiteboard (Penalty Whiteboard)', value: 'whiteboard' },
+      ],
+    })
+    .end()
+    .dialog('open');
 }
 
 function openColorsDialog(k) {
   'use strict';
-  if (k.Team) {
-    $('#ColorsDialog[team="' + k.Team + '"]').dialog('open');
-  } else {
-    $('#ColorsDialog').dialog('open');
-  }
+  WS.SetupDialog($('#ColorsDialog'), k, {
+    title: 'Team Colors',
+    width: 800,
+    autoOpen: false,
+    buttons: {
+      Close: function () {
+        $(this).dialog('close');
+      },
+    },
+  })
+    .children('#newType')
+    .autocomplete({
+      minLength: 0,
+      source: [
+        { label: 'operator (Operator Colors)', value: 'operator' },
+        { label: 'overlay (Video Overlay Colors)', value: 'overlay' },
+        { label: 'scoreboard (Scoreboard Colors)', value: 'scoreboard' },
+        { label: 'scoreboard_dots (Scoreboard Dot Colors)', value: 'scoreboard_dots' },
+      ],
+    })
+    .end()
+    .dialog('open');
 }
 
-function isPrepared(k, v) {
+function isPrepared(k) {
   'use strict';
   return k.PreparedTeam != null;
 }
 
-function notPrepared(k, v) {
+function notPrepared(k) {
   'use strict';
   return k.PreparedTeam == null;
 }
@@ -232,7 +220,7 @@ function addSkater(k) {
 
 function openRemoveSkaterDialog(k, v, elem) {
   'use strict';
-  WS.OpenDialog($('#RemoveSkaterDialog'), k, {
+  WS.SetupDialog($('#RemoveSkaterDialog'), k, {
     title: 'Remove Skater',
     modal: true,
     width: 700,
@@ -261,7 +249,7 @@ function getAlternateNameId(k) {
 
 function addAlternateName(k, v, elem, event) {
   'use strict';
-  if (event && event.which !== 13) {
+  if (event && event.type === 'keypress' && event.which !== 13) {
     return;
   }
   const typeinput = elem.closest('#AlternateNamesDialog').children('#newType');

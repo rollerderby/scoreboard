@@ -161,7 +161,7 @@ function rulesetDlLink(k, v) {
     : null;
 }
 
-function operatorDlLink(k, v) {
+function operatorDlLink(k) {
   'use strict';
   return '/SaveJSON/crg-operator-' + k.Setting.split('.')[2].replace(/[\/|\\:*?"<>\ ]/g, '_') + '.json?path=' + k;
 }

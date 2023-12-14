@@ -1,20 +1,20 @@
-function compareAttrThenSubId(attr, a, b) {
+function _compareAttrThenSubId(attr, a, b) {
   'use strict';
   if ($(a).attr(attr) == null) {
     return true;
   } else if ($(a).attr(attr) === $(b).attr(attr)) {
-    return _windowFunctions.numCompareByAttr('subId', a, b);
+    return _windowFunctions.numCompareByAttr('sbSubId', a, b);
   } else {
     return _windowFunctions.alphaCompareByAttr(attr, a, b);
   }
 }
 
-function numCompareAttrThenSubId(attr, a, b) {
+function _numCompareAttrThenSubId(attr, a, b) {
   'use strict';
   if ($(a).attr(attr) == null) {
     return true;
   } else if ($(a).attr(attr) === $(b).attr(attr)) {
-    return _windowFunctions.numCompareByAttr('subId', a, b);
+    return _windowFunctions.numCompareByAttr('sbSubId', a, b);
   } else {
     return _windowFunctions.numCompareByAttr(attr, a, b);
   }
@@ -22,34 +22,34 @@ function numCompareAttrThenSubId(attr, a, b) {
 
 function compareRosterNumber(a, b) {
   'use strict';
-  return compareAttrThenSubId('rosterNumber', a, b);
+  return _compareAttrThenSubId('rosterNumber', a, b);
 }
 
 function compareName(a, b) {
   'use strict';
-  return compareAttrThenSubId('name', a, b);
+  return _compareAttrThenSubId('name', a, b);
 }
 
 function compareValue(a, b) {
   'use strict';
-  return compareAttrThenSubId('value', a, b);
+  return _compareAttrThenSubId('value', a, b);
 }
 
 function compareRole(a, b) {
   'use strict';
-  return compareAttrThenSubId('role', a, b);
+  return _compareAttrThenSubId('role', a, b);
 }
 
 function comparePeriod(a, b) {
   'use strict';
-  const comp = numCompareAttrThenSubId('Period', a, b);
-  return $('[context="Sheet"]').length ? comp : !comp;
+  const comp = _numCompareAttrThenSubId('Period', a, b);
+  return $(a).closest('[context]').attr('context') === 'sheet' ? comp : !comp;
 }
 
 function compareJam(a, b) {
   'use strict';
-  const comp = numCompareAttrThenSubId('Jam', a, b);
-  return $('[context="Sheet"]').length ? comp : !comp;
+  const comp = _numCompareAttrThenSubId('Jam', a, b);
+  return $(a).closest('[context]').attr('context') === 'sheet' ? comp : !comp;
 }
 
 function orderRsAsTree(a, b) {
@@ -122,7 +122,7 @@ function fromX(k, v, elem) {
 
 function toTime(k, v) {
   'use strict';
-  const isCountDown = isTrue(WS.state[k.upTo('Clock') + 'Direction']);
+  const isCountDown = isTrue(WS.state[k.upTo('Clock') + '.Direction']);
   return _timeConversions.msToMinSecNoZero(v, isCountDown);
 }
 
@@ -283,12 +283,12 @@ function setActiveTimeout(k) {
 
 function closeDialog(k, v, elem) {
   'use strict';
-  elem.closest('.ui-dialog').dialog('close');
+  elem.closest('.ui-dialog-content').dialog('close');
 }
 
 function closeIfNull(k, v, elem) {
   'use strict';
   if (v == null) {
-    elem.closest('.ui-dialog').dialog('close');
+    elem.closest('.ui-dialog-content').dialog('close');
   }
 }

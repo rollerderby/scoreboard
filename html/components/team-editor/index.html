@@ -24,7 +24,7 @@
             <option
               sbForeach="File::compareName: resort=Name"
               sbContext="/ScoreBoard.Media.Format(images).Type(teamlogo)"
-              sbAttr="name: Name | value::toMediaPath"
+              sbAttr="name: Name | value:-:toMediaPath"
               sbDisplay="Name"
             ></option>
           </select>
@@ -47,7 +47,7 @@
   </tr>
   <tr class="Color">
     <td class="Label">
-      <span sbClass="Hide:: isPrepared">Uniform Color: </span><span sbClass="Hide:: notPrepared">Uniform Colors: </span>
+      <span sbClass="Hide:-: isPrepared">Uniform Color: </span><span sbClass="Hide:-: notPrepared">Uniform Colors: </span>
     </td>
     <td class="Value">
       <span id="PreparedUc" class="Hide" sbClass="Hide: PreparedTeam: !" sbPrefix="t:[*]">
@@ -63,14 +63,14 @@
         </select>
       </span>
       <input type="text" class="Name" size="15" sbClass="Hide: UniformColor: isNotOtherUc" sbControl="UniformColor" />
-      <span sbClass="Hide:: notPrepared">
+      <span sbClass="Hide:-: notPrepared">
         <span sbForeach="UniformColor:: compareName:noId" sbAttr="name:" class="RemoveColor">
           <span sbDisplay=""></span>
           <button sbSet=": null">X</button>
         </span>
       </span>
-      <input type="text" id="newUc" class="Name" size="15" sbClass="Hide:: notPrepared" sbOn="keyup: addNewUc" />
-      <button sbClass="Hide:: notPrepared" sbCall="addNewUc">Add</button>
+      <input type="text" id="newUc" class="Name" size="15" sbClass="Hide:-: notPrepared" sbOn="keyup: addNewUc" />
+      <button sbClass="Hide:-: notPrepared" sbCall="addNewUc">Add</button>
     </td>
   </tr>
   <tr class="Skaters">
@@ -139,54 +139,6 @@
   </tr>
 </table>
 
-<div id="AlternateNamesDialog" sbContext="[*]">
-  <span>Type: </span><input id="newType" type="text" sbOn="focus: startAutocomplete" /> <span>Name: </span>
-  <input id="newName" type="text" sbOn="keypress: addAlternateName" />
-  <button sbCall="addAlternateName">Add</button>
-  <table>
-    <thead>
-      <tr>
-        <th class="X">X</th>
-        <th class="Id">Id</th>
-        <th class="Name">Name</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr sbForeach="AlternateName:::noId">
-        <td class="X"><button sbSet=": null">X</button></td>
-        <td class="Id" sbDisplay=": getAlternateNameId"></td>
-        <td class="Name"><input type="text" size="20" sbControl="" /></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<div id="ColorsDialog" sbContext="[*]">
-  <span>Type: </span><input id="newType" type="text" size="10" sbOn="focus: startAutocomplete" />
-  <button sbCall="addColor">Add</button>
-  <table>
-    <thead>
-      <tr>
-        <th class="X"></th>
-        <th class="Id">Id</th>
-        <th class="Color">Text/Icons</th>
-        <th class="Color">Background</th>
-        <th class="Color">Glow/Halo</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr sbForeach="Color:::part=1, noContext, noId">
-        <td class="X"><button sbCall="clearColor">X</button></td>
-        <td class="Id" sbDisplay=": toColorType"></td>
-        <td sbForeach="Color:fg,bg,glow:only:filter=^, noId" class="Color">
-          <input type="color" sbClass="cleared:: empty" sbControl=":defaultColorIfEmpy" />
-          <button class="ClearPrev" sbSet=": null">X</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
 <div id="Templates">
   <div id="StoreTeamDialog">
     <span>Merge into: </span>
@@ -199,6 +151,54 @@
         sbDisplay="FullName"
       ></option>
     </select>
+  </div>
+
+  <div id="AlternateNamesDialog">
+    <span>Type: </span><input id="newType" type="text" sbOn="focus: startAutocomplete" /> <span>Name: </span>
+    <input id="newName" type="text" sbOn="keypress: addAlternateName" />
+    <button sbCall="addAlternateName">Add</button>
+    <table>
+      <thead>
+        <tr>
+          <th class="X">X</th>
+          <th class="Id">Id</th>
+          <th class="Name">Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr sbForeach="AlternateName:::noId">
+          <td class="X"><button sbSet=": null">X</button></td>
+          <td class="Id" sbDisplay=": getAlternateNameId"></td>
+          <td class="Name"><input type="text" size="20" sbControl="" /></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="ColorsDialog">
+    <span>Type: </span><input id="newType" type="text" size="10" sbOn="focus: startAutocomplete" />
+    <button sbCall="addColor">Add</button>
+    <table>
+      <thead>
+        <tr>
+          <th class="X"></th>
+          <th class="Id">Id</th>
+          <th class="Color">Text/Icons</th>
+          <th class="Color">Background</th>
+          <th class="Color">Glow/Halo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr sbForeach="Color:::part=1, noContext, noId">
+          <td class="X"><button sbCall="clearColor">X</button></td>
+          <td class="Id" sbDisplay=": toColorType"></td>
+          <td sbForeach="Color:fg,bg,glow:only:filter=^, noId" class="Color">
+            <input type="color" sbClass="cleared:: empty" sbControl=":defaultColorIfEmpy" />
+            <button class="ClearPrev" sbSet=": null">X</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <div id="RemoveSkaterDialog" sbContext="Skater(*)">

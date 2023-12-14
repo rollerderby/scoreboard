@@ -4,10 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -125,10 +121,10 @@ public class WS extends WebSocketServlet {
                 case "Register":
                     List<?> jsonPaths = (List<?>) json.get("paths");
                     if (jsonPaths != null) {
-                        Set<String> newPaths = new TreeSet<>();
+                        PathTrie newPaths = new PathTrie();
                         for (Object p : jsonPaths) { newPaths.add((String) p); }
-                        sendWSUpdatesForRegister(newPaths);
-                        this.paths.addAll(newPaths);
+                        sendWSUpdates(newPaths, state);
+                        this.paths.merge(newPaths);
                     }
                     break;
                 case "Set":
@@ -295,93 +291,24 @@ public class WS extends WebSocketServlet {
         }
 
         // State changes from JSONStateManager.
-        @SuppressWarnings("hiding")
         @Override
-        public synchronized void sendUpdates(Map<String, Object> state, Set<String> changed) {
-            this.state = state;
-            sendWSUpdatesForPaths(paths, changed);
+        public synchronized void sendUpdates(StateTrie fullState, StateTrie changedState) {
+            this.state = fullState;
+            sendWSUpdates(paths, changedState);
         }
 
-        private void sendWSUpdatesForPaths(PathTrie watchedPaths, Set<String> changed) {
-            Map<String, Object> updates = new HashMap<>();
-            for (String k : changed) {
-                if (watchedPaths.covers(k) && !k.endsWith("Secret")) { updates.put(k, state.get(k)); }
-            }
+        private synchronized void sendWSUpdates(PathTrie registered, StateTrie updated) {
+            Map<String, Object> updates = registered.intersect(updated, true);
             if (updates.size() == 0) { return; }
             Map<String, Object> json = new HashMap<>();
             json.put("state", updates);
             send(json);
-            updates.clear();
-        }
-
-        private synchronized void sendWSUpdatesForRegister(Set<String> registeredPaths) {
-            if (registeredPaths.size() > 5) {
-                // for larger sets this is faster
-                PathTrie pt = new PathTrie();
-                pt.addAll(registeredPaths);
-                sendWSUpdatesForPaths(pt, state.keySet());
-            } else {
-                String pattern =
-                    registeredPaths.stream()
-                        .map(path -> "^" + path.replace("(", "\\(").replace(")", "\\)").replace("*", "[^)]*"))
-                        .collect(Collectors.joining("|"));
-                Pattern pat = Pattern.compile(pattern);
-                Map<String, Object> updates = new HashMap<>();
-                for (String k : state.keySet()) {
-                    if (pat.matcher(k).find() && !k.endsWith("Secret")) { updates.put(k, state.get(k)); }
-                }
-                if (updates.size() == 0) { return; }
-                Map<String, Object> json = new HashMap<>();
-                json.put("state", updates);
-                send(json);
-            }
         }
 
         protected Client sbClient;
         protected Device device;
         protected PathTrie paths = new PathTrie();
-        private Map<String, Object> state = new HashMap<>();
+        private StateTrie state = new StateTrie();
         private Session wsSession;
-    }
-
-    protected static class PathTrie {
-        boolean exists = false;
-        Map<String, PathTrie> trie = new HashMap<>();
-
-        public void addAll(Set<String> c) {
-            for (String p : c) { add(p); }
-        }
-        public void add(String path) {
-            String[] p = path.split("[.(]");
-            PathTrie head = this;
-            for (int i = 0; !head.exists && i < p.length; i++) {
-                if (head.trie.containsKey(p[i])) {
-                    head = head.trie.get(p[i]);
-                } else {
-                    PathTrie child = new PathTrie();
-                    head.trie.put(p[i], child);
-                    head = child;
-                }
-            }
-            head.exists = true;
-        }
-        public boolean covers(String p) { return _covers(p.split("[.(]"), 0); }
-        private boolean _covers(String[] p, int i) {
-            PathTrie head = this;
-            for (;; i++) {
-                if (head.exists) { return true; }
-                if (i >= p.length) { return false; }
-                // Allow Blah(*).
-                if (head.trie.containsKey("*)")) {
-                    int j;
-                    // id captured by * might contain . and thus be split - find the end
-                    for (j = i; j < p.length && !p[j].endsWith(")"); j++)
-                        ;
-                    if (head.trie.get("*)")._covers(p, j + 1)) { return true; }
-                }
-                head = head.trie.get(p[i]);
-                if (head == null) { return false; }
-            }
-        }
     }
 }

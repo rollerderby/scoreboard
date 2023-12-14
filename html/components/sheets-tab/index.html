@@ -1,0 +1,22 @@
+<div class="SheetSelector">
+  <select sbCall="selectSheets">
+    <option value="">No Sheet Selected</option>
+    <option value="[Team='1'] .SKS" sbDisplay="Team(1).Name: appendScores">Team 1 Scores</option>
+    <option value="[Team='2'] .SKS" sbDisplay="Team(2).Name: appendScores">Team 2 Scores</option>
+    <option value=".SKS">Both Scores</option>
+    <option value="[Team='1'] .PTS" sbDisplay="Team(1).Name: appendPenalties">Team 1 Penalties</option>
+    <option value="[Team='2'] .PTS" sbDisplay="Team(2).Name: appendPenalties">Team 2 Penalties</option>
+    <option value=".PTS">Both Penalties</option>
+    <option value="[Team='1'] .LTS" sbDisplay="Team(1).Name: appendLineups">Team 1 Lineups</option>
+    <option value="[Team='2'] .LTS" sbDisplay="Team(2).Name: appendLineups">Team 2 Lineups</option>
+    <option value=".LTS">Both Lineups</option>
+    <option value="[Team='1'] .SKS, [Team='1'] .LTS" sbDisplay="Team(1).Name: appendScoreAndLineups">Team 1 Score + Lineups</option>
+    <option value="[Team='2'] .SKS, [Team='2'] .LTS" sbDisplay="Team(2).Name: appendScoreAndLineups">Team 2 Score + Lineups</option>
+  </select>
+</div>
+
+<div sbForeach="Team: 1,2: only" context="sheet">
+  <div sbInclude="/components/sk-sheet/" class="Sheet SKS Hide"></div>
+  <div sbInclude="/components/plt-input/" class="Sheet PTS Hide"></div>
+  <div sbInclude="/components/lt-sheet/" class="Sheet LTS Hide"></div>
+</div>

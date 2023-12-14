@@ -1,0 +1,51 @@
+#Igrf { width: 100%; } 
+#Igrf > tbody > tr > td { text-align: center; vertical-align: middle; margin-top: 5px; background: #eee; } 
+#Igrf > tbody > tr:first-of-type > td { border-radius: 12px 12px 0px 0px; } 
+#Igrf > tbody > tr:last-of-type > td { border-radius: 0px 0px 12px 12px; } 
+#Igrf > tbody > tr:only-of-type > td { border-radius: 12px; } 
+
+#Igrf tr.Name > td { background: #ccc; border-radius: 12px 12px 0px 0px; } 
+#Igrf tr.Name > td > span.Name { font-size: 200%; font-weight: bold; } 
+#Igrf tr.Name > td > button { margin-left: 5px; } 
+#Igrf .Variables { width: 100%; } 
+#Igrf .Variables td:first-of-type { text-align: right; } 
+#Igrf .Variables td { text-align: left; width: 50%; } 
+#Igrf tr.Files > td { background: #ddd; } 
+#Igrf tr.Files .ui-button { margin: 1px 5px; } 
+#Igrf tr.Files .Warning { color: red; }
+
+#Igrf table.Summary { border: 1px solid black; border-collapse: collapse; background-color: white; font-weight: bold; font-size: 80%; margin: auto; }
+#Igrf table.Summary td { border: 1px solid black; border-collapse: collapse; width: 80px; }
+#Igrf table.Summary .Head, #Igrf table.Summary .Total { background-color: #ffd0ff; }
+#Igrf table.Summary .Label { background-color: #ffe8ff; }
+#Igrf table.Summary .Small { font-weight: initial; }
+#Igrf table.Summary .Value { font-size: 125%; }
+
+#Igrf .Expulsions th { font-size: 150%; } 
+#Igrf .Expulsions table { width: 100%; } 
+
+#Igrf table.Officials { width: 100%; border-spacing: 0px; } 
+#Igrf table.Officials.Empty tr:last-of-type > th:first-of-type { border-radius: 0px 0px 0px 12px; } 
+#Igrf table.Officials.Empty tr:last-of-type > th:last-of-type { border-radius: 0px 0px 12px 0px; } 
+#Igrf table.Officials tr:last-of-type > td:first-of-type { border-radius: 0px 0px 0px 12px; } 
+#Igrf table.Officials tr:last-of-type > td:last-of-type { border-radius: 0px 0px 12px 0px; } 
+#Igrf table.Officials tbody tr:nth-child(2n) { background: #ddd; } 
+#Igrf table.Officials col.Name { width: 30%; } 
+#Igrf table.Officials col.League { width: 30%; } 
+#Igrf table.Officials col.Cert { width: 10%; } 
+#Igrf table.Officials col.Button { width: 10%; } 
+
+#Igrf table.Officials th.Title { font-size: 150%; } 
+#Igrf table.Officials button.AddOfficial > span { padding-top: 0em; padding-bottom: 0em; } 
+#Igrf table.Officials button.RemoveOfficial > span { padding-top: 0em; padding-bottom: 0em; } 
+#Igrf table.Officials button.Swap { font-size: 80%; padding: 0.4em; } 
+
+/* Official Remove Dialog */
+#OfficialRemoveDialog { text-align: center; } 
+#OfficialRemoveDialog span.Title { font-size: 125%; } 
+#OfficialRemoveDialog span.Remove { font-size: 150%; } 
+#OfficialRemoveDialog span.Target { font-weight: bold; font-size: 250%; } 
+#OfficialRemoveDialog span.AreYouSure { font-weight: bold; font-size: 300%; } 
+#OfficialRemoveDialog button.No { float: left; } 
+#OfficialRemoveDialog button.Yes { float: right; } 
+/* End Official Remove Dialog */

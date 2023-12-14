@@ -1,7 +1,7 @@
 let WS = {
   connectCallback: null,
   connectTimeout: null,
-  registerOnConnect: [],
+  _registerOnConnect: [],
   _afterLoadCallbacks: [],
   Connected: false,
   _connectionStatus: $('<div>').attr('id', 'ConnectionStatus').attr('status', 'loading').text('Loading'),
@@ -62,7 +62,7 @@ let WS = {
         if (WS._preRegisterDone) {
           let req = {
             action: 'Register',
-            paths: WS.registerOnConnect,
+            paths: WS._registerOnConnect,
           };
           WS.send(JSON.stringify(req));
         }
@@ -82,12 +82,16 @@ let WS = {
         }
         if (json.state != null) {
           WS.processUpdate(json.state);
-        }
-        WS._connectionStatus.attr('status', 'ready').text('');
-        if (WS._afterLoadCallbacks.length) {
-          $.each(WS._afterLoadCallbacks, function (idx, func) {
-            func();
-          });
+          if (!json.state['WS.Device.Id']) {
+            // skip initial pseudo update
+            if (WS._afterLoadCallbacks.length) {
+              $.each(WS._afterLoadCallbacks, function (idx, func) {
+                func();
+              });
+              WS._afterLoadCallbacks = [];
+            }
+            WS._connectionStatus.attr('status', 'ready').text('');
+          }
         }
       };
       WS.socket.onclose = function (e) {
@@ -370,11 +374,11 @@ let WS = {
 
     WS._preRegisterDone = WS._preRegisterDone || isPreRegister;
     if (paths.length) {
-      WS.registerOnConnect.push(...paths);
+      WS._registerOnConnect.push(...paths);
       if (WS.Connected && WS._preRegisterDone) {
         const req = {
           action: 'Register',
-          paths: isPreRegister ? WS.registerOnConnect : paths,
+          paths: isPreRegister ? WS._registerOnConnect : paths,
         };
         WS.send(JSON.stringify(req));
       }
@@ -450,7 +454,7 @@ let WS = {
       WS._callbackTrie,
       elements
         .find('*')
-        .add(elements)
+        .addBack()
         .each(function () {
           WS._pathCache.delete(this);
           WS._prefixCache.delete(this);
@@ -467,13 +471,7 @@ let WS = {
         let list = part.split(':').map((s) => s.trim());
         const basePath = WS._getContext(elem, attr === 'sbForeach', isPreRegister);
         const prefixes = WS._getPrefixes(elem, isPreRegister);
-        list[pathIndex] = list[pathIndex]
-          .split(',')
-          .map((item) =>
-            attr === 'sbForeach'
-              ? basePath + (list[3] && list[3].includes('noId') && isPreRegister ? '' : '.Id')
-              : WS._combinePaths(basePath, item.trim(), prefixes)
-          );
+        list[pathIndex] = list[pathIndex].split(',').map((item) => WS._combinePaths(basePath, item.trim(), prefixes));
         return list;
       });
   },
@@ -489,17 +487,9 @@ let WS = {
 
   _getElements: function (selector, root) {
     'use strict';
-    const filterFunc =
-      selector === '[sbForeach]'
-        ? function () {
-            return !$(this).parent().closest('[sbForeach], #Templates').length;
-          }
-        : function () {
-            return !$(this).closest('[sbForeach], #Templates').length;
-          };
-    return $(selector, root)
-      .add(root ? root.filter(selector) : $())
-      .filter(filterFunc);
+    return selector === '[sbForeach]'
+      ? root.find('[sbForeach]:not([sbForeach] [sbForeach]):not(#Templates [sbForeach])')
+      : root.find(selector + ':not([sbForeach]):not([sbForeach] ' + selector + '):not(#Templates ' + selector + ')').addBack(selector);
   },
 
   _getModifyFunc: function (paths, func, isBool) {
@@ -517,10 +507,10 @@ let WS = {
             return isTrue(v);
           };
         } else {
-          func = Function('k', 'v', 'elem', 'return v' + func);
+          func = WS._buildBoolFunc(func);
         }
       } else {
-        func = window[func] || Function('k', 'v', 'elem', 'return ' + (func || 'v'));
+        func = window[func] || WS._buildNonBoolFunc(func);
       }
     }
     if (paths.length < 2) {
@@ -541,6 +531,17 @@ let WS = {
         return v;
       };
     }
+  },
+
+  _boolFuncCache: {},
+  _buildBoolFunc: function (body) {
+    WS._boolFuncCache[body] = WS._boolFuncCache[body] || Function('k', 'v', 'elem', 'return v' + body);
+    return WS._boolFuncCache[body];
+  },
+  _nonBoolFuncCache: {},
+  _buildNonBoolFunc: function (body) {
+    WS._nonBoolFuncCache[body] = WS._nonBoolFuncCache[body] || Function('k', 'v', 'elem', 'return ' + (body || 'v'));
+    return WS._nonBoolFuncCache[body];
   },
 
   _isInputElement: function (elem) {
@@ -577,6 +578,16 @@ let WS = {
     'use strict';
     if (!root) {
       WS._preRegister();
+      $('[sbForeach]').each(function () {
+        const elem = $(this);
+        const prev = elem.prev('[sbForeach]');
+        elem.attr('sbSubId', Number(prev.attr('sbSubId') || -1) + 1);
+      });
+      // run the button conversion before items are cloned as the operation is expensive
+      $(
+        '[sbButton], button[sbCall]:not(.ToggleSwitch), button[sbControl]:not(.ToggleSwitch), button[sbSet]:not(.ToggleSwitch), button[sbToggle]:not(.ToggleSwitch)'
+      ).button();
+      root = $('html');
     }
 
     $.each(WS._getElements('.AutoFit:not([sbDisplay]):not([sbControl]):not(:has(*))', root), function (idx, elem) {
@@ -586,9 +597,6 @@ let WS = {
         return text;
       };
       WS.Register(WS._getAutoFitPaths(elem), { preRegistered: true, element: elem, modifyFunc: mf });
-    });
-    $.each(WS._getElements('[sbButton]', root), function (idx, elem) {
-      $(elem).button();
     });
     $.each(WS._getElements('[sbOn]', root), function (idx, elem) {
       elem = $(elem);
@@ -630,7 +638,6 @@ let WS = {
           });
         });
       });
-      elem.filter('button:not(.ToggleSwitch)').button();
     });
     $.each(WS._getElements('[sbControl]', root), function (idx, elem) {
       elem = $(elem);
@@ -640,7 +647,6 @@ let WS = {
       elem.on('change', function (event) {
         WS.Set(paths[0], writeFunc(paths[0], elem.val(), elem, event));
       });
-      elem.filter('button:not(.ToggleSwitch)').button();
     });
     $.each(WS._getElements('[sbToggle]', root), function (idx, elem) {
       elem = $(elem);
@@ -657,7 +663,6 @@ let WS = {
       elem.on('click', function () {
         WS.Set(paths[0], !elem.hasClass(usedClass));
       });
-      elem.filter('button:not(.ToggleSwitch)').button();
     });
     $.each(WS._getElements('[sbClass]', root), function (idx, elem) {
       elem = $(elem);
@@ -712,18 +717,16 @@ let WS = {
           window[entry](WS._enrichProp(WS._getContext(elem)), elem.val(), elem, event);
         });
       });
-      elem.filter('button:not(.ToggleSwitch)').button();
     });
-    let lastForeach;
-    let lastSubId = 0;
+    let preForeachItem;
     $.each(WS._getElements('[sbForeach]', root), function (idx, elem) {
       elem = $(elem);
       const paren = elem.parent();
-      let index = elem.index();
+      const subId = elem.attr('sbSubId');
+      if (subId == 0) {
+        preForeachItem = elem.prev();
+      }
       let [paths, fixedKeys, sortFunction, optionsString] = WS._getParameters(elem, 'sbForeach')[0];
-      let subId = elem.attr('sbForeach') === lastForeach ? lastSubId + 1 : 0;
-      lastForeach = elem.attr('sbForeach');
-      lastSubId = subId;
       if (fixedKeys) {
         fixedKeys = fixedKeys.split(',').map((s) => s.trim());
       }
@@ -742,14 +745,14 @@ let WS = {
       if (context[1] != '') {
         context[1] = '.' + context[1];
       }
-      elem.detach().removeAttr('sbForeach').attr('subId', subId);
+      elem.detach().removeAttr('sbForeach');
       $.each(paths, function (idx, path) {
-        const field = path.slice(path.lastIndexOf('.', path.length - 6) + 1, -6); // cut off (*).Id
+        const field = path.substring(path.lastIndexOf('.') + 1);
         if (options.filter === '^') {
           options.filter = paren
             .closest('[' + field + ']')
             .attr(field)
-            .slice(0, -2);
+            .slice(0, -2); // cut off .*
         }
         $.each(fixedKeys, function (idx, key) {
           if (key.startsWith('-')) {
@@ -758,28 +761,27 @@ let WS = {
             if (options.filter) {
               key = options.filter + '.' + key;
             }
-            const newElem = elem.clone(true).attr(field, key).addClass('Fixed');
+            const newElem = elem.clone(true).attr(field, key).addClass('sbFixed');
             if (!options.noContext) {
               newElem.attr('sbContext', context[0] + field + '(' + key + ')' + context[1]);
             }
-            if (subId > 0) {
-              newElem.insertAfter(paren.children('[' + field + '="' + key + '"][subId="' + (subId - 1) + '"]'));
-            } else if (index === 0) {
-              paren.prepend(newElem);
-            } else {
-              newElem.insertAfter(paren.children(':nth-child(' + index + ')'));
+            let prev = paren.children('[' + field + '="' + key + '"][sbSubId="' + (subId - 1) + '"]');
+            if (!prev.length) {
+              prev = preForeachItem.nextUntil(':not(.sbFixed)').addBack().last();
             }
-            index++;
+            if (!prev.length) {
+              prev = paren.children(':first-child.sbFixed').nextUntil(':not(.sbFixed)').addBack().last();
+            }
+            if (prev.length) {
+              newElem.insertAfter(prev);
+            } else {
+              paren.prepend(newElem);
+            }
             WS.AutoRegister(newElem);
           }
         });
         if (sortFunction !== 'only') {
-          if (options.filter) {
-            path = path.slice(0, -5) + options.filter + '.*).Id';
-          }
-          if (options.noId) {
-            path = path.slice(0, -3);
-          }
+          path = path + '(' + (options.filter ? options.filter + '.' : '') + '*)' + (options.noId ? '' : '.Id');
           WS.Register(path, {
             preRegistered: true,
             element: elem,
@@ -790,23 +792,23 @@ let WS = {
                 return;
               } else if (v == null) {
                 if (key !== k[field]) {
-                  const target = paren.children('[' + field + '="' + key + '"][' + subfieldId + '][subId="' + subId + '"]:not(.Fixed)');
+                  const target = paren.children('[' + field + '="' + key + '"][' + subfieldId + '][sbSubId="' + subId + '"]:not(.sbFixed)');
                   const removed = target
                     .attr(subfieldId, null)
                     .attr('sbCount', target.attr('sbCount') - 1)
                     .filter('[sbCount="0"]');
                   if (removed.length) {
-                    WS.Forget(WS.callbackTrie, removed);
+                    WS.Forget(removed);
                     removed.remove();
                   }
                 } else {
-                  const removed = paren.children('[' + field + '="' + key + '"][subId="' + subId + '"]:not(.Fixed)');
+                  const removed = paren.children('[' + field + '="' + key + '"][sbSubId="' + subId + '"]:not(.sbFixed)');
                   if (removed.length) {
-                    WS.Forget(WS.callbackTrie, removed);
+                    WS.Forget(removed);
                     removed.remove();
                   }
                 }
-              } else if (!paren.children('[' + field + '="' + key + '"][subId="' + subId + '"]').length) {
+              } else if (!paren.children('[' + field + '="' + key + '"][sbSubId="' + subId + '"]').length) {
                 const newElem = elem.clone(true).attr(field, key).appendTo(paren);
                 if (!options.noContext) {
                   newElem.attr('sbContext', context[0] + field + '(' + key + ')' + context[1]);
@@ -822,7 +824,7 @@ let WS = {
                     triggerFunc: function (k, v, elem) {
                       if (v != null) {
                         elem.detach();
-                        _windowFunctions.appendSorted(paren, elem, window[sortFunction], index);
+                        _windowFunctions.appendSorted(paren, elem, window[sortFunction], preForeachItem.index() + 1);
                       }
                     },
                   });
@@ -833,16 +835,16 @@ let WS = {
                     newElem,
                     window[sortFunction] ||
                       function (a, b) {
-                        return compareAttrThenSubId(field, a, b);
+                        return _compareAttrThenSubId(field, a, b);
                       },
-                    index
+                    preForeachItem.index() + 1
                   );
                 }
               } else if (
                 key !== k[field] &&
-                !paren.children('[' + field + '="' + key + '"][' + subfieldId + '][subId="' + subId + '"]').length
+                !paren.children('[' + field + '="' + key + '"][' + subfieldId + '][sbSubId="' + subId + '"]').length
               ) {
-                const target = paren.children('[' + field + '="' + key + '"][subId="' + subId + '"]:not(.Fixed)');
+                const target = paren.children('[' + field + '="' + key + '"][sbSubId="' + subId + '"]:not(.sbFixed)');
                 target.attr(subfieldId, k[field]).attr('sbCount', Number(target.attr('sbCount')) + 1);
               }
             },
@@ -863,7 +865,13 @@ let WS = {
       });
     };
 
-    $.each(['sbForeach', 'sbDisplay', 'sbControl', 'sbToggle'], function (idx, attr) {
+    $('[sbForeach]').each(function (idx, elem) {
+      $.each(WS._getParameters($(elem), 'sbForeach', 0, true), function (idx, params) {
+        paths = paths.concat(params[0].map((s) => s + '(*)' + ((params[3] || '').includes('noId') ? '' : '.Id')));
+      });
+    });
+
+    $.each(['sbDisplay', 'sbControl', 'sbToggle'], function (idx, attr) {
       preRegisterAttribute(attr, 0);
     });
     $.each(['sbClass', 'sbCss', 'sbAttr', 'sbProp'], function (idx, attr) {
@@ -879,7 +887,7 @@ let WS = {
     let clean = true;
     elem = $(elem);
     if (!elem.attr(attr)) {
-      return [null, true];
+      return [elem.attr(attr), true];
     }
     elem.attr(
       attr,
@@ -920,7 +928,7 @@ let WS = {
     let path = '';
     const parent = elem.parent();
     if (parent.length > 0) {
-      path = WS._getContext(parent);
+      path = WS._getContext(parent, false, isPreRegister);
       reevaluate = WS._pathCache.get(parent[0]).reevaluate;
     }
     let [value, clean] = WS._replacePathComponents(elem, 'sbContext', isPreRegister);
@@ -932,12 +940,12 @@ let WS = {
       path = WS._combinePaths(path, parts[0], prefixes);
       suffix = parts[1];
     }
+    const noSuffixPath = path;
     const foreach = elem.attr('sbForeach');
-    if (foreach != null && (!foreach.includes('noContext') || skipSuffix)) {
+    if (foreach != null && !foreach.includes('noContext')) {
       reevaluate = true;
       path = (path !== '' ? path + '.' : '') + foreach.split(':', 1)[0].trim() + '(*)';
     }
-    const noSuffixPath = path;
     if (suffix) {
       path = WS._combinePaths(path, suffix, prefixes);
     }
@@ -986,7 +994,7 @@ let WS = {
     return [prefixes, suffixes];
   },
 
-  OpenDialog: function (elem, context, options) {
+  SetupDialog: function (elem, context, options) {
     'use strict';
     elem = elem.clone().attr('sbContext', '/' + context);
     options = options || {};
@@ -999,6 +1007,7 @@ let WS = {
       }
       elem.dialog('destroy').remove();
     };
-    elem.dialog(options).dialog('open');
+    elem.dialog(options);
+    return elem;
   },
 };

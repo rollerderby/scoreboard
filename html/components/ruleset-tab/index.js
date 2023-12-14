@@ -4,12 +4,12 @@ let activeRsPrefix = _windowFunctions.hasParam('ruleset')
 
 function compareIndex(a, b) {
   'use strict';
-  return compareAttrThenSubId('index', a, b);
+  return _compareAttrThenSubId('index', a, b);
 }
 
 function compareChildIndex(a, b) {
   'use strict';
-  return compareAttrThenSubId('index', $(a).children('[index]'), $(b).children('[index]'));
+  return _compareAttrThenSubId('index', $(a).children('[index]'), $(b).children('[index]'));
 }
 
 function updateActiveRs(k, v) {

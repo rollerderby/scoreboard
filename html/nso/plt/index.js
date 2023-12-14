@@ -57,23 +57,30 @@ function openOptionsDialog() {
   $('#OptionsDialog').dialog('open');
 }
 
+function _updateUrl(key, val) {
+  'use strict';
+  let url = new URL(window.location);
+  url.searchParams.set(key, val);
+  window.history.replaceState(null, '', url);
+}
+
 function setTeam(k, v, elem) {
   $('#OptionsDialog [team]').removeClass('Active');
   elem.addClass('Active');
   $('body').attr('showTeam', elem.attr('team'));
-  window.history.replaceState(null, '', new URL(window.location).searchParams.set('team', elem.attr('team')));
+  _updateUrl('team', elem.attr('team'));
 }
 
 function setPos(k, v, elem) {
   $('#OptionsDialog [pos]').removeClass('Active');
   elem.addClass('Active');
   $('body').attr('context', elem.attr('pos'));
-  window.history.replaceState(null, '', new URL(window.location).searchParams.set('pos', elem.attr('pos')));
+  _updateUrl('pos', elem.attr('pos'));
 }
 
 function setZoom(k, v, elem) {
   'use strict';
   elem.toggleClass('Active');
-  window.history.replaceState(null, '', new URL(window.location).searchParams.set('zoomable', elem.filter('.Active').length));
+  _updateUrl('zoomable', elem.filter('.Active').length);
   _windowFunctions.configureZoom();
 }
