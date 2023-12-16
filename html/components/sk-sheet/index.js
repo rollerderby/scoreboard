@@ -13,9 +13,9 @@
 
   WS.Register('ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Period(*).Jam(*).StarPass', {
     triggerBatchFunc: function () {
-      const selector = 'tr.Jam:not(.Hide)';
-      $('.SK.Period').each(function (i, e) {
-        const dark = $(e).closest('[context="sheet"]').length ? 1 : $(e).find(selector).length % 2;
+      const selector = 'tr.Jam:not(.sbHide)';
+      $('.SkSheet>.Period').each(function (i, e) {
+        const dark = $(e).closest('[sbSheetStyle="sheet"]').length ? 1 : $(e).find(selector).length % 2;
         $(e)
           .find(selector)
           .each(function (idx) {
@@ -26,7 +26,7 @@
   });
 })();
 
-function toggleEdit(k, v, elem) {
+function toggleJamEdit(k, v, elem) {
   'use strict';
   elem
     .closest('tbody')
@@ -177,7 +177,7 @@ function toPreSpScore(k, v) {
 
 function toArrow(k, v, elem) {
   'use strict';
-  return elem.closest('tr.Jam').hasClass('SP') === (elem.closest('[context]').attr('context') === 'sheet') ? '↓' : '↑';
+  return elem.closest('tr.Jam').hasClass('SP') === (elem.closest('[sbSheetStyle]').attr('sbSheetStyle') === 'sheet') ? '↓' : '↑';
 }
 
 function hasOffset(k, v) {
@@ -215,9 +215,9 @@ function isOrThisTeam(k, v, elem) {
 
 function toToTypeName(k, v, elem) {
   'use strict';
-  if (v === '.false') {
+  if (v === '') {
     return 'Untyped Timeout';
-  } else if (v === 'O.false') {
+  } else if (v === 'O') {
     return 'Official Timeout';
   } else {
     const prefix = k.upTo('Game') + '.Team(' + v.slice(-1) + ').';
@@ -245,7 +245,7 @@ function toDuration(k, v) {
 
 function _setupTripEditor(gameId, p, j, teamId, t) {
   'use strict';
-  $(':not(#Templates)>#TripEditor').dialog('close');
+  $(':not(#sbTemplates)>#TripEditor').dialog('close');
 
   const prefix = 'ScoreBoard.Game(' + gameId + ').Period(' + p + ').Jam(' + j + ').TeamJam(' + teamId + ').ScoringTrip(';
   while (t > 1 && WS.state[prefix + (t - 1) + ').Score'] === undefined) {

@@ -8,7 +8,7 @@
     class="Period LT"
     sbClass="Current: Number,^CurrentPeriodNumber: isCurrentPeriod"
   >
-    <thead class="ShowSome ShowOnSheet">
+    <thead class="sbShowOnSheet">
       <tr>
         <td colspan="12"><span sbDisplay="t.UniformColor, t.Name"></span></td>
       </tr>
@@ -28,7 +28,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr class="Jam Upcoming" sbContext="t" sbClass="Hide: ^InJam">
+      <tr class="Jam Upcoming" sbContext="t" sbClass="sbHide: ^InJam">
         <td class="JamNumber Darker" sbDisplay="^UpcomingJamNumber"></td>
         <td class="NP Darker" sbDisplay="NoPivot: toX"></td>
         <td
@@ -67,7 +67,7 @@
           sbCall="editFielding"
         ></td>
       </tr>
-      <tr class="SP" sbContext=":TeamJam([Team])" sbForeach="Jam:: compareJam" sbClass="Hide: ^StarPass: !">
+      <tr class="SP" sbContext=":TeamJam([Team])" sbForeach="Jam:: compareJam" sbClass="sbHide: ^StarPass: !">
         <td class="JamNumber Darker" sbDisplay="StarPass: toSpJamNo"></td>
         <td class="NP Darker" sbDisplay="StarPass: toX"></td>
         <td
@@ -87,19 +87,19 @@
   </table>
 </div>
 
-<div id="Templates">
+<div id="sbTemplates">
   <table id="FieldingEditor">
     <tr class="Skater">
       <td colspan="2">
-        <span id="skaterList" sbPrefix="f:[*]">
+        <span id="skaterList" sbPrefix="f:[*]" sbButtonGroup>
           <button sbSet="Skater: null">?</button>
-          <button sbClass="Hide:-: isUpcoming" sbSet="Skater: null" sbToggle="NotFielded">n/a</button>
+          <button sbClass="sbHide:-: isUpcoming" sbSet="Skater: null" sbToggle="NotFielded">n/a</button>
           <button
             sbContext="/ScoreBoard.Game([Game]).Team([TeamJam])"
             sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"
             sbAttr="rosterNumber: RosterNumber"
             sbDisplay="RosterNumber"
-            sbClass="Active: f.Skater == elem.attr('Skater')"
+            sbClass="sbActive: f.Skater == elem.attr('Skater') | sbHide: Role: === 'NotInGame'"
             sbSet="f.Skater: elem.attr('Skater')"
           ></button>
         </span>
@@ -109,7 +109,7 @@
     <tr class="Skater">
       <td colspan="3"><input type="text" size="60" id="annotation" sbControl="Annotation:: toNullIfEmpty" /></td>
     </tr>
-    <tr class="Skater BoxTripComments" sbClass="Hide: CurrentBoxTrip: empty">
+    <tr class="Skater BoxTripComments" sbClass="sbHide: CurrentBoxTrip: empty">
       <td><button sbSet="Annotation: appendText">Self Report</button></td>
       <td><button sbSet="Annotation: appendText">Penalty Overturned</button></td>
     </tr>

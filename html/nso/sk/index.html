@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title sbContext="ScoreBoard.Game([game]).Team(*)" sbDisplay="AlternateName(operator), UnifomrColor, Name: toTitle">
+      Scorekeeper | CRG ScoreBoard
+    </title>
+
+    <script type="text/javascript" src="/external/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/json/core.js"></script>
+  </head>
+
+  <body sbContext="ScoreBoard.Game([game])" sbSheetStyle="sk">
+    <div class="Content">
+      <div class="GameAdvance" sbInclude="/components/game-advance/"></div>
+      <div sbForeach="Team: 1,2: only" sbInclude="/components/sk-input/" class="Input"></div>
+      <div class="Sheet" sbForeach="Team: 1,2: only" sbInclude="/components/sk-sheet/"></div>
+      <div class="SettingsButton sbSegment">
+        <div class="sbGroup"><button sbCall="openOptionsDialog">Settings</button></div>
+      </div>
+    </div>
+
+    <div id="sbTemplates">
+      <div id="OptionsDialog">
+        <div class="sbSegment">
+          <div class="sbGroup sbHeader">Select Team</div>
+          <div class="sbGroup Teams">
+            <button team="1" sbCall="setTeam" sbContext="Team(1)" sbDisplay="AlternateName(operator),UniformColor,Name">Team 1</button>
+            <button team="2" sbCall="setTeam" sbContext="Team(2)" sbDisplay="AlternateName(operator),UniformColor,Name">Team 2</button>
+            <button team="both" sbCall="setTeam">Both Teams</button>
+          </div>
+        </div>
+        <div class="sbSegment">
+          <div class="sbGroup sbHeader">Options</div>
+          <div class="sbGroup">
+            <button sbCall="setZoom">Allow Pinch Zoom</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

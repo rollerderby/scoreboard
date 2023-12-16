@@ -43,13 +43,13 @@ function compareRole(a, b) {
 function comparePeriod(a, b) {
   'use strict';
   const comp = _numCompareAttrThenSubId('Period', a, b);
-  return $(a).closest('[context]').attr('context') === 'sheet' ? comp : !comp;
+  return $(a).closest('[sbSheetStyle]').attr('sbSheetStyle') === 'sheet' ? comp : !comp;
 }
 
 function compareJam(a, b) {
   'use strict';
   const comp = _numCompareAttrThenSubId('Jam', a, b);
-  return $(a).closest('[context]').attr('context') === 'sheet' ? comp : !comp;
+  return $(a).closest('[sbSheetStyle]').attr('sbSheetStyle') === 'sheet' ? comp : !comp;
 }
 
 function orderRsAsTree(a, b) {

@@ -1,10 +1,10 @@
 <table id="Igrf">
   <tr class="Name">
     <td colspan="3">
-      <span class="Name" sbCall="toggleHide" sbDisplay="Name"></span> <span class="NameFormat Hide">NameFormat: </span>
-      <input type="text" size="30" class="NameFormat Hide" sbControl="NameFormat" sbOn="focusout: toggleHide" />
-      <button class="Hide" sbClass="Hide: State: !== 'Running'" sbSet="OfficialScore">End Game</button>
-      <table class="NameFormat Variables Hide">
+      <span class="Name" sbCall="toggleHide" sbDisplay="Name"></span> <span class="NameFormat sbHide">NameFormat: </span>
+      <input type="text" size="30" class="NameFormat sbHide" sbControl="NameFormat" sbOn="focusout: toggleHide" />
+      <button class="sbHide" sbClass="sbHide: State: !== 'Running'" sbSet="OfficialScore">End Game</button>
+      <table class="NameFormat Variables sbHide">
         <tr>
           <th colspan="2">Supported Variables:</th>
         </tr>
@@ -46,19 +46,19 @@
   <tr class="Files">
     <td colspan="3">
       <span>Game Files: </span>
-      <button sbClass="Hide: ExportBlockedBy: !=''" sbSet="Export">Update</button>
-      <span sbClass="Hide: ExportBlockedBy: ==''">Export Blocked by </span>
-      <span sbClass="Hide: ExportBlockedBy: ==''" sbDisplay="ExportBlockedBy"></span>
-      <div class="spinner Hide" sbClass="Hide: UpdateInProgress: !"></div>
-      <a download sbAttr="href: Filename: toJsonDl" sbClass="Hide: JsonExists: !" sbButton>Download JSON</a>
-      <span sbClass="Hide: JsonExists">No JSON yet</span>
-      <a download sbAttr="href: Filename: toXlsxDl" sbClass="Hide: StatsbookExists: !" sbButton>Download Statsbook</a>
-      <span sbClass="Hide: StatsbookExists">No Statsbook yet</span>
+      <button sbClass="sbHide: ExportBlockedBy: !=''" sbSet="Export">Update</button>
+      <span sbClass="sbHide: ExportBlockedBy: ==''">Export Blocked by </span>
+      <span sbClass="sbHide: ExportBlockedBy: ==''" sbDisplay="ExportBlockedBy"></span>
+      <div class="sbSpinner sbHide" sbClass="sbHide: UpdateInProgress: !"></div>
+      <a download sbAttr="href: Filename: toJsonDl" sbClass="sbHide: JsonExists: !" sbButton>Download JSON</a>
+      <span sbClass="sbHide: JsonExists">No JSON yet</span>
+      <a download sbAttr="href: Filename: toXlsxDl" sbClass="sbHide: StatsbookExists: !" sbButton>Download Statsbook</a>
+      <span sbClass="sbHide: StatsbookExists">No Statsbook yet</span>
       <span>Last Updated: </span>
       <span sbDisplay="LastFileUpdate"></span>
-      <span class="Warning Hide" sbClass="Hide: ^BlankStatsbookFound: !== 'none'"> Blank Statsbook not found.</span>
-      <span class="Warning Hide" sbClass="Hide: ^BlankStatsbookFound: !== 'broken'"> Blank Statsbook not readable.</span>
-      <span class="Warning Hide" sbClass="Hide: ^BlankStatsbookFound: !== 'checking'"> Checking Blank Statsbook.</span>
+      <span class="Warning sbHide" sbClass="sbHide: ^BlankStatsbookFound: !== 'none'"> Blank Statsbook not found.</span>
+      <span class="Warning sbHide" sbClass="sbHide: ^BlankStatsbookFound: !== 'broken'"> Blank Statsbook not readable.</span>
+      <span class="Warning sbHide" sbClass="sbHide: ^BlankStatsbookFound: !== 'checking'"> Checking Blank Statsbook.</span>
     </td>
   </tr>
   <tr class="Location">
@@ -79,12 +79,12 @@
     <td></td>
   </tr>
   <tr
-    class="Separator Abort Hide"
-    sbClass="Hide: Clock(Period).Time, CurrentPeriodNumber, Rule(Period.Number), OfficialScore: isNotAborted"
+    class="Separator Abort sbHide"
+    sbClass="sbHide: Clock(Period).Time, CurrentPeriodNumber, Rule(Period.Number), OfficialScore: isNotAborted"
   >
     <td colspan="3"><hr /></td>
   </tr>
-  <tr class="Abort Info Hide" sbClass="Hide: Clock(Period).Time, CurrentPeriodNumber, Rule(Period.Number), OfficialScore: isNotAborted">
+  <tr class="Abort Info sbHide" sbClass="sbHide: Clock(Period).Time, CurrentPeriodNumber, Rule(Period.Number), OfficialScore: isNotAborted">
     <td colspan="3">
       <span sbDisplay="Clock(Period).Time, CurrentPeriodNumber, Rule(Period.Number): toAbortTime"></span>
       <input type="text" size="50" sbControl="AbortReason" />
@@ -125,10 +125,10 @@
       </table>
     </td>
   </tr>
-  <tr class="Separator Expulsions Hide" sbClass="Hide: Expulsion(*).Id: noExpulsions">
+  <tr class="Separator Expulsions sbHide" sbClass="sbHide: Expulsion(*).Id: noExpulsions">
     <td colspan="3"><hr /></td>
   </tr>
-  <tr class="Expulsions Hide" sbClass="Hide: Expulsion(*).Id: noExpulsions">
+  <tr class="Expulsions sbHide" sbClass="sbHide: Expulsion(*).Id: noExpulsions">
     <td colspan="3">
       <table>
         <tr>
@@ -189,7 +189,7 @@
                   <option value="Non-Skating Official Alternate">Non-Skating Official Alternate</option>
                   <option value="O">Other</option>
                 </select>
-                <input type="text" size="20" class="Role Hide" sbOn="paste: pasteOfficials" />
+                <input type="text" size="20" class="Role sbHide" sbOn="paste: pasteOfficials" />
               </span>
             </th>
             <th><input type="text" size="30" class="Name" sbOn="keyup: updateAddButton | paste: pasteOfficials" /></th>
@@ -230,9 +230,9 @@
                   <option value="Non-Skating Official Alternate">Non-Skating Official Alternate</option>
                   <option value="O">Other</option>
                 </select>
-                <input type="text" size="20" class="Role Hide" sbClass="Hide: Role: notOtherRole" sbControl="Role" />
+                <input type="text" size="20" class="Role sbHide" sbClass="sbHide: Role: notOtherRole" sbControl="Role" />
               </span>
-              <span sbClass="Hide: Role: isNotPerTeam">
+              <span sbClass="sbHide: Role: isNotPerTeam">
                 <br /><span>P1: </span>
                 <select sbControl="P1Team">
                   <option value=""></option>
@@ -266,7 +266,7 @@
   </tr>
 </table>
 
-<div id="Templates">
+<div id="sbTemplates">
   <div id="RefRoles">
     <option value="">None Selected</option>
     <option value="Head Referee">Head Referee</option>

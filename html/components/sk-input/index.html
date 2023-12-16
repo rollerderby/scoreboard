@@ -1,0 +1,145 @@
+<div class="sbSegment SkInput">
+  <div class="sbGroup Name">
+    <div class="Logo EditGroup">
+      <div sbCall="toggleEdit">
+        <span sbClass="sbHide: Logo: notEmpty">No Logo</span>
+        <img class="Logo" sbAttr="src: Logo" sbClass="sbHide: Logo: empty" />
+      </div>
+      <select class="sbHide" sbControl="Logo" sbOn="change: toggleEdit">
+        <option value="">No Logo</option>
+        <option
+          sbForeach="File::compareName: resort=Name"
+          sbContext="/ScoreBoard.Media.Format(images).Type(teamlogo)"
+          sbAttr="name: Name | value:-:toMediaPath"
+          sbDisplay="Name"
+        ></option>
+      </select>
+    </div>
+    <div class="Name EditGroup">
+      <div
+        class="TeamName"
+        sbDisplay="AlternateName(operator), UniformColor, Name"
+        sbCss="color: Color(operator.fg) | background-color: Color(operator.bg) | text-shadow: Color(operator.glow): toShadow"
+        sbCall="toggleEdit"
+      ></div>
+      <span class="sbHide" sbCall="toggleEdit"> Alternate Name: </span>
+      <input type="text" size="15" class="sbHide" sbControl="AlternateName(operator):: toNullIfEmpty" sbOn="focusout: toggleEdit" />
+    </div>
+  </div>
+  <div class="sbGroup">
+    <div class="Stack">
+      <button
+        class="sbKeyControl BigButton"
+        sbAttr="id:-: 'Team[Team]ScoreDown'"
+        sbProp="disabled: TripScore: == 0"
+        sbSet="TripScore: -1: change"
+      >
+        Trip Pts -1
+      </button>
+      <button class="sbKeyControl" sbAttr="id:-: 'Team[Team]RemoveTrip'" sbProp="disabled: NoInitial" sbSet="RemoveTrip">
+        Remove Trip
+      </button>
+    </div>
+    <div class="Stack">
+      <span>Jam Pts: <span class="SubScore" sbDisplay="JamScore"></span></span>
+      <span>Trip Pts: <span class="SubScore" sbDisplay="TripScore"></span></span>
+    </div>
+    <span class="Score" sbDisplay="Score"></span>
+    <div class="Stack">
+      <button class="sbKeyControl BigButton" sbAttr="id:-: 'Team[Team]ScoreUp'" sbSet="TripScore: +1: change">Trip Pts +1</button>
+      <button class="sbKeyControl" sbAttr="id:-: 'Team[Team]AddTrip'" sbSet="AddTrip">Add Trip</button>
+    </div>
+  </div>
+  <div class="sbGroup">
+    <span>Set Trip Pts</span>
+    <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore0'" sbSet="TripScore: 0">0</button>
+    <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore1'" sbSet="TripScore: 1">1</button>
+    <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore2'" sbSet="TripScore: 2">2</button>
+    <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore3'" sbSet="TripScore: 3">3</button>
+    <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore4'" sbSet="TripScore: 4">4</button>
+  </div>
+  <div class="sbGroup sbShowOnOperator">
+    <button
+      class="sbKeyControl"
+      sbAttr="id:-:'Team[Team]Timeout'"
+      sbClass="sbActive: Id,^TimeoutOwner, ^OfficialReview: isToThisTeam"
+      sbSet="Timeout"
+    >
+      Team TO
+    </button>
+    <span class="TimeoutCount" sbDisplay="Timeouts"></span>
+    <button
+      class="sbKeyControl"
+      sbAttr="id:-:'Team[Team]OfficialReview'"
+      sbClass="sbActive: Id,^TimeoutOwner, ^OfficialReview: isOrThisTeam"
+      sbSet="OfficialReview"
+    >
+      Off Review
+    </button>
+    <span class="TimeoutCount" sbDisplay="OfficialReviews"></span>
+    <button class="sbKeyControl" sbAttr="id:-:'Team[Team]RetainedOfficialReview'" sbToggle="RetainedOfficialReview">Retained</button>
+  </div>
+  <div class="sbGroup">
+    <span>
+      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]StarPass'" sbToggle="StarPass">Star Pass</button>
+      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]NoPivot'" sbToggle="NoPivot">No Pivot</button>
+    </span>
+    <span sbButtonGroup>
+      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]Lost'" sbToggle="Lost">Lost</button>
+      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]Lead'" sbToggle="Lead">Lead</button>
+      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]Call'" sbToggle="Calloff">Call</button>
+      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]Inj'" sbToggle="Injury">Inj</button>
+      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]NI'" sbToggle="NoInitial">NI</button>
+    </span>
+  </div>
+  <div class="sbGroup" sbPrefix="p:[*].Position(Jammer)">
+    <span
+      >Jammer:
+      <span sbButtonGroup>
+        <button class="sbKeyControl" sbAttr="Id:-: 'Team[Team]JammerNone'" sbClass="sbActive: p.Skater: === ''" sbSet="p.Skater: ''">
+          ?
+        </button>
+        <button
+          sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"
+          sbAttr="rosterNumber: RosterNumber | id: -: toJammerId"
+          sbDisplay="RosterNumber"
+          sbClass="sbActive: p.Skater: === elem.attr('Skater') | HasPlayed: Color: === 'Jammer' | sbHide: Role: === 'NotInGame'"
+          sbSet="p.Skater: elem.attr('Skater')"
+        ></button>
+      </span>
+      <button
+        class="sbKeyControl Box"
+        sbClass="sbHide: /ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)"
+        sbAttr="id:-:'Team[Team]JammerBox'"
+        sbToggle="p.PenaltyBox : Sitting"
+      >
+        Box
+      </button>
+    </span>
+  </div>
+  <div class="sbGroup" sbPrefix="p:[*].Position(Pivot)">
+    <span
+      >Piv/4th Bl:
+      <span sbButtonGroup>
+        <button class="sbKeyControl" sbAttr="Id:-: 'Team[Team]PivotNone'" sbClass="sbActive: p.Skater: === ''" sbSet="p.Skater: ''">
+          ?
+        </button>
+        <button
+          sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"
+          sbAttr="rosterNumber: RosterNumber | id: -: toPivotId"
+          sbDisplay="RosterNumber"
+          sbClass="sbActive: p.Skater: === elem.attr('Skater') | HasPlayed: Color: === 'Pivot' | sbHide: Role: === 'NotInGame'"
+          sbSet="p.Skater: elem.attr('Skater')"
+        ></button>
+      </span>
+      <button
+        class="sbKeyControl Box"
+        sbClass="sbHide: /ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)"
+        sbAttr="id:-:'Team[Team]PivotBox'"
+        sbToggle="p.PenaltyBox: Sitting"
+      >
+        Box
+      </button>
+    </span>
+  </div>
+</div>

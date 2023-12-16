@@ -10,10 +10,6 @@ $(function () {
   WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.*)', function (k, v) {
     setOperatorSettings(_windowFunctions.getParam('operator'));
   });
-  // Only connect after any registrations from the above are in place.
-  // This avoids repeating work on the initial load.
-  WS.AutoRegister();
-  WS.Connect();
 
   $('#tabsDiv').tabs();
 

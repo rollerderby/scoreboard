@@ -120,7 +120,7 @@ function selectPanel(k, v) {
   if (v !== nextPanel) {
     nextPanel = v;
     $('#PanelSet').toggleClass('changed', nextPanel !== currrentPanel);
-    $('#LowerThirdControls').toggleClass('Hide', nextPanel !== 'LowerThird');
+    $('#LowerThirdControls').toggleClass('sbHide', nextPanel !== 'LowerThird');
   }
 }
 

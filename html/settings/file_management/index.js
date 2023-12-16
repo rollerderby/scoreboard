@@ -20,12 +20,12 @@ function getSubId(k, v) {
 
 function showTable(k, v, elem) {
   'use strict';
-  elem.closest('table').removeClass('Hide');
+  elem.closest('table').removeClass('sbHide');
 }
 
 function hideTable(k, v, elem) {
   'use strict';
-  elem.closest('table').addClass('Hide');
+  elem.closest('table').addClass('sbHide');
 }
 
 function gameData(k, v) {

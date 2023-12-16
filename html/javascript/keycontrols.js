@@ -1,9 +1,9 @@
 var _crgKeyControls = {
   /* This selector should be used to match key control buttons. */
-  keySelector: ':button.KeyControl,label.KeyControl',
+  keySelector: ':button.sbKeyControl,label.sbKeyControl',
 
   /* Setup all key control buttons.
-   * This finds all button-type elements with the class KeyControl
+   * This finds all button-type elements with the class sbKeyControl
    * and calls setupKeyControl, using the given controlParent.
    */
   setupKeyControls: function (operator) {
@@ -11,7 +11,7 @@ var _crgKeyControls = {
     _crgKeyControls.setupKeyControl($(_crgKeyControls.keySelector), operator);
   },
   /* Destroy all key control buttons.
-   * This finds all button-type elements with the class KeyControl
+   * This finds all button-type elements with the class sbKeyControl
    * and calls destroyKeyControl.
    */
   destroyKeyControls: function () {
@@ -30,7 +30,7 @@ var _crgKeyControls = {
    * destroyed and then re-setup.
    *
    * CSS notes:
-   * key control buttons have the class KeyControl
+   * key control buttons have the class sbKeyControl
    * there are new span elements added, which are button>span>span
    * the new span elements (under the child span) have the class Indicator
    * the span.Indicator element that stores the control key has class Key
@@ -41,8 +41,11 @@ var _crgKeyControls = {
     _crgKeyControls._start(operator);
     _crgKeyControls
       .destroyKeyControl(button)
-      .addClass('KeyControl')
+      .addClass('sbKeyControl')
       .on('mouseenter mouseleave', _crgKeyControls._hoverFunction)
+      .not(':has(>span)')
+      .wrapInner('<span>')
+      .end()
       .children('span')
       .append($('<span>').text(' [').addClass('Indicator'))
       .append($('<span>').addClass('Key Indicator'))
@@ -69,7 +72,7 @@ var _crgKeyControls = {
    * This undoes the key control setup. If destroyButton
    * is true, is destroys the jQuery-UI button.
    * It returns the button element.
-   * Note this does not remove the KeyControl class from the button.
+   * Note this does not remove the sbKeyControl class from the button.
    */
   destroyKeyControl: function (button) {
     'use strict';

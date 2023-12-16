@@ -20,8 +20,8 @@ $('.NSOs table')
 
 function toggleHide(k, v, elem) {
   'use strict';
-  elem.siblings('table').addClass('Hide');
-  elem.siblings(':not(table):not(button)').add(elem).toggleClass('Hide');
+  elem.siblings('table').addClass('sbHide');
+  elem.siblings(':not(table):not(button)').add(elem).toggleClass('sbHide');
 }
 
 function toJsonDl(k, v) {
@@ -76,7 +76,7 @@ function toggleInput(k, v, elem) {
   elem
     .siblings('input')
     .val(v === 'O' ? '' : v)
-    .toggleClass('Hide', v !== 'O');
+    .toggleClass('sbHide', v !== 'O');
 }
 
 function addOfficial(k, v, elem) {

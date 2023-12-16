@@ -8,7 +8,7 @@
   </head>
 
   <body sbContext="ScoreBoard">
-    <a id="indexLink" href="/" class="ui-widget ui-widget-content">Back to index page</a>
+    <a id="sbIndexLink" href="/" class="ui-widget ui-widget-content">Back to index page</a>
     <div id="sbData">
       <table class="UpDown">
         <thead>
@@ -28,7 +28,7 @@
                 <button class="UploadButton" sbCall="uploadJson">Import JSON</button>
                 <button class="UploadButton" sbCall="uploadXlsx">Import Statsbook</button>
                 <button class="UploadButton" sbCall="uploadBlankXlsx">Upload Blank Statsbook</button>
-                <div class="spinner Hide" sbClass="Hide: ImportsInProgress: !"></div>
+                <div class="sbSpinner sbHide" sbClass="sbHide: ImportsInProgress: !"></div>
               </form>
             </td>
           </tr>
@@ -118,7 +118,7 @@
         </tbody>
       </table>
     </div>
-    <div id="Templates">
+    <div id="sbTemplates">
       <div class="RemoveDataDialog">
         <p>
           This will delete <a class="Elements"></a> elements. You cannot undo this operation. (But you can reimport this data if you have it

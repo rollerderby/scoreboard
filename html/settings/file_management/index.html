@@ -8,7 +8,7 @@
   </head>
 
   <body>
-    <a id="indexLink" href="/" class="ui-widget ui-widget-content">Back to index page</a><br />
+    <a id="sbIndexLink" href="/" class="ui-widget ui-widget-content">Back to index page</a><br />
     <div id="tabsDiv" sbContext="ScoreBoard.Media">
       <ul id="fileTabBar">
         <li><a href="#images">Image</a></li>
@@ -44,16 +44,16 @@
           <tbody>
             <tr sbForeach="File:: compareName: resort=Name" sbAttr="name: Name" class="Item">
               <td class="Remove"><button class="Remove" sbCall="createRemoveDialog">Remove</button></td>
-              <td class="Name" sbClass="Hide: Id: gameData"><input type="text" class="Name" sbControl="Name" /></td>
-              <td class="Preview" sbClass="Hide: Id: gameData" sbDisplay="Id: toPreviewElem: html"></td>
-              <td colspan="2" class="Src" sbClass="Hide: Id: noGameData" sbDisplay="Id"></td>
+              <td class="Name" sbClass="sbHide: Id: gameData"><input type="text" class="Name" sbControl="Name" /></td>
+              <td class="Preview" sbClass="sbHide: Id: gameData" sbDisplay="Id: toPreviewElem: html"></td>
+              <td colspan="2" class="Src" sbClass="sbHide: Id: noGameData" sbDisplay="Id"></td>
               <td class="Download"><a download class="Download" sbAttr="href: Id: toMediaPath" sbButton>Download</a></td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-    <div id="Templates">
+    <div id="sbTemplates">
       <div class="UploadMediaDialog">
         <div class="Upload"></div>
         <p><a class="File">File: </a><input type="file" multiple class="File" /></p>

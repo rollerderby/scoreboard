@@ -4,7 +4,7 @@ let WS = {
   _registerOnConnect: [],
   _afterLoadCallbacks: [],
   Connected: false,
-  _connectionStatus: $('<div>').attr('id', 'ConnectionStatus').attr('status', 'loading').text('Loading'),
+  _connectionStatus: $('<div>').attr('id', 'sbConnectionStatus').attr('status', 'loading').text('Loading'),
   _started: false,
   _preRegisterDone: false,
   state: {},
@@ -286,10 +286,9 @@ let WS = {
           };
         } else if (options.prop != null) {
           callback = function (k, v) {
+            elem.prop(options.prop, v);
             if (options.prop === 'disabled' && elem.hasClass('ui-button')) {
-              elem.button('option', 'disabled', v);
-            } else {
-              elem.prop(options.prop, v);
+              elem.toggleClass('ui-state-disabled', v);
             }
           };
         } else if (options.toggleClass != null) {
@@ -488,8 +487,8 @@ let WS = {
   _getElements: function (selector, root) {
     'use strict';
     return selector === '[sbForeach]'
-      ? root.find('[sbForeach]:not([sbForeach] [sbForeach]):not(#Templates [sbForeach])')
-      : root.find(selector + ':not([sbForeach]):not([sbForeach] ' + selector + '):not(#Templates ' + selector + ')').addBack(selector);
+      ? root.find('[sbForeach]:not([sbForeach] [sbForeach]):not(#sbTemplates [sbForeach])')
+      : root.find(selector + ':not([sbForeach]):not([sbForeach] ' + selector + '):not(#sbTemplates ' + selector + ')').addBack(selector);
   },
 
   _getModifyFunc: function (paths, func, isBool) {
@@ -587,6 +586,10 @@ let WS = {
       $(
         '[sbButton], button[sbCall]:not(.ToggleSwitch), button[sbControl]:not(.ToggleSwitch), button[sbSet]:not(.ToggleSwitch), button[sbToggle]:not(.ToggleSwitch)'
       ).button();
+      $('[sbButtonGroup').controlgroup();
+      $(
+        '.sbShowOnSk, .sbShowOnPt, .sbShowOnPurePt, .sbShowOnLt, .sbShowOnPureLt, .sbShowOnPlt, .sbShowOnSheet, .sbShowOnWhiteboard, .sbShowOnOperator'
+      ).addClass('sbShowBySheetStyle');
       root = $('html');
     }
 
@@ -651,7 +654,7 @@ let WS = {
     $.each(WS._getElements('[sbToggle]', root), function (idx, elem) {
       elem = $(elem);
       let [paths, usedClass, func] = WS._getParameters(elem, 'sbToggle')[0];
-      usedClass = usedClass || 'Active';
+      usedClass = usedClass || 'sbActive';
       WS.Register(paths, {
         preRegistered: true,
         element: elem,

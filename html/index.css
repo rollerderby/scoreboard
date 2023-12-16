@@ -1,0 +1,119 @@
+body {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    font-size: 2vmin;
+  }
+
+  a,
+  a:hover,
+  a:visited,
+  a:active {
+    color: darkblue;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+    color: red;
+    cursor: pointer;
+  }
+
+  table {
+    margin: 0;
+  }
+  td,
+  th {
+    vertical-align: top;
+    width: 25%;
+  }
+  .btn {
+    margin: 5px;
+    border: 1px inset #999;
+  }
+  .btn span {
+    display: inline-block;
+  }
+  .btn h2 span {
+    float: right;
+  }
+  span.pill {
+    display: inline-block;
+    margin: 0 10px;
+    background: red;
+    color: white;
+    border-radius: 10%;
+    font-size: 80%;
+    line-height: 80%;
+    padding: 3px;
+    border-radius: 4px;
+  }
+  .row {
+    width: 100%;
+    clear: both;
+  }
+  .column {
+    width: 25%;
+    float: left;
+  }
+
+  h1,
+  h2 {
+    color: white;
+    display: block;
+    font-size: 2vmin;
+    line-height: 4vmin;
+  }
+  .heading h1 {
+    font-size: 4vmin;
+    line-height: 5vmin;
+    margin: 0;
+    text-align: center;
+  }
+  .btn h2 {
+    margin: 0 0 10px 0;
+    text-align: left;
+    padding: 4px 4px 4px 10px;
+  }
+  h1 img {
+    margin-top: 4px;
+    float: left;
+    height: 80px;
+    opacity: 0.8;
+  }
+
+  ul {
+    -webkit-padding-start: 0;
+    list-style: none;
+    font-size: 80%;
+  }
+  ul li {
+    display: block;
+    padding-left: 1em;
+    margin-left: 0;
+    text-indent: 0;
+  }
+  .qrButton {
+    font-size: 60%;
+  }
+  .footer {
+    font-size: 75%;
+    padding-top: 10px;
+    padding-bottom: 80px;
+    margin-top: 100px;
+    color: #333;
+    clear: both;
+  }
+  .footer a {
+    color: red;
+  }
+  h1,
+  h2 {
+    background-image: linear-gradient(to bottom, #282537 0%, #282537 10%, #999 100%);
+    /*
+  background: #282537;
+  background-image: -webkit-radial-gradient(top, circle cover, #3c3b52 0%, #252233 80%);
+  background-image: -moz-radial-gradient(top, circle cover, #3c3b52 0%, #252233 80%);
+  background-image: -o-radial-gradient(top, circle cover, #3c3b52 0%, #252233 80%);
+  background-image: radial-gradient(top, circle cover, #3c3b52 0%, #252233 80%);
+    */
+  }

@@ -10,10 +10,10 @@ div.LT { font-size: 200%; text-align: center; background-color: #cccccc; color: 
 .LT.Period .Darker { background-color: #e7f3ff; } 
 .LT.Period .Darker .Darker { background-color: #cee7ff; } 
 .LT.Period tbody td.Box { background-color: #b6daff; }
-[context]:not([context="sheet"]) .LT.Period tr.SP td, [context]:not([context="sheet"]) .LT.Period tr.INJ td  { border-bottom-style: dotted; } 
-[context="sheet"] .LT.Period tr.SP td, [context="sheet"] .LT.Period tr.INJ td { border-top-style: dotted; } 
+[sbSheetStyle]:not([sbSheetStyle="sheet"]) .LT.Period tr.SP td, [sbSheetStyle]:not([sbSheetStyle="sheet"]) .LT.Period tr.INJ td  { border-bottom-style: dotted; } 
+[sbSheetStyle="sheet"] .LT.Period tr.SP td, [sbSheetStyle="sheet"] .LT.Period tr.INJ td { border-top-style: dotted; } 
 .LT.Period .JamNumber { width: 30px; } 
-[context]:not([context="sheet"]) .LT.Period .CopyArrow::before { position: absolute; left: 10px; content: "⮬";color: #777; }
+[sbSheetStyle]:not([sbSheetStyle="sheet"]) .LT.Period .CopyArrow::before { position: absolute; left: 10px; content: "⮬";color: #777; }
 .LT.Period .NP { width: 25px; } 
 .LT.Period .Skater { width: 12%; } 
 .LT.Period .Box { width: 8%; } 

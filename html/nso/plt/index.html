@@ -12,10 +12,10 @@
     <div sbInclude="/components/game-advance/"></div>
     <div class="Content">
       <div sbForeach="Team: 1,2: only" sbInclude="/components/plt-input/" class="Input"></div>
-      <div class="ShowSome ShowOnLt Sheet" sbForeach="Team: 1,2: only" sbInclude="/components/lt-sheet/"></div>
+      <div class="sbShowOnLt Sheet" sbForeach="Team: 1,2: only" sbInclude="/components/lt-sheet/"></div>
     </div>
 
-    <div id="Templates">
+    <div id="sbTemplates">
       <div id="OptionsDialog" sbPrefix="$: ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)">
         <table>
           <tr>

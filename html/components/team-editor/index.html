@@ -1,8 +1,8 @@
 <table id="Team">
   <tr class="Name">
     <td colspan="3">
-      <span sbClass="Hide: ^State: === 'Prepared'" sbDisplay="FullName"></span>
-      <select sbControl="PreparedTeam" sbClass="Hide: ^State: !== 'Prepared'">
+      <span sbClass="sbHide: ^State: === 'Prepared'" sbDisplay="FullName"></span>
+      <select sbControl="PreparedTeam" sbClass="sbHide: ^State: !== 'Prepared'">
         <option value="">Custom Team</option>
         <option
           sbForeach="PreparedTeam:: compareName: resort=Name"
@@ -11,8 +11,8 @@
           sbDisplay="FullName"
         ></option>
       </select>
-      <button class="SyncButton" sbToggle="PreparedTeamConnected" sbClass="Hide: PreparedTeam: !">Sync Changes</button>
-      <button class="StoreButton Hide" sbCall="openStoreDialog" sbClass="Hide: PreparedTeam: !==''">Store Team</button>
+      <button class="SyncButton" sbToggle="PreparedTeamConnected" sbClass="sbHide: PreparedTeam: !">Sync Changes</button>
+      <button class="StoreButton sbHide" sbCall="openStoreDialog" sbClass="sbHide: PreparedTeam: !==''">Store Team</button>
     </td>
   </tr>
   <tr class="Control">
@@ -28,7 +28,7 @@
               sbDisplay="Name"
             ></option>
           </select>
-          <input type="file" id="teamLogoUpload" class="Hide" />
+          <input type="file" id="teamLogoUpload" class="sbHide" />
           <button sbCall="triggerUpload">Upload...</button>
         </div>
         <button sbCall="openAlternateNamesDialog">Alternate Names</button>
@@ -47,30 +47,30 @@
   </tr>
   <tr class="Color">
     <td class="Label">
-      <span sbClass="Hide:-: isPrepared">Uniform Color: </span><span sbClass="Hide:-: notPrepared">Uniform Colors: </span>
+      <span sbClass="sbHide:-: isPrepared">Uniform Color: </span><span sbClass="sbHide:-: notPrepared">Uniform Colors: </span>
     </td>
     <td class="Value">
-      <span id="PreparedUc" class="Hide" sbClass="Hide: PreparedTeam: !" sbPrefix="t:[*]">
+      <span id="PreparedUc" class="sbHide" sbClass="sbHide: PreparedTeam: !" sbPrefix="t:[*]">
         <select
           sbForeach="PreparedTeam"
           sbContext="/ScoreBoard"
           sbAttr="team: Id"
-          sbClass="Hide: t.PreparedTeam: isSelectorTeam"
+          sbClass="sbHide: t.PreparedTeam: isSelectorTeam"
           sbControl="t.UniformColor, UniformColor(*): filterOtherUc"
         >
           <option value="">Other</option>
           <option sbForeach="UniformColor::compareValue:noId" sbAttr="value:" sbDisplay=""></option>
         </select>
       </span>
-      <input type="text" class="Name" size="15" sbClass="Hide: UniformColor: isNotOtherUc" sbControl="UniformColor" />
-      <span sbClass="Hide:-: notPrepared">
+      <input type="text" class="Name" size="15" sbClass="sbHide: UniformColor: isNotOtherUc" sbControl="UniformColor" />
+      <span sbClass="sbHide:-: notPrepared">
         <span sbForeach="UniformColor:: compareName:noId" sbAttr="name:" class="RemoveColor">
           <span sbDisplay=""></span>
           <button sbSet=": null">X</button>
         </span>
       </span>
-      <input type="text" id="newUc" class="Name" size="15" sbClass="Hide:-: notPrepared" sbOn="keyup: addNewUc" />
-      <button sbClass="Hide:-: notPrepared" sbCall="addNewUc">Add</button>
+      <input type="text" id="newUc" class="Name" size="15" sbClass="sbHide:-: notPrepared" sbOn="keyup: addNewUc" />
+      <button sbClass="sbHide:-: notPrepared" sbCall="addNewUc">Add</button>
     </td>
   </tr>
   <tr class="Skaters">
@@ -139,7 +139,7 @@
   </tr>
 </table>
 
-<div id="Templates">
+<div id="sbTemplates">
   <div id="StoreTeamDialog">
     <span>Merge into: </span>
     <select>

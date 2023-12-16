@@ -20,9 +20,9 @@ function appendScoreAndLineups(k, v) {
 
 function selectSheets(k, v) {
   'use strict';
-  $('#SheetsTab').find('.Sheet').addClass('Hide');
+  $('#SheetsTab').find('.Sheet').addClass('sbHide');
   $('#SheetsTab')
     .find(v)
-    .removeClass('Hide')
+    .removeClass('sbHide')
     .toggleClass('Only', v.length === 15);
 }

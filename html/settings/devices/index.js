@@ -34,8 +34,8 @@ WS.AfterLoad(function () {
 function toggleSelection(k, v, elem) {
   'use strict';
   elem = $(elem);
-  elem.toggleClass('Active');
-  $('.Devices').toggleClass('Show' + elem.text(), elem.hasClass('Active'));
+  elem.toggleClass('sbActive');
+  $('.Devices').toggleClass('Show' + elem.text(), elem.hasClass('sbActive'));
 }
 
 function compareDeviceName(a, b) {

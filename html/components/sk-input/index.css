@@ -1,0 +1,15 @@
+body:not([showTeam="2"]) [Team] ~ [Team]>.SkInput>.sbGroup  { flex-direction: row-reverse; }
+.SkInput { user-select: none; }
+.SkInput .ui-button { font-size: 90%; line-height: 1em; padding: .4em; } 
+.SkInput .BigButton.ui-button { font-size: 110%; line-height: 1.4em; }
+.SkInput img.Logo { height: 50px; max-width: 200px; }
+.SkInput .sbGroup.Name { height: 50px; font-weight: bold; }
+.SkInput .sbGroup.Name>div { flex:content; }
+.SkInput .sbGroup.Name>div.Name { flex: 3 0 content; }
+.SkInput .TeamName { font-size: 150%; }
+.SkInput .Stack { display:flex; flex-direction: column; }
+.SkInput .Score { font-size: 300%; font-weight: bold; }
+.SkInput .SubScore { font-size: 150%; font-weight: bold; }
+.SkInput .TimeoutCount { font-size: 200%; font-weight: bold; }
+.SkInput .HasPlayed:not(.Active) { box-shadow: inset 0px 0px 3px 2px #70ff70; }
+.SkInput .Box.Sitting { background: #ff4040; }

@@ -22,7 +22,7 @@ table.Type tr.Type > th { background: #ccc; }
 table.Type tr.Controls > th { background: #ddd; } 
 table.Type tr.Item > td { background: #eee; } 
 table.Type tr.Type > th.Type { border-radius: 12px 12px 0px 0px; } 
-table.Type.Hide tr.Type > th { border-radius: 12px; } 
+table.Type.sbHide tr.Type > th { border-radius: 12px; } 
 table.Type tr.Item:last-of-type > td:first-of-type { border-bottom-left-radius: 12px; } 
 table.Type tr.Item:last-of-type > td:last-of-type { border-bottom-right-radius: 12px; } 
 
@@ -30,11 +30,11 @@ table.Type tr.Item:last-of-type > td:last-of-type { border-bottom-right-radius: 
 #images table.Type tr.Item td.Preview { background: #000; } 
 
 /* Show/Hide Type groups */
-table.Type:not(.Hide) tr.Type > th > button.ShowTable { display: none; } 
-table.Type.Hide tr.Type > th > button.HideTable { display: none; } 
-table.Type.Hide tr.Type > th > button.Available { display: none; } 
-table.Type.Hide tr:not(.Type) > th { display: none; } 
-table.Type.Hide tr:not(.Type) > td { display: none; } 
+table.Type:not(.sbHide) tr.Type > th > button.ShowTable { display: none; } 
+table.Type.sbHide tr.Type > th > button.HideTable { display: none; } 
+table.Type.sbHide tr.Type > th > button.Available { display: none; } 
+table.Type.sbHide tr:not(.Type) > th { display: none; } 
+table.Type.sbHide tr:not(.Type) > td { display: none; } 
 
 /* Preview elements */
 table.Type tr.Item > td.Preview > * { max-width: 400px; max-height: 100px; } 
