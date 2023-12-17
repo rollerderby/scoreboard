@@ -160,7 +160,7 @@
               Head:
               <select class="Head" sbControl="HNSO">
                 <option value="">Not Set</option>
-                <option sbForeach="Nso:: compareName: resort=Name" sbAttr="name: Name | value: Id" sbDisplay="Name"></option>
+                <option sbForeach="Nso:: name: resort=Name" sbAttr="name: Name | value: Id" sbDisplay="Name"></option>
               </select>
             </th>
           </tr>
@@ -212,7 +212,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr sbForeach="Nso:: compareRole: resort=Role" sbAttr="role: Role | name: Name" class="Official">
+          <tr sbForeach="Nso:: role: resort=Role" sbAttr="role: Role | name: Name" class="Official">
             <td class="Role">
               <span class="Role">
                 <select class="Role" sbControl="Role: filterOtherRole: otherToEmpty">

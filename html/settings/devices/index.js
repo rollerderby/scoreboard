@@ -38,16 +38,6 @@ function toggleSelection(k, v, elem) {
   $('.Devices').toggleClass('Show' + elem.text(), elem.hasClass('sbActive'));
 }
 
-function compareDeviceName(a, b) {
-  'use strict';
-  return _compareAttrThenSubId('name', a, b);
-}
-
-function compareCreated(a, b) {
-  'use strict';
-  return numCompareAttrThenSubId('created', a, b);
-}
-
 function plus1(k, v) {
   'use strict';
   return v + 1;

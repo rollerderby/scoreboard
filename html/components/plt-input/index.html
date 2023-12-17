@@ -38,7 +38,7 @@
   <tbody>
     <tr
       class="Skater Penalty"
-      sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"
+      sbForeach="Skater:: rosterNumber: resort=RosterNumber"
       sbAttr="role: Role | rosterNumber: RosterNumber | warn: PenaltyCount, Penalty(0).Code: toWarnLevel"
       sbClass="Captain: Flags: ==='C'"
     >
@@ -76,7 +76,7 @@
     </tr>
     <tr
       class="Skater Jam"
-      sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"
+      sbForeach="Skater:: rosterNumber: resort=RosterNumber"
       sbAttr="role: Role | rosterNumber: RosterNumber | warn: PenaltyCount, Penalty(0).Code: toWarnLevel"
     >
       <td
@@ -146,7 +146,7 @@
   </div>
 
   <table id="AnnotationEditor" sbContext="^Period(*).Jam(*).TeamJam(*).Fielding(*)">
-    <tr class="Box" sbClass="sbHide: CurrentBoxTrip: isEmpty">
+    <tr class="Box" sbClass="sbHide: CurrentBoxTrip: empty">
       <td><button sbClass="sbHide: PenaltyBox" sbSet="UnendBoxTrip" sbCall="closeDialog">Unend Box Trip</button></td>
       <td>
         <button sbClass="sbHide: PenaltyBox: !" sbSet="Annotation: appendText | Penalty: false" sbCall="closeDialog">Self Report</button>
@@ -157,12 +157,12 @@
         </button>
       </td>
     </tr>
-    <tr class="Box" sbClass="sbHide: CurrentBoxTrip: isEmpty">
+    <tr class="Box" sbClass="sbHide: CurrentBoxTrip: empty">
       <td colspan="3" sbPrefix="f:[*]">
         <span>Substitute: </span>
         <span id="skaterList" sbContext="^^^^Team([TeamJam])" sbButtonGroup>
           <button
-            sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"
+            sbForeach="Skater:: rosterNumber: resort=RosterNumber"
             sbAttr="rosterNumber: RosterNumber"
             sbDisplay="RosterNumber"
             sbClass="sbActive: f.Skater: === elem.attr('Skater') | sbHide: Role: === 'NotInGame'"

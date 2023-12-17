@@ -95,8 +95,8 @@
           <button sbSet="Skater: null">?</button>
           <button sbClass="sbHide:-: isUpcoming" sbSet="Skater: null" sbToggle="NotFielded">n/a</button>
           <button
-            sbContext="/ScoreBoard.Game([Game]).Team([TeamJam])"
-            sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"
+            sbContext="/ScoreBoard.Game([game]).Team([TeamJam])"
+            sbForeach="Skater:: rosterNumber: resort=RosterNumber"
             sbAttr="rosterNumber: RosterNumber"
             sbDisplay="RosterNumber"
             sbClass="sbActive: f.Skater == elem.attr('Skater') | sbHide: Role: === 'NotInGame'"
@@ -122,7 +122,7 @@
       <td>End</td>
       <td />
     </tr>
-    <tr sbForeach="BoxTrip" sbContext=":/ScoreBoard.Game([Game]).Team([TeamJam]).BoxTrip[BoxTrip]">
+    <tr sbForeach="BoxTrip" sbContext=":/ScoreBoard.Game([game]).Team([TeamJam]).BoxTrip([BoxTrip])">
       <td>
         <button class="tripModify" sbSet="StartEarlier">-</button>
         <span sbDisplay="StartJamNumber, StartBetweenJams, StartAfterSP: toBtStartText"></span>

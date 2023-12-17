@@ -36,7 +36,7 @@
         </tr>
       </thead>
       <tbody
-        sbForeach="Device:: compareDeviceName: resort=Name"
+        sbForeach="Device:: name: resort=Name"
         sbAttr="name: Name"
         sbClass="HasComment: Comment: !== '' | HasWritten: Wrote: !== 0 | HasClients: NumClients: > 0 | Own: Id: isOwnId"
       >
@@ -57,7 +57,7 @@
           <td class="LastWrite" sbAttr="age: Wrote | title: Wrote: toDate"></td>
           <td class="Created" sbAttr="age: Created | title: Created: toDate"></td>
         </tr>
-        <tr sbForeach="Client:: compareCreated" sbAttr="created: Created">
+        <tr sbForeach="Client:: created" sbAttr="created: Created">
           <td class="Source" sbDisplay="Source"></td>
           <td class="Platform" sbDisplay="Platform"></td>
           <td class="RemoteAddr" sbDisplay="RemoteAddr"></td>

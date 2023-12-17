@@ -1,3 +1,4 @@
+'use strict';
 if (typeof $ === 'undefined') {
   alert('You MUST include jQuery before this file!');
   throw 'You MUST include jQuery before this file!';
@@ -6,7 +7,6 @@ if (typeof $ === 'undefined') {
 var _alreadyIncludedScripts = {};
 
 function _includeUrl(url, callback) {
-  'use strict';
   var filename = url.replace(/^.*[\/]/g, '');
   if (/\.[cC][sS][sS](\?.*)?$/.test(url) && !$('head link[href="' + url + '"],head link[href="' + filename + '"]').length) {
     $('<link>').attr({ href: url, type: 'text/css', rel: 'stylesheet' }).appendTo('head');
@@ -21,7 +21,6 @@ function _includeUrl(url, callback) {
 }
 
 function _include(dir, files, callback) {
-  'use strict';
   if (!files) {
     files = dir;
     dir = undefined;
@@ -35,7 +34,6 @@ function _include(dir, files, callback) {
 }
 
 function _includeJsAndCss(path, callback) {
-  'use strict';
   if (/\.html$/.test(path)) {
     _include(path.replace(/\.html$/, '.css'));
     _include(path.replace(/\.html$/, '.js'), null, callback);
@@ -57,13 +55,11 @@ _include('/external/jquery-plugins/fileupload/jquery.fileupload.js');
 _include('/javascript', ['timeconversions.js', 'windowfunctions.js', 'autofit.js', 'conversions.js']);
 _include('/styles', ['fonts.css', 'common.css']);
 _include('/json', ['WS.js'], function () {
-  'use strict';
   WS.Connect();
   WS.Process(window.location.pathname);
 });
 
 function isTrue(value) {
-  'use strict';
   if (typeof value === 'boolean') {
     return value;
   } else {
@@ -72,7 +68,6 @@ function isTrue(value) {
 }
 
 function newUUID() {
-  'use strict';
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     var r = (Math.random() * 16) | 0,
       v = c === 'x' ? r : (r & 0x3) | 0x8;

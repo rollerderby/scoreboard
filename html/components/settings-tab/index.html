@@ -114,7 +114,7 @@
             <label>Image View: </label>
             <select sbControl="$_Image" ApplyPreview="Image">
               <option value="">No Image</option>
-              <option sbForeach="File:: compareName: resort=Name" sbAttr="name: Name | value: Name: toMediaPath" sbDisplay="Name"></option>
+              <option sbForeach="File:: name: resort=Name" sbAttr="name: Name | value: Name: toMediaPath" sbDisplay="Name"></option>
             </select>
           </td>
           <td>
@@ -143,7 +143,7 @@
             <label>Video View: </label>
             <select sbControl="$_Video" ApplyPreview="Video">
               <option value="">No Video</option>
-              <option sbForeach="File:: compareName: resort=Name" sbAttr="name: Name | value: Name: toMediaPath" sbDisplay="Name"></option>
+              <option sbForeach="File:: name: resort=Name" sbAttr="name: Name | value: Name: toMediaPath" sbDisplay="Name"></option>
             </select>
           </td>
           <td>
@@ -163,7 +163,7 @@
             <label>Custom Page View: </label>
             <select sbControl="$_CustomHtml" ApplyPreview="CustomHtml">
               <option value="">No Page</option>
-              <option sbForeach="File:: compareName: resort=Name" sbAttr="name: Name | value: Name: toMediaPath" sbDisplay="Name"></option>
+              <option sbForeach="File:: name: resort=Name" sbAttr="name: Name | value: Name: toMediaPath" sbDisplay="Name"></option>
             </select>
           </td>
         </tr>

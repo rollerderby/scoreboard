@@ -20,26 +20,6 @@ function _numCompareAttrThenSubId(attr, a, b) {
   }
 }
 
-function compareRosterNumber(a, b) {
-  'use strict';
-  return _compareAttrThenSubId('rosterNumber', a, b);
-}
-
-function compareName(a, b) {
-  'use strict';
-  return _compareAttrThenSubId('name', a, b);
-}
-
-function compareValue(a, b) {
-  'use strict';
-  return _compareAttrThenSubId('value', a, b);
-}
-
-function compareRole(a, b) {
-  'use strict';
-  return _compareAttrThenSubId('role', a, b);
-}
-
 function comparePeriod(a, b) {
   'use strict';
   const comp = _numCompareAttrThenSubId('Period', a, b);

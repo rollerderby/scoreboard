@@ -5,7 +5,7 @@
       <select sbControl="PreparedTeam" sbClass="sbHide: ^State: !== 'Prepared'">
         <option value="">Custom Team</option>
         <option
-          sbForeach="PreparedTeam:: compareName: resort=Name"
+          sbForeach="PreparedTeam:: name: resort=Name"
           sbContext="/ScoreBoard"
           sbAttr="name: FullName | value: Id"
           sbDisplay="FullName"
@@ -22,7 +22,7 @@
           <select sbControl="Logo">
             <option value="">No Logo</option>
             <option
-              sbForeach="File::compareName: resort=Name"
+              sbForeach="File::name: resort=Name"
               sbContext="/ScoreBoard.Media.Format(images).Type(teamlogo)"
               sbAttr="name: Name | value:-:toMediaPath"
               sbDisplay="Name"
@@ -59,12 +59,12 @@
           sbControl="t.UniformColor, UniformColor(*): filterOtherUc"
         >
           <option value="">Other</option>
-          <option sbForeach="UniformColor::compareValue:noId" sbAttr="value:" sbDisplay=""></option>
+          <option sbForeach="UniformColor::value:noId" sbAttr="value:" sbDisplay=""></option>
         </select>
       </span>
       <input type="text" class="Name" size="15" sbClass="sbHide: UniformColor: isNotOtherUc" sbControl="UniformColor" />
       <span sbClass="sbHide:-: notPrepared">
-        <span sbForeach="UniformColor:: compareName:noId" sbAttr="name:" class="RemoveColor">
+        <span sbForeach="UniformColor:: name:noId" sbAttr="name:" class="RemoveColor">
           <span sbDisplay=""></span>
           <button sbSet=": null">X</button>
         </span>
@@ -117,7 +117,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr sbForeach="Skater:: compareRosterNumber: resort=RosterNumber" class="Skater" sbAttr="rosterNumber: RosterNumber">
+          <tr sbForeach="Skater:: rosterNumber: resort=RosterNumber" class="Skater" sbAttr="rosterNumber: RosterNumber">
             <td class="RosterNumber"><input type="text" size="5" sbControl="RosterNumber" /></td>
             <td class="Name"><input type="text" size="20" sbControl="Name" /></td>
             <td class="Pronouns"><input type="text" size="10" sbControl="Pronouns" /></td>
@@ -145,7 +145,7 @@
     <select>
       <option value="">None</option>
       <option
-        sbForeach="PreparedTeam:: compareName: resort=Name"
+        sbForeach="PreparedTeam:: name: resort=Name"
         sbContext="/ScoreBoard"
         sbAttr="name: FullName | value: Id"
         sbDisplay="FullName"

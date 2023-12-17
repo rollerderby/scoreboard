@@ -2,11 +2,6 @@ let activeRsPrefix = _windowFunctions.hasParam('ruleset')
   ? 'ScoreBoard.Rulesets.Ruleset(' + _windowFunctions.getParam('ruleset') + ')'
   : 'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ')';
 
-function compareIndex(a, b) {
-  'use strict';
-  return _compareAttrThenSubId('index', a, b);
-}
-
 function compareChildIndex(a, b) {
   'use strict';
   return _compareAttrThenSubId('index', $(a).children('[index]'), $(b).children('[index]'));

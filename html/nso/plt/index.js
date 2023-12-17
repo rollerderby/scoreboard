@@ -1,4 +1,4 @@
-(function () {
+WS.AfterLoad(function () {
   'use strict';
   _windowFunctions.configureZoom();
   $('body')
@@ -36,11 +36,11 @@
   WS.Register(['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)'], function (k, v) {
     $('#UseLTDialog').dialog(!isTrue(v) && $('body[sbSheetStyle*="lt"]').length ? 'open' : 'close');
   });
-})();
+});
 
 function toTitle() {
-  const pos = $('body').attr('sbSheetStyle').toUpperCase();
-  const team = $('body').attr('showTeam');
+  const pos = _windowFunctions.getParam('pos').toUpperCase();
+  const team = _windowFunctions.getParam('team');
   const prefix = 'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Team(' + team + ').';
   return (
     pos +

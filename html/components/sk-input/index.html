@@ -8,7 +8,7 @@
       <select class="sbHide" sbControl="Logo" sbOn="change: toggleEdit">
         <option value="">No Logo</option>
         <option
-          sbForeach="File::compareName: resort=Name"
+          sbForeach="File::name: resort=Name"
           sbContext="/ScoreBoard.Media.Format(images).Type(teamlogo)"
           sbAttr="name: Name | value:-:toMediaPath"
           sbDisplay="Name"
@@ -100,7 +100,7 @@
           ?
         </button>
         <button
-          sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"
+          sbForeach="Skater:: rosterNumber: resort=RosterNumber"
           sbAttr="rosterNumber: RosterNumber | id: -: toJammerId"
           sbDisplay="RosterNumber"
           sbClass="sbActive: p.Skater: === elem.attr('Skater') | HasPlayed: Color: === 'Jammer' | sbHide: Role: === 'NotInGame'"
@@ -125,7 +125,7 @@
           ?
         </button>
         <button
-          sbForeach="Skater:: compareRosterNumber: resort=RosterNumber"
+          sbForeach="Skater:: rosterNumber: resort=RosterNumber"
           sbAttr="rosterNumber: RosterNumber | id: -: toPivotId"
           sbDisplay="RosterNumber"
           sbClass="sbActive: p.Skater: === elem.attr('Skater') | HasPlayed: Color: === 'Pivot' | sbHide: Role: === 'NotInGame'"

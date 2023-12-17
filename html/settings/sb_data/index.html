@@ -45,7 +45,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr sbForeach="Game:: compareName: resort=Name" sbAttr="name: Name" class="Content">
+          <tr sbForeach="Game:: name: resort=Name" sbAttr="name: Name" class="Content">
             <td class="Name">
               <button class="Select Left" sbCall="select">Select</button> <button class="Delete Left" sbCall="deleteElem">Delete</button>
               <a download class="Download Left" sbAttr="href: Name: gameDlLink" sbButton>Download</a>
@@ -66,7 +66,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr sbForeach="PreparedTeam:: compareName: resort=FullName" sbAttr="name: FullName" class="Content">
+          <tr sbForeach="PreparedTeam:: name: resort=FullName" sbAttr="name: FullName" class="Content">
             <td class="Name">
               <button class="Select Left" sbCall="select">Select</button> <button class="Delete Left" sbCall="deleteElem">Delete</button>
               <a download class="Download Left" sbAttr="href: FullName: teamDlLink" sbButton>Download</a>
@@ -108,7 +108,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr sbForeach="Setting:: compareName: part=3, filter=ScoreBoard.Operator, noId" sbAttr="name:-: toOperatorName" class="Content">
+          <tr sbForeach="Setting:: name: part=3, filter=ScoreBoard.Operator, noId" sbAttr="name:-: toOperatorName" class="Content">
             <td class="Name">
               <button class="Select Left" sbCall="select">Select</button> <button class="Delete Left" sbCall="deleteElem">Delete</button>
               <a download class="Download Left" sbAttr="href:-: operatorDlLink" sbButton>Download</a>
