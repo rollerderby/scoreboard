@@ -1,28 +1,14 @@
-#RosterTab { width: 100%; } 
-#RosterTab>tbody>tr>td { text-align: center; vertical-align: top; background: #eee; width: 50%; } 
-#RosterTab>tbody>tr:first-of-type>td { border-radius: 12px 12px 0px 0px; } 
-#RosterTab>tbody>tr:last-of-type>td { border-radius: 0px 0px 12px 12px; } 
-#RosterTab>tbody>tr:only-of-type>td { border-radius: 12px; } 
 
 #RosterTab table.Team { width: 100%; border-spacing: 0px; } 
-#RosterTab table.Team tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; font-size: 200%; font-weight: bold; } 
-#RosterTab table.Team tr.League>td, #RosterTab table.Team tr.LTeam>td, #RosterTab table.Team tr.Color>td { text-align: left; }
-#RosterTab table.Team tr.League>td:first-of-type, #RosterTab table.Team tr.LTeam>td:first-of-type,
-#RosterTab table.Team tr.Color>td:first-of-type { text-align: right; }
-#RosterTab .Logo { max-height: 4em; }
+#RosterTab table.Names td { text-align: left; }
+#RosterTab table.Names td:first-of-type { text-align: right; }
+#RosterTab .Logo { max-width: 50%; max-height: 4em; }
 
-#RosterTab table.Skaters { width: 100%; border-spacing: 0px; } 
-#RosterTab table.Skaters.Empty tr:last-of-type>th:first-of-type { border-radius: 0px 0px 0px 12px; } 
-#RosterTab table.Skaters.Empty tr:last-of-type>th:last-of-type { border-radius: 0px 0px 12px 0px; } 
-#RosterTab table.Skaters tr:last-of-type>td:first-of-type { border-radius: 0px 0px 0px 12px; } 
-#RosterTab table.Skaters tr:last-of-type>td:last-of-type { border-radius: 0px 0px 12px 0px; } 
-#RosterTab table.Skaters tbody tr:nth-of-type(2n)>td { background: #ddd; } 
 #RosterTab table.Skaters col.Name { width: 50%; } 
 #RosterTab table.Skaters col.RosterNumber { width: 15%; } 
 #RosterTab table.Skaters col.Pronouns { width: 15%; } 
 
-#RosterTab table.Skaters th.Title { font-size: 150%; } 
-#RosterTab table.Skaters th#skaterCount { font-size: 100%; font-weight: normal; } 
+#RosterTab table.Skaters #skaterCount { font-weight: normal; font-size: 100%; }
 
 #RosterTab table.Skaters tr[flag='ALT'] { display:none; }
 #RosterTab table.Skaters tr[role='Pivot']>td { background: #00ee00 !important; }

@@ -1,5 +1,6 @@
-function sktr_sort(a, b) {
-  'use strict';
+'use strict';
+
+function _ovaSktrSort(a, b) {
   return $(b).attr('data-team') === $(a).attr('data-team')
     ? $(b).text() < $(a).text()
       ? 1
@@ -9,8 +10,7 @@ function sktr_sort(a, b) {
     : -1;
 }
 jQuery.fn.sortOptions = function sortOptions() {
-  'use strict';
-  $('> option', this[0]).sort(sktr_sort).appendTo(this[0]);
+  $('> option', this[0]).sort(_ovaSktrSort).appendTo(this[0]);
 };
 
 let Skaters = new DataSet();
@@ -34,10 +34,7 @@ Skaters.AddTrigger('DELETE', '*', {}, function (n, o, k) {
 let nextPanel = '';
 let currrentPanel = '';
 
-$(initialize);
-
-function initialize() {
-  'use strict';
+(function () {
   WS.Register(
     [
       'ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)',
@@ -85,13 +82,9 @@ function initialize() {
   $('#PanelSelect').val('');
 
   WS.Register('ScoreBoard.CurrentGame.Team(*).Name');
+})();
 
-  WS.Connect();
-  WS.AutoRegister();
-}
-
-$(function () {
-  'use strict';
+WS.AfterLoad(function () {
   $(document).on('keyup', function (e) {
     var tag = e.target.tagName.toLowerCase();
     var c = String.fromCharCode(e.keyCode || e.charCode).toUpperCase();
@@ -115,7 +108,7 @@ $(function () {
   });
 });
 
-function selectPanel(k, v) {
+function ovaSelectPanel(k, v) {
   'use strict';
   if (v !== nextPanel) {
     nextPanel = v;
@@ -124,8 +117,7 @@ function selectPanel(k, v) {
   }
 }
 
-function selectSkater(k, v) {
-  'use strict';
+function ovaSelectSkater(k, v) {
   const option = $('option[value=' + v + ']', $('select#Skaters'));
   const team = option.attr('data-team');
   const name = option.attr('data-name');
@@ -136,16 +128,14 @@ function selectSkater(k, v) {
   WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)', 'ColourTeam' + team);
 }
 
-function selectKeeper(k, v) {
-  'use strict';
+function ovaSelectKeeper(k, v) {
   const option = $('option[value="' + v + '"]', $('select#Keepers'));
   WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)', option.attr('data-line1'));
   WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)', option.attr('data-line2'));
   WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)', option.attr('data-style'));
 }
 
-function addKeeper() {
-  'use strict';
+function ovaAddKeeper() {
   const line1 = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)'];
   const line2 = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)'];
   const style = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)'];
@@ -159,18 +149,18 @@ function addKeeper() {
     .appendTo('#Keepers');
 }
 
-function invert(k) {
+function ovaInvert(k) {
   return WS.state[k] === 'On' ? 'Off' : 'On';
 }
 
-function getNextPanel() {
+function ovaGetNextPanel() {
   return nextPanel === currrentPanel ? '' : nextPanel;
 }
 
-function defaultFgIfNull(k, v) {
+function ovaDefaultFgIfNull(k, v) {
   return v || '#FFFFFF';
 }
 
-function defaultBgIfNull(k, v) {
+function ovaDefaultBgIfNull(k, v) {
   return v || '#333333';
 }

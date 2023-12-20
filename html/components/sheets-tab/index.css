@@ -1,3 +1,3 @@
-#SheetsTab .SheetSelector { width: 100%; background-color: #ccc; text-align: center; padding: 2px; } 
-#SheetsTab .Sheet { float:left; width: 50%; } 
-#SheetsTab .Sheet.Only { width: 100%; } 
+#SheetsTab .SheetSelector .Selectors { display: grid; grid: auto auto / auto auto auto auto; gap: 2px; }
+#SheetsTab .SheetSelector .TeamWrapper { display: contents; }
+#SheetsTab .SheetSelector .Name { place-self: center right; }

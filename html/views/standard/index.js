@@ -1,13 +1,8 @@
-(function () {
-  'use strict';
-  const view = _windowFunctions.checkParam('preview', 'true') ? 'Preview' : 'View';
-  $('body').attr('sbPrefix', '&: ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_ : )');
+'use strict';
 
-  // Set Styles
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_SwapTeams)', function (k, v) {
-    $('[Team=1]').toggleClass('Left', !isTrue(v)).toggleClass('Right', isTrue(v));
-    $('[Team=2]').toggleClass('Left', isTrue(v)).toggleClass('Right', !isTrue(v));
-  });
+(function () {
+  const view = _windowFunctions.checkParam('preview', 'true') ? 'Preview' : 'View';
+  $('body').attr('sbPrefix', '&: ScoreBoard.Settings.Setting(ScoreBoard.' + view + ' : )');
 
   WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_CurrentView)', function (k, v) {
     $('div#video>video').each(function () {
@@ -24,28 +19,10 @@
 
   WS.Register(
     ['ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_BoxStyle)', 'ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_SidePadding)'],
-    function (k, v) {
-      const boxStyle = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_BoxStyle)'];
-      const sidePadding = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_SidePadding)'];
-
-      // change box_flat_bright to two separate classes in order to reuse much of the css
-      if (boxStyle === 'box_flat_bright') {
-        boxStyle = 'box_flat bright';
-      }
-
-      $('body').removeClass('box_flat bright');
-      if (boxStyle) {
-        $('body').addClass(boxStyle);
-      }
-
-      let left = 0;
-      let right = 0;
-      if (sidePadding !== '' && sidePadding != null) {
-        left = sidePadding;
-        right = left;
-      }
-      $('div#scoreboard').css({ left: left + '%', width: 100 - left - right + '%' });
-      $(window).trigger('resize');
+    {
+      triggerBatchFunc: function () {
+        $(window).trigger('resize');
+      },
     }
   );
 
@@ -56,11 +33,11 @@
       'ScoreBoard.CurrentGame.OfficialReview',
       'ScoreBoard.CurrentGame.Team(*).Timeouts',
     ],
-    setActiveTimeout
+    sbSetActiveTimeout
   );
 
   // Show Clocks
-  WS.Register(['ScoreBoard.CurrentGame.Clock(*).Running', 'ScoreBoard.CurrentGame.InJam'], clockSelect);
+  WS.Register(['ScoreBoard.CurrentGame.Clock(*).Running', 'ScoreBoard.CurrentGame.InJam'], sbClockSelect);
 })();
 
 WS.AfterLoad(function () {
@@ -96,8 +73,31 @@ WS.AfterLoad(function () {
   nextImgFunction();
 });
 
-function toJammerName(k, v) {
-  'use strict';
+function dspIsFlat(k, v) {
+  return v && v.includes('box_flat');
+}
+
+function dspIsBright(k, v) {
+  return v && v.includes('bright');
+}
+
+function dspToLeftMargin(k, v) {
+  return v ? v + '%' : '0%';
+}
+
+function dspToWidth(k, v) {
+  return v ? 100 - 2 * v + '%' : '100%';
+}
+
+function dspIsLeft(k, v, elem) {
+  return (elem.attr('Team') === '1') !== isTrue(v);
+}
+
+function dspIsRight(k, v, elem) {
+  return (elem.attr('Team') !== '1') !== isTrue(v);
+}
+
+function dspToJammerName(k, v) {
   const id = k.Team;
   const prefix = 'ScoreBoard.CurrentGame.Team(' + id + ').';
   let jammerName = WS.state[prefix + 'Position(Jammer).Name'];

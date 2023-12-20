@@ -8,9 +8,9 @@
     <style type="text/css" title="jsStyle"></style>
   </head>
   <body
-    class="preload"
+    class="preload sbNoConnectionStatus"
     sbPrefix="$: ScoreBoard.Settings.Setting(Overlay.Interactive : )"
-    sbCss="background-color: $.BackgroundColor: toBackground | font-size: $.Scaling: toPercent"
+    sbCss="background-color: $.BackgroundColor: ovlToBackground | font-size: $.Scaling: v + '%'"
   >
     <div id="logo"></div>
 
@@ -22,7 +22,7 @@
         >
           <div sbForeach="Team: 1,2: only" sbClass="Lead: DisplayLead">
             <div class="Indicator Box" sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)">
-              <div class="Clock ShowInJam" sbDisplay="StarPass, Lead, Lost: toIndicator"></div>
+              <div class="Clock ShowInJam" sbDisplay="StarPass, Lead, Lost: ovlToIndicator"></div>
             </div>
             <div class="Team Row barBackground">
               <div class="Name VerticalCenter Box" sbDisplay="AlternateName(overlay),Name"></div>
@@ -59,34 +59,34 @@
           >
             <div
               class="Box TextLeft Name"
-              sbDisplay="Clock(Period).Name,Clock(Period).Number,Rule(Period.Number): toClockInitialNumber"
+              sbDisplay="Clock(Period).Name,Clock(Period).Number,Rule(Period.Number): sbToClockInitialNumber"
             ></div>
             <div
               class="Box TextRight Clock ShowInJam ShowInIntermission ShowInLineup ShowInTimeout Name"
               sbContext="Clock(Jam)"
-              sbDisplay="Name,Number: toClockInitialNumber"
+              sbDisplay="Name,Number: sbToClockInitialNumber"
             ></div>
           </div>
 
           <div
             class="ClockBarMiddle Wrapper SlideDown ShowInIntermission ShowInLineup ShowInTimeout ShowInNoClock Box BigName ClockDescription"
             sbPrefix="#: ScoreBoard.Settings.Setting(ScoreBoard.Intermission : )"
-            sbDisplay="Clock.(Intermission).Number, Clock(*).Running, TimeoutOwner, OfficialReviews, #.PreGame, #.Intermission, #.Unofficial, #.Official, #.OfficialWithClock, OfficialScore, ClockDuringFinalScore, Rule(Period.Number): toClockType"
+            sbDisplay="Clock.(Intermission).Number, Clock(*).Running, TimeoutOwner, OfficialReviews, #.*, OfficialScore, ClockDuringFinalScore, Rule(Period.Number): ovlToClockType"
           ></div>
           <div class="ClockBarBottom Wrapper Row BottomRow barBackgroundBottom">
             <div
               class="Box TextLeft Time Clock Show ShowInJam ShowInLineup ShowInTimeout"
               sbContext="Clock(Period)"
-              sbDisplay="Time, Direction: toTime"
+              sbDisplay="Time, Direction: sbToTime"
             ></div>
             <div
               class="Box BoxLarge TextCenter Time Intermission Clock ShowInIntermission"
               sbContext="Clock(Intermission)"
-              sbDisplay="Time, Direction: toTime"
+              sbDisplay="Time, Direction: sbToTime"
             ></div>
-            <div class="Box TextRight Time Clock Show ShowInJam" sbContext="Clock(Jam)" sbDisplay="Time, Direction: toTime"></div>
-            <div class="Box TextRight Time Clock ShowInLineup" sbContext="Clock(Lineup)" sbDisplay="Time, Direction: toTime"></div>
-            <div class="Box TextRight Time Clock ShowInTimeout" sbContext="Clock(Timeout)" sbDisplay="Time, Direction: toTime"></div>
+            <div class="Box TextRight Time Clock Show ShowInJam" sbContext="Clock(Jam)" sbDisplay="Time, Direction: sbToTime"></div>
+            <div class="Box TextRight Time Clock ShowInLineup" sbContext="Clock(Lineup)" sbDisplay="Time, Direction: sbToTime"></div>
+            <div class="Box TextRight Time Clock ShowInTimeout" sbContext="Clock(Timeout)" sbDisplay="Time, Direction: sbToTime"></div>
           </div>
         </div>
       </div>
@@ -97,12 +97,12 @@
             <div
               class="Box BigName ShowInIntermission Clock"
               sbPrefix="#: ScoreBoard.Settings.Setting(ScoreBoard.Intermission : )"
-              sbDisplay="#.PreGame, #.Intermission, #.Unofficial, #.Official, #.OfficialWithClock, OfficialScore, ClockDuringFinalScore, Clock(Intermission).Number, Rule(Period.Number): intermissionDisplay"
+              sbDisplay="#.*, OfficialScore, ClockDuringFinalScore, Clock(Intermission).Number, Rule(Period.Number): sbToIntermissionDisplay"
             ></div>
             <div
               class="Box BoxLarge TextCenter Time Clock ShowInIntermission"
               sbContext="Clock(Intermission)"
-              sbDisplay="Time, Direction: toTime"
+              sbDisplay="Time, Direction: sbToTime"
             ></div>
           </div>
         </div>
@@ -122,7 +122,7 @@
                   class="ColumnWidth GraphBlock"
                   sbForeach="Jam"
                   sbClass="Lead: TeamJam(1).Lead | Lost: TeamJam(1).Lost"
-                  sbCss="height: TeamJam(1).JamScore: toPpjColumnHeight | width: ScoreBoard.CurrentGame.Clock(Jam).Number: toPpjColumnWidth | margin-top: TeamJam(1).JamScore: toPpjMargin | background: t(1).Color(overlay.bg)"
+                  sbCss="height: TeamJam(1).JamScore: v * 4 + 'px' | width: ScoreBoard.CurrentGame.Clock(Jam).Number: ovlToPpjColumnWidth | margin-top: TeamJam(1).JamScore: ovlToPpjMargin | background: t(1).Color(overlay.bg)"
                 >
                   <div class="JammerStar ColumnWidth"></div>
                   <div class="Points ColumnWidth" sbDisplay="TeamJam(1).JamScore"></div>
@@ -154,7 +154,7 @@
         <div sbForeach="Team: 1,2: only">
           <div
             class="RosterTeam PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel"
-            sbClass="NoLogo: Logo: empty | Show1: $.Panel: ==='RosterTeam1' | Show2: $.Panel: ==='RosterTeam2'"
+            sbClass="NoLogo: Logo: sbIsEmpty | Show1: $.Panel: ==='RosterTeam1' | Show2: $.Panel: ==='RosterTeam2'"
           >
             <img class="TeamLogo" sbAttr="src: Logo" />
             <h1 sbDisplay="AlternateName(overlay),Name" sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)"></h1>
@@ -173,10 +173,10 @@
               >
                 <div
                   class="Number"
-                  sbDisplay="RosterNumber: toNbspIfEmpty"
+                  sbDisplay="RosterNumber: sbToNbspIfEmpty"
                   sbCss="color: ^Color(overlay.fg) | background: ^Color(overlay.bg)"
                 ></div>
-                <div class="Name" sbDisplay="Name: toNbspIfEmpty">&nbsp;</div>
+                <div class="Name" sbDisplay="Name: sbToNbspIfEmpty">&nbsp;</div>
                 <div class="Flags" sbAttr="data-flag: Flag">&nbsp;</div>
               </div>
             </div>
@@ -184,7 +184,7 @@
 
           <div
             class="PenaltyTeam PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel"
-            sbClass="NoLogo: Logo: empty | Show1: $.Panel: ==='PenaltyTeam1' | Show2: $.Panel: ==='PenaltyTeam2'"
+            sbClass="NoLogo: Logo: sbIsEmpty | Show1: $.Panel: ==='PenaltyTeam1' | Show2: $.Panel: ==='PenaltyTeam2'"
           >
             <img class="TeamLogo" sbAttr="src: Logo" />
             <h1>Penalty Board</h1>
@@ -203,10 +203,10 @@
               >
                 <div
                   class="Number"
-                  sbDisplay="RosterNumber: toNbspIfEmpty"
+                  sbDisplay="RosterNumber: sbToNbspIfEmpty"
                   sbCss="color: ^Color(overlay.fg) | background: ^Color(overlay.bg)"
                 ></div>
-                <div class="Name" sbDisplay="Name: toNbspIfEmpty">&nbsp;</div>
+                <div class="Name" sbDisplay="Name: sbToNbspIfEmpty">&nbsp;</div>
                 <div class="Penalties">
                   <div class="Penalty" sbForeach="Penalty" sbDisplay="Code" sbClass="NoShow: Id: == 0"></div>
                 </div>
@@ -216,7 +216,7 @@
         </div>
 
         <div class="Upcoming PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel" sbClass="Show: $.Panel: ==='Upcoming'">
-          <div sbContext="Team(1)" sbClass="NoLogo: Logo: empty">
+          <div sbContext="Team(1)" sbClass="NoLogo: Logo: sbIsEmpty">
             <img class="TeamLogo" sbAttr="src: Logo" style="float: left" />
             <h1
               sbDisplay="AlternateName(overlay),Name"
@@ -225,7 +225,7 @@
             ></h1>
           </div>
           <div class="UpcomingVS">VS</div>
-          <div sbContext="Team(2)" sbClass="NoLogo: Logo: empty">
+          <div sbContext="Team(2)" sbClass="NoLogo: Logo: sbIsEmpty">
             <img class="TeamLogo" sbAttr="src: Logo" style="float: right" />
             <h1
               sbDisplay="AlternateName(overlay),Name"
@@ -242,7 +242,7 @@
           <h5
             class="Line2"
             sbDisplay="$.LowerThird.Line2"
-            sbCss="color: $.LowerThird.Style,Team(*).Color(overlay.fg): toLowerThirdColorFg | background: $.LowerThird.Style,Team(*).Color(overlay.bg): toLowerThirdColorBg"
+            sbCss="color: $.LowerThird.Style,Team(*).Color(overlay.fg): ovlToLowerThirdColorFg | background: $.LowerThird.Style,Team(*).Color(overlay.bg): ovlToLowerThirdColorBg"
           />
         </div>
       </div>

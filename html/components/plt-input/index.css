@@ -1,76 +1,70 @@
-.PLT { font-size: 11pt; } 
-table.PLT, .PLT table, .PLT tr, .PLT td, #PenaltyEditor table, #PenaltyEditor tr, #PenaltyEditor td { border-collapse: collapse; border-color:#777; } 
-table.PLT { border-collapse: separate; border-left: none; border-bottom: none; }
-body:not(.AllowSelect) .PLT {user-select: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-o-user-select: none; } 
+/* Sizes */
+.PltInput>.Team tr { height: 22px; } 
+.PltInput>.Team .Role, .PltInput>.Team .Sitting { width: 7%; } 
+.PltInput>.Team .Advance { width: 5%; }
+.PltInput>.Team .Number, .PltInput>.Team .Box, .PltInput>.Team .Total { width: 5%; } 
 
-.Skater[role="NotInGame"] { display: none; }
+/* Borders */
+.PltInput>table { border-collapse: separate; border-left: none; border-bottom: none; }
+.PltInput>table td { border-style: solid; }
+.PltInput>table td.Role, .PltInput>.Team td.Darker:not(.Advance) { border-radius: 6px; }
+.PltInput>table td.Advance { border: none; }
+.PltInput>table td.Number, .PltInput>.Team td.Penalty, .PltInput>.Team td.Total { border-top: none; border-right:none; } 
+.PltInput>table tr.Code td.Penalty { border-bottom-style: dotted; }
 
-.PLT tr { color: #333; } 
-.PLT.Team {width: 99%;top: 0%; } 
-/* Colors are the same as the operator controls, so per-team colours look the same on both. */
-.PLT.Team thead td { font-size: 1em; font-weight: bold; background-color: #cccccc; color: #333333; border-right: none; border-top: none; } 
-.PLT.Team #StarPass { background-color: #cee7ff; font-weight: normal; } 
+/* header row */
+.PltInput>.Team thead td { height: 1em; font-weight: bold; background-color: #cccccc; color: #333333; border-right: none; border-top: none; } 
+.PltInput>.Team #StarPass { background-color: #cee7ff; font-weight: normal; } 
+[sbSheetStyle="whiteboard"] .PltInput>.Team thead td { background-color: #000; color: #FFF; } 
 
-/* Similarly for the IWB view and the scoreboard. */
-[sbSheetStyle="whiteboard"] .PLT.Team thead td { background-color: #000; color: #FFF; } 
+.PltInput>.Team .Skater[role="NotInGame"] { display: none; }
 
-.PLT.Team td { text-align: center; vertical-align: middle; } 
-.PLT.Team .Number, .PLT.Team .Box, .PLT.Team .Total { width: 5%; border-top: none; border-right:none; } 
-.PLT.Team .Advance { width: 5%; }
-.PLT.Team .Role, .PLT.Team .Sitting { width: 7%; border-radius: 6px; } 
-.PLT.Team tr { background-color: #FFF; height: 22px; } 
-.PLT.Team tr.Darker { background-color: #FFE8FF; } 
-.PLT.Team .Role { background-color: #FFF; } 
-.PLT.Team tr.Darker .Role:not(.OnTrack) { background-color: #e7f3ff; } 
-.PLT.Team .Sitting, .PLT.Team .Advance:not(.Active).OnTrack { background-color: #e7f3ff; } 
-.PLT.Team tr.Darker .Sitting:not(.inBox):not(.Unserved), .PLT.Team tr.Darker .Advance:not(.Active).OnTrack { background-color: #cee7ff; } 
-.PLT.Team .Number { font-weight: bold; background-color: #f4f4f4; } 
-.PLT.Team tr.Darker .Number:not(.OnTrack) { background-color: #E8E8E8; } 
-.PLT.Team [Penalty="0"] { background-color: #ffd0ff; } 
-.PLT.Team .Role:not(.OnTrack)>span.Num { display: none; } 
-.PLT.Team .Role.OnTrack>span.Pos { display: none; } 
+/* LT part text & colors */
+.PltInput>.Team .Role { background-color: #FFF; } 
+.PltInput>.Team .Darker .Role { background-color: #e7f3ff; } 
+.PltInput>.Team .Role:not(.OnTrack)>span.Num { display: none; } 
+.PltInput>.Team .Role.OnTrack>span.Pos { display: none; } 
+.PltInput>.Team tr .Darker { background-color: #e7f3ff; } 
+.PltInput>.Team .Darker .Darker { background-color: #cee7ff; } 
+.PltInput>.Team .Box.Serving { background-color: #ff4040; } 
+.PltInput>.Team .Menu:not(.Show):not(.Advance) { visibility: hidden; }
+.PltInput>.Team .Menu:not(.Advance)::after { content: "☰"; } 
+.PltInput>.Team [warn="3"] .Menu.Darker { background-color: #ff9010; }
+.PltInput>.Team .Menu.Advance { background-color: #ff9010; vertical-align: bottom; }
+.PltInput>.Team tr:nth-child(6n+1) .Advance::after { content: "Go To"; } 
+.PltInput>.Team tr:nth-child(6n+3) .Advance::after { content: "Next Jam"; } 
 
-.PLT.Team [warn="1"] .ShowWarn { background-color: #ffff00; } 
-.PLT.Team [warn="1"].Darker .ShowWarn { background-color: #e8e800; } 
-.PLT.Team [warn="2"] .ShowWarn { background-color: #ff9010; } 
-.PLT.Team [warn="2"].Darker .ShowWarn { background-color: #e87800; } 
-.PLT.Team [warn="3"] .ShowWarn { background-color: #ff2828; } 
-.PLT.Team [warn="3"].Darker .ShowWarn { background-color: #e80808; } 
+/* PT part text & colors */
+.PltInput>.Team .Number { font-weight: bold; background-color: #f4f4f4; } 
+.PltInput>.Team .Darker .Number { background-color: #E8E8E8; } 
+.PltInput>.Team .Number.OnTrack { background-color: #70ff70; } 
+.PltInput>.Team .Penalty, .PltInput>.Team .Total { background-color: #FFF; } 
+.PltInput>.Team .Darker .Penalty, .PltInput>.Team .Darker .Total { background-color: #FFE8FF; } 
+.PltInput>.Team .Skater [Penalty="0"] { background-color: #ffd0ff; } 
+.PltInput>.Team [warn="1"] .ShowWarn { background-color: #ffff00; } 
+.PltInput>.Team [warn="1"].Darker .ShowWarn { background-color: #e8e800; } 
+.PltInput>.Team [warn="2"] .ShowWarn { background-color: #ff9010; } 
+.PltInput>.Team [warn="2"].Darker .ShowWarn { background-color: #e87800; } 
+.PltInput>.Team [warn="3"] .ShowWarn { background-color: #ff2828; } 
+.PltInput>.Team [warn="3"].Darker .ShowWarn { background-color: #e80808; } 
+.PltInput>.Team .Skater .Penalty.Serving { background-color: #70ff70; } 
+.PltInput>.Team .Captain .Number { position: relative; }
+.PltInput>.Team .Captain .Number::before { content: "C"; font-weight: normal; position: absolute; left: .2em; top: .15em; }
 
-.PLT.Team .Unserved, .PLT.Team [warn] .Unserved { background-color: #0FF; } 
-.PLT.Team .Serving, .PLT.Team [warn] .Serving { background-color: #70ff70; } 
-.PLT.Team .Penalty .Sitting, .PLT.Team .Penalty .Box { position: relative; } 
-.PLT.Team .Penalty .Sitting::before, .PLT.Team .Penalty .Box::before { font-weight: normal; position: absolute; left: .2em; top: .15em; } 
-.PLT.Team .Penalty .Sitting.Unserved::before, .PLT.Team .Penalty .Box.Unserved::before { content: "!"; } 
-.PLT.Team .Penalty .Sitting.inBox::before, .PLT.Team .Penalty .Box.Serving::before { content: "\203E" /* overline */; } 
-.PLT.Team .OnTrack:not(.Advance) { background-color: #70ff70; } 
-.PLT.Team tr[role='Pivot'] .OnTrack:not(.Advance) { background-color: #00ee00; } 
-.PLT.Team tr[role='Jammer'] .OnTrack:not(.Advance) { background-color: #00cc00; } 
-.PLT.Team .inBox { background-color: #ff4040; } 
-.PLT.Team .Captain .Number { position: relative; }
-.PLT.Team .Captain .Number::before { content: "C"; font-weight: normal; position: absolute; left: .2em; top: .15em; }
-.PLT.Team .Advance { background-color: #FFF; } 
-.PLT.Team .Advance.Active { border: none; background-color: #ff9010; vertical-align: bottom; } 
-.PLT.Team tr:nth-child(6n+1) .Advance.Active::after { content: "Go To"; } 
-.PLT.Team tr:nth-child(6n+3) .Advance.Active::after { content: "Next Jam"; } 
-.PLT.Team .Advance:not(.Active).OnTrack { border-radius: 6px; }
-.PLT.Team .Advance:not(.Active):not(.OnTrack) { border: none; }
-.PLT.Team .Advance:not(.Active).OnTrack::after { content: "☰"; } 
-.PLT.Team tr[warn="3"] .Advance:not(.Active).OnTrack { background-color: #ff9010; }
+/* joint text & colors */
+.PltInput>.Team .Skater .OnTrack { background-color: #70ff70; } 
+.PltInput>.Team [role='Pivot'] .OnTrack { background-color: #00ee00; } 
+.PltInput>.Team [role='Jammer'] .OnTrack { background-color: #00cc00; } 
+.PltInput>.Team .Skater[warn] .Unserved { background-color: #0FF; } 
+.PltInput>.Team .Serving, .PltInput>.Team .Unserved { position: relative; background-clip: padding-box; } 
+.PltInput>.Team .Serving::before, .PltInput>.Team .Unserved::before { font-weight: normal; position: absolute; left: .2em; top: .15em; } 
+.PltInput>.Team .Code .Unserved::before { content: "!"; } 
+.PltInput>.Team .Code .Serving::before { content: "\203E" /* overline */; } 
 
-#PenaltyEditor .Codes>div { float: left; width: 150px; height: 90px; margin: 10px; border: 1px solid black; font-size: 11pt; font-weight: bold; } 
+#PenaltyEditor .Codes { flex-wrap: wrap; gap: 0.5em; }
+#PenaltyEditor .Codes>div { width: 150px; height: 90px; border: 1px solid black; font-weight: bold; background-color: #fff; } 
 #PenaltyEditor .Codes>div.Selected { background-color: #F00; color: #FFF; } 
-#PenaltyEditor .Codes>div div { text-align: center; } 
 #PenaltyEditor .Codes>div .Code { font-size: 1.2em; background-color: #FAA; color: #000; } 
 #PenaltyEditor .Codes>div .Description { font-size: 0.75em; } 
-#PenaltyEditor .ui-button.small { font-size: 75%; } 
-#PenaltyEditor td { text-align: center; } 
 
-#AnnotationEditor tr.Box > td { width:33%; }
-#AnnotationEditor .ui-button { font-size: 75%; } 
-#AnnotationEditor .ui-controlgroup { text-align: center; } 
-#AnnotationEditor .ui-controlgroup>button { border-radius: 0; margin: 0; } 
-#AnnotationEditor .ui-controlgroup>button:first-of-type { border-radius: 6px 0px 0px 6px; } 
-#AnnotationEditor .ui-controlgroup>button:last-of-type { border-radius: 0px 6px 6px 0px; } 
-#AnnotationEditor .ui-controlgroup>button:only-of-type { border-radius: 6px; } 
-#AnnotationEditor .ui-controlgroup>button { padding: 0.4em 0.5em; } 
+#AnnotationEditor .sbGroup { flex-wrap: wrap; gap: 0.5em; }

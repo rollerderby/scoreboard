@@ -1,5 +1,8 @@
-$('.NSOs table')
+'use strict';
+
+$('table.Officials')
   .clone(true)
+  .attr('officialType', 'Ref')
   .find('.Title')
   .text('Skating Officials')
   .end()
@@ -16,26 +19,23 @@ $('.NSOs table')
   .find('tr.Official')
   .attr('sbForeach', 'Ref:: role: resort=Role')
   .end()
-  .appendTo('.Refs > td');
+  .appendTo('#Igrf');
 
-function toggleHide(k, v, elem) {
-  'use strict';
-  elem.siblings('table').addClass('sbHide');
-  elem.siblings(':not(table):not(button)').add(elem).toggleClass('sbHide');
+function igrfToggleHide(k, v, elem, event) {
+  if (event.target.tagName !== 'INPUT') {
+    $('#Igrf>.Name>span>:not(button), #Igrf>.Variables').toggleClass('sbHide');
+  }
 }
 
-function toJsonDl(k, v) {
-  'use strict';
+function igrfToJsonDl(k, v) {
   return '/game-data/json/' + v + '.json';
 }
 
-function toXlsxDl(k, v) {
-  'use strict';
+function igrfToXlsxDl(k, v) {
   return '/game-data/xlsx/' + v + '.xlsx';
 }
 
-function isNotAborted(k) {
-  'use strict';
+function igrfIsNotAborted(k) {
   const prefix = 'ScoreBoard.Game(' + k.Game + ').';
   const curPeriod = WS.state[prefix + '.CurrentPeriodNumber'];
   const lastPeriod = WS.state[prefix + '.Rule(Period.Number)'];
@@ -45,8 +45,7 @@ function isNotAborted(k) {
   return !official || (pc <= 0 && curPeriod == lastPeriod);
 }
 
-function toAbortTime(k) {
-  'use strict';
+function igrfToAbortTime(k) {
   const prefix = 'ScoreBoard.Game(' + k.Game + ').';
   const curPeriod = WS.state[prefix + '.CurrentPeriodNumber'];
   const lastPeriod = WS.state[prefix + '.Rule(Period.Number)'];
@@ -61,28 +60,20 @@ function toAbortTime(k) {
   return text + '. Reason: ';
 }
 
-function prefixPeriod(k, v) {
-  'use strict';
-  return 'Period ' + v;
-}
-
-function noExpulsions(k, v) {
-  'use strict';
+function igrfNoExpulsions(k, v) {
   return !v && !$('.Expulsions table tr[Expulsion]:not([Expulsion="' + k.Expulsion + '"])').length;
 }
 
-function toggleInput(k, v, elem) {
-  'use strict';
+function igrfToggleInput(k, v, elem) {
   elem
     .siblings('input')
     .val(v === 'O' ? '' : v)
     .toggleClass('sbHide', v !== 'O');
 }
 
-function addOfficial(k, v, elem) {
-  'use strict';
+function igrfAddOfficial(k, v, elem) {
   const row = elem.closest('tr');
-  _addOfficial(
+  _igrfAddOfficial(
     k,
     elem.closest('[officialType]').attr('officialType'),
     row.find('input.Role').val(),
@@ -95,8 +86,8 @@ function addOfficial(k, v, elem) {
   elem.prop('disabled', true);
 }
 
-function _addOfficial(prefix, type, role, name, league, cert, id) {
-  id = id || newUUID();
+function _igrfAddOfficial(prefix, type, role, name, league, cert, id) {
+  id = id || sbNewUuid();
   prefix = prefix + '.' + type + '(' + id + ').';
   WS.Set(prefix + 'Role', role);
   WS.Set(prefix + 'Name', name);
@@ -104,8 +95,7 @@ function _addOfficial(prefix, type, role, name, league, cert, id) {
   WS.Set(prefix + 'Cert', cert);
 }
 
-function updateAddButton(k, v, elem, event) {
-  'use strict';
+function igrfUpdateAddButton(k, v, elem, event) {
   const button = elem.closest('tr').find('button.AddOfficial');
   button.prop('disabled', !elem.closest('tr').find('input.Name').val());
   if (!button.prop('disabled') && 13 === event.which) {
@@ -114,8 +104,7 @@ function updateAddButton(k, v, elem, event) {
   }
 }
 
-function pasteOfficials(k, v, elem, event) {
-  'use strict';
+function igrfPasteOfficials(k, v, elem, event) {
   const text = event.originalEvent.clipboardData.getData('text');
   const lines = text.split('\n');
   if (lines.length <= 1) {
@@ -158,28 +147,23 @@ function pasteOfficials(k, v, elem, event) {
   return false;
 }
 
-function filterOtherRole(k, v, elem) {
-  'use strict';
+function igrfFilterOtherRole(k, v, elem) {
   return elem.children('[value="' + v + '"]').length ? v : 'O';
 }
 
-function otherToEmpty(k, v) {
-  'use strict';
+function igrfOtherToEmpty(k, v) {
   return v === 'O' ? '' : v;
 }
 
-function notOtherRole(k, v, elem) {
-  'use strict';
+function igrfNotOtherRole(k, v, elem) {
   return elem.siblings('select').children('[value="' + v + '"]').length > 0;
 }
 
-function isNotPerTeam(k, v) {
-  'use strict';
+function igrfIsNotPerTeam(k, v) {
   return ['Penalty Lineup Tracker', 'Scorekeeper', 'Lineup Tracker', 'Jammer Referee', 'Penalty Box Timer'].indexOf(v) == -1;
 }
 
-function openRemoveDialog(k) {
-  'use strict';
+function igrfOpenRemoveDialog(k) {
   WS.SetupDialog($('#OfficialRemoveDialog'), k, {
     title: 'Remove Official',
     modal: true,

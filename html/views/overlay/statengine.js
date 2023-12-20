@@ -174,9 +174,6 @@
         console.debug('Initialize');
       }
 
-      if (!WS.socket) {
-        WS.Connect();
-      }
       WS.Register(['ScoreBoard.CurrentGame.Clock', 'ScoreBoard.CurrentGame.Period', 'ScoreBoard.CurrentGame.Team'], function (k, v) {
         _handleJamData(k, v);
       });

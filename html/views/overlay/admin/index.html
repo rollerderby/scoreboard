@@ -13,16 +13,16 @@
 
 		<p id="Core" class="Panel">
 			<h2>Elements</h2>
-			<button data-key="C" sbSet="$.Clock: invert" sbClass="current: $.Clock: ==='On'" class="ToggleSwitch">Clock [C]</button> 
-			<button data-key="S" sbSet="$.Score: invert" sbClass="current: $.Score: ==='On'" class="ToggleSwitch">Score [S]</button>
-			<button data-key="J" sbSet="$.ShowJammers: invert" sbClass="current: $.ShowJammers: ==='On'" class="ToggleSwitch">Jammer Names [J]</button><br/>
-			<button data-key="L" sbSet="$.ShowLineups: invert" sbClass="current: $.ShowLineups: ==='On'" class="ToggleSwitch">Lineups [L]</button><br/>
-			<button data-key="N" sbSet="$.ShowAllNames: invert" sbClass="current: $.ShowAllNames: ==='On'" class="ToggleSwitch">All Names [N]</button><br/>
+			<button data-key="C" sbSet="$.Clock: ovaInvert" sbClass="current: $.Clock: ==='On'" class="ToggleSwitch">Clock [C]</button> 
+			<button data-key="S" sbSet="$.Score: ovaInvert" sbClass="current: $.Score: ==='On'" class="ToggleSwitch">Score [S]</button>
+			<button data-key="J" sbSet="$.ShowJammers: ovaInvert" sbClass="current: $.ShowJammers: ==='On'" class="ToggleSwitch">Jammer Names [J]</button><br/>
+			<button data-key="L" sbSet="$.ShowLineups: ovaInvert" sbClass="current: $.ShowLineups: ==='On'" class="ToggleSwitch">Lineups [L]</button><br/>
+			<button data-key="N" sbSet="$.ShowAllNames: ovaInvert" sbClass="current: $.ShowAllNames: ==='On'" class="ToggleSwitch">All Names [N]</button><br/>
 		</p>
 
 		<p id="Panel">
 			<h2>Panels</h2>
-			<select id="PanelSelect" sbCall="selectPanel">
+			<select id="PanelSelect" sbCall="ovaSelectPanel">
 				<option data-key="X" value="">--- No Panel --- [X]</option>
 				<option data-key="0" value="PPJBox">Points per Jam  [0]</option>
 				<option data-key="1" value="RosterTeam1">Roster (T1)  [1]</option>
@@ -34,7 +34,7 @@
 			</select>
 
 
-			<button id="PanelSet" sbSet="$.Panel: getNextPanel" class="ToggleSwitch Reverse"> </button>
+			<button id="PanelSet" sbSet="$.Panel: ovaGetNextPanel" class="ToggleSwitch Reverse"> </button>
 
 			<div id="LowerThirdControls" class="sbHide">
 				<h2>Lower Third</h2>
@@ -50,13 +50,13 @@
 
 	
 					<label>Auto Skater Generator</label>
-					<select id="Skaters" sbCall="selectSkater">
+					<select id="Skaters" sbCall="ovaSelectSkater">
 					</select>
 
-					<select id="Keepers" style="width: 80%; float: left;" sbCall="selectKeeper">
+					<select id="Keepers" style="width: 80%; float: left;" sbCall="ovaSelectKeeper">
 						<option data-line1="" data-line2="" data-style="ColourDefault">--- Clear ---</option>
 					</select>
-					<button id="KeeperAdd" style="width: 15%; " sbCall="addKeeper">+</button>
+					<button id="KeeperAdd" style="width: 15%; " sbCall="ovaAddKeeper">+</button>
 
 				</div>
 			</div>
@@ -77,9 +77,9 @@
 		<div id="TeamOptions" class="Panel" sbContext="ScoreBoard.CurrentGame">
 			<h2>Team Display</h2>
 			<div sbForeach="Team: 1,2: only">
-			<input sbControl="AlternateName(overlay),Name:: toNullIfEmpty" type="text"/>
-			<input sbControl="Color(overlay.fg): defaultFgIfNull" type="color" sbClass="Cleared: Color(overlay.fg): ==null"/><button class="ClearPrev" sbSet="Color(overlay.fg): null">X</button>
-			<input sbControl="Color(overlay.bg): defaultBgIfNull" type="color" sbClass="Cleared: Color(overlay.bg): ==null"/><button class="ClearPrev" sbSet="Color(overlay.bg): null">X</button>
+			<input sbControl="AlternateName(overlay),Name:: sbToNullIfEmpty" type="text"/>
+			<input sbControl="Color(overlay.fg): ovaDefaultFgIfNull" type="color" sbClass="Cleared: Color(overlay.fg): ==null"/><button class="ClearPrev" sbSet="Color(overlay.fg): null">X</button>
+			<input sbControl="Color(overlay.bg): ovaDefaultBgIfNull" type="color" sbClass="Cleared: Color(overlay.bg): ==null"/><button class="ClearPrev" sbSet="Color(overlay.bg): null">X</button>
 			</div>
 		</div>
 

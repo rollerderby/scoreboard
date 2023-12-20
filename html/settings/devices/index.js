@@ -1,7 +1,8 @@
+'use strict';
+
 WS.Register('WS.Device.Id');
 
 WS.AfterLoad(function () {
-  'use strict';
   function updateAge(e, now) {
     if (!now) {
       now = new Date().getTime();
@@ -31,35 +32,32 @@ WS.AfterLoad(function () {
   }, 1000);
 });
 
-function toggleSelection(k, v, elem) {
-  'use strict';
+function devColorRows() {
+  $('.Devices tr:visible').each(function (idx) {
+    $(this).toggleClass('Darker', idx % 2 === 1);
+  });
+}
+
+function devToggleSelection(k, v, elem) {
   elem = $(elem);
   elem.toggleClass('sbActive');
   $('.Devices').toggleClass('Show' + elem.text(), elem.hasClass('sbActive'));
+  devColorRows();
 }
 
-function plus1(k, v) {
-  'use strict';
-  return v + 1;
-}
-
-function isLocalAddr(k, v) {
-  'use strict';
+function devIsLocalAddr(k, v) {
   return v === '127.0.0.1' || v === '0:0:0:0:0:0:0:1';
 }
 
-function isOwnId(k, v) {
-  'use strict';
+function devIsOwnId(k, v) {
   return v === WS.state['WS.Device.Id'];
 }
 
-function toRwStatus(k, v) {
-  'use strict';
+function devToRwStatus(k, v) {
   return isTrue(v) ? 'Write' : 'Read only';
 }
 
-function toDate(k, v) {
-  'use strict';
+function devToDate(k, v) {
   if (v == 0) {
     return 'never';
   } else {

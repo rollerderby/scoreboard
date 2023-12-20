@@ -1,18 +1,42 @@
+body { font-size: 11pt; }
 .sbSegmentGroup { display: flex; gap: 1px; }
 .sbSegmentGroup > * { flex: 1; }
 .sbSegment { border-radius: 12px; margin-bottom: 1px; }
-.sbSegment > :first-child { border-top-left-radius: 12px; border-top-right-radius: 12px; }
-.sbSegment > :last-child { border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
-.sbGroup { display: flex; justify-content: space-around; align-items: center; width: 100%; text-align: center; padding: 5px 0; background-color: #e7e7e7; }
-.sbHeader { background-color: #ccc; font-size: 150%; font-weight: bold; }
-.sbSubHeader { background-color: #ddd; }
-.sbGroup:not(.sbHeader):not(.sbSubHeader) + .sbGroup { border-top: 1px dashed #777; }
+.sbSegment.sbFillArea { height: calc(100% - 1px); }
+.sbSegment>:first-child { border-top-left-radius: 12px; border-top-right-radius: 12px; }
+.sbSegment>:last-child { border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
+
+.sbGroup { width: 100%; text-align: center; padding: 5px 0; background-color: #eee; }
+div.sbHeader, th.sbHeader, td.sbHeader, table .sbHeader td, table .sbHeader th { background-color: #ccc; font-size: 150%; font-weight: bold; }
+div.sbSubHeader, th.sbHubHeader, td.sbSubHeader, table .sbSubHeader td, table .sbSubHeader th { background-color: #ddd; }
+div.sbGroup { display: flex; justify-content: space-around; align-items: center; }
+table.sbGroup { border-spacing: 0; padding: 0; }
+table.sbGroup:first-child>thead>tr:first-child>*:first-child { border-top-left-radius: 12px; }
+table.sbGroup:first-child>thead>tr:first-child>*:last-child { border-top-right-radius: 12px; }
+table.sbGroup:not(:first-child) { padding-top: 1em; }
+table.sbGroup:last-child { padding-bottom: 12px; }
+table.sbGroup td, table.sbGroup th { padding: 5px; }
+table.sbGroup tr:nth-of-type(even) { background-color: #e4e4e4; }
+.sbGroup:not(.sbHeader):not(.sbSubHeader) + .sbGroup:not(table):not(.sbHeader):not(.sbSubHeader) { border-top: 1px dashed black; }
+
+.sbStack { display: flex; flex-direction: column; }
+.sbStack>div { width: 100%; display: flex; justify-content: space-around; align-items: center; }
+.sbStack>div + div { margin-top: 0.5em; }
+
+div.sbSheets { height: calc(100% - 10px); align-items: flex-start; flex-wrap: wrap; gap: 1em; }
+.sbSheets>table { width: calc(100% - 12px); border-spacing: 0; border-collapse: collapse; table-layout:fixed; }
+.sbSheets>table, .sbSheets>table>tbody, .sbSheets>table td { border: 1px solid #777; }
+.sbSheets>table td { text-align: center; vertical-align: middle; padding: 0; border-style: dotted solid; }
 
 .sbActive, .ui-button.sbActive, .ui-button:hover.sbActive { background: #70ff70; color: #000; }
 .sbClickMe, .ui-button.sbClickMe, .ui-button:hover.sbClickMe { background: #ff9010; color: #000; }
+.sbSheets .hasAnnotation { position: relative; background-clip: padding-box; } 
+.sbSheets .hasAnnotation::after { position: absolute; right: 2px; top: 2px; height: 5px; width: 5px; background-color: red; content: ""; } 
 
-.sbHide, .sbSpinner.sbHide { display: none; } 
+.sbInvisible { visibility: hidden; }
+.sbHide, .sbSpinner.sbHide, .sbGroup.sbHide { display: none; } 
 #sbTemplates { display: none; }
+
 [sbSheetStyle="sk"] .sbShowBySheetStyle:not(.sbShowOnSk) { display: none; }
 [sbSheetStyle="pt"] .sbShowBySheetStyle:not(.sbShowOnPt):not(.sbShowOnPurePt) { display: none; }
 [sbSheetStyle="lt"] .sbShowBySheetStyle:not(.sbShowOnLt):not(.sbShowOnPureLt) { display: none; }
@@ -29,8 +53,14 @@
 #sbIndexLink { float: right; border: none; }
 
 #sbConnectionStatus { position: absolute; display: none; z-index: 9999; background-color: #A00000; color: #fff; font-size: 100px; text-align: center; vertical-align: middle; line-height: 100vh; width: 100%; height: 100%; opacity: 0.5; top: 0; left: 0; } 
-#sbConnectionStatus:not([status="ready"]) { display: block; } 
+body:not(.sbNoConnectionStatus) #sbConnectionStatus:not([status="ready"]) { display: block; } 
 #sbConnectionStatus[status="loading"] { background-color: #A0A000; color: #000; }
+
+.ui-controlgroup>button { border-radius: 0; margin: 0; } 
+.ui-controlgroup>button:first-of-type { border-radius: 6px 0px 0px 6px; } 
+.ui-controlgroup>button:last-of-type { border-radius: 0px 6px 6px 0px; } 
+.ui-controlgroup>button:only-of-type { border-radius: 6px; } 
+.ui-controlgroup>button { padding: 0.4em 0.5em; } 
 
 @keyframes sbSpinner {
     0%   { transform: translate3d(-50%, -50%, 0) rotate(0deg);   }

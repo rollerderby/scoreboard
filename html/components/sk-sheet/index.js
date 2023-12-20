@@ -1,13 +1,14 @@
+'use strict';
 (function () {
   const prefix = 'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Period(*).Jam(*).TeamJam(*).ScoringTrip(*).';
   WS.Register([prefix + 'AfterSP', prefix + 'Score', prefix + 'Current'], function (k) {
     const selectorPrefix = '[Team="' + k.TeamJam + '"] [Period="' + k.Period + '"] [Jam="' + k.Jam + '"]';
     if (k.ScoringTrip === 1) {
-      $(selectorPrefix + '.Jam:not(.SP) [ScoringTrip="2"]').text(toTripPoints(k));
-      $(selectorPrefix + '.SP [ScoringTrip="2"]').text(toTripSpPoints(k));
+      $(selectorPrefix + '>.Jam [ScoringTrip="2"]').text(toTripPoints(k));
+      $(selectorPrefix + '>.SP [ScoringTrip="2"]').text(toTripSpPoints(k));
     } else if (k.ScoringTrip > 10) {
-      $(selectorPrefix + '.Jam:not(.SP) [ScoringTrip="10"]').text(toTripPoints(k));
-      $(selectorPrefix + '.SP [ScoringTrip="10"]').text(toTripSpPoints(k));
+      $(selectorPrefix + '>.Jam [ScoringTrip="10"]').text(toTripPoints(k));
+      $(selectorPrefix + '>.SP [ScoringTrip="10"]').text(toTripSpPoints(k));
     }
   });
 
@@ -26,17 +27,12 @@
   });
 })();
 
-function toggleJamEdit(k, v, elem) {
-  'use strict';
-  elem
-    .closest('tbody')
-    .children('tr[Jam="' + elem.closest('[Jam]').attr('Jam') + '"]')
-    .toggleClass('Edit');
+function sksToggleEdit(k, v, elem) {
+  elem.closest('tbody').toggleClass('Edit');
   return true;
 }
 
-function notRemovable(k) {
-  'use strict';
+function sksNotRemovable(k) {
   const prefix = k.upTo('Jam');
   return (
     WS.state[prefix + '.TeamJam(1).JamScore'] + WS.state[prefix + '.TeamJam(1).OsOffset'] !== 0 ||
@@ -45,8 +41,7 @@ function notRemovable(k) {
   );
 }
 
-function noPoints(k) {
-  'use strict';
+function sksNoPoints(k) {
   const prefix = k.upTo('Jam');
   return (
     WS.state[prefix + '.TeamJam(1).JamScore'] + WS.state[prefix + '.TeamJam(1).OsOffset'] === 0 &&
@@ -54,29 +49,24 @@ function noPoints(k) {
   );
 }
 
-function notRunning(k) {
-  'use strict';
+function sksNotRunning(k) {
   const prefix = k.upTo('Jam');
   return WS.state[prefix + '.WalltimeStart'] === 0 || WS.state[prefix + '.WalltimeEnd'] > 0;
 }
 
-function toXnoSP(k, v) {
-  'use strict';
+function sksToXnoSP(k, v) {
   return isTrue(v) && !isTrue(WS.state[k.upTo('TeamJam') + '.StarPass']) ? 'X' : '';
 }
 
-function toXifSP(k, v) {
-  'use strict';
+function sksToXifSP(k, v) {
   return isTrue(v) && isTrue(WS.state[k.upTo('TeamJam') + '.StarPass']) ? 'X' : '';
 }
 
-function toNiPreSp(k, v) {
-  'use strict';
+function sksToNiPreSp(k, v) {
   return isTrue(v) || isTrue(WS.state[k.upTo('TeamJam') + '.ScoringTrip(1).AfterSP']) ? 'X' : '';
 }
 
-function toTripPoints(k) {
-  'use strict';
+function sksToTripPoints(k) {
   const prefix = k.upTo('ScoringTrip') + '.';
   if (k.ScoringTrip === '2' || k.ScoringTrip === '1') {
     const prefix1 = k.upTo('TeamJam') + '.ScoringTrip(1).';
@@ -117,8 +107,7 @@ function toTripPoints(k) {
   }
 }
 
-function toTripSpPoints(k) {
-  'use strict';
+function sksToTripSpPoints(k) {
   const prefix = k.upTo('ScoringTrip') + '.';
   if (k.ScoringTrip === '2' || k.ScoringTrip === '1') {
     const prefix1 = k.upTo('TeamJam') + '.ScoringTrip(1).';
@@ -163,35 +152,29 @@ function toTripSpPoints(k) {
   }
 }
 
-function openTripEditor(k, v, elem, event) {
-  'use strict';
+function sksOpenTripEditor(k, v, elem, event) {
   if (event.target === elem[0] || event.target === elem.children('span')[0]) {
-    _setupTripEditor(k.Game, k.Period, k.Jam, k.TeamJam, Number(k.ScoringTrip));
+    _sksSetupTripEditor(k.Game, k.Period, k.Jam, k.TeamJam, Number(k.ScoringTrip));
   }
 }
 
-function toPreSpScore(k, v) {
-  'use strict';
+function sksToPreSpScore(k, v) {
   return v - WS.state[k.upTo('TeamJam') + '.AfterSPScore'];
 }
 
-function toArrow(k, v, elem) {
-  'use strict';
-  return elem.closest('tr.Jam').hasClass('SP') === (elem.closest('[sbSheetStyle]').attr('sbSheetStyle') === 'sheet') ? '↓' : '↑';
+function sksToArrow(k, v, elem) {
+  return elem.closest('tr').hasClass('SP') === (elem.closest('[sbSheetStyle]').attr('sbSheetStyle') === 'sheet') ? '↓' : '↑';
 }
 
-function hasOffset(k, v) {
-  'use strict';
+function sksHasOffset(k, v) {
   return v !== 0 || WS.state[k.upTo('TeamJam') + '.OsOffsetReason'] !== '';
 }
 
-function hasUnexplainedOffset(k, v) {
-  'use strict';
+function sksHasUnexplainedOffset(k, v) {
   return v !== 0 && WS.state[k.upTo('TeamJam') + '.OsOffsetReason'] === '';
 }
 
-function showOffsetEditor(k) {
-  'use strict';
+function sksShowOffsetEditor(k) {
   WS.SetupDialog($('#osOffsetEditor'), k, {
     title: 'OS Offset',
     width: '600px',
@@ -203,18 +186,15 @@ function showOffsetEditor(k) {
   });
 }
 
-function toToJamNumber(k, v) {
-  'use strict';
+function sksToToJamNumber(k, v) {
   return v + '.' + WS.state[k.upTo('Timeout') + '.WalltimeStart'];
 }
 
-function isOrThisTeam(k, v, elem) {
-  'use strict';
+function sksIsOrThisTeam(k, v, elem) {
   return isTrue(v) && WS.state[k.upTo('Timeout') + '.Owner'] === k.Game + '_' + elem.closest('[Team]').attr('Team');
 }
 
-function toToTypeName(k, v, elem) {
-  'use strict';
+function sksToToTypeName(k, v) {
   if (v === '') {
     return 'Untyped Timeout';
   } else if (v === 'O') {
@@ -226,25 +206,21 @@ function toToTypeName(k, v, elem) {
   }
 }
 
-function toToTypeVal(k, v) {
-  'use strict';
+function sksToToTypeVal(k, v) {
   return WS.state[k.upTo('Timeout') + '.Owner'] + '.' + v;
 }
 
-function fromToTypeVal(k, v) {
-  'use strict';
+function sksFromToTypeVal(k, v) {
   const parts = v.split('.');
   WS.Set(k.upTo('Timeout') + '.Owner', parts[0]);
   return isTrue(parts[1]);
 }
 
-function toDuration(k, v) {
-  'use strict';
+function sksToToDuration(k, v) {
   return isTrue(v) ? 'Running' : _timeConversions.msToMinSec(WS.state[k.upTo('Timeout') + '.Duration'], true);
 }
 
-function _setupTripEditor(gameId, p, j, teamId, t) {
-  'use strict';
+function _sksSetupTripEditor(gameId, p, j, teamId, t) {
   $(':not(#sbTemplates)>#TripEditor').dialog('close');
 
   const prefix = 'ScoreBoard.Game(' + gameId + ').Period(' + p + ').Jam(' + j + ').TeamJam(' + teamId + ').ScoringTrip(';
@@ -257,23 +233,23 @@ function _setupTripEditor(gameId, p, j, teamId, t) {
 
   WS.SetupDialog($('#TripEditor'), prefix + t + ')', {
     title: 'Period ' + p + ' Jam ' + j + ' Trip ' + (t === 1 ? 'Initial' : t),
-    width: '300px',
+    width: '330px',
+    buttons: {
+      '⬅ Prev': function () {
+        _sksSetupTripEditor(gameId, p, j, teamId, t - 1);
+      },
+      'Next ➡': function () {
+        _sksSetupTripEditor(gameId, p, j, teamId, t + 1);
+      },
+      Close: function () {
+        $(this).dialog('close');
+      },
+    },
   });
 }
 
-function remove(k, v, elem, event) {
-  'use strict';
+function sksRemoveTrip(k, v, elem, event) {
   if (event.which === 13 && v === '') {
     WS.Set(k + '.Remove', null);
   }
-}
-
-function openPrevTrip(k, v, elem, event) {
-  'use strict';
-  _setupTripEditor(k.Game, k.Period, k.Jam, k.TeamJam, Number(k.ScoringTrip) - 1);
-}
-
-function openNextTrip(k, v, elem, event) {
-  'use strict';
-  _setupTripEditor(k.Game, k.Period, k.Jam, k.TeamJam, Number(k.ScoringTrip) + 1);
 }

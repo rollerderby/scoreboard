@@ -1,11 +1,10 @@
-WS.AfterLoad(function () {
-  'use strict';
+'use strict';
 
+(function () {
   $('#tabsDiv').tabs();
-});
+})();
 
 function toTitle(k, v) {
-  'use strict';
   if (v == null && $('#sbConnectionStatus').attr('status') === 'ready') {
     window.close();
   } else {

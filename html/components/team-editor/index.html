@@ -1,6 +1,6 @@
-<table id="Team">
-  <tr class="Name">
-    <td colspan="3">
+<div id="Team" class="sbSegment">
+  <div class="sbGroup sbHeader Name">
+    <span>
       <span sbClass="sbHide: ^State: === 'Prepared'" sbDisplay="FullName"></span>
       <select sbControl="PreparedTeam" sbClass="sbHide: ^State: !== 'Prepared'">
         <option value="">Custom Team</option>
@@ -12,201 +12,201 @@
         ></option>
       </select>
       <button class="SyncButton" sbToggle="PreparedTeamConnected" sbClass="sbHide: PreparedTeam: !">Sync Changes</button>
-      <button class="StoreButton sbHide" sbCall="openStoreDialog" sbClass="sbHide: PreparedTeam: !==''">Store Team</button>
-    </td>
-  </tr>
-  <tr class="Control">
-    <td colspan="3">
-      <div>
-        <div>
-          <select sbControl="Logo">
-            <option value="">No Logo</option>
-            <option
-              sbForeach="File::name: resort=Name"
-              sbContext="/ScoreBoard.Media.Format(images).Type(teamlogo)"
-              sbAttr="name: Name | value:-:toMediaPath"
-              sbDisplay="Name"
-            ></option>
+      <button class="StoreButton sbHide" sbCall="tmeOpenStoreDialog" sbClass="sbHide: PreparedTeam: !==''">Store Team</button>
+    </span>
+  </div>
+  <div class="sbGroup Control">
+    <span>
+      <select sbControl="Logo">
+        <option value="">No Logo</option>
+        <option
+          sbForeach="File::name: resort=Name"
+          sbContext="/ScoreBoard.Media.Format(images).Type(teamlogo)"
+          sbAttr="name: Name | value:-:sbToMediaPath"
+          sbDisplay="Name"
+        ></option>
+      </select>
+      <input type="file" id="teamLogoUpload" class="sbHide" />
+      <button sbCall="tmeTriggerUpload">Upload...</button>
+    </span>
+    <button sbCall="tmeOpenAlternateNamesDialog">Alternate Names</button>
+    <button sbCall="tmeOpenColorsDialog">Colors</button>
+  </div>
+  <div class="sbGroup Names">
+    <div class="LogoPreview" sbClass="sbHide: Logo: sbIsEmpty"><img sbAttr="src: Logo" /></div>
+    <table class="Names">
+      <tr class="League">
+        <td class="Label"><span>League: </span></td>
+        <td class="Value"><input type="text" class="Name" size="30" sbControl="LeagueName" /></td>
+      </tr>
+      <tr class="LTeam">
+        <td class="Label"><span>Team: </span></td>
+        <td class="Value"><input type="text" class="Name" size="30" sbControl="TeamName" /></td>
+      </tr>
+      <tr class="Color">
+        <td class="Label">
+          <span sbClass="sbHide:-: tmeIsPrepared">Uniform Color: </span><span sbClass="sbHide:-: tmeNotPrepared">Uniform Colors: </span>
+        </td>
+        <td class="Value">
+          <span id="PreparedUc" class="sbHide" sbClass="sbHide: PreparedTeam: !" sbPrefix="t:[*]">
+            <select
+              sbForeach="PreparedTeam"
+              sbContext="/ScoreBoard"
+              sbAttr="team: Id"
+              sbClass="sbHide: t.PreparedTeam: !== elem.attr('PreparedTeam')"
+              sbControl="t.UniformColor, UniformColor(*): tmeFilterOtherUc"
+            >
+              <option value="">Other</option>
+              <option sbForeach="UniformColor::value:noId" sbAttr="value:" sbDisplay=""></option>
+            </select>
+          </span>
+          <input type="text" class="Name" size="15" sbClass="sbHide: UniformColor: tmeIsNotOtherUc" sbControl="UniformColor" />
+          <span sbClass="sbHide:-: tmeNotPrepared">
+            <span sbForeach="UniformColor:: name:noId" sbAttr="name:" class="RemoveColor">
+              <span sbDisplay=":"></span>
+              <button sbSet=": null">X</button>
+            </span>
+          </span>
+          <input type="text" id="newUc" class="Name" size="15" sbClass="sbHide:-: tmeNotPrepared" sbOn="keyup: tmeAddNewUc" />
+          <button sbClass="sbHide:-: tmeNotPrepared" sbCall="tmeAddNewUc">Add</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <table class="sbGroup Skaters">
+    <thead>
+      <tr class="sbHeader">
+        <th></th>
+        <th class="Title">Skaters</th>
+        <th></th>
+        <th id="skaterCount" sbDisplay="Skater(*).Flags: tmeSkaterCount">0 skating</th>
+        <th></th>
+      </tr>
+      <tr class="sbSubHeader">
+        <th>Number</th>
+        <th>Name</th>
+        <th>Pronouns</th>
+        <th>Flags</th>
+        <th>Add</th>
+      </tr>
+      <tr class="AddSkater sbSubHeader">
+        <td class="RosterNumber">
+          <input type="text" size="5" class="RosterNumber" sbOn="keyup: tmeNewSkaterInput | paste: tmePasteSkaters" />
+        </td>
+        <td class="Name"><input type="text" size="20" class="Name" sbOn="keyup: tmeNewSkaterInput | paste: tmePasteSkaters" /></td>
+        <td class="Pronouns"><input type="text" size="10" class="Pronouns" sbOn="keyup: tmeNewSkaterInput | paste: tmePasteSkaters" /></td>
+        <td class="Flags">
+          <select class="Flags">
+            <option value="">Skater</option>
+            <option value="ALT">Not Skating</option>
+            <option value="C">Captain</option>
+            <option value="A">Alt Captain</option>
+            <option value="BA">Bench Alt Captain</option>
+            <option value="B">Bench Staff</option>
           </select>
-          <input type="file" id="teamLogoUpload" class="sbHide" />
-          <button sbCall="triggerUpload">Upload...</button>
-        </div>
-        <button sbCall="openAlternateNamesDialog">Alternate Names</button>
-        <button sbCall="openColorsDialog">Colors</button>
-      </div>
-    </td>
-  </tr>
-  <tr class="League">
-    <td class="LogoPreview" rowspan="3"><img sbAttr="src: Logo" /></td>
-    <td class="Label"><span>League: </span></td>
-    <td class="Value"><input type="text" class="Name" size="30" sbControl="LeagueName" /></td>
-  </tr>
-  <tr class="LTeam">
-    <td class="Label"><span>Team: </span></td>
-    <td class="Value"><input type="text" class="Name" size="30" sbControl="TeamName" /></td>
-  </tr>
-  <tr class="Color">
-    <td class="Label">
-      <span sbClass="sbHide:-: isPrepared">Uniform Color: </span><span sbClass="sbHide:-: notPrepared">Uniform Colors: </span>
-    </td>
-    <td class="Value">
-      <span id="PreparedUc" class="sbHide" sbClass="sbHide: PreparedTeam: !" sbPrefix="t:[*]">
-        <select
-          sbForeach="PreparedTeam"
-          sbContext="/ScoreBoard"
-          sbAttr="team: Id"
-          sbClass="sbHide: t.PreparedTeam: isSelectorTeam"
-          sbControl="t.UniformColor, UniformColor(*): filterOtherUc"
-        >
-          <option value="">Other</option>
-          <option sbForeach="UniformColor::value:noId" sbAttr="value:" sbDisplay=""></option>
-        </select>
-      </span>
-      <input type="text" class="Name" size="15" sbClass="sbHide: UniformColor: isNotOtherUc" sbControl="UniformColor" />
-      <span sbClass="sbHide:-: notPrepared">
-        <span sbForeach="UniformColor:: name:noId" sbAttr="name:" class="RemoveColor">
-          <span sbDisplay=""></span>
-          <button sbSet=": null">X</button>
-        </span>
-      </span>
-      <input type="text" id="newUc" class="Name" size="15" sbClass="sbHide:-: notPrepared" sbOn="keyup: addNewUc" />
-      <button sbClass="sbHide:-: notPrepared" sbCall="addNewUc">Add</button>
-    </td>
-  </tr>
-  <tr class="Skaters">
-    <td colspan="3">
-      <table class="Skaters Empty">
-        <col class="RosterNumber" />
-        <col class="Name" />
-        <col class="Pronouns" />
-        <col class="Flags" />
-        <col class="Button" />
-        <thead>
-          <tr>
-            <th></th>
-            <th class="Title">Skaters</th>
-            <th></th>
-            <th id="skaterCount" sbDisplay="Skater(*).Flags: skaterCount">0 skating</th>
-            <th></th>
-          </tr>
-          <tr>
-            <th>Number</th>
-            <th>Name</th>
-            <th>Pronouns</th>
-            <th>Flags</th>
-            <th>Add</th>
-          </tr>
-          <tr class="AddSkater">
-            <th><input type="text" size="5" class="RosterNumber" sbOn="keyup: newSkaterInput | paste: pasteSkaters" /></th>
-            <th><input type="text" size="20" class="Name" sbOn="keyup: newSkaterInput | paste: pasteSkaters" /></th>
-            <th><input type="text" size="10" class="Pronouns" sbOn="keyup: newSkaterInput | paste: pasteSkaters" /></th>
-            <th>
-              <select class="Flags">
-                <option value="">Skater</option>
-                <option value="ALT">Not Skating</option>
-                <option value="C">Captain</option>
-                <option value="A">Alt Captain</option>
-                <option value="BA">Bench Alt Captain</option>
-                <option value="B">Bench Staff</option>
-              </select>
-            </th>
-            <th><button class="AddSkater" sbCall="addSkater">Add Skater</button></th>
-          </tr>
-          <tr>
-            <th colspan="5"><hr /></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr sbForeach="Skater:: rosterNumber: resort=RosterNumber" class="Skater" sbAttr="rosterNumber: RosterNumber">
-            <td class="RosterNumber"><input type="text" size="5" sbControl="RosterNumber" /></td>
-            <td class="Name"><input type="text" size="20" sbControl="Name" /></td>
-            <td class="Pronouns"><input type="text" size="10" sbControl="Pronouns" /></td>
-            <td class="Flags">
-              <select class="Flags" sbControl="Flags">
-                <option value="">Skater</option>
-                <option value="ALT">Not Skating</option>
-                <option value="C">Captain</option>
-                <option value="A">Alt Captain</option>
-                <option value="BA">Bench Alt Captain</option>
-                <option value="B">Bench Staff</option>
-              </select>
-            </td>
-            <td class="Remove"><button class="RemoveSkater" sbCall="openRemoveSkaterDialog">Remove</button></td>
-          </tr>
-        </tbody>
-      </table>
-    </td>
-  </tr>
-</table>
+        </td>
+        <td><button class="AddSkater" sbCall="tmeAddSkater">Add Skater</button></td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr sbForeach="Skater:: rosterNumber: resort=RosterNumber" class="Skater" sbAttr="rosterNumber: RosterNumber">
+        <td class="RosterNumber"><input type="text" size="5" sbControl="RosterNumber" /></td>
+        <td class="Name"><input type="text" size="20" sbControl="Name" /></td>
+        <td class="Pronouns"><input type="text" size="10" sbControl="Pronouns" /></td>
+        <td class="Flags">
+          <select class="Flags" sbControl="Flags">
+            <option value="">Skater</option>
+            <option value="ALT">Not Skating</option>
+            <option value="C">Captain</option>
+            <option value="A">Alt Captain</option>
+            <option value="BA">Bench Alt Captain</option>
+            <option value="B">Bench Staff</option>
+          </select>
+        </td>
+        <td class="Remove"><button class="RemoveSkater" sbCall="tmeOpenRemoveSkaterDialog">Remove</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <div id="sbTemplates">
-  <div id="StoreTeamDialog">
-    <span>Merge into: </span>
-    <select>
-      <option value="">None</option>
-      <option
-        sbForeach="PreparedTeam:: name: resort=Name"
-        sbContext="/ScoreBoard"
-        sbAttr="name: FullName | value: Id"
-        sbDisplay="FullName"
-      ></option>
-    </select>
+  <div id="StoreTeamDialog" class="sbSegment">
+    <div class="sbGroup">
+      <span>Merge into: </span>
+      <select>
+        <option value="">None</option>
+        <option
+          sbForeach="PreparedTeam:: name: resort=Name"
+          sbContext="/ScoreBoard"
+          sbAttr="name: FullName | value: Id"
+          sbDisplay="FullName"
+        ></option>
+      </select>
+    </div>
   </div>
 
-  <div id="AlternateNamesDialog">
-    <span>Type: </span><input id="newType" type="text" sbOn="focus: startAutocomplete" /> <span>Name: </span>
-    <input id="newName" type="text" sbOn="keypress: addAlternateName" />
-    <button sbCall="addAlternateName">Add</button>
-    <table>
-      <thead>
+  <div id="AlternateNamesDialog" class="sbSegment">
+    <div class="sbGroup">
+      <span>Type: <input id="newType" type="text" sbOn="focus: tmeStartAutocomplete" /></span>
+      <span>Name: <input id="newName" type="text" sbOn="keypress: tmeAddAlternateName" /></span>
+      <button sbCall="tmeAddAlternateName">Add</button>
+    </div>
+    <table class="sbGroup">
+      <thead class="sbHeader">
         <tr>
-          <th class="X">X</th>
-          <th class="Id">Id</th>
+          <th class="Id">Type</th>
           <th class="Name">Name</th>
+          <th class="X"></th>
         </tr>
       </thead>
       <tbody>
         <tr sbForeach="AlternateName:::noId">
+          <td class="Id" sbDisplay=": tmeGetAlternateNameId"></td>
+          <td class="Name"><input type="text" size="20" sbControl=" " /></td>
           <td class="X"><button sbSet=": null">X</button></td>
-          <td class="Id" sbDisplay=": getAlternateNameId"></td>
-          <td class="Name"><input type="text" size="20" sbControl="" /></td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <div id="ColorsDialog">
-    <span>Type: </span><input id="newType" type="text" size="10" sbOn="focus: startAutocomplete" />
-    <button sbCall="addColor">Add</button>
-    <table>
-      <thead>
+  <div id="ColorsDialog" class="sbSegment">
+    <div class="sbGroup">
+      <span
+        >Type: <input id="newType" type="text" size="15" sbOn="focus: tmeStartAutocomplete" /> <button sbCall="tmeAddColor">Add</button>
+      </span>
+    </div>
+    <table class="sbGroup">
+      <thead class="sbHeader">
         <tr>
-          <th class="X"></th>
           <th class="Id">Id</th>
           <th class="Color">Text/Icons</th>
           <th class="Color">Background</th>
           <th class="Color">Glow/Halo</th>
+          <th class="X"></th>
         </tr>
       </thead>
       <tbody>
         <tr sbForeach="Color:::part=1, noContext, noId">
-          <td class="X"><button sbCall="clearColor">X</button></td>
-          <td class="Id" sbDisplay=": toColorType"></td>
+          <td class="Id" sbDisplay=": tmeToColorType"></td>
           <td sbForeach="Color:fg,bg,glow:only:filter=^, noId" class="Color">
-            <input type="color" sbClass="cleared:: empty" sbControl=":defaultColorIfEmpy" />
+            <input type="color" sbClass="cleared:: sbIsEmpty" sbControl=":tmeDefaultColorIfEmpy" />
             <button class="ClearPrev" sbSet=": null">X</button>
           </td>
+          <td class="X"><button sbCall="tmeClearColor">X</button></td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <div id="RemoveSkaterDialog" sbContext="Skater(*)">
-    <span class="Title">Team: </span><span class="Title" sbDisplay="^FullName"></span><br />
-    <span class="Remove">Remove Skater: </span>
-    <span class="Target" sbDisplay="RosterNumber"></span><br />
-    <span class="Name">(Skater Name: <span sbDisplay="Name"></span>)</span><br />
-    <hr />
-    <span class="AreYouSure">Are you sure?</span><br />
+  <div id="RemoveSkaterDialog" sbContext="Skater(*)" class="sbSegment">
+    <div class="sbGroup">
+      <div>
+        <span class="Title">Team: </span><span class="Title" sbDisplay="^FullName"></span><br />
+        <span class="Remove">Remove Skater: </span>
+        <span class="Target" sbDisplay="RosterNumber"></span><br />
+        <span class="Name">(Skater Name: <span sbDisplay="Name"></span>)</span>
+      </div>
+    </div>
+    <div class="sbGroup"><span class="AreYouSure">Are you sure?</span></div>
   </div>
 </div>

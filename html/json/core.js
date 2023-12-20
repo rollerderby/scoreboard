@@ -52,25 +52,18 @@ _include('/external/jquery-plugins/string/jquery.string.js');
 _include('/external/jquery-plugins/fileupload/jquery.fileupload.js');
 
 /* Core functionality */
-_include('/javascript', ['timeconversions.js', 'windowfunctions.js', 'autofit.js', 'conversions.js']);
+_include('/javascript', [
+  'timeconversions.js',
+  'windowfunctions.js',
+  'autofit.js',
+  'conversions.js',
+  'boolconversions.js',
+  'cssfunctions.js',
+  'sortfunctions.js',
+  'utils.js',
+]);
 _include('/styles', ['fonts.css', 'common.css']);
 _include('/json', ['WS.js'], function () {
   WS.Connect();
   WS.Process(window.location.pathname);
 });
-
-function isTrue(value) {
-  if (typeof value === 'boolean') {
-    return value;
-  } else {
-    return String(value).toLowerCase() === 'true';
-  }
-}
-
-function newUUID() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    var r = (Math.random() * 16) | 0,
-      v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}

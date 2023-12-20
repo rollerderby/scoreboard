@@ -1,7 +1,2 @@
 body { margin: 0px; } 
-#sbIndexLink { float: right;  } 
-#tabsDiv>div.TabContent { padding: 2px; overflow: hidden; } 
-#tabsDiv>div.TabContent>table { width: 100%; border-spacing: 0px; } 
-#tabsDiv>div.TabContent>div.Loading { text-align: center; font-weight: bold; font-size: 300%; } 
-
-#TeamsTab>div { width: 50%; float: left; }
+#tabsDiv>div.TabContent { padding: 2px; overflow: scroll; } 

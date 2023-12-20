@@ -1005,7 +1005,7 @@ function prepareOptionsDialog(gameId, teamId, onlySettings) {
   var table = $('<table>').appendTo($('#OptionsDialog'));
 
   var zoomable = $('<label/><input type="checkbox"/>').addClass('ui-button-small');
-  var id = newUUID();
+  var id = sbNewUuid();
   zoomable.first().attr('for', id);
   var zoomInput = zoomable.last().attr('id', id).button();
   zoomInput.prop('checked', _windowFunctions.checkParam('zoomable', 1));

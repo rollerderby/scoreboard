@@ -72,6 +72,7 @@ function setTeam(k, v, elem) {
 }
 
 function setPos(k, v, elem) {
+  console.log('called');
   $('#OptionsDialog [pos]').removeClass('sbActive');
   elem.addClass('sbActive');
   $('body').attr('sbSheetStyle', elem.attr('pos'));

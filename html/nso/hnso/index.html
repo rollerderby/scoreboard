@@ -18,7 +18,9 @@
       </ul>
       <div id="IgrfTab" class="TabContent" sbInclude="/components/igrf-tab/"></div>
       <div id="TeamsTab" class="TabContent">
-        <div sbForeach="Team: 1,2: only" sbInclude="/components/team-editor/"></div>
+        <div class="sbSegmentGroup">
+          <div sbForeach="Team: 1,2: only" sbInclude="/components/team-editor/"></div>
+        </div>
       </div>
       <div id="RulesetsTab" class="TabContent" sbInclude="/components/ruleset-tab/"></div>
       <div id="SheetsTab" class="TabContent" sbInclude="/components/sheets-tab/"></div>

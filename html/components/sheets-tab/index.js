@@ -1,28 +1,8 @@
-function appendScores(k, v) {
-  'use strict';
-  return v + ' Scores';
-}
+'use strict';
 
-function appendPenalties(k, v) {
-  'use strict';
-  return v + ' Penalties';
-}
-
-function appendLineups(k, v) {
-  'use strict';
-  return v + ' Lineups';
-}
-
-function appendScoreAndLineups(k, v) {
-  'use strict';
-  return v + ' Score + Lineups';
-}
-
-function selectSheets(k, v) {
-  'use strict';
-  $('#SheetsTab').find('.Sheet').addClass('sbHide');
+function shtSelectSheet(k, v, elem) {
+  elem.toggleClass('sbActive');
   $('#SheetsTab')
-    .find(v)
-    .removeClass('sbHide')
-    .toggleClass('Only', v.length === 15);
+    .find('[Team="' + k.Team + '"].Sheet.' + elem.text())
+    .toggleClass('sbHide', !elem.hasClass('sbActive'));
 }

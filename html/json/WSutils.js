@@ -1,7 +1,7 @@
 function toggleButton(key, trueText, falseText) {
   'use strict';
   var button = $('<label/><input type="checkbox"/>').addClass('ui-button-small');
-  var id = newUUID();
+  var id = sbNewUuid();
   button.first().attr('for', id);
   var input = button.last().attr('id', id).button();
   input.on('change', function (e) {

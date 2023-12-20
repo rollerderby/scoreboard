@@ -1,6 +1,7 @@
+'use strict';
+
 function toTitle(k, v) {
-  'use strict';
-  if (v == null) {
+  if (v == null && $('#sbConnectionStatus').attr('status') === 'ready') {
     window.close();
   } else {
     return v + ' | Edit Ruleset | CRG ScoreBoard';

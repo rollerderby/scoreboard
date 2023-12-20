@@ -1,22 +1,11 @@
-#sbData table { width: 100%; border-spacing: 0px; margin-bottom: 10px; } 
-#sbData thead { background: #ccc; } 
-#sbData tbody { background: #eee; } 
-#sbData tbody > tr:nth-child(2n) { background: #e4e4e4; } 
-#sbData tbody > tr:last-of-type > td:first-of-type { border-bottom-left-radius: 12px; } 
-#sbData tbody > tr:last-of-type > td:last-of-type { border-bottom-right-radius: 12px; } 
-#sbData table th { border-radius: 12px 12px 0px 0px; } 
-#sbData th > span { font-size: 150%; } 
 #sbData th { padding-left: 15px; padding-right: 15px; } 
 #sbData td { padding-left: 15px; padding-right: 15px; line-height: 27px; } 
-#sbData .UpDown td { padding-top: 5px; padding-bottom: 5px; text-align: center; } 
-#sbData .Type tbody > tr:last-of-type > td { padding-bottom: 2px; } 
 #sbData .SelectAll { margin-left: 1em; } 
 #sbData .New { margin-left: 1em; } 
 #sbData .Right { float: left; } 
 #sbData .Left { float: left; } 
 #sbData .Edit { min-width: 27px; } 
-#sbData .ui-button { font-size: 75%; } 
-#sbData span { margin-left: 5px; } 
-#sbData .UpDown tbody .ui-button { font-size: 100%; } 
+#sbData .Type .ui-button { font-size: 75%; } 
+#sbData .Type th .ui-button { font-size: 50%; } 
 #sbData tr.Selected button.Select { background: #3f3; } 
 #sbData button.Delete:disabled { color: #bbb; } 

@@ -209,7 +209,7 @@ function createDataTab(tab) {
     .attr('type', 'Games')
     .find('th.Type>button.New')
     .on('click', function () {
-      var gameid = newUUID();
+      var gameid = sbNewUuid();
       WS.Set('ScoreBoard.Game(' + gameid + ').Id', gameid);
       window.open('/nso/hnso?game=' + gameid, '_blank');
     })
@@ -224,7 +224,7 @@ function createDataTab(tab) {
     .attr('type', 'Teams')
     .find('th.Type>button.New')
     .on('click', function () {
-      var teamid = newUUID();
+      var teamid = sbNewUuid();
       WS.Set('ScoreBoard.PreparedTeam(' + teamid + ').Id', teamid);
       window.open('/settings/teams?team=' + teamid, '_blank');
     })
@@ -239,7 +239,7 @@ function createDataTab(tab) {
     .attr('type', 'Rulesets')
     .find('th.Type>button.New')
     .on('click', function () {
-      var rulesetid = newUUID();
+      var rulesetid = sbNewUuid();
       WS.Set('ScoreBoard.Rulesets.Ruleset(' + rulesetid + ').Id', rulesetid);
       window.open('/settings/rulesets?ruleset=' + rulesetid, '_blank');
     })

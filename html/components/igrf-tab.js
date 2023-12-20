@@ -325,7 +325,7 @@ function createIgrfTab(tab, gameId) {
   });
 
   var addOfficial = function (type, role, name, league, cert, id) {
-    id = id || newUUID();
+    id = id || sbNewUuid();
     var prefix = gamePrefix + '.' + type + '(' + id + ').';
     WS.Set(prefix + 'Role', role);
     WS.Set(prefix + 'Name', name);

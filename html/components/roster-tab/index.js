@@ -1,4 +1,6 @@
-function updateSkaterCount(k, v) {
+'use strict';
+
+function rstUpdateSkaterCount(k, v) {
   let count = 0;
   $('#RosterTab [Team="' + k.Team + '"] tr.Skater').each(function (_, f) {
     let flag = $(f).attr('flag');
@@ -14,10 +16,10 @@ function updateSkaterCount(k, v) {
   return v;
 }
 
-function toPositionDisplay(k, v) {
+function rstToPositionDisplay(k, v) {
   let position = '';
-  const flag = WS.state['ScoreBoard.CurrentGame.Team(' + k.Team + ').Skater(' + k.Skater + ').Flags'];
-  const role = WS.state['ScoreBoard.CurrentGame.Team(' + k.Team + ').Skater(' + k.Skater + ').Role'];
+  const flag = WS.state[k.upTo('Skater') + '.Flags'];
+  const role = WS.state[k.upTo('Skater') + '.Role'];
   switch (role) {
     case 'Jammer':
     case 'Pivot':
@@ -30,11 +32,11 @@ function toPositionDisplay(k, v) {
   }
   switch (flag) {
     case '':
-      return position === '' ? 'Skater' : position;
+      return position;
     case 'C':
-      return position === '' ? 'Captain' : position + ' C';
+      return position === 'Skater' ? 'Captain' : position + ' C';
     case 'A':
-      return position === '' ? 'Alt Captain' : position + ' A';
+      return position === 'Skater' ? 'Alt Captain' : position + ' A';
     case 'ALT':
       return 'Not Skating';
     case 'BA':

@@ -1,3 +1,5 @@
+'use strict';
+
 $('#teamLogoUpload').fileupload({
   url: '/Media/upload',
   formData: [
@@ -18,8 +20,7 @@ $('#teamLogoUpload').fileupload({
   },
 });
 
-function openStoreDialog(k) {
-  'use strict';
+function tmeOpenStoreDialog(k) {
   WS.SetupDialog($('#StoreTeamDialog'), k, {
     title: 'Store Team',
     width: '500px',
@@ -33,13 +34,11 @@ function openStoreDialog(k) {
   });
 }
 
-function triggerUpload() {
-  'use strict';
+function tmeTriggerUpload() {
   $('#teamLogoUpload').trigger('click');
 }
 
-function openAlternateNamesDialog(k) {
-  'use strict';
+function tmeOpenAlternateNamesDialog(k) {
   WS.SetupDialog($('#AlternateNamesDialog'), k, {
     title: 'Alternate Names',
     width: 700,
@@ -50,7 +49,7 @@ function openAlternateNamesDialog(k) {
       },
     },
   })
-    .children('#newType')
+    .find('#newType')
     .autocomplete({
       minLength: 0,
       source: [
@@ -64,8 +63,7 @@ function openAlternateNamesDialog(k) {
     .dialog('open');
 }
 
-function openColorsDialog(k) {
-  'use strict';
+function tmeOpenColorsDialog(k) {
   WS.SetupDialog($('#ColorsDialog'), k, {
     title: 'Team Colors',
     width: 800,
@@ -90,45 +88,34 @@ function openColorsDialog(k) {
     .dialog('open');
 }
 
-function isPrepared(k) {
-  'use strict';
+function tmeIsPrepared(k) {
   return k.PreparedTeam != null;
 }
 
-function notPrepared(k) {
-  'use strict';
+function tmeNotPrepared(k) {
   return k.PreparedTeam == null;
 }
 
-function isSelectorTeam(k, v, elem) {
-  'use strict';
-  return v === elem.attr('team');
-}
-
-function filterOtherUc(k, v, elem) {
-  'use strict';
+function tmeFilterOtherUc(k, v, elem) {
   elem.children('[value="' + v + '"]').length ? v : '';
 }
 
-function isNotOtherUc(k, v) {
-  'use strict';
+function tmeIsNotOtherUc(k, v) {
   const preparedTeam = WS.state['ScoreBoard.Game(' + k.Game + ').Team(' + k.Team + ').PreparedTeam'];
   return !k.Team || (preparedTeam && $('#PreparedUc [PreparedTeam="' + preparedTeam + '"] [value="' + v + '"]').length);
 }
 
-function addNewUc(k, v, elem, event) {
-  'use strict';
+function tmeAddNewUc(k, v, elem, event) {
   if (event && event.which !== 13) {
     return;
   }
   if ($('#newUc').val() !== '') {
-    WS.Set(k + '.UniformColor(' + newUUID() + ')', $('#newUc').val());
+    WS.Set(k + '.UniformColor(' + sbNewUuid() + ')', $('#newUc').val());
     $('#newUc').val('');
   }
 }
 
-function skaterCount(k, v, elem) {
-  'use strict';
+function tmeSkaterCount(k, v, elem) {
   var count = 0;
   elem
     .closest('table')
@@ -141,7 +128,7 @@ function skaterCount(k, v, elem) {
   return '(' + count + ' skating)';
 }
 
-function newSkaterInput(k, v, elem, event) {
+function tmeNewSkaterInput(k, v, elem, event) {
   elem
     .parent()
     .find('button.AddSkater')
@@ -152,11 +139,11 @@ function newSkaterInput(k, v, elem, event) {
     );
   if (!elem.parent().parent().find('button.AddSkater').button('option', 'disabled') && 13 === event.which) {
     // Enter
-    addSkater(k);
+    tmeAddSkater(k);
   }
 }
 
-function pasteSkaters(k, v, elem, event) {
+function tmePasteSkaters(k, v, elem, event) {
   const text = event.originalEvent.clipboardData.getData('text');
   const lines = text.split('\n');
   if (lines.length <= 1) {
@@ -187,23 +174,21 @@ function pasteSkaters(k, v, elem, event) {
     const pronouns = cols.length > 2 ? cols[cols.length - 1].trim() : '';
     // Assume same number means same skater.
     const id = knownNumbers[number];
-    _addSkater(k, number, name, pronouns, '', id);
+    _tmeAddSkater(k, number, name, pronouns, '', id);
   }
   return false;
 }
 
-function _addSkater(teamPrefix, number, name, pronouns, flags, id) {
-  'use strict';
-  id = id || newUUID();
+function _tmeAddSkater(teamPrefix, number, name, pronouns, flags, id) {
+  id = id || sbNewUuid();
   WS.Set(teamPrefix + '.Skater(' + id + ').RosterNumber', number);
   WS.Set(teamPrefix + '.Skater(' + id + ').Name', name);
   WS.Set(teamPrefix + '.Skater(' + id + ').Pronouns', pronouns);
   WS.Set(teamPrefix + '.Skater(' + id + ').Flags', flags);
 }
 
-function addSkater(k) {
-  'use strict';
-  _addSkater(
+function tmeAddSkater(k) {
+  _tmeAddSkater(
     k,
     $('.AddSkater>>.RosterNumber').val(),
     $('.AddSkater>>.Name').val(),
@@ -218,8 +203,7 @@ function addSkater(k) {
   $('button.AddSkater').button('option', 'disabled', true);
 }
 
-function openRemoveSkaterDialog(k, v, elem) {
-  'use strict';
+function tmeOpenRemoveSkaterDialog(k) {
   WS.SetupDialog($('#RemoveSkaterDialog'), k, {
     title: 'Remove Skater',
     modal: true,
@@ -242,30 +226,26 @@ function openRemoveSkaterDialog(k, v, elem) {
   });
 }
 
-function getAlternateNameId(k) {
-  'use strict';
+function tmeGetAlternateNameId(k) {
   return k.AlternateName;
 }
 
-function addAlternateName(k, v, elem, event) {
-  'use strict';
+function tmeAddAlternateName(k, v, elem, event) {
   if (event && event.type === 'keypress' && event.which !== 13) {
     return;
   }
-  const typeinput = elem.closest('#AlternateNamesDialog').children('#newType');
-  const nameinput = elem.closest('#AlternateNamesDialog').children('#newName');
+  const typeinput = elem.closest('#AlternateNamesDialog').find('#newType');
+  const nameinput = elem.closest('#AlternateNamesDialog').find('#newName');
   WS.Set(k + '.AlternateName(' + typeinput.val() + ')', nameinput.val());
   nameinput.val('');
   typeinput.val('').trigger('focus');
 }
 
-function startAutocomplete(k, v, elem) {
-  'use strict';
+function tmeStartAutocomplete(k, v, elem) {
   elem.autocomplete('search', '');
 }
 
-function addColor(k, v, elem) {
-  'use strict';
+function tmeAddColor(k, v, elem) {
   const typeinput = elem.closest('#ColorsDialog').children('#newType');
   WS.Set(k + '.Color(' + typeinput.val() + '.fg)', '');
   WS.Set(k + '.Color(' + typeinput.val() + '.bg)', '');
@@ -273,20 +253,17 @@ function addColor(k, v, elem) {
   typeinput.val('').trigger('focus');
 }
 
-function clearColor(k, v, elem) {
-  'use strict';
+function tmeClearColor(k, v, elem) {
   const type = elem.closest('[Color]').attr('Color').split('.')[0];
   WS.Set(k + '.Color(' + type + '.fg)', null);
   WS.Set(k + '.Color(' + type + '.bg)', null);
   WS.Set(k + '.Color(' + type + '.glow)', null);
 }
 
-function toColorType(k, v, elem) {
-  'use strict';
+function tmeToColorType(k, v, elem) {
   return elem.parent().attr('Color').split('.')[0];
 }
 
-function defaultColorIfEmpy(k, v, elem) {
-  'use strict';
+function tmeDefaultColorIfEmpy(k, v, elem) {
   return v || '#787878';
 }

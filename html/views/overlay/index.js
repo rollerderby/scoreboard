@@ -1,6 +1,6 @@
-(function () {
-  'use strict';
+'use strict';
 
+(function () {
   WS.Register('ScoreBoard.CurrentGame.Team(*).StarPass', function (k, v) {
     $('[Team=' + k.Team + '] [Position="Jammer"]').toggleClass('Jamming', !isTrue(v));
     $('[Team=' + k.Team + '] [Position="Pivot"]').toggleClass('Jamming', isTrue(v));
@@ -13,49 +13,49 @@
       'ScoreBoard.CurrentGame.OfficialReview',
       'ScoreBoard.CurrentGame.Team(*).Timeouts',
     ],
-    setActiveTimeout
+    sbSetActiveTimeout
   );
 
   // Show Clocks
-  WS.Register(['ScoreBoard.CurrentGame.Clock(*).Running', 'ScoreBoard.CurrentGame.InJam'], clockSelect);
+  WS.Register(['ScoreBoard.CurrentGame.Clock(*).Running', 'ScoreBoard.CurrentGame.InJam'], sbClockSelect);
 
   $(document).keyup(function (e) {
     switch (e.which) {
       case 74: // j
-        toggleSetting('ShowJammers');
+        _ovlToggleSetting('ShowJammers');
         break;
       case 76: // l
-        toggleSetting('ShowLineups');
+        _ovlToggleSetting('ShowLineups');
         break;
       case 78: // n
-        toggleSetting('ShowAllNames');
+        _ovlToggleSetting('ShowAllNames');
         break;
       case 67: // c
-        toggleSetting('Clock');
+        _ovlToggleSetting('Clock');
         break;
       case 83: // s
-        toggleSetting('Score');
+        _ovlToggleSetting('Score');
         break;
       case 48: // 0
-        togglePanel('PPJBox');
+        _ovlTogglePanel('PPJBox');
         break;
       case 49: // 1
-        togglePanel('RosterTeam1');
+        _ovlTogglePanel('RosterTeam1');
         break;
       case 50: // 2
-        togglePanel('RosterTeam2');
+        _ovlTogglePanel('RosterTeam2');
         break;
       case 51: // 3
-        togglePanel('PenaltyTeam1');
+        _ovlTogglePanel('PenaltyTeam1');
         break;
       case 52: // 4
-        togglePanel('PenaltyTeam2');
+        _ovlTogglePanel('PenaltyTeam2');
         break;
       case 57: // 9
-        togglePanel('LowerThird');
+        _ovlTogglePanel('LowerThird');
         break;
       case 85: // u
-        togglePanel('Upcoming');
+        _ovlTogglePanel('Upcoming');
         break;
       case 32: // space
         WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', '');
@@ -68,30 +68,25 @@
   }, 1000);
 })();
 
-function toggleSetting(s) {
+function _ovlToggleSetting(s) {
   WS.Set(
     'ScoreBoard.Settings.Setting(Overlay.Interactive.' + s + ')',
     WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.' + s + ')'] === 'On' ? 'Off' : 'On'
   );
 }
 
-function togglePanel(p) {
+function _ovlTogglePanel(p) {
   WS.Set(
     'ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)',
     WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'] === p ? '' : p
   );
 }
 
-function toBackground(k, v) {
+function ovlToBackground(k, v) {
   return v || 'transparent';
 }
 
-function toPercent(k, v) {
-  return v + '%';
-}
-
-function toIndicator(k, v) {
-  'use strict';
+function ovlToIndicator(k, v) {
   var prefix = k.substring(0, k.lastIndexOf('.'));
   return isTrue(WS.state[prefix + '.StarPass'])
     ? 'SP'
@@ -102,13 +97,7 @@ function toIndicator(k, v) {
     : '';
 }
 
-function toPpjColumnHeight(k, v) {
-  'use strict';
-  return v * 4 + 'px';
-}
-
-function toPpjColumnWidth() {
-  'use strict';
+function ovlToPpjColumnWidth() {
   var ne1 = $('.PPJBox .Team1 .GraphBlock').length;
   var ne2 = $('.PPJBox .Team2 .GraphBlock').length;
   if (ne2 > ne1) {
@@ -122,20 +111,19 @@ function toPpjColumnWidth() {
   return newWidth;
 }
 
-function toPpjMargin(k, v) {
-  'use strict';
+function ovlToPpjMargin(k, v) {
   return parseInt($('.PPJBox .Team1 .Period').innerHeight()) - v * 4;
 }
 
-function toLowerThirdColorFg(k, v) {
-  return toLowerThirdColor('overlay.fg');
+function ovlToLowerThirdColorFg() {
+  return _ovlToLowerThirdColor('overlay.fg');
 }
 
-function toLowerThirdColorBg(k, v) {
-  return toLowerThirdColor('overlay.bg');
+function ovlToLowerThirdColorBg() {
+  return _ovlToLowerThirdColor('overlay.bg');
 }
 
-function toLowerThirdColor(type) {
+function _ovlToLowerThirdColor(type) {
   switch (WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)']) {
     case 'ColourTeam1':
       return WS.state['ScoreBoard.CurrentGame.Team(1).Color(' + type + ')'];
@@ -146,8 +134,7 @@ function toLowerThirdColor(type) {
   }
 }
 
-function toClockType(k, v) {
-  'use strict';
+function ovlToClockType() {
   let ret;
   const to = WS.state['ScoreBoard.CurrentGame.TimeoutOwner'];
   const or = WS.state['ScoreBoard.CurrentGame.OfficialReview'];

@@ -1,13 +1,22 @@
+'use strict';
+
 (function () {
-  'use strict';
   const gameId = _windowFunctions.getParam('game');
   const prefix = gameId ? 'ScoreBoard.Game(' + gameId + ').' : 'ScoreBoard.CurrentGame.';
 
   WS.Register([prefix + 'Rule(Penalties.NumberToFoulout)']);
-  WS.Register([prefix + 'Clock(Period).Number'], updateCurrentPeriodStyle());
-  WS.Register([prefix + 'Clock(Jam).Number'], updateCurrentJamStyle());
+  WS.Register([prefix + 'Clock(Period).Number'], _pltUpdateCurrentPeriodStyle());
+  WS.Register([prefix + 'Clock(Jam).Number'], _pltUpdateCurrentJamStyle());
   WS.Register(prefix + 'Team(*).Skater(*).Role', {
-    triggerBatchFunc: updatePtRowColor,
+    triggerBatchFunc: function () {
+      $('.PltInput>.Team').each(function (i, e) {
+        $(e)
+          .find('tr.Skater:not([role="NotInGame])')
+          .each(function (idx) {
+            $(this).toggleClass('Darker', idx % 4 === 2 || idx % 4 === 3);
+          });
+      });
+    },
   });
 
   WS.Register([
@@ -15,40 +24,14 @@
     prefix + 'Period(*).CurrentJam',
     prefix + 'CurrentPeriodNumber',
     prefix + 'Period(*).CurrentJamNumber',
+    prefix + 'Team(*).Skater(*).Position',
+    prefix + 'Team(*).Position(*).',
   ]);
-
-  $('#AnnotationEditor #skaterList').controlgroup();
 })();
 
-function updatePtRowColor() {
-  $('.PLT.Team').each(function (i, e) {
-    $(e)
-      .find('tr.Skater:not([role="NotInGame])')
-      .each(function (idx) {
-        $(this).toggleClass('Darker', idx % 4 === 2 || idx % 4 === 3);
-      });
-  });
-}
-
-function isOnTrackRole(k, v) {
-  'use strict';
-  return v === 'Jammer' || v === 'Pivot' || v === 'Blocker';
-}
-
-function prefixSigma(k, v) {
-  'use strict';
-  return 'Σ ' + v;
-}
-
-function toWarnLevel(k, v) {
-  'use strict';
+function pltToWarnLevel(k, v) {
   const limit = WS.state['ScoreBoard.' + (k.Game ? 'Game(' + k.Game + ')' : 'CurrentGame') + '.Rule(Penalties.NumberToFoulout)'];
-  if (
-    WS.state[
-      'ScoreBoard.' + (k.Game ? 'Game(' + k.Game + ')' : 'CurrentGame') + '.Team(' + k.Team + ').Skater(' + k.Skater + ').Penalty(0).Code'
-    ] ||
-    v >= limit
-  ) {
+  if (WS.state[k.upTo('Skater') + '.Penalty(0).Code'] || v >= limit) {
     return 3;
   } else if (v == limit - 1) {
     return 2;
@@ -59,52 +42,37 @@ function toWarnLevel(k, v) {
   }
 }
 
-function updateSkaterUnserved(k, v, elem) {
-  'use strict';
+function pltUpdateSkaterUnserved(k, v, elem) {
   elem
-    .siblings('.Sitting')
-    .toggleClass('Unserved', (v != null && !isTrue(v)) || elem.siblings('.Box:not([Penalty="0"]).Unserved').length > 0);
+    .siblings('.Box')
+    .toggleClass('Unserved', (v != null && !isTrue(v)) || elem.siblings('.Penalty:not([Penalty="0"]).Unserved').length > 0);
   return v != null && !isTrue(v);
 }
 
-function advanceOrAnnotation(k, v, elem) {
-  'use strict';
-  if (elem.hasClass('Active')) {
-    WS.Set(k.substring(0, k.lastIndexOf('.')) + '.AdvanceFieldings', true);
-  } else if (elem.hasClass('OnTrack')) {
-    _openAnnotationEditor(k.Game, k.Team, k.Skater);
+function pltAdvanceOrAnnotation(k, v, elem) {
+  if (elem.hasClass('Advance')) {
+    WS.Set(k.upTo('Team') + '.AdvanceFieldings', true);
+  } else if (elem.hasClass('Show')) {
+    _pltOpenAnnotationEditor(k.Game, k.Team, k.Skater);
   }
 }
 
-function addPenalty(k, v, elem) {
-  'use strict';
-  _openPenaltyEditor(k.Game, k.Team, k.Skater, 99);
+function pltAddPenalty(k) {
+  _pltOpenPenaltyEditor(k.Game, k.Team, k.Skater, 99);
 }
 
-function editPenalty(k, v, elem) {
-  'use strict';
-  _openPenaltyEditor(k.Game, k.Team, k.Skater, k.Penalty);
+function pltEditPenalty(k) {
+  _pltOpenPenaltyEditor(k.Game, k.Team, k.Skater, k.Penalty);
 }
 
-function toPeriodJam(k, v) {
-  'use strict';
-  const prefix =
-    'ScoreBoard.' +
-    (k.Game ? 'Game(' + k.Game + ')' : 'CurrentGame') +
-    '.Team(' +
-    k.Team +
-    ').Skater(' +
-    k.Skater +
-    ').Penalty(' +
-    k.Penalty +
-    ').';
-  const pn = WS.state[prefix + 'PeriodNumber'];
-  const jn = WS.state[prefix + 'JamNumber'];
+function pltToPeriodJam(k) {
+  const prefix = k.upTo('Penalty');
+  const pn = WS.state[prefix + '.PeriodNumber'];
+  const jn = WS.state[prefix + '.JamNumber'];
   return pn && jn ? pn + '-' + jn : '\xa0';
 }
 
-function updateCurrentPeriodStyle() {
-  'use strict';
+function _pltUpdateCurrentPeriodStyle() {
   const prefix = _windowFunctions.getParam('game')
     ? 'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').'
     : 'ScoreBoard.CurrentGame.';
@@ -114,15 +82,14 @@ function updateCurrentPeriodStyle() {
   }
 
   $('#current-period-style').remove();
-  $('<style> .Box[period="' + periodNumber + '"] { font-weight: bold; color: #000; }</style>')
+  $('<style> .Penalty[period="' + periodNumber + '"] { font-weight: bold; color: #000; }</style>')
     .attr('id', 'current-period-style')
     .appendTo('head');
 
-  updateCurrentJamStyle();
+  _pltUpdateCurrentJamStyle();
 }
 
-function updateCurrentJamStyle() {
-  'use strict';
+function _pltUpdateCurrentJamStyle() {
   const prefix = _windowFunctions.getParam('game')
     ? 'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').'
     : 'ScoreBoard.CurrentGame.';
@@ -133,7 +100,7 @@ function updateCurrentJamStyle() {
   }
 
   $('#current-jam-style').remove();
-  $('<style> .Box[period="' + periodNumber + '"][jam="' + jamNumber + '"] { text-decoration: underline; } </style>')
+  $('<style> .Penalty[period="' + periodNumber + '"][jam="' + jamNumber + '"] { text-decoration: underline; } </style>')
     .attr('id', 'current-jam-style')
     .appendTo('head');
 }
@@ -144,8 +111,7 @@ function updateCurrentJamStyle() {
 //
 //###################################################################
 
-function _openPenaltyEditor(g, t, s, p) {
-  'use strict';
+function _pltOpenPenaltyEditor(g, t, s, p) {
   if (!g) {
     return; // Whiteboard
   }
@@ -167,33 +133,26 @@ function _openPenaltyEditor(g, t, s, p) {
   });
 }
 
-function currentIfNull(k, v) {
-  'use strict';
+function pltCurrentIfNull(k, v) {
   return v || WS.state['ScoreBoard.Game(' + k.Game + ').CurrentPeriodNumber'];
 }
 
-function currentIfInvalid(k, v, elem) {
-  'use strict';
-  return elem.children('[value="' + v + '"]').length ? v : WS.state['ScoreBoard.Game(' + k.Game + ').Period(' + k.Period + ').CurrentJam'];
+function pltCurrentIfInvalid(k, v, elem) {
+  return elem.children('[value="' + v + '"]').length ? v : WS.state[k.upTo('Period') + '.CurrentJam'];
 }
 
-function adjust(k, v, elem) {
-  'use strict';
+function pltAdjust(k, v, elem) {
   const dir = elem.attr('dir');
-  elem.siblings('select').find(':selected')[dir]().prop('selected', true).parent().toggle('change');
+  elem.siblings('select').find(':selected')[dir]().prop('selected', true).parent().trigger('change');
 }
 
-function updateJam(k, v) {
-  'use strict';
-  WS.Set(
-    'ScoreBoard.Game(' + k.Game + ').Team(' + k.Team + ').Skater(' + k.Skater + ').Penalty(' + k.Penalty + ').Jam',
-    WS.state['ScoreBoard.Game(' + k.Game + ').Period(' + v + ').CurrentJam']
-  );
+function pltUpdateJam(k, v) {
+  console.log(k, WS.state['ScoreBoard.Game(' + k.Game + ').Period(' + v + ').CurrentJam']);
+  WS.Set(k.upTo('Penalty') + '.Jam', WS.state['ScoreBoard.Game(' + k.Game + ').Period(' + v + ').CurrentJam']);
   return v;
 }
 
-function toPenaltyCodeDisplay(k, v, elem, suffix) {
-  'use strict';
+function pltToPenaltyCodeDisplay(k, v, elem, suffix) {
   suffix = suffix || '';
   let output = '<div class="Code">' + k.PenaltyCode + suffix + '</div><div class="Description">';
   v.split(',').forEach(function (d) {
@@ -203,9 +162,8 @@ function toPenaltyCodeDisplay(k, v, elem, suffix) {
   return output;
 }
 
-function toExpCodeDisplay(k, v, elem) {
-  'use strict';
-  return toPenaltyCodeDisplay(k, v, elem, '(EXP)');
+function pltToExpCodeDisplay(k, v, elem) {
+  return pltToPenaltyCodeDisplay(k, v, elem, '(EXP)');
 }
 
 //###################################################################
@@ -214,8 +172,7 @@ function toExpCodeDisplay(k, v, elem) {
 //
 //###################################################################
 
-function _openAnnotationEditor(gameId, teamId, skaterId) {
-  'use strict';
+function _pltOpenAnnotationEditor(gameId, teamId, skaterId) {
   let position = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Skater(' + skaterId + ').Position'];
   position = position.slice(position.lastIndexOf('_') + 1);
   let fieldingPrefix = ').TeamJam(' + teamId + ').Fielding(' + position + ')';
@@ -238,10 +195,18 @@ function _openAnnotationEditor(gameId, teamId, skaterId) {
     modal: true,
     title: 'Annotation & Box Trip Editor',
     width: '700px',
+    buttons: {
+      Close: function () {
+        $(this).dialog('close');
+      },
+    },
   });
 }
 
-function subAnn(k, v, elem) {
-  'use strict';
+function pltSubAnn(k, v, elem) {
   return 'Substitute for #' + elem.attr('rosterNumber');
+}
+
+function pltNoUnend(k, v) {
+  return isTrue(v) || WS.state[k.upTo('Fielding') + '.CurrentBoxTrip'] == null;
 }

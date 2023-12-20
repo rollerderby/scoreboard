@@ -161,7 +161,7 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
     var newColorInput = $('<input type="text" class="Name" size="15">')
       .on('keyup', function (event) {
         if ($(this).val() !== '' && 13 === event.which) {
-          WS.Set(teamPrefix + '.UniformColor(' + newUUID() + ')', $(this).val());
+          WS.Set(teamPrefix + '.UniformColor(' + sbNewUuid() + ')', $(this).val());
           $(this).val('');
         }
       })
@@ -171,7 +171,7 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
       .button()
       .on('click', function () {
         if (newColorInput.val() !== '') {
-          WS.Set(teamPrefix + '.UniformColor(' + newUUID() + ')', newColorInput.val());
+          WS.Set(teamPrefix + '.UniformColor(' + sbNewUuid() + ')', newColorInput.val());
           newColorInput.val('');
         }
       })
@@ -279,7 +279,7 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
     .end();
 
   var addSkater = function (number, name, pronouns, flags, id) {
-    id = id || newUUID();
+    id = id || sbNewUuid();
     WS.Set(teamPrefix + '.Skater(' + id + ').RosterNumber', number);
     WS.Set(teamPrefix + '.Skater(' + id + ').Name', name);
     WS.Set(teamPrefix + '.Skater(' + id + ').Pronouns', pronouns);

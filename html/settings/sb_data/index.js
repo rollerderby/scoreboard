@@ -1,13 +1,13 @@
+'use strict';
+
 WS.Register('ScoreBoard.Rulesets.Ruleset(*).Parent');
 
 WS.AfterLoad(function () {
-  'use strict';
-
-  setInterval(updateAllUrl, 1000);
-  updateSelectedUrl();
+  setInterval(_datUpdateAllUrl, 1000);
+  _datUpdateSelectedUrl();
 });
 
-function updateAllUrl() {
+function _datUpdateAllUrl() {
   const d = new Date();
   let name = $.datepicker.formatDate('yy-mm-dd_', d);
   name += _timeConversions.twoDigit(d.getHours());
@@ -16,7 +16,7 @@ function updateAllUrl() {
   $('#downloadAll').attr('href', '/SaveJSON/scoreboard-' + name + '.json');
 }
 
-function updateSelectedUrl() {
+function _datUpdateSelectedUrl() {
   const paths = $('#games tr.Content.Selected')
     .map((elem) => 'ScoreBoard.Game(' + elem.attr('game') + ')')
     .get()
@@ -40,32 +40,27 @@ function updateSelectedUrl() {
   $('#downloadSelected').attr('href', '/SaveJSON/crg-dataset-' + name + '.json?path=' + paths);
 }
 
-function createRemoveSelectedDialog() {
-  'use strict';
-  createRemoveDialog('selected');
+function datCreateRemoveSelectedDialog() {
+  _datCreateRemoveDialog('selected');
 }
 
-function uploadJson(k, v, elem) {
-  'use strict';
+function datUploadJson(k, v, elem) {
   elem.closest('form').attr('action', 'Load/JSON').submit();
 }
 
-function uploadXlsx(k, v, elem) {
-  'use strict';
+function datUloadXlsx(k, v, elem) {
   elem.closest('form').attr('action', 'Load/xlsx').submit();
 }
 
-function uploadBlankXlsx(k, v, elem) {
-  'use strict';
+function datUploadBlankXlsx(k, v, elem) {
   elem.closest('form').attr('action', 'Load/blank_xlsx').submit();
 }
 
-function updateUploadButtons(k, v, elem) {
-  'use strict';
+function datUpdateUploadButtons(k, v, elem) {
   $('UploadButton').button(elem.val() ? 'enable' : 'disable');
 }
 
-function createRemoveDialog(type) {
+function _datCreateRemoveDialog(type) {
   let div = $('#sbTemplates .RemoveDataDialog').clone(true);
   const selector = type === 'selected' ? ' tr.Content.Selected' : type === 'singleElement' ? ' tr.Content.ToDelete' : ' tr.Content.None'; // class None is not used, so this will match nothing
   div.find('a.Elements').text($(selector).length);
@@ -103,90 +98,63 @@ function createRemoveDialog(type) {
   });
 }
 
-function selectAll(k, v, elem) {
-  'use strict';
+function datSelectAll(k, v, elem) {
   const turnOn = elem.closest('table').find('tr.Content:not(.Selected)').length > 0;
   elem.closest('table').find('tr.Content').toggleClass('Selected', turnOn);
 }
 
-function newGame() {
-  'use strict';
-  const gameid = newUUID();
+function datNewGame() {
+  const gameid = sbNewUuid();
   WS.Set('ScoreBoard.Game(' + gameid + ').Id', gameid);
   window.open('/nso/hnso?game=' + gameid, '_blank');
 }
 
-function newTeam() {
-  'use strict';
-  const teamid = newUUID();
+function datNewTeam() {
+  const teamid = sbNewUuid();
   WS.Set('ScoreBoard.PreparedTeam(' + teamid + ').Id', teamid);
   window.open('/settings/teams?team=' + teamid, '_blank');
 }
 
-function newRuleset() {
-  'use strict';
-  const rulesetid = newUUID();
+function datNewRuleset() {
+  const rulesetid = sbNewUuid();
   WS.Set('ScoreBoard.Rulesets.Ruleset(' + rulesetid + ').Id', rulesetid);
   window.open('/settings/rulesets?ruleset=' + rulesetid, '_blank');
 }
 
-function select(k, v, elem) {
-  'use strict';
+function datSelect(k, v, elem) {
   elem.closest('tr.Content').toggleClass('Selected');
-  updateSelectedUrl();
+  _datUpdateSelectedUrl();
 }
 
-function deleteElem(k, v, elem) {
-  'use strict';
+function datDeleteElem(k, v, elem) {
   elem.closest('tr.Content').addClass('ToDelete');
-  createRemoveDialog('singleElement');
+  _datCreateRemoveDialog('singleElement');
 }
 
-function gameDlLink(k, v) {
-  'use strict';
+function datGameDlLink(k, v) {
   return v ? '/SaveJSON/crg-game-' + v.replace(/[\/|\\:*?"<>\ ]/g, '_') + '.json?path=ScoreBoard.Game(' + k.Game + ')' : null;
 }
 
-function teamDlLink(k, v) {
-  'use strict';
+function datTeamDlLink(k, v) {
   return v
     ? '/SaveJSON/crg-team-' + v.replace(/[\/|\\:*?"<>\ ]/g, '_') + '.json?path=ScoreBoard.PreparedTeam(' + k.PreparedTeam + ')'
     : null;
 }
 
-function rulesetDlLink(k, v) {
-  'use strict';
+function datRulesetDlLink(k, v) {
   return v
     ? '/SaveJSON/crg-ruleset-' + v.replace(/[\/|\\:*?"<>\ ]/g, '_') + '.json?path=ScoreBoard.Rulesets.Ruleset(' + k.Ruleset + ')'
     : null;
 }
 
-function operatorDlLink(k) {
-  'use strict';
+function datOperatorDlLink(k) {
   return '/SaveJSON/crg-operator-' + k.Setting.split('.')[2].replace(/[\/|\\:*?"<>\ ]/g, '_') + '.json?path=' + k;
 }
 
-function gameEditLink(k) {
-  'use strict';
-  return '/nso/hnso?game=' + k.Game;
-}
-
-function teamEditLink(k) {
-  'use strict';
-  return '/settings/teams?team=' + k.PreparedTeam;
-}
-
-function rulesetEditLink(k) {
-  'use strict';
-  return '/settings/rulesets?ruleset=' + k.Ruleset;
-}
-
-function toEditButtonLabel(k, v) {
-  'use strict';
+function datToEditButtonLabel(k, v) {
   return isTrue(v) ? 'View' : 'Edit';
 }
 
-function toOperatorName(k) {
-  'use strict';
+function datToOperatorName(k) {
   return k.Setting.split('.')[2];
 }

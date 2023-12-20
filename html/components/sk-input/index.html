@@ -1,16 +1,16 @@
 <div class="sbSegment SkInput">
   <div class="sbGroup Name">
     <div class="Logo EditGroup">
-      <div sbCall="toggleEdit">
-        <span sbClass="sbHide: Logo: notEmpty">No Logo</span>
-        <img class="Logo" sbAttr="src: Logo" sbClass="sbHide: Logo: empty" />
+      <div sbCall="skiToggleEdit">
+        <span sbClass="sbHide: Logo: sbIsNotEmpty">No Logo</span>
+        <img class="Logo" sbAttr="src: Logo" sbClass="sbHide: Logo: sbIsEmpty" />
       </div>
-      <select class="sbHide" sbControl="Logo" sbOn="change: toggleEdit">
+      <select class="sbHide" sbControl="Logo" sbOn="change: skiToggleEdit">
         <option value="">No Logo</option>
         <option
           sbForeach="File::name: resort=Name"
           sbContext="/ScoreBoard.Media.Format(images).Type(teamlogo)"
-          sbAttr="name: Name | value:-:toMediaPath"
+          sbAttr="name: Name | value:-:sbToMediaPath"
           sbDisplay="Name"
         ></option>
       </select>
@@ -19,50 +19,52 @@
       <div
         class="TeamName"
         sbDisplay="AlternateName(operator), UniformColor, Name"
-        sbCss="color: Color(operator.fg) | background-color: Color(operator.bg) | text-shadow: Color(operator.glow): toShadow"
-        sbCall="toggleEdit"
+        sbCss="color: Color(operator.fg) | background-color: Color(operator.bg) | text-shadow: Color(operator.glow): sbCssToShadow"
+        sbCall="skiToggleEdit"
       ></div>
-      <span class="sbHide" sbCall="toggleEdit"> Alternate Name: </span>
-      <input type="text" size="15" class="sbHide" sbControl="AlternateName(operator):: toNullIfEmpty" sbOn="focusout: toggleEdit" />
+      <span class="sbHide" sbCall="skiToggleEdit"> Alternate Name: </span>
+      <input type="text" size="15" class="sbHide" sbControl="AlternateName(operator):: sbToNullIfEmpty" sbOn="focusout: skiToggleEdit" />
     </div>
   </div>
-  <div class="sbGroup">
-    <div class="Stack">
-      <button
-        class="sbKeyControl BigButton"
-        sbAttr="id:-: 'Team[Team]ScoreDown'"
-        sbProp="disabled: TripScore: == 0"
-        sbSet="TripScore: -1: change"
-      >
-        Trip Pts -1
-      </button>
-      <button class="sbKeyControl" sbAttr="id:-: 'Team[Team]RemoveTrip'" sbProp="disabled: NoInitial" sbSet="RemoveTrip">
-        Remove Trip
-      </button>
+  <div class="sbGroup sbStack">
+    <div class="ScoreRow">
+      <div class="sbStack">
+        <button
+          class="sbKeyControl BigButton"
+          sbAttr="id:-: 'Team[Team]ScoreDown'"
+          sbProp="disabled: TripScore: == 0"
+          sbSet="TripScore: -1: change"
+        >
+          Trip Pts -1
+        </button>
+        <button class="sbKeyControl" sbAttr="id:-: 'Team[Team]RemoveTrip'" sbProp="disabled: NoInitial" sbSet="RemoveTrip">
+          Remove Trip
+        </button>
+      </div>
+      <div class="sbStack">
+        <span>Jam Pts: <span class="SubScore" sbDisplay="JamScore"></span></span>
+        <span>Trip Pts: <span class="SubScore" sbDisplay="TripScore"></span></span>
+      </div>
+      <span class="Score" sbDisplay="Score"></span>
+      <div class="sbStack">
+        <button class="sbKeyControl BigButton" sbAttr="id:-: 'Team[Team]ScoreUp'" sbSet="TripScore: +1: change">Trip Pts +1</button>
+        <button class="sbKeyControl" sbAttr="id:-: 'Team[Team]AddTrip'" sbSet="AddTrip">Add Trip</button>
+      </div>
     </div>
-    <div class="Stack">
-      <span>Jam Pts: <span class="SubScore" sbDisplay="JamScore"></span></span>
-      <span>Trip Pts: <span class="SubScore" sbDisplay="TripScore"></span></span>
+    <div class="ScoreRow">
+      <span>Set Trip Pts</span>
+      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore0'" sbSet="TripScore: 0">0</button>
+      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore1'" sbSet="TripScore: 1">1</button>
+      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore2'" sbSet="TripScore: 2">2</button>
+      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore3'" sbSet="TripScore: 3">3</button>
+      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore4'" sbSet="TripScore: 4">4</button>
     </div>
-    <span class="Score" sbDisplay="Score"></span>
-    <div class="Stack">
-      <button class="sbKeyControl BigButton" sbAttr="id:-: 'Team[Team]ScoreUp'" sbSet="TripScore: +1: change">Trip Pts +1</button>
-      <button class="sbKeyControl" sbAttr="id:-: 'Team[Team]AddTrip'" sbSet="AddTrip">Add Trip</button>
-    </div>
-  </div>
-  <div class="sbGroup">
-    <span>Set Trip Pts</span>
-    <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore0'" sbSet="TripScore: 0">0</button>
-    <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore1'" sbSet="TripScore: 1">1</button>
-    <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore2'" sbSet="TripScore: 2">2</button>
-    <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore3'" sbSet="TripScore: 3">3</button>
-    <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore4'" sbSet="TripScore: 4">4</button>
   </div>
   <div class="sbGroup sbShowOnOperator">
     <button
       class="sbKeyControl"
       sbAttr="id:-:'Team[Team]Timeout'"
-      sbClass="sbActive: Id,^TimeoutOwner, ^OfficialReview: isToThisTeam"
+      sbClass="sbActive: Id,^TimeoutOwner, ^OfficialReview: skiIsToThisTeam"
       sbSet="Timeout"
     >
       Team TO
@@ -71,7 +73,7 @@
     <button
       class="sbKeyControl"
       sbAttr="id:-:'Team[Team]OfficialReview'"
-      sbClass="sbActive: Id,^TimeoutOwner, ^OfficialReview: isOrThisTeam"
+      sbClass="sbActive: Id,^TimeoutOwner, ^OfficialReview: skiIsOrThisTeam"
       sbSet="OfficialReview"
     >
       Off Review
@@ -101,7 +103,7 @@
         </button>
         <button
           sbForeach="Skater:: rosterNumber: resort=RosterNumber"
-          sbAttr="rosterNumber: RosterNumber | id: -: toJammerId"
+          sbAttr="rosterNumber: RosterNumber | id: -: skiToJammerId"
           sbDisplay="RosterNumber"
           sbClass="sbActive: p.Skater: === elem.attr('Skater') | HasPlayed: Color: === 'Jammer' | sbHide: Role: === 'NotInGame'"
           sbSet="p.Skater: elem.attr('Skater')"
@@ -126,7 +128,7 @@
         </button>
         <button
           sbForeach="Skater:: rosterNumber: resort=RosterNumber"
-          sbAttr="rosterNumber: RosterNumber | id: -: toPivotId"
+          sbAttr="rosterNumber: RosterNumber | id: -: skiToPivotId"
           sbDisplay="RosterNumber"
           sbClass="sbActive: p.Skater: === elem.attr('Skater') | HasPlayed: Color: === 'Pivot' | sbHide: Role: === 'NotInGame'"
           sbSet="p.Skater: elem.attr('Skater')"

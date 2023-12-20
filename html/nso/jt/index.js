@@ -104,7 +104,7 @@ function setupPeriodTimePage() {
   });
 }
 
-function toTime(k, v) {
+function sbToTime(k, v) {
   'use strict';
   var isCountDown = isTrue(WS.state['ScoreBoard.CurrentGame.Clock(' + k.Clock + ').Direction']);
   return _timeConversions.msToMinSecNoZero(v, isCountDown);

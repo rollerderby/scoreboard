@@ -1,45 +1,30 @@
+'use strict';
+
 WS.AfterLoad(function () {
-  'use strict';
   $('#tabsDiv').tabs();
 });
 
-function isNotImages(k, v) {
-  'use strict';
-  return v !== 'images';
-}
-
-function noneIfNotImages(k, v) {
-  'use strict';
-  return v !== 'images' ? 'none' : '';
-}
-
-function getSubId(k, v) {
-  'use strict';
+function filGetSubId(k, v) {
   return v.split('_')[1];
 }
 
-function showTable(k, v, elem) {
-  'use strict';
-  elem.closest('table').removeClass('sbHide');
+function filShowTable(k, v, elem) {
+  elem.closest('table').removeClass('Hide');
 }
 
-function hideTable(k, v, elem) {
-  'use strict';
-  elem.closest('table').addClass('sbHide');
+function filHideTable(k, v, elem) {
+  elem.closest('table').addClass('Hide');
 }
 
-function gameData(k, v) {
-  'use strict';
+function filIsGameData(k, v) {
   return k.Format === 'game-data';
 }
 
-function noGameData(k, v) {
-  'use strict';
+function filNoGameData(k, v) {
   return k.Format !== 'game-data';
 }
 
-function toPreviewElem(k, v) {
-  'use strict';
+function filToPreviewElem(k, v) {
   return k.Format === 'game-data'
     ? ''
     : (k.Format === 'images' ? '<img' : k.Format === 'videos' ? '<video' : '<iframe') +
@@ -52,8 +37,7 @@ function toPreviewElem(k, v) {
         '">';
 }
 
-function createRemoveDialog(k, v, elem) {
-  'use struct';
+function filCreateRemoveDialog(k, v, elem) {
   var div = $('div.RemoveMediaDialog').clone(true);
   div.find('a.File').text(k.Format + '/' + k.Type + '/' + k.File);
   div.dialog({
@@ -91,7 +75,7 @@ function createRemoveDialog(k, v, elem) {
   });
 }
 
-function createUploadDialog(k, v, elem) {
+function filCreateUploadDialog(k) {
   var div = $('div.UploadMediaDialog').clone(true);
   var uploader = div.find('div.Upload').fileupload({
     url: '/Media/upload',
@@ -113,7 +97,7 @@ function createUploadDialog(k, v, elem) {
         div.find('a.Status').text(statustxt);
       })
       .fail(function (jqxhr, textStatus, errorThrown) {
-        div.find('a.Status').text('Error while uploading : ' + jqxhr.responseText);
+        div.find('a.Status').text('Error while uploading: ' + jqxhr.responseText);
       })
       .always(function () {
         var newInputFile = inputFile.clone(true).insertAfter(inputFile);
@@ -129,7 +113,7 @@ function createUploadDialog(k, v, elem) {
   var buttonsUploadClose = { Upload: uploadFunction, Close: closeFunction };
 
   div.dialog({
-    title: 'Upload media ' + format + ' : ' + type,
+    title: 'Upload media ' + k.Format + ' : ' + k.Type,
     modal: true,
     width: 700,
     close: function () {

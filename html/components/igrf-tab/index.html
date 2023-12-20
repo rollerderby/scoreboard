@@ -1,270 +1,246 @@
-<table id="Igrf">
-  <tr class="Name">
-    <td colspan="3">
-      <span class="Name" sbCall="toggleHide" sbDisplay="Name"></span> <span class="NameFormat sbHide">NameFormat: </span>
-      <input type="text" size="30" class="NameFormat sbHide" sbControl="NameFormat" sbOn="focusout: toggleHide" />
+<div id="Igrf" class="sbSegment">
+  <div class="sbGroup sbHeader Name">
+    <span sbCall="igrfToggleHide">
+      <span class="Name" sbDisplay="Name"></span> <span class="NameFormat sbHide">Name Format: </span>
+      <input type="text" size="30" class="NameFormat sbHide" sbControl="NameFormat" sbOn="focusout: igrfToggleHide" />
       <button class="sbHide" sbClass="sbHide: State: !== 'Running'" sbSet="OfficialScore">End Game</button>
-      <table class="NameFormat Variables sbHide">
-        <tr>
-          <th colspan="2">Supported Variables:</th>
-        </tr>
-        <tr>
-          <td>%g:</td>
-          <td>Game Number</td>
-        </tr>
-        <tr>
-          <td>%G:</td>
-          <td>&quot;Game &lt;Game Number&gt;: &quot; if game number is set, empty otherwise</td>
-        </tr>
-        <tr>
-          <td>%d:</td>
-          <td>Date of Game</td>
-        </tr>
-        <tr>
-          <td>%t:</td>
-          <td>Start Time</td>
-        </tr>
-        <tr>
-          <td>%1:</td>
-          <td>Team 1 Name</td>
-        </tr>
-        <tr>
-          <td>%2:</td>
-          <td>Team 2 Name</td>
-        </tr>
-        <tr>
-          <td>%s:</td>
-          <td>Game State</td>
-        </tr>
-        <tr>
-          <td>%S:</td>
-          <td>&quot;&lt;Team 1 Score&gt; - &lt;Team 2 Score&gt;&quot;</td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-  <tr class="Files">
-    <td colspan="3">
-      <span>Game Files: </span>
+    </span>
+  </div>
+  <div class="sbGroup Variables sbHide" sbCall="igrfToggleHide">
+    <table class="Variables">
+      <tr>
+        <th colspan="2">Supported Variables:</th>
+      </tr>
+      <tr>
+        <td>%g:</td>
+        <td>Game Number</td>
+      </tr>
+      <tr>
+        <td>%G:</td>
+        <td>&quot;Game &lt;Game Number&gt;: &quot; if game number is set, empty otherwise</td>
+      </tr>
+      <tr>
+        <td>%d:</td>
+        <td>Date of Game</td>
+      </tr>
+      <tr>
+        <td>%t:</td>
+        <td>Start Time</td>
+      </tr>
+      <tr>
+        <td>%1:</td>
+        <td>Team 1 Name</td>
+      </tr>
+      <tr>
+        <td>%2:</td>
+        <td>Team 2 Name</td>
+      </tr>
+      <tr>
+        <td>%s:</td>
+        <td>Game State</td>
+      </tr>
+      <tr>
+        <td>%S:</td>
+        <td>&quot;&lt;Team 1 Score&gt; - &lt;Team 2 Score&gt;&quot;</td>
+      </tr>
+    </table>
+  </div>
+  <div class="sbGroup sbSubHeader Files">
+    <span>Game Files: </span>
+    <span>
       <button sbClass="sbHide: ExportBlockedBy: !=''" sbSet="Export">Update</button>
-      <span sbClass="sbHide: ExportBlockedBy: ==''">Export Blocked by </span>
-      <span sbClass="sbHide: ExportBlockedBy: ==''" sbDisplay="ExportBlockedBy"></span>
-      <div class="sbSpinner sbHide" sbClass="sbHide: UpdateInProgress: !"></div>
-      <a download sbAttr="href: Filename: toJsonDl" sbClass="sbHide: JsonExists: !" sbButton>Download JSON</a>
-      <span sbClass="sbHide: JsonExists">No JSON yet</span>
-      <a download sbAttr="href: Filename: toXlsxDl" sbClass="sbHide: StatsbookExists: !" sbButton>Download Statsbook</a>
-      <span sbClass="sbHide: StatsbookExists">No Statsbook yet</span>
-      <span>Last Updated: </span>
-      <span sbDisplay="LastFileUpdate"></span>
-      <span class="Warning sbHide" sbClass="sbHide: ^BlankStatsbookFound: !== 'none'"> Blank Statsbook not found.</span>
-      <span class="Warning sbHide" sbClass="sbHide: ^BlankStatsbookFound: !== 'broken'"> Blank Statsbook not readable.</span>
-      <span class="Warning sbHide" sbClass="sbHide: ^BlankStatsbookFound: !== 'checking'"> Checking Blank Statsbook.</span>
-    </td>
-  </tr>
-  <tr class="Location">
-    <td><span>Venue: </span><input type="text" size="30" sbControl="EventInfo(Venue)" /></td>
-    <td><span>City: </span><input type="text" size="30" sbControl="EventInfo(City)" /></td>
-    <td><span>State / Province: </span><input type="text" size="10" sbControl="EventInfo(State)" /></td>
-  </tr>
-  <tr class="Event">
-    <td colspan="2"><span>Tournament: </span><input type="text" size="50" sbControl="EventInfo(Tournament)" /></td>
-    <td><span>Game: </span><input type="text" size="5" sbControl="EventInfo(GameNo)" /></td>
-  </tr>
-  <tr class="Host">
-    <td colspan="3"><span>Host League: </span><input type="text" size="50" sbControl="EventInfo(HostLeague)" /></td>
-  </tr>
-  <tr class="Time">
-    <td><span>Date: </span><input type="date" sbControl="EventInfo(Date)" /></td>
-    <td><span>Start Time: </span><input type="time" sbControl="EventInfo(StartTime)" /></td>
-    <td></td>
-  </tr>
-  <tr
-    class="Separator Abort sbHide"
-    sbClass="sbHide: Clock(Period).Time, CurrentPeriodNumber, Rule(Period.Number), OfficialScore: isNotAborted"
+      <span sbClass="sbHide: ExportBlockedBy: ==''"
+        >Export Blocked by <span sbClass="sbHide: ExportBlockedBy: ==''" sbDisplay="ExportBlockedBy"></span>
+      </span>
+      <div class="sbSpinner sbInvisible" sbClass="sbInvisible: UpdateInProgress: !"></div>
+    </span>
+    <a download sbAttr="href: Filename: igrfToJsonDl" sbClass="sbHide: JsonExists: !" sbButton>Download JSON</a>
+    <span sbClass="sbHide: JsonExists">No JSON yet</span>
+    <a download sbAttr="href: Filename: igrfToXlsxDl" sbClass="sbHide: StatsbookExists: !" sbButton>Download Statsbook</a>
+    <span sbClass="sbHide: StatsbookExists">No Statsbook yet</span>
+    <span>Last Updated: <span sbDisplay="LastFileUpdate"></span></span>
+    <span class="Warning sbHide" sbClass="sbHide: ^BlankStatsbookFound: !== 'none'"> Blank Statsbook not found.</span>
+    <span class="Warning sbHide" sbClass="sbHide: ^BlankStatsbookFound: !== 'broken'"> Blank Statsbook not readable.</span>
+    <span class="Warning sbHide" sbClass="sbHide: ^BlankStatsbookFound: !== 'checking'"> Checking Blank Statsbook.</span>
+  </div>
+  <div class="sbGroup sbStack">
+    <div class="Location">
+      <span>Venue: <input type="text" size="30" sbControl="EventInfo(Venue)" /></span>
+      <span>City: <input type="text" size="30" sbControl="EventInfo(City)" /></span>
+      <span>State / Province: <input type="text" size="10" sbControl="EventInfo(State)" /></span>
+    </div>
+    <div class="Event">
+      <span>Tournament: <input type="text" size="50" sbControl="EventInfo(Tournament)" /></span>
+      <span>Game: <input type="text" size="5" sbControl="EventInfo(GameNo)" /></span>
+    </div>
+    <div class="Host">
+      <span>Host League: <input type="text" size="50" sbControl="EventInfo(HostLeague)" /></span>
+    </div>
+    <div class="Time">
+      <span>Date: <input type="date" sbControl="EventInfo(Date)" /></span>
+      <span>Start Time: <input type="time" sbControl="EventInfo(StartTime)" /></span>
+    </div>
+  </div>
+  <div
+    class="sbGroup Abort Info sbHide"
+    sbClass="sbHide: Clock(Period).Time, CurrentPeriodNumber, Rule(Period.Number), OfficialScore: igrfIsNotAborted"
   >
-    <td colspan="3"><hr /></td>
-  </tr>
-  <tr class="Abort Info sbHide" sbClass="sbHide: Clock(Period).Time, CurrentPeriodNumber, Rule(Period.Number), OfficialScore: isNotAborted">
-    <td colspan="3">
-      <span sbDisplay="Clock(Period).Time, CurrentPeriodNumber, Rule(Period.Number): toAbortTime"></span>
-      <input type="text" size="50" sbControl="AbortReason" />
-    </td>
-  </tr>
-  <tr class="Separator">
-    <td colspan="3"><hr /></td>
-  </tr>
-  <tr class="Summary">
-    <td colspan="3">
-      <table class="Summary">
-        <tr class="Head">
-          <td colspan="5" class="Value" sbDisplay="Team(1).Name"></td>
-          <td colspan="5" class="Value" sbDisplay="Team(2).Name"></td>
-        </tr>
-        <tr sbForeach="Period: -0">
-          <td class="Label" sbDisplay="Number: prefixPeriod"></td>
-          <td class="Label Small">Points</td>
-          <td class="Value" sbDisplay="Team1Points"></td>
-          <td class="Label Small">Penalties</td>
-          <td class="Value" sbDisplay="Team1PenaltyCount"></td>
-          <td class="Label" sbDisplay="Number: prefixPeriod"></td>
-          <td class="Label Small">Points</td>
-          <td class="Value" sbDisplay="Team2Points"></td>
-          <td class="Label Small">Penalties</td>
-          <td class="Value" sbDisplay="Team2PenaltyCount"></td>
-        </tr>
-        <tr class="Total">
-          <td colspan="2">TOTAL POINTS:</td>
-          <td class="Value" sbDisplay="Team(1).Score"></td>
-          <td>PENALTIES:</td>
-          <td class="Value" sbDisplay="Team(1).TotalPenalties"></td>
-          <td colspan="2">TOTAL POINTS:</td>
-          <td class="Value" sbDisplay="Team(2).Score"></td>
-          <td>PENALTIES:</td>
-          <td class="Value" sbDisplay="Team(2).TotalPenalties"></td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-  <tr class="Separator Expulsions sbHide" sbClass="sbHide: Expulsion(*).Id: noExpulsions">
-    <td colspan="3"><hr /></td>
-  </tr>
-  <tr class="Expulsions sbHide" sbClass="sbHide: Expulsion(*).Id: noExpulsions">
-    <td colspan="3">
-      <table>
-        <tr>
-          <th colspan="3">Expulsions</th>
-        </tr>
-        <tr>
-          <td class="Info" sbDisplay="Info"></td>
-          <td><input type="text" size="50" sbControl="ExtraInfo" /></td>
-          <td><button sbToggle="Suspension">Suspension Recommended</button></td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-  <tr class="Separator">
-    <td colspan="3"><hr /></td>
-  </tr>
-  <tr class="NSOs" officialType="Nso">
-    <td colspan="3">
-      <table class="Officials">
-        <col class="Role" />
-        <col class="Name" />
-        <col class="League" />
-        <col class="Cert" />
-        <col class="Button" />
-        <thead>
-          <tr>
-            <th colspan="2" class="Title">Non Skating Officials</th>
-            <th class="Head">
-              Head:
-              <select class="Head" sbControl="HNSO">
-                <option value="">Not Set</option>
-                <option sbForeach="Nso:: name: resort=Name" sbAttr="name: Name | value: Id" sbDisplay="Name"></option>
-              </select>
-            </th>
-          </tr>
-          <tr>
-            <th>Role</th>
-            <th>Name</th>
-            <th>League</th>
-            <th>Cert Level</th>
-            <th />
-          </tr>
-          <tr class="AddOfficial">
-            <th>
-              <span class="Role">
-                <select class="Role" sbCall="toggleInput">
-                  <option value="">None Selected</option>
-                  <option value="Penalty Lineup Tracker">Penalty Lineup Tracker</option>
-                  <option value="Penalty Tracker">Penalty Tracker</option>
-                  <option value="Penalty Wrangler">Penalty Wrangler</option>
-                  <option value="Inside Whiteboard Operator">Inside Whiteboard Operator</option>
-                  <option value="Jam Timer">Jam Timer</option>
-                  <option value="Scorekeeper">Scorekeeper</option>
-                  <option value="ScoreBoard Operator">ScoreBoard Operator</option>
-                  <option value="Penalty Box Manager">Penalty Box Manager</option>
-                  <option value="Penalty Box Timer">Penalty Box Timer</option>
-                  <option value="Lineup Tracker">Lineup Tracker</option>
-                  <option value="Non-Skating Official Alternate">Non-Skating Official Alternate</option>
-                  <option value="O">Other</option>
-                </select>
-                <input type="text" size="20" class="Role sbHide" sbOn="paste: pasteOfficials" />
-              </span>
-            </th>
-            <th><input type="text" size="30" class="Name" sbOn="keyup: updateAddButton | paste: pasteOfficials" /></th>
-            <th><input type="text" size="30" class="League" sbOn="keyup: updateAddButton | paste: pasteOfficals" /></th>
-            <th>
-              <select class="Cert">
-                <option value="">None</option>
-                <option value="R">Recognized</option>
-                <option value="1">Level 1</option>
-                <option value="2">Level 2</option>
-                <option value="3">Level 3</option>
-              </select>
-            </th>
-            <th>
-              <button class="AddOfficial" sbCall="addOfficial">Add</button>
-            </th>
-          </tr>
-          <tr>
-            <th colspan="5"><hr /></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr sbForeach="Nso:: role: resort=Role" sbAttr="role: Role | name: Name" class="Official">
-            <td class="Role">
-              <span class="Role">
-                <select class="Role" sbControl="Role: filterOtherRole: otherToEmpty">
-                  <option value="">None Selected</option>
-                  <option value="Penalty Lineup Tracker">Penalty Lineup Tracker</option>
-                  <option value="Penalty Tracker">Penalty Tracker</option>
-                  <option value="Penalty Wrangler">Penalty Wrangler</option>
-                  <option value="Inside Whiteboard Operator">Inside Whiteboard Operator</option>
-                  <option value="Jam Timer">Jam Timer</option>
-                  <option value="Scorekeeper">Scorekeeper</option>
-                  <option value="ScoreBoard Operator">ScoreBoard Operator</option>
-                  <option value="Penalty Box Manager">Penalty Box Manager</option>
-                  <option value="Penalty Box Timer">Penalty Box Timer</option>
-                  <option value="Lineup Tracker">Lineup Tracker</option>
-                  <option value="Non-Skating Official Alternate">Non-Skating Official Alternate</option>
-                  <option value="O">Other</option>
-                </select>
-                <input type="text" size="20" class="Role sbHide" sbClass="sbHide: Role: notOtherRole" sbControl="Role" />
-              </span>
-              <span sbClass="sbHide: Role: isNotPerTeam">
-                <br /><span>P1: </span>
-                <select sbControl="P1Team">
-                  <option value=""></option>
-                  <option sbForeach="Team: 1,2: only" sbContext="^" sbAttr="value: Id" sbDisplay="Name"></option>
-                </select>
-                <button sbToggle="Swap">Swap</button>
-              </span>
-            </td>
-            <td class="Name"><input type="text" size="30" sbControl="Name" /></td>
-            <td class="League"><input type="text" size="30" sbControl="League" /></td>
-            <td class="Cert">
-              <select class="Cert" sbControl="Cert">
-                <option value="">None</option>
-                <option value="R">Recognized</option>
-                <option value="1">Level 1</option>
-                <option value="2">Level 2</option>
-                <option value="3">Level 3</option>
-              </select>
-            </td>
-            <td class="Remove"><button class="RemoveOfficial" sbCall="openRemoveDialog">Remove</button></td>
-          </tr>
-        </tbody>
-      </table>
-    </td>
-  </tr>
-  <tr class="Separator">
-    <td colspan="3"><hr /></td>
-  </tr>
-  <tr class="Refs" officialType="Ref">
-    <td colspan="3"></td>
-  </tr>
-</table>
+    <span sbDisplay="Clock(Period).Time, CurrentPeriodNumber, Rule(Period.Number): igrfToAbortTime"></span>
+    <input type="text" size="50" sbControl="AbortReason" />
+  </div>
+  <div class="sbGroup Summary">
+    <table class="Summary">
+      <tr class="Head">
+        <td colspan="5" class="Value" sbDisplay="Team(1).Name"></td>
+        <td colspan="5" class="Value" sbDisplay="Team(2).Name"></td>
+      </tr>
+      <tr sbForeach="Period: -0">
+        <td class="Label" sbDisplay="Number: 'Period ' + v"></td>
+        <td class="Label Small">Points</td>
+        <td class="Value" sbDisplay="Team1Points"></td>
+        <td class="Label Small">Penalties</td>
+        <td class="Value" sbDisplay="Team1PenaltyCount"></td>
+        <td class="Label" sbDisplay="Number: 'Period ' + v"></td>
+        <td class="Label Small">Points</td>
+        <td class="Value" sbDisplay="Team2Points"></td>
+        <td class="Label Small">Penalties</td>
+        <td class="Value" sbDisplay="Team2PenaltyCount"></td>
+      </tr>
+      <tr class="Total">
+        <td colspan="2">TOTAL POINTS:</td>
+        <td class="Value" sbDisplay="Team(1).Score"></td>
+        <td>PENALTIES:</td>
+        <td class="Value" sbDisplay="Team(1).TotalPenalties"></td>
+        <td colspan="2">TOTAL POINTS:</td>
+        <td class="Value" sbDisplay="Team(2).Score"></td>
+        <td>PENALTIES:</td>
+        <td class="Value" sbDisplay="Team(2).TotalPenalties"></td>
+      </tr>
+    </table>
+  </div>
+  <table class="sbGroup Expulsions sbHide" sbClass="sbHide: Expulsion(*).Id: igrfNoExpulsions">
+    <thead class="sbHeader">
+      <tr>
+        <th colspan="3">Expulsions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr sbForeach="Expulsion">
+        <td class="Info" sbDisplay="Info"></td>
+        <td><input type="text" size="50" sbControl="ExtraInfo" /></td>
+        <td><button sbToggle="Suspension">Suspension Recommended</button></td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="sbGroup Officials" officialType="Nso">
+    <col class="Role" />
+    <col class="Name" />
+    <col class="League" />
+    <col class="Cert" />
+    <col class="Button" />
+    <thead>
+      <tr class="sbHeader">
+        <th colspan="2" class="Title">Non Skating Officials</th>
+        <th class="Head">
+          Head:
+          <select class="Head" sbControl="HNSO">
+            <option value="">Not Set</option>
+            <option sbForeach="Nso:: name: resort=Name" sbAttr="name: Name | value: Id" sbDisplay="Name"></option>
+          </select>
+        </th>
+        <th></th>
+        <th></th>
+      </tr>
+      <tr class="sbSubHeader">
+        <th>Role</th>
+        <th>Name</th>
+        <th>League</th>
+        <th>Cert Level</th>
+        <th />
+      </tr>
+      <tr class="AddOfficial sbSubHeader">
+        <th>
+          <span class="Role">
+            <select class="Role" sbCall="igrfToggleInput">
+              <option value="">None Selected</option>
+              <option value="Penalty Lineup Tracker">Penalty Lineup Tracker</option>
+              <option value="Penalty Tracker">Penalty Tracker</option>
+              <option value="Penalty Wrangler">Penalty Wrangler</option>
+              <option value="Inside Whiteboard Operator">Inside Whiteboard Operator</option>
+              <option value="Jam Timer">Jam Timer</option>
+              <option value="Scorekeeper">Scorekeeper</option>
+              <option value="ScoreBoard Operator">ScoreBoard Operator</option>
+              <option value="Penalty Box Manager">Penalty Box Manager</option>
+              <option value="Penalty Box Timer">Penalty Box Timer</option>
+              <option value="Lineup Tracker">Lineup Tracker</option>
+              <option value="Non-Skating Official Alternate">Non-Skating Official Alternate</option>
+              <option value="O">Other</option>
+            </select>
+            <input type="text" size="20" class="Role sbHide" sbOn="paste: igrfPasteOfficials" />
+          </span>
+        </th>
+        <th><input type="text" size="30" class="Name" sbOn="keyup: igrfUpdateAddButton | paste: igrfPasteOfficials" /></th>
+        <th><input type="text" size="30" class="League" sbOn="keyup: igrfUpdateAddButton | paste: igrfPasteOfficials" /></th>
+        <th>
+          <select class="Cert">
+            <option value="">None</option>
+            <option value="R">Recognized</option>
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+          </select>
+        </th>
+        <th>
+          <button class="AddOfficial" sbCall="igrfAddOfficial">Add</button>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr sbForeach="Nso:: role: resort=Role" sbAttr="role: Role | name: Name" class="Official">
+        <td class="Role">
+          <span class="Role">
+            <select class="Role" sbControl="Role: igrfFilterOtherRole: igrfOtherToEmpty">
+              <option value="">None Selected</option>
+              <option value="Penalty Lineup Tracker">Penalty Lineup Tracker</option>
+              <option value="Penalty Tracker">Penalty Tracker</option>
+              <option value="Penalty Wrangler">Penalty Wrangler</option>
+              <option value="Inside Whiteboard Operator">Inside Whiteboard Operator</option>
+              <option value="Jam Timer">Jam Timer</option>
+              <option value="Scorekeeper">Scorekeeper</option>
+              <option value="ScoreBoard Operator">ScoreBoard Operator</option>
+              <option value="Penalty Box Manager">Penalty Box Manager</option>
+              <option value="Penalty Box Timer">Penalty Box Timer</option>
+              <option value="Lineup Tracker">Lineup Tracker</option>
+              <option value="Non-Skating Official Alternate">Non-Skating Official Alternate</option>
+              <option value="O">Other</option>
+            </select>
+            <input type="text" size="20" class="Role sbHide" sbClass="sbHide: Role: igrfNotOtherRole" sbControl="Role" />
+          </span>
+          <span sbClass="sbHide: Role: igrfIsNotPerTeam">
+            <br /><span>P1: </span>
+            <select sbControl="P1Team">
+              <option value=""></option>
+              <option sbForeach="Team: 1,2: only" sbContext="^" sbAttr="value: Id" sbDisplay="UniformColor, Name"></option>
+            </select>
+            <button class="Swap" sbToggle="Swap">Swap</button>
+          </span>
+        </td>
+        <td class="Name"><input type="text" size="30" sbControl="Name" /></td>
+        <td class="League"><input type="text" size="30" sbControl="League" /></td>
+        <td class="Cert">
+          <select class="Cert" sbControl="Cert">
+            <option value="">None</option>
+            <option value="R">Recognized</option>
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+          </select>
+        </td>
+        <td class="Remove"><button class="RemoveOfficial" sbCall="igrfOpenRemoveDialog">Remove</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <div id="sbTemplates">
   <div id="RefRoles">
@@ -277,11 +253,17 @@
     <option value="O">Other</option>
   </div>
 
-  <div id="OfficialRemoveDialog">
-    <span class="Title">Officials</span><br />
-    <span class="Remove">Remove Official: </span><span class="Target" sbDisplay="Name"></span><br />
-    <span class="Role">(Role: <span sbDisplay="Role"></span>)<br />
-    <hr />
-    <span class="AreYouSure">Are you sure?</span><br />
+  <div id="OfficialRemoveDialog" sbContext="NSO(*)" class="sbSegment">
+    <div class="sbGroup">
+      <div>
+        <span class="Title">Officials</span><br />
+        <span class="Remove">Remove Official: </span>
+        <span class="Target" sbDisplay="Name"></span><br />
+        <span class="Role">(Role: <span sbDisplay="Role"></span>)</span>
+      </div>
+    </div>
+    <div class="sbGroup">
+      <span class="AreYouSure">Are you sure?</span>
+    </div>
   </div>
 </div>

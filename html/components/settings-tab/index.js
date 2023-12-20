@@ -1,3 +1,5 @@
+'use strict';
+
 $(function () {
   $('#IntermissionControlDialog')
     .parent()
@@ -19,20 +21,17 @@ $('.View')
   .removeClass('View')
   .addClass('Preview')
   .attr('sbPrefix', '$:ScoreBoard.Settings.Setting(ScoreBoard.Preview:)')
-  .insertBefore('tr.ViewFrames');
+  .insertBefore('div.ViewFrameLabels');
 
-function openIntermissionDialog() {
-  'use strict';
+function stgOpenIntermissionDialog() {
   $('#IntermissionControlDialog').parent().dialog('open');
 }
 
-function setUsePreview(k, v) {
-  'use strict';
+function stgSetUsePreview(k, v) {
   $('#ScoreBoardSettings').toggleClass('UsePreview', v === 'preview');
 }
 
-function applyPreview() {
-  'use strict';
+function stgAplyPreview() {
   var done = {};
   $('#ScoreBoardSettings .Preview [ApplyPreview]').each(function (_, e) {
     var name = $(e).attr('ApplyPreview');
@@ -47,8 +46,7 @@ function applyPreview() {
   });
 }
 
-function showPreview(k, v, elem) {
-  'use struct';
+function stgShowPreview(k, v, elem) {
   $('<iframe>Your browser does not support iframes.</iframe>')
     .attr({ scrolling: 'no', frameborder: '0', src: elem.attr('src') })
     .replaceAll(elem);

@@ -4,7 +4,7 @@ let WS = {
   _connectTimeout: null,
   _registerOnConnect: [],
   _afterLoadCallbacks: [],
-  Connected: false,
+  _Connected: false,
   _connectionStatus: $('<div>').attr('id', 'sbConnectionStatus').attr('status', 'loading').text('Loading'),
   _started: false,
   _preRegisterDone: false,
@@ -364,6 +364,10 @@ let WS = {
           } else {
             callback(WS._enrichProp(paths[0]), WS.state[paths[0]], elem);
           }
+          if (elem.prop('tagName') === 'SELECT') {
+            WS._selectCache.set(elem[0], { path: paths[0], callback: callback });
+          }
+
           paths = []; // they have been registered with the backend during pre registration
         } else {
           callback();
@@ -501,6 +505,7 @@ let WS = {
         .each(function () {
           WS._pathCache.delete(this);
           WS._prefixCache.delete(this);
+          WS._selectCache.delete(this);
         })
     );
   },
@@ -515,7 +520,7 @@ let WS = {
             const basePath = WS._getContext(elem, attr === 'sbForeach', isPreRegister);
             list[pathIndex] = list[pathIndex].split(',').map((item) => WS._combinePaths(basePath, [item.trim(), false], prefixes)[0]);
           }
-          if (readFuncIndex > -1 && (isBool || list[readFuncIndex] != null)) {
+          if (readFuncIndex > -1 && (isBool || list[readFuncIndex] != null || list[pathIndex].length > 1)) {
             list[readFuncIndex] = WS._getModifyFunc(list[pathIndex], list[readFuncIndex] || '', isBool);
           }
           if (writeFuncIndex > -1) {
@@ -575,7 +580,9 @@ let WS = {
   _sortFuncCache: {},
   _buildSortFunc: function (func) {
     WS._sortFuncCache[func] =
-      WS._sortFuncCache[func] || window[func] || Function('a', 'b', 'return _compareAttrThenSubId("' + func + '", a, b);');
+      WS._sortFuncCache[func] ||
+      window[func] ||
+      Function('a', 'b', 'return _sb' + (func.split(',')[1] || '') + 'CompareAttrThenSubId("' + func.split(',')[0] + '", a, b);');
     return WS._sortFuncCache[func];
   },
 
@@ -615,6 +622,7 @@ let WS = {
     });
   },
 
+  _selectCache: new Map(),
   AutoRegister: function (elem) {
     if (!elem || elem.attr('id') === 'sbTemplates') {
       return;
@@ -637,14 +645,14 @@ let WS = {
           option = option.split('=', 2).map((s) => s.trim());
           options[option[0]] = option[1] || true;
         });
+        if (options.onInsert) {
+          options.onInsert = WS._buildNonBoolFunc(options.onInsert);
+        }
       }
       let context = elem.attr('sbContext');
       context = context ? (context + ':').split(':', 2) : ['', ''];
       if (context[0] != '' && !context[0].endsWith('^')) {
         context[0] = context[0] + '.';
-      }
-      if (context[1] != '') {
-        context[1] = '.' + context[1];
       }
       elem.detach().removeAttr('sbForeach');
       paths.forEach(function (path) {
@@ -664,7 +672,7 @@ let WS = {
             }
             const newElem = elem.clone(true).attr(field, key).addClass('sbFixed');
             if (!options.noContext) {
-              newElem.attr('sbContext', context[0] + field + '(' + key + ')' + context[1]);
+              newElem.attr('sbContext', context[0] + field + '(' + key + '):' + context[1]);
             }
             let prev = paren.children('[' + field + '="' + key + '"][sbSubId="' + (subId - 1) + '"]');
             if (!prev.length) {
@@ -679,6 +687,9 @@ let WS = {
               paren.prepend(newElem);
             }
             WS.AutoRegister(newElem);
+            if (options.onInsert) {
+              options.onInsert(WS._enrichProp(WS._getContext(newElem)), null, newElem);
+            }
           }
         });
         if (sortFunction !== 'only') {
@@ -713,12 +724,18 @@ let WS = {
               } else if (!paren.children('[' + field + '="' + key + '"][sbSubId="' + subId + '"]').length) {
                 const newElem = elem.clone(true).attr(field, key).appendTo(paren);
                 if (!options.noContext) {
-                  newElem.attr('sbContext', context[0] + field + '(' + key + ')' + context[1]);
+                  newElem.attr('sbContext', context[0] + field + '(' + key + '):' + context[1]);
                 }
                 if (key !== k[field]) {
                   newElem.attr('sbCount', 1).attr(subfieldId, k[field]);
                 }
                 WS.AutoRegister(newElem);
+                if (elem.prop('tagName') === 'OPTION') {
+                  const cached = WS._selectCache.get(paren[0]);
+                  if (cached) {
+                    cached.callback(cached.path, WS.state[cached.path], paren);
+                  }
+                }
                 if (options.resort) {
                   WS.Register(WS._getContext(newElem)[0] + '.' + options.resort, {
                     preRegistered: true,
@@ -727,12 +744,18 @@ let WS = {
                       if (v != null) {
                         elem.detach();
                         _windowFunctions.appendSorted(paren, elem, func, preForeachItem.index() + 1);
+                        if (options.onInsert) {
+                          options.onInsert(WS._enrichProp(WS._getContext(newElem)), null, newElem);
+                        }
                       }
                     },
                   });
                 } else {
                   newElem.detach();
                   _windowFunctions.appendSorted(paren, newElem, func, preForeachItem.index() + 1);
+                  if (options.onInsert) {
+                    options.onInsert(WS._enrichProp(WS._getContext(newElem)), null, newElem);
+                  }
                 }
               } else if (
                 key !== k[field] &&
@@ -750,72 +773,71 @@ let WS = {
       const context = WS._enrichProp(WS._getContext(elem)[0]);
       let autoFitNeeded = elem.hasClass('AutoFit');
 
-      WS._getParameters(elem, 'sbOn', -1, -1, 1).forEach(function (entry) {
-        elem.on(entry[0], function (e) {
-          return entry[1](context, elem.val(), elem, e);
+      elem.children().each(function () {
+        autoFitNeeded = false;
+        WS.AutoRegister($(this));
+      });
+
+      WS._getParameters(elem, 'sbOn', -1, -1, 1).forEach(function ([event, func]) {
+        elem.on(event, function (e) {
+          return func(context, elem.val(), elem, e);
         });
       });
 
-      WS._getParameters(elem, 'sbDisplay', 0, 1).forEach(function (entry) {
+      WS._getParameters(elem, 'sbDisplay', 0, 1).forEach(function ([paths, func, options]) {
         autoFitNeeded = false;
-        WS.Register(entry[0].concat(autoFitPaths), { preRegistered: true, element: elem, html: entry[2] === 'html', modifyFunc: entry[1] });
+        WS.Register(paths.concat(autoFitPaths), { preRegistered: true, element: elem, html: options === 'html', modifyFunc: func });
       });
 
       const sbSetEntries = WS._getParameters(elem, 'sbSet', 0, -1, 1);
       if (sbSetEntries.length) {
         elem.on(WS._isInputElement(elem) ? 'change' : 'click', function (event) {
           const prefixes = WS._getPrefixes(elem);
-          sbSetEntries.map(function (entry) {
-            entry[0].map(function (path) {
+          sbSetEntries.map(function ([paths, func, flag]) {
+            paths.map(function (path) {
               if (prefixes[path[0]]) {
                 path = (prefixes[path[0]].prefix || '') + path.substring(1) + (prefixes[path[0]].suffix || '');
               }
-              WS.Set(path, entry[1](WS._enrichProp(path), WS._isInputElement(elem) ? elem.val() : true, elem, event), entry[2]);
+              WS.Set(path, func(WS._enrichProp(path), WS._isInputElement(elem) ? elem.val() : true, elem, event), flag);
             });
           });
         });
       }
 
-      WS._getParameters(elem, 'sbControl', 0, 1, 2).forEach(function (entry) {
-        WS.Register(entry[0], { preRegistered: true, element: elem, set: true, modifyFunc: entry[1] });
-        elem.on('change', function (event) {
-          WS.Set(entry[0][0], entry[2](entry[0][0], elem.val(), elem, event));
-        });
-      });
-
-      WS._getParameters(elem, 'sbToggle', 0).forEach(function (entry) {
-        const usedClass = entry[1] || 'sbActive';
-        WS.Register(entry[0], { preRegistered: true, element: elem, toggleClass: usedClass, modifyFunc: WS._buildBoolFunc('') });
-        elem.on('click', function () {
-          WS.Set(entry[0][0], !elem.hasClass(usedClass));
-        });
-      });
-
-      WS._getParameters(elem, 'sbClass', 1, 2, -1, true).forEach(function (entry) {
-        WS.Register(entry[1], { preRegistered: true, element: elem, toggleClass: entry[0], modifyFunc: entry[2] });
-      });
-
-      WS._getParameters(elem, 'sbCss', 1, 2).forEach(function (entry) {
-        WS.Register(entry[1], { preRegistered: true, element: elem, css: entry[0], modifyFunc: entry[2] });
-      });
-
-      WS._getParameters(elem, 'sbAttr', 1, 2).forEach(function (entry) {
-        WS.Register(entry[1], { preRegistered: true, element: elem, attr: entry[0], modifyFunc: entry[2] });
-      });
-
-      WS._getParameters(elem, 'sbProp', 1, 2, -1, true).forEach(function (entry) {
-        WS.Register(entry[1], { preRegistered: true, element: elem, prop: entry[0], modifyFunc: entry[2] });
-      });
-
-      WS._getParameters(elem, 'sbCall', -1, -1, 0).forEach(function (entry) {
+      WS._getParameters(elem, 'sbControl', 0, 1, 2).forEach(function ([paths, readFunc, writeFunc]) {
+        WS.Register(paths, { preRegistered: true, element: elem, set: WS._isInputElement(elem), modifyFunc: readFunc });
         elem.on(WS._isInputElement(elem) ? 'change' : 'click', function (event) {
-          entry[0](context, elem.val(), elem, event);
+          WS.Set(paths[0], writeFunc(WS._enrichProp(paths[0]), elem.val(), elem, event));
         });
       });
 
-      elem.children().each(function () {
-        autoFitNeeded = false;
-        WS.AutoRegister($(this));
+      WS._getParameters(elem, 'sbToggle', 0).forEach(function ([paths, usedClass = 'sbActive']) {
+        WS.Register(paths, { preRegistered: true, element: elem, toggleClass: usedClass, modifyFunc: WS._buildBoolFunc('') });
+        elem.on('click', function () {
+          WS.Set(paths[0], !elem.hasClass(usedClass));
+        });
+      });
+
+      WS._getParameters(elem, 'sbClass', 1, 2, -1, true).forEach(function ([toggleClass, paths, func]) {
+        WS.Register(paths, { preRegistered: true, element: elem, toggleClass: toggleClass, modifyFunc: func });
+      });
+
+      WS._getParameters(elem, 'sbCss', 1, 2).forEach(function ([prop, paths, func]) {
+        WS.Register(paths, { preRegistered: true, element: elem, css: prop, modifyFunc: func });
+      });
+
+      WS._getParameters(elem, 'sbAttr', 1, 2).forEach(function ([attr, paths, func]) {
+        WS.Register(paths, { preRegistered: true, element: elem, attr: attr, modifyFunc: func });
+      });
+
+      WS._getParameters(elem, 'sbProp', 1, 2, -1, true).forEach(function ([prop, paths, func]) {
+        WS.Register(paths, { preRegistered: true, element: elem, prop: prop, modifyFunc: func });
+      });
+
+      WS._getParameters(elem, 'sbCall', -1, -1, 0).forEach(function ([func]) {
+        elem.on(WS._isInputElement(elem) ? 'change' : 'click', function (event) {
+          func(context, elem.val(), elem, event);
+        });
       });
 
       if (autoFitNeeded) {
@@ -957,8 +979,8 @@ let WS = {
     }
 
     let prefixes = {};
-    Object.entries(WS._getPrefixes(elem.parent(), isPreRegister)).forEach(function (entry) {
-      prefixes[entry[0]] = { prefix: entry[1].prefix, suffix: entry[1].suffix, reevaluate: entry[1].reevaluate };
+    Object.entries(WS._getPrefixes(elem.parent(), isPreRegister)).forEach(function ([prefix, value]) {
+      prefixes[prefix] = { prefix: value.prefix, suffix: value.suffix, reevaluate: value.reevaluate };
     });
     const [value, reevaluate] = WS._replacePathComponents(elem, 'sbPrefix', isPreRegister, skipCopyContext);
     if (value) {
@@ -973,6 +995,12 @@ let WS = {
 
   SetupDialog: function (elem, context, options) {
     elem = elem.clone().attr('sbContext', '/' + context);
+    context = WS._enrichProp(context);
+    context.parts.forEach(function (part) {
+      if (context[part]) {
+        elem.attr(part, context[part]);
+      }
+    });
     options = options || {};
     WS.AutoRegister(elem);
     const origCloseHandler = options.close;

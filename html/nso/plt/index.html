@@ -9,53 +9,39 @@
     <script type="text/javascript" src="/json/core.js"></script>
   </head>
   <body sbContext="ScoreBoard.Game([game])">
-    <div sbInclude="/components/game-advance/"></div>
     <div class="Content">
+      <div class="GameAdvance" sbInclude="/components/game-advance/"></div>
       <div sbForeach="Team: 1,2: only" sbInclude="/components/plt-input/" class="Input"></div>
       <div class="sbShowOnLt Sheet" sbForeach="Team: 1,2: only" sbInclude="/components/lt-sheet/"></div>
     </div>
-
-    <div id="sbTemplates">
-      <div id="OptionsDialog" sbPrefix="$: ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)">
-        <table>
-          <tr>
-            <th>Select Team</th>
-          </tr>
-          <tr>
-            <td>
-              <button team="1" sbCall="setTeam" sbContext="Team(1)" sbDisplay="AlternateName(operator),UniformColor,Name">Team 1</button>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <button team="2" sbCall="setTeam" sbContext="Team(2)" sbDisplay="AlternateName(operator),UniformColor,Name">Team 2</button>
-            </td>
-          </tr>
-          <tr>
-            <td><button team="both" sbCall="setTeam">Both Teams</button></td>
-          </tr>
-          <tr>
-            <th>Select Position</th>
-          </tr>
-          <tr>
-            <td>
-              <button pos="pt" sbCall="setPos">PT</button><button pos="plt" sbProp="disabled: $: !" sbCall="setPos">PLT</button>
-              <button pos="lt" sbProp="disabled: $: !" sbCall="setPos">LT</button>
-            </td>
-          </tr>
-          <tr>
-            <th>Options</th>
-          </tr>
-          <tr>
-            <td><button sbToggle="$">Enable Lineup Tracking</button></td>
-          </tr>
-          <tr>
-            <td><button sbCall="setZoom">Allow Pinch Zoom</button></td>
-          </tr>
-        </table>
-      </div>
-
-      <div id="UseLTDialog">Use of Lineup Tracking is disabled.</div>
+    <div class="SettingsButton sbSegment">
+      <div class="sbGroup"><button sbCall="openOptionsDialog">Settings</button></div>
     </div>
+
+    <div id="OptionsDialog" sbPrefix="$: ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)">
+      <div class="sbSegment">
+        <div class="sbGroup sbHeader">Select Team</div>
+        <div class="sbGroup Teams">
+          <button team="1" sbCall="setTeam" sbContext="Team(1)" sbDisplay="AlternateName(operator),UniformColor,Name">Team 1</button>
+          <button team="2" sbCall="setTeam" sbContext="Team(2)" sbDisplay="AlternateName(operator),UniformColor,Name">Team 2</button>
+          <button team="both" sbCall="setTeam">Both Teams</button>
+        </div>
+      </div>
+      <div class="sbSegment">
+        <div class="sbGroup sbHeader">Select Position</div>
+        <div class="sbGroup Positions">
+          <button pos="pt" sbCall="setPos">PT</button>
+          <button pos="plt" sbProp="disabled: $: !" sbCall="setPos">PLT</button>
+          <button pos="lt" sbProp="disabled: $: !" sbCall="setPos">LT</button>
+        </div>
+      </div>
+      <div class="sbSegment">
+        <div class="sbGroup sbHeader">Options</div>
+        <div class="sbGroup"><button sbToggle="$">Enable Lineup Tracking</button></div>
+        <div class="sbGroup"><button sbCall="setZoom">Allow Pinch Zoom</button></div>
+      </div>
+    </div>
+
+    <div id="UseLTDialog">Use of Lineup Tracking is disabled.</div>
   </body>
 </html>
