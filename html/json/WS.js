@@ -485,8 +485,8 @@ let WS = {
 
   Forget: function (elements) {
     function filter(trie, elem) {
-      if (trie._values && trie._values.plain) {
-        trie._values.plain = trie._values.plain.filter(function (v) {
+      if (trie._values) {
+        trie._values = trie._values.filter(function (v) {
           return !elements.is(v.elem);
         });
       }

@@ -1,5 +1,5 @@
 <div class="UsePreview" id="ScoreBoardSettings">
-  <div class="sbSegment" sbContext="ScoreBoard" sbPrefix="$:ScoreBoard.Settings.Setting(ScoreBoard:)">
+  <div class="sbSegment" sbContext="/ScoreBoard" sbPrefix="$:ScoreBoard.Settings.Setting(ScoreBoard:)">
     <div class="sbGroup sbHeader"><span>General Settings</span></div>
     <div class="sbGroup ScoreBoardOptions">
       <button sbToggle="$.Clock.Sync">Sync Clocks</button>
@@ -33,7 +33,7 @@
       <span><label>Name format for new games: </label> <input type="text" size="25" sbControl="$.Game.DefaultNameFormat" /></span>
     </div>
     <div class="sbGroup ScoreBoardOptions">
-      <span class="StatsFile" sbClass="Readable: BlankStatsbookFound | Progress: BlanStatsbookFound: === 'checking'">
+      <span class="StatsFile" sbClass="Readable: BlankStatsbookFound: | Progress: BlankStatsbookFound: === 'checking'">
         <label>Blank Statsbook File: </label>
         <input type="text" size="40" sbControl="$.Stats.InputFile" />
         <div class="sbSpinner" sbClass="sbHide: BlankStatsbookFound: !== 'checking'"></div>
@@ -91,7 +91,7 @@
           <option value="box_flat_bright">Flat & Bright</option>
         </select>
       </span>
-      <span sbContext="ScoreBoard.Media.Format(images).Type(fullscreen)">
+      <span sbContext="/ScoreBoard.Media.Format(images).Type(fullscreen)">
         <label>Image View: </label>
         <select sbControl="$_Image" ApplyPreview="Image">
           <option value="">No Image</option>
@@ -118,7 +118,7 @@
           <option value="10">10%</option>
         </select>
       </span>
-      <span sbContext="ScoreBoard.Media.Format(videos).Type(fullscreen)">
+      <span sbContext="/ScoreBoard.Media.Format(videos).Type(fullscreen)">
         <label>Video View: </label>
         <select sbControl="$_Video" ApplyPreview="Video">
           <option value="">No Video</option>
@@ -135,7 +135,7 @@
       </span>
       <span></span>
       <span></span>
-      <span sbContext="ScoreBoard.Media.Format(custom).Type(view)">
+      <span sbContext="/ScoreBoard.Media.Format(custom).Type(view)">
         <label>Custom Page View: </label>
         <select sbControl="$_CustomHtml" ApplyPreview="CustomHtml">
           <option value="">No Page</option>

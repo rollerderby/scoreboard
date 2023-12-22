@@ -196,7 +196,7 @@ function sksIsOrThisTeam(k, v, elem) {
 }
 
 function sksToToTypeName(k, v) {
-  if (v === '') {
+  if (!v) {
     return 'Untyped Timeout';
   } else if (v === 'O') {
     return 'Official Timeout';
