@@ -60,7 +60,7 @@
       <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore4'" sbSet="TripScore: 4">4</button>
     </div>
   </div>
-  <div class="sbGroup sbShowOnOperator">
+  <div class="sbGroup sbShowOnOperator Timeouts">
     <button
       class="sbKeyControl"
       sbAttr="id:-:'Team[Team]Timeout'"
@@ -69,7 +69,7 @@
     >
       Team TO
     </button>
-    <span class="TimeoutCount" sbDisplay="Timeouts"></span>
+    <span class="TimeoutCount" sbDisplay="Timeouts" sbCall="opOpenTimeoutDialog"></span>
     <button
       class="sbKeyControl"
       sbAttr="id:-:'Team[Team]OfficialReview'"
@@ -78,8 +78,13 @@
     >
       Off Review
     </button>
-    <span class="TimeoutCount" sbDisplay="OfficialReviews"></span>
+    <span class="TimeoutCount" sbDisplay="OfficialReviews" sbCall="opOpenTimeoutDialog"></span>
     <button class="sbKeyControl" sbAttr="id:-:'Team[Team]RetainedOfficialReview'" sbToggle="RetainedOfficialReview">Retained</button>
+    <div class="OfficialTimeout">
+      <div>
+        <button id="OfficialTimeout" sbClass="sbActive: ^TimeoutOwner: ==='O'" sbSet="^OfficialTimeout">Official Timeout</button>
+      </div>
+    </div>
   </div>
   <div class="sbGroup">
     <span>
@@ -98,7 +103,7 @@
     <span
       >Jammer:
       <span sbButtonGroup>
-        <button class="sbKeyControl" sbAttr="Id:-: 'Team[Team]JammerNone'" sbClass="sbActive: p.Skater: === ''" sbSet="p.Skater: ''">
+        <button class="sbKeyControl" sbAttr="Id:-: 'Team[Team]JammerNone'" sbClass="sbActive: p.Skater: sbIsEmpty" sbSet="p.Skater: ''">
           ?
         </button>
         <button
@@ -123,7 +128,7 @@
     <span
       >Piv/4th Bl:
       <span sbButtonGroup>
-        <button class="sbKeyControl" sbAttr="Id:-: 'Team[Team]PivotNone'" sbClass="sbActive: p.Skater: === ''" sbSet="p.Skater: ''">
+        <button class="sbKeyControl" sbAttr="Id:-: 'Team[Team]PivotNone'" sbClass="sbActive: p.Skater: sbIsEmpty" sbSet="p.Skater: ''">
           ?
         </button>
         <button

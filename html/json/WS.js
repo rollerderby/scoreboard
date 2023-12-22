@@ -624,7 +624,7 @@ let WS = {
 
   _selectCache: new Map(),
   AutoRegister: function (elem) {
-    if (!elem || elem.attr('id') === 'sbTemplates') {
+    if (!elem || elem.hasClass('sbTemplates')) {
       return;
     }
     const forEachEntries = WS._getParameters(elem, 'sbForeach', 0);
@@ -688,7 +688,7 @@ let WS = {
             }
             WS.AutoRegister(newElem);
             if (options.onInsert) {
-              options.onInsert(WS._enrichProp(WS._getContext(newElem)), null, newElem);
+              options.onInsert(WS._enrichProp(WS._getContext(newElem)[0]), null, newElem);
             }
           }
         });
@@ -745,7 +745,7 @@ let WS = {
                         elem.detach();
                         _windowFunctions.appendSorted(paren, elem, func, preForeachItem.index() + 1);
                         if (options.onInsert) {
-                          options.onInsert(WS._enrichProp(WS._getContext(newElem)), null, newElem);
+                          options.onInsert(WS._enrichProp(WS._getContext(newElem)[0]), null, newElem);
                         }
                       }
                     },
@@ -754,7 +754,7 @@ let WS = {
                   newElem.detach();
                   _windowFunctions.appendSorted(paren, newElem, func, preForeachItem.index() + 1);
                   if (options.onInsert) {
-                    options.onInsert(WS._enrichProp(WS._getContext(newElem)), null, newElem);
+                    options.onInsert(WS._enrichProp(WS._getContext(newElem)[0]), null, newElem);
                   }
                 }
               } else if (
@@ -772,11 +772,6 @@ let WS = {
       const autoFitPaths = WS._getAutoFitPaths(elem);
       const context = WS._enrichProp(WS._getContext(elem)[0]);
       let autoFitNeeded = elem.hasClass('AutoFit');
-
-      elem.children().each(function () {
-        autoFitNeeded = false;
-        WS.AutoRegister($(this));
-      });
 
       WS._getParameters(elem, 'sbOn', -1, -1, 1).forEach(function ([event, func]) {
         elem.on(event, function (e) {
@@ -838,6 +833,11 @@ let WS = {
         elem.on(WS._isInputElement(elem) ? 'change' : 'click', function (event) {
           func(context, elem.val(), elem, event);
         });
+      });
+
+      elem.children().each(function () {
+        autoFitNeeded = false;
+        WS.AutoRegister($(this));
       });
 
       if (autoFitNeeded) {

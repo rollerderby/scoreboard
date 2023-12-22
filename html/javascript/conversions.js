@@ -19,6 +19,14 @@ function sbToTime(k, v) {
   return _timeConversions.msToMinSecNoZero(v, isCountDown);
 }
 
+function sbToLongTime(k, v) {
+  const isCountDown = isTrue(WS.state[k.upTo('Clock') + '.Direction']);
+  return _timeConversions.msToMinSec(v, isCountDown);
+}
+
+function sbFromLongTime(k, v) {
+  return _timeConversions.minSecToMs(v);
+}
 function sbToClockInitialNumber(k) {
   let ret = '';
   const name = WS.state[k.upTo('Clock') + '.Name'];
@@ -47,6 +55,16 @@ function sbToTimeoutType(k) {
   } else {
     return 'Team Timeout';
   }
+}
+
+function sbToToTypeVal(k, v) {
+  return WS.state[k.upTo('Timeout') + '.Owner'] + '.' + v;
+}
+
+function sbFromToTypeVal(k, v) {
+  const parts = v.split('.');
+  WS.Set(k.upTo('Timeout') + '.Owner', parts[0]);
+  return isTrue(parts[1]);
 }
 
 function sbToIntermissionDisplay(k) {

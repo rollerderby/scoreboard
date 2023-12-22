@@ -15,6 +15,10 @@ function skiIsOrThisTeam(k, v) {
   return v === WS.state[prefix + '.TimeoutOwner'] && isTrue(WS.state[prefix + 'OfficialReview']);
 }
 
+function skiIsTeam2(k) {
+  return k.Team === '2';
+}
+
 function skiToJammerId(k, v, elem) {
   if (typeof _crgKeyControls === 'Object') {
     _crgKeyControls.setupKeyControl(elem, _crgKeyControls.operator);

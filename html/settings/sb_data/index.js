@@ -61,7 +61,7 @@ function datUpdateUploadButtons(k, v, elem) {
 }
 
 function _datCreateRemoveDialog(type) {
-  let div = $('#sbTemplates .RemoveDataDialog').clone(true);
+  let div = $('.sbTemplates .RemoveDataDialog').clone(true);
   const selector = type === 'selected' ? ' tr.Content.Selected' : type === 'singleElement' ? ' tr.Content.ToDelete' : ' tr.Content.None'; // class None is not used, so this will match nothing
   div.find('a.Elements').text($(selector).length);
   div.dialog({

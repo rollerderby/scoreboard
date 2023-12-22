@@ -1,6 +1,25 @@
 <div class="sbSegment" sbPrefix="t:[*]">
   <div class="sbGroup sbSheets SkSheet">
     <table sbContext="^" sbForeach="Period: -0: _sbComparePeriod" class="Period">
+      <col class="EditButton"></col>
+      <col class="JamNumber"></col>
+      <col class="Jammer"></col>
+      <col class="SmallHead"></col>
+      <col class="SmallHead"></col>
+      <col class="SmallHead"></col>
+      <col class="SmallHead"></col>
+      <col class="SmallHead"></col>
+      <col class="Trip"></col>
+      <col class="Trip"></col>
+      <col class="Trip"></col>
+      <col class="Trip"></col>
+      <col class="Trip"></col>
+      <col class="Trip"></col>
+      <col class="Trip"></col>
+      <col class="Trip"></col>
+      <col class="Trip"></col>
+      <col class="JamTotal"></col>
+      <col class="Gametotal"></col>
       <thead class="sbShowOnSheet">
         <tr>
           <th class="AutoFit EditButton">EDT</th>
@@ -134,7 +153,7 @@
           <td class="EditButton"><button sbCall="sksToggleEdit">✎</button></td>
           <td colspan="9" class="Type">
             <span class="NoEditOnly" sbDisplay="Owner, Review: sksToToTypeName"></span>
-            <select class="EditOnly" sbControl="Review, Owner: sksToToTypeVal: sksFromToTypeVal">
+            <select class="EditOnly" sbControl="Review, Owner: sbToToTypeVal: sbFromToTypeVal">
               <option value=".false">Untyped Timeout</option>
               <option value="O.false">Official Timeout</option>
               <option
@@ -151,7 +170,7 @@
               ></option>
             </select>
           </td>
-          <td colspan="4" class="Retained"><button class="OROnly" sbControl="RetainedReview">Retained</button></td>
+          <td colspan="4" class="Retained"><button class="OROnly" sbToggle="RetainedReview">Retained</button></td>
           <td colspan="5" class="Duration" sbDisplay="Running, Duration: sksToToDuration"></td>
         </tr>
         <tr class="Edits">
@@ -166,7 +185,7 @@
   </div>
 </div>
 
-<div id="sbTemplates">
+<div class="sbTemplates">
   <div id="TripEditor" sbContext="^Period(*).Jam(*).TeamJam([Team]).ScoringTrip(*)" sbClass="A: Id: sbCloseDialogIfNull">
     <div class="sbSegment">
       <div class="sbGroup">

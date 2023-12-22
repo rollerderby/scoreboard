@@ -1,5 +1,6 @@
+'use strict';
+
 (function () {
-  'use strict';
   _windowFunctions.configureZoom();
   $('body').attr('showTeam', _windowFunctions.getParam('team'));
 
@@ -32,27 +33,18 @@ function toTitle() {
 }
 
 function openOptionsDialog() {
-  'use strict';
   $('#OptionsDialog').dialog('open');
-}
-
-function _updateUrl(key, val) {
-  'use strict';
-  let url = new URL(window.location);
-  url.searchParams.set(key, val);
-  window.history.replaceState(null, '', url);
 }
 
 function setTeam(k, v, elem) {
   $('#OptionsDialog [team]').removeClass('sbActive');
   elem.addClass('sbActive');
   $('body').attr('showTeam', elem.attr('team'));
-  _updateUrl('team', elem.attr('team'));
+  _sbUpdateUrl('team', elem.attr('team'));
 }
 
 function setZoom(k, v, elem) {
-  'use strict';
   elem.toggleClass('sbActive');
-  _updateUrl('zoomable', elem.filter('.sbActive').length);
+  _sbUpdateUrl('zoomable', elem.filter('.sbActive').length);
   _windowFunctions.configureZoom();
 }

@@ -6,39 +6,44 @@
     <script type="text/javascript" src="/external/jquery/jquery.js"></script>
     <script type="text/javascript" src="/external/gamepad/gamepad.js"></script>
     <script type="text/javascript" src="/javascript/keycontrols.js"></script>
-    <script type="text/javascript" src="/javascript/utils.js"></script>
-    <script type="text/javascript" src="/javascript/windowfunctions.js"></script>
-    <script type="text/javascript" src="/javascript/timeconversions.js"></script>
     <script type="text/javascript" src="/json/core.js"></script>
-    <script type="text/javascript" src="/json/WSutils.js"></script>
-
-    <script type="text/javascript" src="/components/sk-sheet.js"></script>
-    <script type="text/javascript" src="/components/plt-input.js"></script>
-    <script type="text/javascript" src="/components/team-time-tab.js"></script>
-    <script type="text/javascript" src="/components/rulesets-tab.js"></script>
-    <script type="text/javascript" src="/components/settings-tab.js"></script>
-    <script type="text/javascript" src="/components/teams-tab.js"></script>
-    <script type="text/javascript" src="/components/igrf-tab.js"></script>
-
-    <link rel="stylesheet" href="/components/sk-sheet.css" type="text/css" />
-    <link rel="stylesheet" href="/components/plt-input.css" type="text/css" />
-    <link rel="stylesheet" href="/components/team-time-tab.css" type="text/css" />
-    <link rel="stylesheet" href="/components/rulesets-tab.css" type="text/css" />
-    <link rel="stylesheet" href="/components/settings-tab.css" type="text/css" />
-    <link rel="stylesheet" href="/components/teams-tab.css" type="text/css" />
-    <link rel="stylesheet" href="/components/igrf-tab.css" type="text/css" />
   </head>
 
   <body>
-    <div id="tabsDiv">
+    <div id="tabsDiv" sbContext="ScoreBoard.Game([game])">
       <div id="helpLink">
         <a href="https://github.com/rollerderby/scoreboard/wiki/Scoreboard-Operation" target="_blank">Operator help</a>
         (<a href="/documentation/wiki-snapshot.html#Scoreboard-Operation" target="_blank">Offline version</a>)
       </div>
       <div id="operatorIdDiv">Operator: <a id="operatorId"></a></div>
       <a id="sbIndexLink" href="/">Back to index page</a>
-      <div id="gameAdvance"></div>
-      <ul id="tabBar"></ul>
+      <div class="GameAdvance" sbInclude="/components/game-advance/"></div>
+      <ul id="tabBar">
+        <li><a href="#ControlsTab">Controls</a></li>
+        <li><a href="#TeamsTab">Teams</a></li>
+        <li><a href="#RulesetsTab">Rules</a></li>
+        <li><a href="#IgrfTab">IGRF</a></li>
+        <li><a href="#SettingsTab">Settings</a></li>
+        <li id="capsLockWarning" class="sbHide">Caps Lock Is On</li>
+        <button id="logoutButton" sbCall="Logout">Logout</button>
+      </ul>
+      <div id="ControlsTab" class="TabContent" sbInclude="/components/sbo-input/" sbSheetStyle="operator"></div>
+      <div id="TeamsTab" class="TabContent">
+        <div class="sbSegmentGroup">
+          <div sbForeach="Team: 1,2: only" sbInclude="/components/team-editor/"></div>
+        </div>
+      </div>
+      <div id="RulesetsTab" class="TabContent" sbInclude="/components/ruleset-tab/"></div>
+      <div id="IgrfTab" class="TabContent" sbInclude="/components/igrf-tab/"></div>
+      <div id="SettingsTab" class="TabContent" sbInclude="/components/settings-tab/"></div>
+    </div>
+
+    <div class="sbTemplates">
+      <div id="loginDialog" class="sbSegment">
+        <div class="sbGroup">
+          <span>Operator: <input type="text" sbOn="keyup: loginOnEnter" /></span>
+        </div>
+      </div>
     </div>
   </body>
 </html>

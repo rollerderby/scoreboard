@@ -18,6 +18,11 @@ body:not([showTeam="2"]) [Team] ~ [Team]>.SkInput .ScoreRow  { flex-direction: r
 
 /* timeout row */
 .SkInput .TimeoutCount { font-size: 200%; font-weight: bold; }
+.SkInput .Timeouts > * { flex: 1; }
+.SkInput .Timeouts { position: relative; }
+[Team="1"] .SkInput .OfficialTimeout>div { position: absolute; left: 50%; width: 100%; }
+[Team="2"] .SkInput .OfficialTimeout>div { position: absolute; right: 50%; width: 100%; }
+.SkInput .OfficialTimeout button { transform: translateY(-50%); }
 
 /* jammer/pivot rows */
 .SkInput .HasPlayed:not(.Active) { box-shadow: inset 0px 0px 3px 2px #70ff70; }

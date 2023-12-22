@@ -57,18 +57,11 @@ function openOptionsDialog() {
   $('#OptionsDialog').dialog('open');
 }
 
-function _updateUrl(key, val) {
-  'use strict';
-  let url = new URL(window.location);
-  url.searchParams.set(key, val);
-  window.history.replaceState(null, '', url);
-}
-
 function setTeam(k, v, elem) {
   $('#OptionsDialog [team]').removeClass('sbActive');
   elem.addClass('sbActive');
   $('body').attr('showTeam', elem.attr('team'));
-  _updateUrl('team', elem.attr('team'));
+  _sbUpdateUrl('team', elem.attr('team'));
 }
 
 function setPos(k, v, elem) {
@@ -76,12 +69,12 @@ function setPos(k, v, elem) {
   $('#OptionsDialog [pos]').removeClass('sbActive');
   elem.addClass('sbActive');
   $('body').attr('sbSheetStyle', elem.attr('pos'));
-  _updateUrl('pos', elem.attr('pos'));
+  _sbUpdateUrl('pos', elem.attr('pos'));
 }
 
 function setZoom(k, v, elem) {
   'use strict';
   elem.toggleClass('sbActive');
-  _updateUrl('zoomable', elem.filter('.sbActive').length);
+  _sbUpdateUrl('zoomable', elem.filter('.sbActive').length);
   _windowFunctions.configureZoom();
 }

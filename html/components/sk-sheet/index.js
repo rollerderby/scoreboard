@@ -1,4 +1,5 @@
 'use strict';
+
 (function () {
   const prefix = 'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Period(*).Jam(*).TeamJam(*).ScoringTrip(*).';
   WS.Register([prefix + 'AfterSP', prefix + 'Score', prefix + 'Current'], function (k) {
@@ -206,22 +207,12 @@ function sksToToTypeName(k, v) {
   }
 }
 
-function sksToToTypeVal(k, v) {
-  return WS.state[k.upTo('Timeout') + '.Owner'] + '.' + v;
-}
-
-function sksFromToTypeVal(k, v) {
-  const parts = v.split('.');
-  WS.Set(k.upTo('Timeout') + '.Owner', parts[0]);
-  return isTrue(parts[1]);
-}
-
 function sksToToDuration(k, v) {
   return isTrue(v) ? 'Running' : _timeConversions.msToMinSec(WS.state[k.upTo('Timeout') + '.Duration'], true);
 }
 
 function _sksSetupTripEditor(gameId, p, j, teamId, t) {
-  $(':not(#sbTemplates)>#TripEditor').dialog('close');
+  $(':not(.sbTemplates)>#TripEditor').dialog('close');
 
   const prefix = 'ScoreBoard.Game(' + gameId + ').Period(' + p + ').Jam(' + j + ').TeamJam(' + teamId + ').ScoringTrip(';
   while (t > 1 && WS.state[prefix + (t - 1) + ').Score'] === undefined) {

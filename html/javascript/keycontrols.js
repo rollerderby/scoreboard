@@ -1,6 +1,6 @@
 var _crgKeyControls = {
   /* This selector should be used to match key control buttons. */
-  keySelector: ':button.sbKeyControl,label.sbKeyControl',
+  keySelector: '.sbKeyControl',
 
   /* Setup all key control buttons.
    * This finds all button-type elements with the class sbKeyControl
@@ -109,10 +109,6 @@ var _crgKeyControls = {
       'use strict';
       return !$('div.MultipleKeyAssignDialog').length;
     },
-    function () {
-      'use strict';
-      return !$('#TeamTimeTab:hidden').length;
-    }, //disable keys when Controls Tab is hidden.
   ],
 
   _start: function (operator) {
@@ -180,14 +176,7 @@ var _crgKeyControls = {
     var editing = controls.filter('.Editing');
 
     // Perform the corresponding button's action
-    var target = active.has('span.Key[data-keycontrol="' + event.which + '"]').trigger('click');
-    // FIXME - workaround seemingly broken jQuery-UI
-    // which does not fire change event for radio buttons when click() is called on their label...
-    if (target.is('label')) {
-      target.filter('label').each(function () {
-        $('#' + $(this).attr('for')).trigger('change');
-      });
-    }
+    active.has('span.Key[data-keycontrol="' + event.which + '"]').trigger('click');
 
     // Update the hovered button if in edit mode
     var editingTarget = editing.filter('.hover');

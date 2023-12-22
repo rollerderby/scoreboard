@@ -2,10 +2,10 @@
 .SkSheet>.Period tr { height: 35px; } 
 .SkSheet>.Period thead>tr { height: 41px; } 
 .SkSheet>.Period .EditButton { width: 30px; }
-.SkSheet>.Period .JamNumber { width: 30px; } 
-.SkSheet>.Period .Jammer { width: 50px; } 
+.SkSheet>.Period .JamNumber { min-width: 30px; } 
+.SkSheet>.Period .Jammer { min-width: 50px; } 
 .SkSheet>.Period .Narrow, .Period .SmallHead { width: 14px; } 
-.SkSheet>.Period .Trip, .Period .JamTotal, .Period .GameTotal { width: 9%; } 
+.SkSheet>.Period .Trip, .Period .JamTotal, .Period .GameTotal { min-width: 30px; } 
 
 /* header row */
 .SkSheet>.Period thead th { font-size: 85%; background-color: #cccccc; color: #333333; } 
@@ -15,8 +15,7 @@
 /* Colors & Borders*/
 .SkSheet>.Period tr { background-color: #FFF; } 
 .SkSheet>.Period tr.Darker { background-color: #e9f6da; } 
-.SkSheet>.Period tr.Timeout { background-color: #e0d0f0; height: 31px; } 
-.SkSheet>.Period tr.Timeout.Darker { background-color: #e0d0f0; } 
+.SkSheet>.Period tbody.Timeout>tr { background-color: #e0d0f0; height: 31px; } 
 .SkSheet>.Period tr .Darker { background-color: #e9f6da; } 
 .SkSheet>.Period tr.Darker .Darker { background-color: #d3ecb6; } 
 .SkSheet>.Period tr .GameTotal { background-color: #d3ecb6; } 

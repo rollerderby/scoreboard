@@ -1,104 +1,79 @@
-$(function () {
-  'use strict';
-  var gameId = _windowFunctions.getParam('game');
-  setupGameAdvance($('#gameAdvance'), gameId, false);
-  createTeamTimeTab(createTab('Controls', 'TeamTimeTab'), gameId);
-  createTeamsTab(createTab('Teams', 'TeamsTab'), gameId);
-  createRulesetsTab(createTab('Rules', 'RulesetsTab'), gameId, true);
-  createIgrfTab(createTab('IGRF', 'IgrfTab'), gameId);
-  createScoreBoardSettingsTab(createTab('Settings', 'ScoreBoardSettingsTab'));
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.*)', function (k, v) {
-    setOperatorSettings(_windowFunctions.getParam('operator'));
-  });
+'use strict';
+
+(function () {
+  WS.Register(['ScoreBoard.Settings.Setting(ScoreBoard.Operator.*)', 'ScoreBoard.Settings.Setting(ScoreBoard.Operator_Default.*)']);
 
   $('#tabsDiv').tabs();
 
-  // FIXME - is there better way to avoid key controls when a dialog is visible?
   _crgKeyControls.addCondition(function () {
     return !$('body>div.ui-dialog').is(':visible');
   });
-  // FIXME - maybe use something else to check if user is typing into a text input...
-  // FIXME - also provide visual feedback that key-control is disabled while typing into input text box?
   _crgKeyControls.addCondition(function () {
-    return !$('#TeamTime input:text.Editing').length;
+    return !$('#ControlsTab input:text:focus').length;
+  });
+  _crgKeyControls.addCondition(function () {
+    return !$('#ControlsTab:hidden').length;
   });
 
-  $('<li>').text('Caps Lock is On').attr('id', 'capsLockWarning').addClass('Hidden').appendTo('#tabBar');
   $(document).on('keydown', function (e) {
     if (e.originalEvent.key === 'CapsLock') {
       // Assume it'll be toggled. Different OSes actually change
       // the setting at different stages of the keypress, so
       // this is the best we can do. If it is wrong, it'll be
       // fixed at the next non-Caps Lock keypress.
-      $('#capsLockWarning').toggleClass('Hidden');
+      $('#capsLockWarning').toggleClass('sbHide');
     } else {
-      $('#capsLockWarning').toggleClass('Hidden', !e.originalEvent.getModifierState('CapsLock'));
+      $('#capsLockWarning').toggleClass('sbHide', !e.originalEvent.getModifierState('CapsLock'));
     }
   });
-  $('<button>').text('Logout').on('click', logout).button().css('float', 'right').appendTo('#tabBar');
+})();
+
+WS.AfterLoad(function () {
+  _login(_windowFunctions.getParam('operator'));
 });
 
-function setOperatorSettings(op) {
-  'use strict';
+function _setOperatorSettings(op) {
   var opPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + op + '.';
   // Default settings are intentionally separate from settings of the default operator
   // This ensures users logging in for the first time always get the former and not whatever
   // the latter currently happens to be.
   var defPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator_Default.';
-  setClockControls(isTrue(WS.state[opPrefix + 'StartStopButtons)'] || WS.state[defPrefix + 'StartStopButtons)']));
-  setScoreAdjustments(isTrue(WS.state[opPrefix + 'ScoreAdjustments)'] || WS.state[defPrefix + 'ScoreAdjustments)']));
-  setReplaceButton(isTrue(WS.state[opPrefix + 'ReplaceButton)'] || WS.state[defPrefix + 'ReplaceButton)']));
-  setTabBar(isTrue(WS.state[opPrefix + 'TabBar)'] || WS.state[defPrefix + 'TabBar)']));
-}
-
-// this is done after the team/time panel is loaded,
-// as the button setup needs to happen after that panel creates its buttons...
-function initialLogin() {
-  'use strict';
-  var operator = _windowFunctions.getParam('operator');
-  if (operator) {
-    login(operator);
-  } else {
-    logout();
-  }
-}
-
-function login(name) {
-  'use strict';
-  var gameId = _windowFunctions.getParam('game');
-  $('#operatorId').text(name);
-  if (window.history.replaceState) {
-    window.history.replaceState(null, '', '?operator=' + $('#operatorId').text() + '&game=' + gameId);
-  }
-  _crgKeyControls.setupKeyControls(name);
-  setOperatorSettings(name);
-}
-
-function logout() {
-  'use strict';
-  var gameId = _windowFunctions.getParam('game');
-  $('#operatorId').text('');
-  if (window.history.replaceState) {
-    window.history.replaceState(null, '', '?game=' + gameId);
-  }
-  _crgKeyControls.destroyKeyControls();
-  setOperatorSettings('');
-  _crgUtils.showLoginDialog('Operator Login', 'Operator:', 'Login', function (value) {
-    if (!value) {
-      return false;
-    }
-    login(value);
-    return true;
+  ['ScoreAdjustments', 'ReplaceButton', 'TabBar'].forEach(function (setting) {
+    _opSetOperatorSetting(setting, isTrue(WS.state[opPrefix + setting + ')'] || WS.state[defPrefix + setting + ')']));
   });
 }
 
-function createTab(title, tabId) {
-  'use strict';
-  if (typeof title === 'string') {
-    title = $('<a>').html(title);
+function _login(name) {
+  name = name || '';
+  $('#operatorId').text(name);
+  _sbUpdateUrl('operator', name);
+  _crgKeyControls.setupKeyControls(name);
+  _setOperatorSettings(name);
+  if (!name) {
+    showLoginDialog();
   }
-  $('<li>')
-    .append(title.attr('href', '#' + tabId))
-    .appendTo('#tabsDiv>ul');
-  return $('<div>').attr('id', tabId).addClass('TabContent').appendTo('#tabsDiv');
+}
+
+function Logout() {
+  _login('');
+}
+
+function showLoginDialog() {
+  WS.SetupDialog($('#loginDialog'), '', {
+    modal: true,
+    title: 'Operator Login',
+    buttons: {
+      Login: function () {
+        _login($(this).find('input').val() || 'default');
+        $(this).dialog('close');
+      },
+    },
+  });
+}
+
+function loginOnEnter(k, v, elem, event) {
+  if (elem.val() && event.which === 13) {
+    _login(elem.val() || 'default');
+    sbCloseDialog(k, v, elem, event);
+  }
 }
