@@ -49,7 +49,7 @@
         ><button
           id="StartJam"
           class="sbKeyControl"
-          sbClass="sbClickMe: Rule(Lineup.Duration), Rule(Lineup.OvertimeDuration), Clock(Lineup).Running, Clock(Lineup).Time, InOvertime: opLineupTooLong"
+          sbClass="sbClickMe: Rule(Lineup.Duration), Rule(Lineup.OvertimeDuration), Clock(Lineup).Running, Clock(Lineup).Time, InOvertime: sbLineupTooLong"
           sbSet="StartJam"
         >
           <span><span sbDisplay="Label(Start)">Start Jam</span></span>
@@ -63,13 +63,13 @@
           Continuation Upcoming
         </button>
       </span>
-      <button id="StopJam" class="sbKeyControl" sbClass="sbClickMe: InJam, Clock(Jam).Running: opJamTooLong" sbSet="StopJam">
+      <button id="StopJam" class="sbKeyControl" sbClass="sbClickMe: InJam, Clock(Jam).Running: sbJamTooLong" sbSet="StopJam">
         <span><span sbDisplay="Label(Stop)">Stop Jam</span></span>
       </button>
       <button
         id="Timeout"
         class="sbKeyControl"
-        sbClass="sbClickMe: Rule(Lineup.Duration), Rule(Lineup.OvertimeDuration), Clock(Lineup).Running, Clock(Lineup).Time, InOvertime: opLineupTooLong"
+        sbClass="sbClickMe: Rule(Lineup.Duration), Rule(Lineup.OvertimeDuration), Clock(Lineup).Running, Clock(Lineup).Time, InOvertime: sbLineupTooLong"
         sbSet="Timeout"
       >
         <span><span sbDisplay="Label(Timeout)">Timeout</span></span>
@@ -84,7 +84,7 @@
   </div>
   <div class="sbSegmentGroup">
     <div sbForeach="Clock: Period, Jam, Lineup, Timeout, Intermission: only" class="sbSegment ClockControl">
-      <div class="sbGroup Name" sbClass="Running: Running | InJam: ^InJam | NoMoreJam: ^NoMoreJam">
+      <div class="sbGroup Name" sbClass="Running: Running | InJam: ^InJam | NoMoreJam: ^NoMoreJam" sbCall="opClockDialog">
         <span>
           <span class="Value" sbDisplay="Name"></span>
           <span class="InvertedTime" sbClass="CountDown: Direction" sbDisplay="InvertedTime: sbToLongTime"></span>

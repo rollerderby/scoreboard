@@ -157,21 +157,6 @@ function opOpenOvertimeDialog(k) {
   });
 }
 
-function opLineupTooLong(k) {
-  const inLineup = isTrue(WS.state[k.upTo('Game') + '.Clock(Lineup).Running']);
-  const overtime = isTrue(WS.state[k.upTo('Game') + '.InOvertime']);
-  const curTime = WS.state[k.upTo('Game') + '.Clock(Lineup).Time'];
-  const maxTime = sbFromLongTime(
-    overtime ? WS.state[k.upTo('Game') + '.Rule(Lineup.OvertimeDuration)'] : WS.state[k.upTo('Game') + '.Rule(Lineup.Duration)']
-  );
-
-  return inLineup && curTime > maxTime;
-}
-
-function opJamTooLong(k) {
-  return isTrue(WS.state[k.upTo('Game') + 'InJam']) && !isTrue(WS.state[k.upTo('Game') + 'Clock(Jam).Running']);
-}
-
 function opPossiblInjCont(k) {
   return !isTrue(k.upTo('Game') + '.Rule(Jam.InjuryContinuation)') || !isTrue(k.upTo('Game') + '.Team(1).Injury');
 }
