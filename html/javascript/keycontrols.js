@@ -139,7 +139,7 @@ var _crgKeyControls = {
     'use strict';
     var ok = true;
     $.each(_crgKeyControls._conditions, function () {
-      if (ok && $.isFunction(this) && !this()) {
+      if (ok && typeof this === 'function' && !this()) {
         ok = false;
       }
     });

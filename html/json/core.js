@@ -25,7 +25,7 @@ function _include(dir, files, callback) {
     files = dir;
     dir = undefined;
   }
-  if (!$.isArray(files)) {
+  if (!Array.isArray(files)) {
     files = [files];
   }
   $.each(files, function () {
@@ -47,9 +47,7 @@ function _includeJsAndCss(path, callback) {
 
 _include('/external/jquery-ui', ['jquery-ui.min.js', 'jquery-ui.min.css']);
 
-_include('/external/jquery-plugins/isjquery/jquery.isjquery.js');
-_include('/external/jquery-plugins/string/jquery.string.js');
-_include('/external/jquery-plugins/fileupload/jquery.fileupload.js');
+_include('/external/jquery-fileupload/jquery.fileupload.js');
 
 /* Core functionality */
 _include('/javascript', [

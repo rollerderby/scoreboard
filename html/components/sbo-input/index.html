@@ -9,13 +9,13 @@
       <button sbCall="opToggleOperatorSetting" id="ReplaceButton_Setting">Enable Replace on Undo</button>
       <button sbCall="opToggleOperatorSetting" id="ScoreAdjustments_Setting">Use Score Adjustments</button>
       <button sbCall="opToggleOperatorSetting" id="TabBar_Setting">Show Tab Bar</button>
+      <button sbClass="sbClickMe: OfficialScore" sbCall="opOpenNewGameDialog">Start New Game</button>
       <button
         sbClass="sbClickMe: InPeriod, OfficialScore, Clock(Period).Number, Rule(Period.Number): opClickEndOfPeriod"
         sbCall="opToggleEndOfPeriod"
       >
         End of Period Controls
       </button>
-      <button sbClass="sbClickMe: OfficialScore" sbCall="opOpenNewGameDialog">Start New Game</button>
     </div>
     <div class="sbGroup sbHide" id="KeyEditHelp">
       <span

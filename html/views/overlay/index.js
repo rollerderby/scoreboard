@@ -19,7 +19,7 @@
   // Show Clocks
   WS.Register(['ScoreBoard.CurrentGame.Clock(*).Running', 'ScoreBoard.CurrentGame.InJam'], sbClockSelect);
 
-  $(document).keyup(function (e) {
+  $(document).on('keyup', function (e) {
     switch (e.which) {
       case 74: // j
         _ovlToggleSetting('ShowJammers');

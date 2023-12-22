@@ -46,7 +46,7 @@
                 <button class="Delete Left" sbCall="datDeleteElem">Delete</button>
                 <a download class="Download Left" sbAttr="href: Name: datGameDlLink" sbButton>Download</a>
                 <a class="Edit Left" sbAttr="href: -: '/nso/hnso?game=' + k.Game" sbButton>Edit</a>
-                <span sbDisplay="Name"></span>
+                <span class="Name" sbDisplay="Name"></span>
               </td>
             </tr>
           </tbody>
@@ -70,7 +70,7 @@
                 <button class="Delete Left" sbCall="datDeleteElem">Delete</button>
                 <a download class="Download Left" sbAttr="href: FullName: datTeamDlLink" sbButton>Download</a>
                 <a class="Edit Left" sbAttr="href: -: '/settings/teams?team=' + k.PreparedTeam" sbButton>Edit</a>
-                <span sbDisplay="FullName"></span>
+                <span class="Name" sbDisplay="FullName"></span>
               </td>
             </tr>
           </tbody>
@@ -99,7 +99,7 @@
                   sbButton
                   sbDisplay="Readonly: datToEditButtonLabel"
                 ></a>
-                <span sbDisplay="Name: sbIndentByParents: html"></span>
+                <span class="Name" sbDisplay="Name: sbIndentByParents: html"></span>
               </td>
             </tr>
           </tbody>
@@ -116,13 +116,13 @@
             </tr>
           </thead>
           <tbody>
-            <tr sbForeach="Setting:: name: part=3, filter=ScoreBoard.Operator, noId" sbAttr="name:: toOperatorName" class="Content">
+            <tr sbForeach="Setting:: name: part=3, filter=ScoreBoard.Operator, noId" sbAttr="name:: datToOperatorName" class="Content">
               <td class="Name">
                 <button class="Select Left" sbCall="datSelect">Select</button>
                 <button class="Delete Left" sbCall="datDeleteElem">Delete</button>
                 <a download class="Download Left" sbAttr="href: Name: datOperatorDlLink" sbButton>Download</a>
                 <button class="sbInvisible" sbButton disabled>Edit</button>
-                <span sbDisplay=": datToOperatorName"></span>
+                <span class="Name" sbDisplay=": datToOperatorName"></span>
               </td>
             </tr>
           </tbody>

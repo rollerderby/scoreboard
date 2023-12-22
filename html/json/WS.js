@@ -265,7 +265,7 @@ let WS = {
   },
 
   Register: function (paths, options, isPreRegister) {
-    if ($.isFunction(options)) {
+    if (typeof options === 'function') {
       options = { triggerFunc: options };
     }
 
@@ -341,17 +341,17 @@ let WS = {
       }
     }
 
-    if (!$.isArray(paths)) {
+    if (!Array.isArray(paths)) {
       paths = [paths];
     }
 
-    if ($.isFunction(batchCallback)) {
+    if (typeof batchCallback === 'function') {
       $.each(paths, function (idx, path) {
         WS._addToTrie(WS._callbackTrie, path, { type: 'batched', func: batchCallback });
       });
     }
 
-    if ($.isFunction(callback)) {
+    if (typeof callback === 'function') {
       $.each(paths, function (idx, path) {
         WS._addToTrie(WS._callbackTrie, path, { type: 'plain', func: callback, elem: elem });
       });
@@ -537,7 +537,7 @@ let WS = {
   },
 
   _getModifyFunc: function (paths, func, isBool) {
-    if (!$.isFunction(func)) {
+    if (typeof func !== 'function') {
       func = isBool ? WS._buildBoolFunc(func) : WS._buildNonBoolFunc(func);
     }
     if (paths.length < 2) {
@@ -552,7 +552,7 @@ let WS = {
             break;
           }
         }
-        if ($.isFunction(func)) {
+        if (typeof func === 'function') {
           v = func(WS._enrichProp(path), v, elem);
         }
         return v;

@@ -7,7 +7,7 @@
 #Team .RemoveColor button { padding: 2px 5px; } 
 #Team .RemoveColor { margin: 0px 5px; border-right: 1px solid black; }
 
-#Team table.Skaters th#skaterCount { font-size: 66%; font-weight: normal; } 
+#Team table.Skaters th#skaterCount { font-size: 100%; font-weight: normal; } 
 #Team table.Skaters td.Name { width: 40%; } 
 #Team table.Skaters td.RosterNumber { width: 15%; } 
 #Team table.Skaters td.Button { width: 15%; } 
