@@ -22,7 +22,7 @@
 .SkSheet>.Period .GameTotal, .SkSheet>.Period .JamTotal,.SkSheet>.Period .Lost, .SkSheet>.Period [ScoringTrip="2"] { border-left-width: 2px; } 
 
 /* Edit Mode */
-.SkSheet>.Period tbody.Edit .EditButton .ui-button { background: #3f3; }
+.SkSheet>.Period tbody.Edit .EditButton .ui-button { background-color: var(--button-active-bg); color: var(--button-active-fg); }
 .SkSheet>.Period .EditButton .ui-button { padding: .4em; }
 .SkSheet>.Period tbody:not(.Edit)>tr.Edits { display: none; }
 .SkSheet>.Period tbody:not(.Edit) .EditOnly { display: none; }

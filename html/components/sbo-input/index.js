@@ -239,7 +239,7 @@ function opClockDialog(k) {
 }
 
 function opSetTime(k, v, elem) {
-  WS.Set(k + '.Time', sbFromLongTime(elem.siblings('input').val()));
+  WS.Set(k + '.Time', sbFromLongTime(k, elem.siblings('input').val()));
   elem.siblings('input').val('');
 }
 

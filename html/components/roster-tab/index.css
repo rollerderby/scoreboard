@@ -8,7 +8,7 @@
 #RosterTab table.Skaters col.RosterNumber { width: 15%; } 
 #RosterTab table.Skaters col.Pronouns { width: 15%; } 
 
-#RosterTab table.Skaters #skaterCount { font-weight: normal; font-size: 100%; }
+#RosterTab table.Skaters #skaterCount { font-weight: normal; font-size: 1rem; }
 
 #RosterTab table.Skaters tr[flag='ALT'] { display:none; }
 #RosterTab table.Skaters tr[role='Pivot']>td { background: #00ee00 !important; }

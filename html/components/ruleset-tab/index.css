@@ -1,7 +1,7 @@
 #RulesetsTab .definitions .rules { text-align: left; } 
-#RulesetsTab .definitions .section .header { border-bottom: 1px solid #eee; } 
-#RulesetsTab .definitions .section .header { font-size: 1.1em; cursor: pointer; } 
-#RulesetsTab .definitions .section .definition .name { position: relative; width: 350px; } 
+#RulesetsTab .definitions .section .header { border-top: 1px solid var(--outside-bg); } 
+#RulesetsTab .definitions .section .header { font-size: 1.1em; } 
+#RulesetsTab .definitions .section .definition .name { position: relative; width: 22rem; } 
 #RulesetsTab .definitions .section:not(.folded) .header:before { content: "-- "; } 
 #RulesetsTab .definitions .section.folded .header:before { content: "+ "; } 
 #RulesetsTab .definitions .section.folded .definition { display:none; } 

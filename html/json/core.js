@@ -45,7 +45,7 @@ function _includeJsAndCss(path, callback) {
   }
 }
 
-_include('/external/jquery-ui', ['jquery-ui.min.js', 'jquery-ui.min.css']);
+_include('/external/jquery-ui', ['jquery-ui.min.js', 'jquery-ui.structure.min.css', 'jquery-ui.theme.css']);
 
 _include('/external/jquery-fileupload/jquery.fileupload.js');
 

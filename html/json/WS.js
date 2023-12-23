@@ -617,6 +617,7 @@ let WS = {
         $(
           '.sbShowOnSk, .sbShowOnPt, .sbShowOnPurePt, .sbShowOnLt, .sbShowOnPureLt, .sbShowOnPlt, .sbShowOnSheet, .sbShowOnWhiteboard, .sbShowOnOperator'
         ).addClass('sbShowBySheetStyle');
+        $('[sbSet], [sbControl], [sbToggle], [sbCall]').not('input, select').addClass('sbClickable');
         WS.AutoRegister($('html'));
       }
     });

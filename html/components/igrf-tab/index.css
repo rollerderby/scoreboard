@@ -1,5 +1,5 @@
-#Igrf div.Name input { font-size: 66%; } 
-#Igrf div.Name button { font-size: 66%; margin: 2px 5px; } 
+#Igrf div.Name input { font-size: 1rem; } 
+#Igrf div.Name button { font-size: 1rem; margin: 2px 5px; } 
 
 #Igrf table.Variables { width: 100%; } 
 #Igrf table.Variables td:first-of-type { text-align: right; } 
@@ -8,14 +8,14 @@
 #Igrf div.Files .ui-button { margin: 1px 5px; } 
 #Igrf div.Files .Warning { color: red; }
 
-#Igrf table.Summary { border: 1px solid black; border-collapse: collapse; background-color: white; font-weight: bold; font-size: 80%; margin: auto; }
+#Igrf table.Summary { border: 1px solid black; border-collapse: collapse; background-color: white; font-weight: bold; margin: auto; }
 #Igrf table.Summary td { border: 1px solid black; border-collapse: collapse; width: 80px; }
 #Igrf table.Summary .Head, #Igrf table.Summary .Total { background-color: #ffd0ff; }
 #Igrf table.Summary .Label { background-color: #ffe8ff; }
-#Igrf table.Summary .Small { font-weight: initial; }
+#Igrf table.Summary .Small { font-weight: normal; }
 #Igrf table.Summary .Value { font-size: 125%; }
 
-#Igrf table.Officials th.Head { font-size: 100%; } 
+#Igrf table.Officials th.Head { font-size: 1rem; } 
 #Igrf table.Officials col.Name { width: 30%; } 
 #Igrf table.Officials col.League { width: 30%; } 
 #Igrf table.Officials col.Cert { width: 10%; } 

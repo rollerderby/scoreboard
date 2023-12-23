@@ -56,7 +56,7 @@
         </button>
         <button
           id="ContinuationUpcoming"
-          class="sbKeyControl Smaller"
+          class="sbKeyControl sbNoDetract"
           sbClass="sbHide: Rule(Jam.InjuryContinuation), Team(1).Injury: opPossiblInjCont"
           sbToggle="InjuryContinuationUpcoming"
         >
@@ -86,14 +86,14 @@
     <div sbForeach="Clock: Period, Jam, Lineup, Timeout, Intermission: only" class="sbSegment ClockControl">
       <div class="sbGroup Name" sbClass="Running: Running | InJam: ^InJam | NoMoreJam: ^NoMoreJam" sbCall="opClockDialog">
         <span>
-          <span class="Value" sbDisplay="Name"></span>
+          <span class="sbImportant" sbDisplay="Name"></span>
           <span class="InvertedTime" sbClass="CountDown: Direction" sbDisplay="InvertedTime: sbToLongTime"></span>
         </span>
       </div>
-      <div class="sbGroup Number"><span class="Value" sbDisplay="Number" sbCall="opClockNumberDialog"></span></div>
+      <div class="sbGroup Number"><span class="sbImportant" sbDisplay="Number" sbCall="opClockNumberDialog"></span></div>
       <div class="sbGroup Time">
         <button sbAttr="id:-:'Clock[Clock]TimeDown'" class="sbKeyControl" sbSet="Time: -1000: change">-1</button>
-        <span class="Value" sbDisplay="Time: sbToLongTime" sbCall="opClockDialog"></span>
+        <span class="sbVeryImportant" sbDisplay="Time: sbToLongTime" sbCall="opClockDialog"></span>
         <button sbAttr="id:-:'Clock[Clock]TimeUp'" class="sbKeyControl" sbSet="Time: +1000: change">+1</button>
       </div>
     </div>

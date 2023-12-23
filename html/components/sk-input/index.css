@@ -2,22 +2,13 @@
 body:not([showTeam="2"]) [Team] ~ [Team]>.SkInput>.sbGroup:not(.sbStack)  { flex-direction: row-reverse; }
 body:not([showTeam="2"]) [Team] ~ [Team]>.SkInput .ScoreRow  { flex-direction: row-reverse; }
 
-/* buttons */
-.SkInput .BigButton.ui-button { font-size: 130%; line-height: 1.4em; }
-
 /* name/logo row */
 .SkInput img.Logo { height: 50px; max-width: 200px; }
-.SkInput .sbGroup.Name { height: 50px; font-weight: bold; }
+.SkInput .sbGroup.Name { height: 50px; }
 .SkInput .sbGroup.Name>div { flex:content; }
 .SkInput .sbGroup.Name>div.Name { flex: 3 0 content; }
-.SkInput .TeamName { font-size: 150%; }
-
-/* points row */
-.SkInput .Score { font-size: 300%; font-weight: bold; }
-.SkInput .SubScore { font-size: 150%; font-weight: bold; }
 
 /* timeout row */
-.SkInput .TimeoutCount { font-size: 200%; font-weight: bold; }
 .SkInput .Timeouts > * { flex: 1; }
 .SkInput .Timeouts { position: relative; }
 [Team="1"] .SkInput .OfficialTimeout>div { position: absolute; left: 50%; width: 100%; }
@@ -25,5 +16,6 @@ body:not([showTeam="2"]) [Team] ~ [Team]>.SkInput .ScoreRow  { flex-direction: r
 .SkInput .OfficialTimeout button { transform: translateY(-50%); }
 
 /* jammer/pivot rows */
-.SkInput .HasPlayed:not(.Active) { box-shadow: inset 0px 0px 3px 2px #70ff70; }
-.SkInput .Box.Sitting { background: #ff4040; }
+.SkInput .HasPlayed:not(.Active) { box-shadow: inset 0px 0px 4px 4px var(--element-active-bg); }
+.SkInput .Box.Sitting { background: var(--button-inbox-bg); color: var(--button-inbox-fg); }
+.SkInput .Box.Sitting:hover { background: var(--button-inbox-hover-bg); color: var(--button-inbox-hover-fg); }

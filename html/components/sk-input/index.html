@@ -2,7 +2,7 @@
   <div class="sbGroup Name">
     <div class="Logo EditGroup">
       <div sbCall="skiToggleEdit">
-        <span sbClass="sbHide: Logo: sbIsNotEmpty">No Logo</span>
+        <span class="sbImportant" sbClass="sbHide: Logo: sbIsNotEmpty">No Logo</span>
         <img class="Logo" sbAttr="src: Logo" sbClass="sbHide: Logo: sbIsEmpty" />
       </div>
       <select class="sbHide" sbControl="Logo" sbOn="change: skiToggleEdit">
@@ -17,7 +17,7 @@
     </div>
     <div class="Name EditGroup">
       <div
-        class="TeamName"
+        class="sbImportant"
         sbDisplay="AlternateName(operator), UniformColor, Name"
         sbCss="color: Color(operator.fg) | background-color: Color(operator.bg) | text-shadow: Color(operator.glow): sbCssToShadow"
         sbCall="skiToggleEdit"
@@ -30,7 +30,7 @@
     <div class="ScoreRow">
       <div class="sbStack">
         <button
-          class="sbKeyControl BigButton"
+          class="sbKeyControl sbImportant"
           sbAttr="id:-: 'Team[Team]ScoreDown'"
           sbProp="disabled: TripScore: == 0"
           sbSet="TripScore: -1: change"
@@ -42,12 +42,12 @@
         </button>
       </div>
       <div class="sbStack">
-        <span>Jam Pts: <span class="SubScore" sbDisplay="JamScore"></span></span>
-        <span>Trip Pts: <span class="SubScore" sbDisplay="TripScore"></span></span>
+        <span>Jam Pts: <span class="sbImportant" sbDisplay="JamScore"></span></span>
+        <span>Trip Pts: <span class="sbImportant" sbDisplay="TripScore"></span></span>
       </div>
-      <span class="Score" sbDisplay="Score"></span>
+      <span class="sbVeryVeryImportant" sbDisplay="Score"></span>
       <div class="sbStack">
-        <button class="sbKeyControl BigButton" sbAttr="id:-: 'Team[Team]ScoreUp'" sbSet="TripScore: +1: change">Trip Pts +1</button>
+        <button class="sbKeyControl sbImportant" sbAttr="id:-: 'Team[Team]ScoreUp'" sbSet="TripScore: +1: change">Trip Pts +1</button>
         <button class="sbKeyControl" sbAttr="id:-: 'Team[Team]AddTrip'" sbSet="AddTrip">Add Trip</button>
       </div>
     </div>
@@ -69,7 +69,7 @@
     >
       Team TO
     </button>
-    <span class="TimeoutCount" sbDisplay="Timeouts" sbCall="opOpenTimeoutDialog"></span>
+    <span class="sbVeryImportant" sbDisplay="Timeouts" sbCall="opOpenTimeoutDialog"></span>
     <button
       class="sbKeyControl"
       sbAttr="id:-:'Team[Team]OfficialReview'"
@@ -78,7 +78,7 @@
     >
       Off Review
     </button>
-    <span class="TimeoutCount" sbDisplay="OfficialReviews" sbCall="opOpenTimeoutDialog"></span>
+    <span class="sbVeryImportant" sbDisplay="OfficialReviews" sbCall="opOpenTimeoutDialog"></span>
     <button class="sbKeyControl" sbAttr="id:-:'Team[Team]RetainedOfficialReview'" sbToggle="RetainedOfficialReview">Retained</button>
     <div class="OfficialTimeout">
       <div>

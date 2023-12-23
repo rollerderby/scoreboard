@@ -17,7 +17,7 @@
 .LtSheet>.Period .Darker .Darker { background-color: #cee7ff; } 
 .LtSheet>.Period td.Box { background-color: #b6daff; }
 
-#FieldingEditor .Skater { flex-wrap: wrap; gap: 0.5em; }
+#FieldingEditor .Skater { flex-wrap: wrap; gap: var(--element-gap); }
 #FieldingEditor td.Earlier { text-align: right; width: 80px; }
 #FieldingEditor td.Later { text-align: left; width: 80px; }
 #FieldingEditor td.Text { width: 100px; }
