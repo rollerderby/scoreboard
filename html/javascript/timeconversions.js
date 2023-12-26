@@ -6,6 +6,9 @@ var _timeConversions = {
   /* Convert ms to seconds */
   msToSeconds: function (ms, roundUp) {
     'use strict';
+    if (ms < 0) {
+      return '0';
+    }
     if (roundUp) {
       return String(Math.ceil(ms / 1000));
     } else {
@@ -20,6 +23,9 @@ var _timeConversions = {
   /* Convert milliseconds to min:sec */
   msToMinSec: function (ms, roundUp) {
     'use strict';
+    if (ms < 0) {
+      return '0:00';
+    }
     return _timeConversions._msOnlyMin(ms, roundUp) + ':' + _timeConversions._msOnlySec(ms, roundUp);
   },
   /* Convert min:sec to milliseconds */
@@ -32,6 +38,9 @@ var _timeConversions = {
   /* Convert milliseconds to min:sec, if min is 0 return only seconds portion */
   msToMinSecNoZero: function (ms, roundUp) {
     'use strict';
+    if (ms < 0) {
+      return '0';
+    }
     var limit = roundUp ? 59001 : 60000;
     if (ms >= limit) {
       return _timeConversions.msToMinSec(ms, roundUp);
