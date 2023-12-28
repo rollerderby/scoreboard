@@ -272,11 +272,20 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
     .append('<col class="Button">')
     .append('<thead/><tbody/>')
     .children('thead')
-    .append('<tr><th></th><th class="Title">Skaters</th><th></th><th id="skaterCount"></th><th></th></tr>')
+    .append('<tr><th></th><th class="Title">Skaters</th><th></th><th id="skaterCount"></th><th id="removeAllButton"></th><th></th></tr>')
     .append('<tr><th>Number</th><th>Name</th><th>Pronouns</th><th>Flags</th><th>Add</th>')
     .append('<tr class="AddSkater"><th/><th/><th/><th/><th/></tr>')
     .append('<tr><th colspan="5"><hr/></th></tr>')
     .end();
+
+  $('<button>')
+    .text('Remove All')
+    .addClass('RemoveSkater')
+    .button()
+    .on('click', function () {
+      createTeamsSkaterRemoveAllDialog(WS.state[teamPrefix + '.Name'], teamTable, teamPrefix + '.Skater(');
+    })
+    .appendTo(skatersTable.find('#removeAllButton'));
 
   var addSkater = function (number, name, pronouns, flags, id) {
     id = id || newUUID();
@@ -724,6 +733,54 @@ function createTeamsSkaterRemoveDialog(teamName, prefix) {
 
   dialog.dialog({
     title: 'Remove Skater',
+    modal: true,
+    width: 700,
+    close: function () {
+      $(this).dialog('destroy').remove();
+    },
+  });
+}
+
+function createTeamsSkaterRemoveAllDialog(teamName, teamTable, prefix) {
+  'use strict';
+  var dialog = $('<div>').addClass('TeamsRemoveDialog');
+
+  $('<a>')
+    .addClass('Title')
+    .text('Team: ' + teamName)
+    .appendTo(dialog);
+  $('<br>').appendTo(dialog);
+
+  $('<a>').addClass('Remove').text('Remove All Skaters').appendTo(dialog);
+  $('<br>').appendTo(dialog);
+
+  $('<hr>').appendTo(dialog);
+  $('<a>').addClass('AreYouSure').text('Are you sure?').appendTo(dialog);
+  $('<br>').appendTo(dialog);
+
+  $('<button>')
+    .addClass('No')
+    .text('No, keep skaters.')
+    .appendTo(dialog)
+    .on('click', function () {
+      dialog.dialog('close');
+    })
+    .button();
+  $('<button>')
+    .addClass('Yes')
+    .text('Yes, remove all!')
+    .appendTo(dialog)
+    .on('click', function () {
+      teamTable.find('.Skater').map(function (_, n) {
+        n = $(n);
+        WS.Set(prefix + n.attr('skaterid') + ')', null)
+      });
+      dialog.dialog('close');
+    })
+    .button();
+
+  dialog.dialog({
+    title: 'Remove All Skaters',
     modal: true,
     width: 700,
     close: function () {
