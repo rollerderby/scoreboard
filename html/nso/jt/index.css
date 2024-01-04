@@ -1,7 +1,6 @@
 body { margin: 0; padding: 0; }
 .sbSegment { height: 50dvh; display: flex; flex-direction: column; }
 .sbGroup { flex: 1; padding: 0; }
-.ui-button, .ui-button:hover { background: linear-gradient(0deg, #eee, #f6f6f6); }
 
 .Clocks { flex: 2; }
 .Clocks .ClockName { font-weight: bold; font-size: 5dvh; }

@@ -13,8 +13,10 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.jr.ob.JSON;
 
+import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.Expulsion;
+import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Media.MediaFile;
@@ -22,6 +24,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Media.MediaType;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period.PeriodSnapshot;
+import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets.Ruleset;
@@ -65,7 +68,6 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
 
     private void initReferences(Ruleset rs) {
         addProperties(props);
-        addProperties(Period.JAM);
 
         setCopy(CURRENT_PERIOD_NUMBER, this, CURRENT_PERIOD, Period.NUMBER, true);
         setCopy(IN_PERIOD, this, CURRENT_PERIOD, Period.RUNNING, false);
@@ -432,6 +434,10 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 set(UPDATE_IN_PROGRESS, true);
                 statsbookExporter = new StatsbookExporter(this);
             }
+        } else if (prop == START_BOX_TRIP) {
+            add(Team.BOX_TRIP, new BoxTripImpl(this));
+        } else if (prop == START_JAMMER_BOX_TRIP) {
+            jammerBoxEntry();
         }
     }
 
@@ -445,6 +451,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 int num = Integer.parseInt(id);
                 if (0 <= num && num <= getInt(Rule.NUMBER_PERIODS)) { return new PeriodImpl(this, num); }
             }
+            if (prop == Team.BOX_TRIP) { return new BoxTripImpl(this, id); }
             if (prop == NSO) { return new OfficialImpl(this, id, NSO); }
             if (prop == REF) { return new OfficialImpl(this, id, REF); }
             if (prop == EXPULSION && source.isFile()) {
@@ -688,6 +695,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
 
         getTeam(Team.ID_1).startJam();
         getTeam(Team.ID_2).startJam();
+        for (BoxTrip bt : getAll(Team.BOX_TRIP)) { bt.startJam(); }
     }
     private void _endJam() {
         Clock pc = getClock(Clock.ID_PERIOD);
@@ -703,6 +711,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         set(IN_JAM, false);
         getTeam(Team.ID_1).stopJam();
         getTeam(Team.ID_2).stopJam();
+        for (BoxTrip bt : getAll(Team.BOX_TRIP)) { bt.stopJam(); }
         setInOvertime(false);
 
         if (pc.isRunning()) {
@@ -840,6 +849,12 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         setInPeriod(snapshot.inPeriod());
         for (Clock clock : getAll(CLOCK)) { clock.restoreSnapshot(snapshot.getClockSnapshot(clock.getId())); }
         for (Team team : getAll(TEAM)) { team.restoreSnapshot(snapshot.getTeamSnapshot(team.getId())); }
+        for (BoxTrip bt : getAll(Team.BOX_TRIP)) { bt.restoreSnapshot(snapshot.getBoxTripSnapshot(bt.getId())); };
+        for (Team team : getAll(TEAM)) {
+            for (BoxTrip bt : team.getAll(Team.BOX_TRIP)) {
+                bt.restoreSnapshot(snapshot.getBoxTripSnapshot(bt.getId()));
+            }
+        }
         for (Button button : Button.values()) { setLabel(button, snapshot.getLabels().get(button)); }
         setLabel(Button.UNDO, ACTION_NONE);
         setLabel(Button.REPLACED, snapshot.getType());
@@ -886,6 +901,24 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             return false;
         }
         return true;
+    }
+
+    private void jammerBoxEntry() {
+        // start a clock
+        BoxTrip newBt = new BoxTripImpl(this);
+        add(Team.BOX_TRIP, newBt);
+        for (Team team : getAll(TEAM)) {
+            if (team.getPosition(team.isStarPass() ? FloorPosition.PIVOT : FloorPosition.JAMMER).isPenaltyBox()) {
+                Team newTeam = team.getOtherTeam();
+                Position newPosition =
+                    newTeam.getPosition(newTeam.isStarPass() ? FloorPosition.PIVOT : FloorPosition.JAMMER);
+                if (newPosition.isPenaltyBox()) {
+                    // both jammers already marked in box - let the operator resolve
+                    return;
+                }
+                newBt.add(BoxTrip.FIELDING, newPosition.getCurrentFielding()); // this will trigger jammer swap logic
+            }
+        }
     }
 
     private String getSetting(String key) { return scoreBoard.getSettings().get(key); }
@@ -1069,6 +1102,11 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             for (Clock clock : g.getAll(CLOCK)) { clockSnapshots.put(clock.getId(), clock.snapshot()); }
             teamSnapshots = new HashMap<>();
             for (Team team : g.getAll(TEAM)) { teamSnapshots.put(team.getId(), team.snapshot()); }
+            boxTripSnapshots = new HashMap<>();
+            for (BoxTrip bt : g.getAll(Team.BOX_TRIP)) { boxTripSnapshots.put(bt.getId(), bt.snapshot()); }
+            for (Team team : g.getAll(TEAM)) {
+                for (BoxTrip bt : team.getAll(Team.BOX_TRIP)) { boxTripSnapshots.put(bt.getId(), bt.snapshot()); }
+            }
         }
 
         public String getType() { return type; }
@@ -1083,8 +1121,9 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         public Map<Button, String> getLabels() { return labels; }
         public Map<String, Clock.ClockSnapshot> getClockSnapshots() { return clockSnapshots; }
         public Map<String, Team.TeamSnapshot> getTeamSnapshots() { return teamSnapshots; }
-        public ClockImpl.ClockSnapshot getClockSnapshot(String clock) { return clockSnapshots.get(clock); }
+        public Clock.ClockSnapshot getClockSnapshot(String clock) { return clockSnapshots.get(clock); }
         public Team.TeamSnapshot getTeamSnapshot(String team) { return teamSnapshots.get(team); }
+        public Clock.ClockSnapshot getBoxTripSnapshot(String bt) { return boxTripSnapshots.get(bt); }
 
         protected String type;
         protected long snapshotTime;
@@ -1098,6 +1137,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         protected Map<Button, String> labels;
         protected Map<String, Clock.ClockSnapshot> clockSnapshots;
         protected Map<String, Team.TeamSnapshot> teamSnapshots;
+        protected Map<String, Clock.ClockSnapshot> boxTripSnapshots;
     }
 
     static public enum Button {

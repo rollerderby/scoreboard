@@ -5,11 +5,11 @@
   WS.Register([prefix + 'AfterSP', prefix + 'Score', prefix + 'Current'], function (k) {
     const selectorPrefix = '[Team="' + k.TeamJam + '"] [Period="' + k.Period + '"] [Jam="' + k.Jam + '"]';
     if (k.ScoringTrip === 1) {
-      $(selectorPrefix + '>.Jam [ScoringTrip="2"]').text(toTripPoints(k));
-      $(selectorPrefix + '>.SP [ScoringTrip="2"]').text(toTripSpPoints(k));
+      $(selectorPrefix + '>.Jam [ScoringTrip="2"]').text(sksToTripPoints(k));
+      $(selectorPrefix + '>.SP [ScoringTrip="2"]').text(sksToTripSpPoints(k));
     } else if (k.ScoringTrip > 10) {
-      $(selectorPrefix + '>.Jam [ScoringTrip="10"]').text(toTripPoints(k));
-      $(selectorPrefix + '>.SP [ScoringTrip="10"]').text(toTripSpPoints(k));
+      $(selectorPrefix + '>.Jam [ScoringTrip="10"]').text(sksToTripPoints(k));
+      $(selectorPrefix + '>.SP [ScoringTrip="10"]').text(sksToTripSpPoints(k));
     }
   });
 

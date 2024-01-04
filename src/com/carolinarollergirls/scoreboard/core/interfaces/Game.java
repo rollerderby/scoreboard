@@ -1,6 +1,7 @@
 package com.carolinarollergirls.scoreboard.core.interfaces;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets.Ruleset;
@@ -100,7 +101,7 @@ public interface Game extends ScoreBoardEventProvider {
         private String string;
     }
 
-    public static Collection<Property<?>> props = new ArrayList<>();
+    public static Collection<Property<?>> props = new ArrayList<>(Arrays.asList(Period.JAM, Team.BOX_TRIP));
 
     public static final Value<String> NAME = new Value<>(String.class, "Name", "", props);
     public static final Value<String> NAME_FORMAT = new Value<>(String.class, "NameFormat", "", props);
@@ -159,6 +160,8 @@ public interface Game extends ScoreBoardEventProvider {
     public static final Command START_OVERTIME = new Command("StartOvertime", props);
     public static final Command OFFICIAL_TIMEOUT = new Command("OfficialTimeout", props);
     public static final Command EXPORT = new Command("Export", props);
+    public static final Command START_BOX_TRIP = new Command("StartBoxTrip", props);
+    public static final Command START_JAMMER_BOX_TRIP = new Command("StartJammerBoxTrip", props);
 
     public static final String SETTING_DEFAULT_NAME_FORMAT = "ScoreBoard.Game.DefaultNameFormat";
 

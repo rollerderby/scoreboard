@@ -1,0 +1,12 @@
+body { display: flex; flex-direction: column; height: 100dvh; }
+#List, #Unassigned { flex: 1; }
+
+#Unassigned { display: flex; flex-direction: column; justify-content: flex-end; }
+#Unassigned>div { display:flex; justify-content: space-around; }
+#Unassigned.SwappedTeams [Team="1"] { order: 1; }
+#Unassigned .perTeam { width: 25rem; display: flex; justify-content: center; gap: var(--element-gap); }
+#Unassigned .col1 { width: 7.5rem; }
+
+#Buttons { height: 33%; }
+#Buttons>div { height: 100%; }
+#Buttons>div>button {  flex: 1; height: 100%; font-size: 5dvh; padding: 1rem; }

@@ -83,6 +83,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
                 game.add(Game.EXPULSION, new ExpulsionImpl(game, this));
             }
         }
+        if (prop == SERVED) { parent.set(Skater.HAS_UNSERVED, (Boolean) value); }
     }
 
     @Override
@@ -93,6 +94,9 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     private void possiblyUpdateSkater() {
         if ("".equals(getCode()) || Skater.FO_EXP_ID.equals(getId())) { return; }
         skater.set(Skater.CURRENT_PENALTIES, skater.get(Skater.CURRENT_PENALTIES), Source.RECALCULATE);
+        if (get(BOX_TRIP) != null) {
+            get(BOX_TRIP).set(BoxTrip.PENALTY_CODES, get(BoxTrip.PENALTY_CODES), Source.RECALCULATE);
+        }
     }
 
     @Override

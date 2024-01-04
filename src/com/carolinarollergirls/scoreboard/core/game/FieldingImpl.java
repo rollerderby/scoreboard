@@ -46,6 +46,13 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
                 if (get(NOT_FIELDED)) {
                     return false;
                 } else {
+                    if (getSkater() == null && getTeamJam().isRunningOrUpcoming()) {
+                        if (getPrevious().getCurrentRole() == getCurrentRole()) {
+                            setSkater(getPrevious().getSkater());
+                        } else if (getCurrentRole() == Role.JAMMER && getPrevious().getTeamJam().isStarPass()) {
+                            setSkater(getPrevious().getTeamJam().getFielding(FloorPosition.PIVOT).getSkater());
+                        }
+                    }
                     getTeamJam().getTeam().add(Team.BOX_TRIP, new BoxTripImpl(this));
                     if (getTeamJam().getTeam().hasFieldingAdvancePending() && isCurrent()) {
                         if (getNext().getSkater() == null && getNext().getCurrentRole() == getCurrentRole()) {
@@ -57,7 +64,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
                     }
                 }
             } else if (!(Boolean) value && getCurrentBoxTrip() != null && getCurrentBoxTrip().isCurrent()) {
-                getCurrentBoxTrip().end();
+                getCurrentBoxTrip().set(BoxTrip.IS_CURRENT, false);
             }
         }
         if (prop == NOT_FIELDED && (getSkater() != null || numberOf(BOX_TRIP) > 0)) { return false; }
@@ -114,12 +121,10 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     @Override
     public void execute(Command prop, Source source) {
         if (prop == ADD_BOX_TRIP && !get(NOT_FIELDED)) {
-            requestBatchStart();
             BoxTrip bt = new BoxTripImpl(this);
             bt.end();
             getTeamJam().getTeam().add(Team.BOX_TRIP, bt);
             add(BOX_TRIP, bt);
-            requestBatchEnd();
         }
         if (prop == UNEND_BOX_TRIP) {
             if (getCurrentBoxTrip() != null && !getCurrentBoxTrip().isCurrent()) {

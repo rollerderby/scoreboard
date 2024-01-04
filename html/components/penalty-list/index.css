@@ -1,0 +1,15 @@
+#PenaltyList { display: flex; flex-direction: column; }
+#PenaltyList .Trip:not(.sbHide)  { display: grid; grid: auto auto / repeat(4, minmax(auto, 1fr)); gap: var(--element-gap); }
+[sbSheetStyle="pbt"] #PenaltyList .Edit, #PenaltyList .Info { display: contents; }
+#PenaltyList>:first-child { border-top-left-radius: var(--segment-corner-radius); border-top-right-radius: var(--segment-corner-radius); }
+#PenaltyList>:last-child { border-bottom-left-radius: var(--segment-corner-radius); border-bottom-right-radius: var(--segment-corner-radius); }
+
+#PenaltyList .Trip:not(.Stand):not(.Done) { background-color: var(--element-inbox-bg); color: var(--element-inbox-fg); border-color: var(--element-inbox-fg); }
+#PenaltyList .Trip.Stand:not(.Done) { background-color: yellow; color: #000; border-color: #000; }
+#PenaltyList .Trip.Done { background-color: #6fdf6f; color: #000; border-color: #000; }
+
+#PenaltySelector .Codes { flex-wrap: wrap; gap: 0.5em; }
+#PenaltySelector .Codes>div { width: 150px; height: 90px; border: 1px solid black; font-weight: bold; background-color: #fff; } 
+#PenaltySelector .Codes>div.Selected { background-color: #F00; color: #FFF; } 
+#PenaltySelector .Codes>div .Code { font-size: 1.2em; background-color: #FAA; color: #000; } 
+#PenaltySelector .Codes>div .Description { font-size: 0.75em; } 

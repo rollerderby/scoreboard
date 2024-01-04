@@ -1,5 +1,5 @@
 <div id="Operator" sbClass="Faded: Label(Replace): === 'No Action'">
-  <div class="sbSegment MetaControl sbNoDetract">
+  <div class="sbSegment MetaControl sbNoDistract">
     <div class="sbGroup LastGroup">
       <button sbCall="opToggleKeyEdit">Edit Key Control</button>
       <button sbToggle="^Settings.Setting(ScoreBoard.AutoEndJam)">Auto End Jams</button>
@@ -56,7 +56,7 @@
         </button>
         <button
           id="ContinuationUpcoming"
-          class="sbKeyControl sbNoDetract"
+          class="sbKeyControl sbNoDistract"
           sbClass="sbHide: Rule(Jam.InjuryContinuation), Team(1).Injury: opPossiblInjCont"
           sbToggle="InjuryContinuationUpcoming"
         >
@@ -165,7 +165,7 @@
             sbDisplay="Name"
           ></option>
         </select>
-        <button disabled sbSet="CurrentGame.Game: opFetchGame">Start Prepared Game</button>
+        <button disabled sbSet="CurrentGame.Game: opFetchGame" sbCall="sbCloseDialog">Start Prepared Game</button>
       </div>
     </div>
     <div class="sbSegment">

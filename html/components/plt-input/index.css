@@ -26,11 +26,12 @@
 .PltInput>.Team .Role.OnTrack>span.Pos { display: none; } 
 .PltInput>.Team tr .Darker { background-color: #e7f3ff; } 
 .PltInput>.Team .Darker .Darker { background-color: #cee7ff; } 
-.PltInput>.Team .Box.Serving { background-color: #ff4040; } 
+.PltInput>.Team .Box.Unserved { background-color: var(--element-unserved-bg); color: var(--element-unserved-fg); } 
+.PltInput>.Team .Box.Serving { background-color: var(--element-inbox-bg); color: var(--element-inbox-fg); } 
 .PltInput>.Team .Menu:not(.Show):not(.Advance) { visibility: hidden; }
 .PltInput>.Team .Menu:not(.Advance)::after { content: "☰"; } 
-.PltInput>.Team [warn="3"] .Menu.Darker { background-color: #ff9010; }
-.PltInput>.Team .Menu.Advance { background-color: #ff9010; vertical-align: bottom; }
+.PltInput>.Team [warn="3"] .Menu.Darker { background-color: var(--element-clickme-bg); color: var(--element-clickme-fg); }
+.PltInput>.Team .Menu.Advance { background-color: var(--element-clickme-bg); color: var(--element-clickme-fg); vertical-align: bottom; }
 .PltInput>.Team tr:nth-child(6n+1) .Advance::after { content: "Go To"; } 
 .PltInput>.Team tr:nth-child(6n+3) .Advance::after { content: "Next Jam"; } 
 
@@ -48,6 +49,7 @@
 .PltInput>.Team [warn="3"] .ShowWarn { background-color: #ff2828; } 
 .PltInput>.Team [warn="3"].Darker .ShowWarn { background-color: #e80808; } 
 .PltInput>.Team .Skater .Penalty.Serving { background-color: #70ff70; } 
+.PltInput>.Team .Skater .Penalty.Unserved { background-color: var(--element-unserved-bg); color: var(--element-unserved-fg); } 
 .PltInput>.Team .Captain .Number { position: relative; }
 .PltInput>.Team .Captain .Number::before { content: "C"; font-weight: normal; position: absolute; left: .2em; top: .15em; }
 
@@ -55,7 +57,6 @@
 .PltInput>.Team .Skater .OnTrack { background-color: #70ff70; } 
 .PltInput>.Team [role='Pivot'] .OnTrack { background-color: #00ee00; } 
 .PltInput>.Team [role='Jammer'] .OnTrack { background-color: #00cc00; } 
-.PltInput>.Team .Skater[warn] .Unserved { background-color: #0FF; } 
 .PltInput>.Team .Serving, .PltInput>.Team .Unserved { position: relative; background-clip: padding-box; } 
 .PltInput>.Team .Serving::before, .PltInput>.Team .Unserved::before { font-weight: normal; position: absolute; left: .2em; top: .15em; } 
 .PltInput>.Team .Code .Unserved::before { content: "!"; } 

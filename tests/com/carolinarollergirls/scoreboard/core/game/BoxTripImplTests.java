@@ -1,6 +1,9 @@
 package com.carolinarollergirls.scoreboard.core.game;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -11,13 +14,16 @@ import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
+import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class BoxTripImplTests {
@@ -47,6 +53,7 @@ public class BoxTripImplTests {
         GameImpl.setQuickClockThreshold(0L);
         sb = new ScoreBoardImpl();
         sb.postAutosaveUpdate();
+        sb.getSettings().set(ScoreBoard.SETTING_USE_LT, "true");
         g = sb.getCurrentGame().get(CurrentGame.GAME);
         sb.addScoreBoardListener(batchCounter);
 
@@ -76,6 +83,8 @@ public class BoxTripImplTests {
         // Check all started batches were ended.
         assertEquals(0, batchLevel);
     }
+
+    private void advance(long time_ms) { ScoreBoardClock.getInstance().advance(time_ms); }
 
     private String getBoxTripSymbols(int jam) {
         Fielding f;
@@ -277,5 +286,443 @@ public class BoxTripImplTests {
         assertEquals("S", getBoxTripSymbols(2));
         assertEquals("S", getBoxTripSymbols(3));
         assertEquals("S", getBoxTripSymbols(4));
+    }
+
+    @Test
+    public void testStartStopTimer() {
+        g.execute(Game.START_BOX_TRIP);
+        assertEquals(1, g.numberOf(Team.BOX_TRIP));
+        BoxTrip newBt = g.getAll(Team.BOX_TRIP).iterator().next();
+        assertNotNull(newBt.getClock());
+        assertFalse(newBt.getClock().isRunning());
+        assertEquals(30000, g.getLong(Rule.PENALTY_DURATION));
+        assertEquals(30000, newBt.getClock().getTimeRemaining());
+
+        g.startJam();
+        assertTrue(newBt.getClock().isRunning());
+        advance(5000);
+        g.stopJamTO();
+        assertFalse(newBt.getClock().isRunning());
+        assertEquals(25000, newBt.getClock().getTimeRemaining());
+
+        g.startJam();
+        assertTrue(newBt.getClock().isRunning());
+        newBt.set(BoxTrip.TIMING_STOPPED, true);
+        assertFalse(newBt.getClock().isRunning());
+        newBt.set(BoxTrip.TIMING_STOPPED, false);
+        assertTrue(newBt.getClock().isRunning());
+        newBt.set(BoxTrip.TIMING_STOPPED, true);
+        assertFalse(newBt.getClock().isRunning());
+        g.stopJamTO();
+        assertFalse(newBt.getClock().isRunning());
+        g.startJam();
+        assertFalse(newBt.getClock().isRunning());
+        g.stopJamTO();
+        newBt.set(BoxTrip.TIMING_STOPPED, false);
+        assertFalse(newBt.getClock().isRunning());
+        g.startJam();
+        assertTrue(newBt.getClock().isRunning());
+    }
+
+    @Test
+    public void testStartDuringJam() {
+        g.startJam();
+        g.execute(Game.START_BOX_TRIP);
+        BoxTrip newBt = g.getAll(Team.BOX_TRIP).iterator().next();
+        assertNotNull(newBt.getClock());
+        assertTrue(newBt.getClock().isRunning());
+    }
+
+    @Test
+    public void testAssignFieldingAndPenalties() {
+        g.execute(Game.START_BOX_TRIP);
+        BoxTrip newBt = g.getAll(Team.BOX_TRIP).iterator().next();
+        assertNotNull(newBt.getClock());
+        assertEquals(0, s.numberOf(Skater.PENALTY));
+        assertEquals(0, (int) s.get(Skater.PENALTY_COUNT));
+        assertEquals(0, s.getUnservedPenalties().size());
+
+        t.field(s, Role.BLOCKER);
+        newBt.set(BoxTrip.CURRENT_FIELDING, s.getCurrentFielding(), Source.WS);
+        assertNotNull(newBt.getCurrentFielding());
+        assertEquals(s.getCurrentFielding(), newBt.getCurrentFielding());
+        assertEquals(0, s.numberOf(Skater.PENALTY));
+        assertEquals(0, g.numberOf(Team.BOX_TRIP));
+        assertEquals(30000L, newBt.getClock().getMaximumTime());
+        assertEquals(30000L, newBt.getClock().getTimeRemaining());
+
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 1));
+        assertEquals(1, s.numberOf(Skater.PENALTY));
+        assertEquals(30000L, newBt.getClock().getMaximumTime());
+        assertEquals(30000L, newBt.getClock().getTimeRemaining());
+
+        Penalty p = new PenaltyImpl(s, 2);
+        s.add(Skater.PENALTY, p);
+        assertEquals(60000L, newBt.getClock().getMaximumTime());
+        assertEquals(60000L, newBt.getClock().getTimeRemaining());
+
+        p.delete();
+        assertEquals(30000L, newBt.getClock().getMaximumTime());
+        assertEquals(30000L, newBt.getClock().getTimeRemaining());
+
+        g.startJam();
+        advance(5000L);
+        p = new PenaltyImpl(s, 2);
+        s.add(Skater.PENALTY, p);
+        assertEquals(60000L, newBt.getClock().getMaximumTime());
+        assertEquals(55000L, newBt.getClock().getTimeRemaining());
+
+        advance(30000L);
+        assertTrue(newBt.getClock().isRunning());
+        assertEquals(25000L, newBt.getClock().getTimeRemaining());
+
+        p.delete();
+        assertEquals(30000L, newBt.getClock().getMaximumTime());
+        assertEquals(0L, newBt.getClock().getTimeRemaining());
+
+        advance(5000L);
+        p = new PenaltyImpl(s, 2);
+        s.add(Skater.PENALTY, p);
+        assertEquals(60000L, newBt.getClock().getMaximumTime());
+        assertEquals(20000L, newBt.getClock().getTimeRemaining());
+    }
+
+    @Test
+    public void testStartWithPenalties() {
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 2));
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 3));
+        t.field(s, Role.BLOCKER);
+        g.execute(Game.START_BOX_TRIP);
+        BoxTrip newBt = g.getAll(Team.BOX_TRIP).iterator().next();
+        newBt.set(BoxTrip.CURRENT_FIELDING, s.getCurrentFielding(), Source.WS);
+
+        assertEquals(60000L, newBt.getClock().getMaximumTime());
+    }
+
+    @Test
+    public void testJammerSwapSimple() {
+        Team t2 = g.getTeam(Team.ID_2);
+        t2.execute(Team.ADVANCE_FIELDINGS);
+        Skater s2 = t2.getOrCreate(Team.SKATER, "Skater2");
+        t2.field(s2, Role.JAMMER);
+        t.field(s, Role.JAMMER);
+        g.startJam();
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 2));
+        s2.add(Skater.PENALTY, new PenaltyImpl(s2, 1));
+
+        g.execute(Game.START_BOX_TRIP);
+        BoxTrip bt1 = g.getAll(Team.BOX_TRIP).iterator().next();
+        bt1.set(BoxTrip.CURRENT_FIELDING, s.getCurrentFielding(), Source.WS);
+        advance(7000L);
+
+        assertEquals(23000L, bt1.getClock().getTimeRemaining());
+        assertTrue(s.getCurrentFielding().isInBox());
+
+        g.execute(Game.START_JAMMER_BOX_TRIP);
+        BoxTrip bt2 = s2.getCurrentFielding().getCurrentBoxTrip();
+        assertNotNull(bt2.getClock());
+        assertTrue(s2.getCurrentFielding().isInBox());
+        assertEquals(0L, bt1.getClock().getTimeRemaining());
+        assertEquals(7000L, bt2.getClock().getTimeRemaining());
+    }
+
+    @Test
+    public void testJammerSwapJammerToExPivot() {
+        Team t2 = g.getTeam(Team.ID_2);
+        t2.execute(Team.ADVANCE_FIELDINGS);
+        Skater s2 = t2.getOrCreate(Team.SKATER, "Skater2");
+        t2.field(s2, Role.PIVOT);
+        t.field(s, Role.JAMMER);
+        g.startJam();
+        t2.set(Team.STAR_PASS, true);
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 2));
+        s2.add(Skater.PENALTY, new PenaltyImpl(s2, 1));
+
+        g.execute(Game.START_BOX_TRIP);
+        BoxTrip bt1 = g.getAll(Team.BOX_TRIP).iterator().next();
+        bt1.set(BoxTrip.CURRENT_FIELDING, s.getCurrentFielding(), Source.WS);
+        advance(7000L);
+
+        assertEquals(23000L, bt1.getClock().getTimeRemaining());
+        assertTrue(s.getCurrentFielding().isInBox());
+
+        g.execute(Game.START_JAMMER_BOX_TRIP);
+        BoxTrip bt2 = s2.getCurrentFielding().getCurrentBoxTrip();
+        assertNotNull(bt2.getClock());
+        assertTrue(s2.getCurrentFielding().isInBox());
+        assertEquals(0L, bt1.getClock().getTimeRemaining());
+        assertEquals(7000L, bt2.getClock().getTimeRemaining());
+    }
+
+    @Test
+    public void testJammerSwapExPivotToJammer() {
+        Team t2 = g.getTeam(Team.ID_2);
+        t2.execute(Team.ADVANCE_FIELDINGS);
+        Skater s2 = t2.getOrCreate(Team.SKATER, "Skater2");
+        t2.field(s2, Role.JAMMER);
+        t.field(s, Role.PIVOT);
+        g.startJam();
+        t.set(Team.STAR_PASS, true);
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 2));
+        s2.add(Skater.PENALTY, new PenaltyImpl(s2, 1));
+
+        g.execute(Game.START_BOX_TRIP);
+        BoxTrip bt1 = g.getAll(Team.BOX_TRIP).iterator().next();
+        bt1.set(BoxTrip.CURRENT_FIELDING, s.getCurrentFielding(), Source.WS);
+        advance(7000L);
+
+        assertEquals(23000L, bt1.getClock().getTimeRemaining());
+        assertTrue(s.getCurrentFielding().isInBox());
+
+        g.execute(Game.START_JAMMER_BOX_TRIP);
+        BoxTrip bt2 = s2.getCurrentFielding().getCurrentBoxTrip();
+        assertNotNull(bt2.getClock());
+        assertTrue(s2.getCurrentFielding().isInBox());
+        assertEquals(0L, bt1.getClock().getTimeRemaining());
+        assertEquals(7000L, bt2.getClock().getTimeRemaining());
+    }
+
+    @Test
+    public void testJammerSwapExPivotToExPivot() {
+        Team t2 = g.getTeam(Team.ID_2);
+        t2.execute(Team.ADVANCE_FIELDINGS);
+        Skater s2 = t2.getOrCreate(Team.SKATER, "Skater2");
+        t2.field(s2, Role.PIVOT);
+        t.field(s, Role.PIVOT);
+        g.startJam();
+        t.set(Team.STAR_PASS, true);
+        t2.set(Team.STAR_PASS, true);
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 2));
+        s2.add(Skater.PENALTY, new PenaltyImpl(s2, 1));
+
+        g.execute(Game.START_BOX_TRIP);
+        BoxTrip bt1 = g.getAll(Team.BOX_TRIP).iterator().next();
+        bt1.set(BoxTrip.CURRENT_FIELDING, s.getCurrentFielding(), Source.WS);
+        advance(7000L);
+
+        assertEquals(23000L, bt1.getClock().getTimeRemaining());
+        assertTrue(s.getCurrentFielding().isInBox());
+
+        g.execute(Game.START_JAMMER_BOX_TRIP);
+        BoxTrip bt2 = s2.getCurrentFielding().getCurrentBoxTrip();
+        assertNotNull(bt2.getClock());
+        assertTrue(s2.getCurrentFielding().isInBox());
+        assertEquals(0L, bt1.getClock().getTimeRemaining());
+        assertEquals(7000L, bt2.getClock().getTimeRemaining());
+    }
+
+    @Test
+    public void testJammerSwapDoubleFirstToSingle() {
+        Team t2 = g.getTeam(Team.ID_2);
+        t2.execute(Team.ADVANCE_FIELDINGS);
+        Skater s2 = t2.getOrCreate(Team.SKATER, "Skater2");
+        t2.field(s2, Role.JAMMER);
+        t.field(s, Role.JAMMER);
+        g.startJam();
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 2));
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 3));
+        s2.add(Skater.PENALTY, new PenaltyImpl(s2, 1));
+
+        g.execute(Game.START_BOX_TRIP);
+        BoxTrip bt1 = g.getAll(Team.BOX_TRIP).iterator().next();
+        bt1.set(BoxTrip.CURRENT_FIELDING, s.getCurrentFielding(), Source.WS);
+        advance(7000L);
+
+        assertEquals(53000L, bt1.getClock().getTimeRemaining());
+        assertTrue(s.getCurrentFielding().isInBox());
+
+        g.execute(Game.START_JAMMER_BOX_TRIP);
+        BoxTrip bt2 = s2.getCurrentFielding().getCurrentBoxTrip();
+        assertNotNull(bt2.getClock());
+        assertTrue(s2.getCurrentFielding().isInBox());
+        assertEquals(23000L, bt1.getClock().getTimeRemaining());
+        assertEquals(0L, bt2.getClock().getTimeRemaining());
+    }
+
+    @Test
+    public void testJammerSwapDoubleSecondToSingle() {
+        Team t2 = g.getTeam(Team.ID_2);
+        t2.execute(Team.ADVANCE_FIELDINGS);
+        Skater s2 = t2.getOrCreate(Team.SKATER, "Skater2");
+        t2.field(s2, Role.JAMMER);
+        t.field(s, Role.JAMMER);
+        g.startJam();
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 2));
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 3));
+        s2.add(Skater.PENALTY, new PenaltyImpl(s2, 1));
+
+        g.execute(Game.START_BOX_TRIP);
+        BoxTrip bt1 = g.getAll(Team.BOX_TRIP).iterator().next();
+        bt1.set(BoxTrip.CURRENT_FIELDING, s.getCurrentFielding(), Source.WS);
+        advance(41000L);
+
+        assertEquals(19000L, bt1.getClock().getTimeRemaining());
+        assertTrue(s.getCurrentFielding().isInBox());
+
+        g.execute(Game.START_JAMMER_BOX_TRIP);
+        BoxTrip bt2 = s2.getCurrentFielding().getCurrentBoxTrip();
+        assertNotNull(bt2.getClock());
+        assertTrue(s2.getCurrentFielding().isInBox());
+        assertEquals(0L, bt1.getClock().getTimeRemaining());
+        assertEquals(11000L, bt2.getClock().getTimeRemaining());
+    }
+
+    @Test
+    public void testJammerSwapDoubleFirstToDouble() {
+        Team t2 = g.getTeam(Team.ID_2);
+        t2.execute(Team.ADVANCE_FIELDINGS);
+        Skater s2 = t2.getOrCreate(Team.SKATER, "Skater2");
+        t2.field(s2, Role.JAMMER);
+        t.field(s, Role.JAMMER);
+        g.startJam();
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 2));
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 3));
+        s2.add(Skater.PENALTY, new PenaltyImpl(s2, 1));
+        s2.add(Skater.PENALTY, new PenaltyImpl(s2, 2));
+
+        g.execute(Game.START_BOX_TRIP);
+        BoxTrip bt1 = g.getAll(Team.BOX_TRIP).iterator().next();
+        bt1.set(BoxTrip.CURRENT_FIELDING, s.getCurrentFielding(), Source.WS);
+        advance(7000L);
+
+        assertEquals(53000L, bt1.getClock().getTimeRemaining());
+        assertTrue(s.getCurrentFielding().isInBox());
+
+        g.execute(Game.START_JAMMER_BOX_TRIP);
+        BoxTrip bt2 = s2.getCurrentFielding().getCurrentBoxTrip();
+        assertNotNull(bt2.getClock());
+        assertTrue(s2.getCurrentFielding().isInBox());
+        assertEquals(0L, bt1.getClock().getTimeRemaining());
+        assertEquals(7000L, bt2.getClock().getTimeRemaining());
+    }
+
+    @Test
+    public void testJammerSwapDoubleSecondToDouble() {
+        Team t2 = g.getTeam(Team.ID_2);
+        t2.execute(Team.ADVANCE_FIELDINGS);
+        Skater s2 = t2.getOrCreate(Team.SKATER, "Skater2");
+        t2.field(s2, Role.JAMMER);
+        t.field(s, Role.JAMMER);
+        g.startJam();
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 2));
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 3));
+        s2.add(Skater.PENALTY, new PenaltyImpl(s2, 1));
+        s2.add(Skater.PENALTY, new PenaltyImpl(s2, 2));
+
+        g.execute(Game.START_BOX_TRIP);
+        BoxTrip bt1 = g.getAll(Team.BOX_TRIP).iterator().next();
+        bt1.set(BoxTrip.CURRENT_FIELDING, s.getCurrentFielding(), Source.WS);
+        advance(41000L);
+
+        assertEquals(19000L, bt1.getClock().getTimeRemaining());
+        assertTrue(s.getCurrentFielding().isInBox());
+
+        g.execute(Game.START_JAMMER_BOX_TRIP);
+        BoxTrip bt2 = s2.getCurrentFielding().getCurrentBoxTrip();
+        assertNotNull(bt2.getClock());
+        assertTrue(s2.getCurrentFielding().isInBox());
+        assertEquals(0L, bt1.getClock().getTimeRemaining());
+        assertEquals(41000L, bt2.getClock().getTimeRemaining());
+    }
+
+    @Test
+    public void testJammerSwapLateSecond() {
+        Team t2 = g.getTeam(Team.ID_2);
+        t2.execute(Team.ADVANCE_FIELDINGS);
+        Skater s2 = t2.getOrCreate(Team.SKATER, "Skater2");
+        t2.field(s2, Role.JAMMER);
+        t.field(s, Role.JAMMER);
+        g.startJam();
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 2));
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 3));
+        s2.add(Skater.PENALTY, new PenaltyImpl(s2, 1));
+
+        g.execute(Game.START_BOX_TRIP);
+        BoxTrip bt1 = g.getAll(Team.BOX_TRIP).iterator().next();
+        bt1.set(BoxTrip.CURRENT_FIELDING, s.getCurrentFielding(), Source.WS);
+        advance(7000L);
+
+        assertEquals(53000L, bt1.getClock().getTimeRemaining());
+        assertTrue(s.getCurrentFielding().isInBox());
+
+        g.execute(Game.START_JAMMER_BOX_TRIP);
+        BoxTrip bt2 = s2.getCurrentFielding().getCurrentBoxTrip();
+        assertNotNull(bt2.getClock());
+        assertTrue(s2.getCurrentFielding().isInBox());
+        assertEquals(23000L, bt1.getClock().getTimeRemaining());
+        assertEquals(0L, bt2.getClock().getTimeRemaining());
+
+        advance(3000L);
+
+        s2.add(Skater.PENALTY, new PenaltyImpl(s2, 2));
+        assertEquals(0L, bt1.getClock().getTimeRemaining());
+        assertEquals(7000L, bt2.getClock().getTimeRemaining());
+    }
+
+    @Test
+    public void testJammerSwapLateId() {
+        Team t2 = g.getTeam(Team.ID_2);
+        t2.execute(Team.ADVANCE_FIELDINGS);
+        Skater s2 = t2.getOrCreate(Team.SKATER, "Skater2");
+        t2.field(s2, Role.JAMMER);
+        t.field(s, Role.JAMMER);
+        g.startJam();
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 2));
+        s2.add(Skater.PENALTY, new PenaltyImpl(s2, 1));
+
+        g.execute(Game.START_BOX_TRIP);
+        BoxTrip bt1 = g.getAll(Team.BOX_TRIP).iterator().next();
+        bt1.set(BoxTrip.CURRENT_FIELDING, s.getCurrentFielding(), Source.WS);
+        advance(7000L);
+
+        assertEquals(23000L, bt1.getClock().getTimeRemaining());
+        assertTrue(s.getCurrentFielding().isInBox());
+
+        g.execute(Game.START_BOX_TRIP);
+        BoxTrip bt2 = g.getAll(Team.BOX_TRIP).iterator().next();
+
+        advance(4000L);
+
+        bt2.set(BoxTrip.CURRENT_FIELDING, s2.getCurrentFielding(), Source.WS);
+
+        assertNotNull(bt2.getClock());
+        assertTrue(s2.getCurrentFielding().isInBox());
+        assertEquals(0L, bt1.getClock().getTimeRemaining());
+        assertEquals(7000L, bt2.getClock().getTimeRemaining());
+    }
+
+    @Test
+    public void testJammerSwapABA() {
+        Team t2 = g.getTeam(Team.ID_2);
+        t2.execute(Team.ADVANCE_FIELDINGS);
+        Skater s2 = t2.getOrCreate(Team.SKATER, "Skater2");
+        t2.field(s2, Role.JAMMER);
+        t.field(s, Role.JAMMER);
+        g.startJam();
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 2));
+        s2.add(Skater.PENALTY, new PenaltyImpl(s2, 1));
+
+        g.execute(Game.START_BOX_TRIP);
+        BoxTrip bt1 = g.getAll(Team.BOX_TRIP).iterator().next();
+        bt1.set(BoxTrip.CURRENT_FIELDING, s.getCurrentFielding(), Source.WS);
+        advance(26000L);
+
+        g.execute(Game.START_JAMMER_BOX_TRIP);
+        BoxTrip bt2 = s2.getCurrentFielding().getCurrentBoxTrip();
+        assertNotNull(bt2.getClock());
+        assertTrue(s2.getCurrentFielding().isInBox());
+        assertEquals(0L, bt1.getClock().getTimeRemaining());
+        assertEquals(26000L, bt2.getClock().getTimeRemaining());
+
+        bt1.set(BoxTrip.IS_CURRENT, false);
+        assertFalse(s.isPenaltyBox());
+
+        advance(11000L);
+
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 3));
+        g.execute(Game.START_JAMMER_BOX_TRIP);
+        bt1 = s.getCurrentFielding().getCurrentBoxTrip();
+        assertEquals(30000L, bt1.getClock().getTimeRemaining());
+        assertEquals(15000L, bt2.getClock().getTimeRemaining());
     }
 }

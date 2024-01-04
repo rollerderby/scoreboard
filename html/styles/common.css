@@ -20,9 +20,9 @@
     --header-font-size: var(--important-font-size);
     --header-font-weight: var(--important-font-weight);
 
-    --nodetract-bg: #ccc;
-    --nodetract-fg: var(--group-fg);
-    --nodetract-font-size: 0.75rem;
+    --nodistract-bg: #ccc;
+    --nodistract-fg: var(--group-fg);
+    --nodistract-font-size: 0.75rem;
 
     --important-font-size: 1.5rem;
     --important-font-weight: bold;
@@ -36,6 +36,12 @@
     --element-gap: 0.5rem;
     --element-active-bg: #6fdf6f;
     --element-active-fg: var(--group-fg);
+    --element-clickme-bg: #ff9010;
+    --element-clickme-fg: var(--group-fg);
+    --element-inbox-bg: #e33;
+    --element-inbox-fg: var(--group-fg);
+    --element-unserved-bg: #0ee;
+    --element-unserved-fg: var(--group-fg);
 
     --button-bg: linear-gradient(0deg, #bbb, #eee);
     --button-fg: #004276;
@@ -57,6 +63,10 @@
     --button-inbox-fg: var(--button-fg);
     --button-inbox-hover-bg: linear-gradient(0deg, #c55, #f44);
     --button-inbox-hover-fg: var(--button-hover-fg);
+    --button-unserved-bg: linear-gradient(0deg, #0bb, #0ee);
+    --button-unserved-fg: var(--button-fg);
+    --button-unserved-hover-bg: linear-gradient(0deg, #0cc, #0ff);
+    --button-unserved-hover-fg: var(--button-hover-fg);
 }
 
 
@@ -93,12 +103,14 @@ div.sbSheets { height: calc(100% - 10px); align-items: flex-start; flex-wrap: wr
 .ui-button:hover.sbActive { background: var(--button-active-hover-bg); color: var(--button-active-hover-fg); }
 .sbClickMe, .ui-button.sbClickMe { background: var(--button-clickme-bg); color: var(--button-clickme-fg); }
 .ui-button:hover.sbClickMe { background: var(--button-clickme-hover-bg); color: var(--button-clickme-hover-fg); }
+.sbUnserved, .ui-button.sbUnserved { background: var(--button-unserved-bg); color: var(--button-unserved-fg); }
+.ui-button:hover.sbUnserved { background: var(--button-unserved-hover-bg); color: var(--button-unserved-hover-fg); }
+.sbInBox, .ui-button.sbInBox { background: var(--button-inbox-bg); color: var(--button-inbox-fg); }
+.ui-button:hover.sbInBox { background: var(--button-inbox-hover-bg); color: var(--button-inbox-hover-fg); }
 
-.sbNoDetract { font-size: var(--nodetract-font-size); }
-.ui-button.sbNoDetract { font-size: calc(.9 * var(--nodetract-font-size)); }
-.sbNoDetract.sbGroup, .sbNoDetract .sbGroup { background-color: var(--nodetract-bg); color: var(--nodetract-fg); }
-/*.sbNoDetract .ui-button { padding: .5em .7em; }*/
-/*.sbNoDetract .sbActive, .sbNoDetract .ui-button.sbActive, .sbNoDetract .ui-button:hover.sbActive { background: #0c0; color: #000; }*/
+.sbNoDistract { font-size: var(--nodistract-font-size); }
+.ui-button.sbNoDistract { font-size: calc(.9 * var(--nodistract-font-size)); }
+.sbNoDistract.sbGroup, .sbNoDistract .sbGroup { background-color: var(--nodistract-bg); color: var(--nodistract-fg); }
 
 .sbImportant { font-size: var(--important-font-size); font-weight: var(--important-font-weight); }
 .ui-button.sbImportant { font-size: calc(.9 * var(--important-font-size)); font-weight: var(--important-font-weight); }
@@ -113,6 +125,8 @@ div.sbSheets { height: calc(100% - 10px); align-items: flex-start; flex-wrap: wr
 .sbHide, .sbSpinner.sbHide, .sbGroup.sbHide { display: none; } 
 .sbTemplates { display: none; }
 
+[sbSheetStyle="pbt"] .sbShowBySheetStyle:not(.sbShowOnPbt) { display: none; }
+[sbSheetStyle="boxview"] .sbShowBySheetStyle:not(.sbShowOnBoxView) { display: none; }
 [sbSheetStyle="sk"] .sbShowBySheetStyle:not(.sbShowOnSk) { display: none; }
 [sbSheetStyle="pt"] .sbShowBySheetStyle:not(.sbShowOnPt):not(.sbShowOnPurePt) { display: none; }
 [sbSheetStyle="lt"] .sbShowBySheetStyle:not(.sbShowOnLt):not(.sbShowOnPureLt) { display: none; }

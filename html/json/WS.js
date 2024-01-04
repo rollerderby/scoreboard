@@ -254,7 +254,7 @@ let WS = {
     parts.reverse();
     prop.parts = parts;
     prop.upTo = function (key) {
-      return prop.substring(0, prop.indexOf('.', prop.indexOf(key)));
+      return key === prop.field ? prop : prop.substring(0, prop.indexOf('.', prop.indexOf(key)));
     };
     WS._enrichPropCache[prop] = prop;
     return prop;
@@ -615,7 +615,7 @@ let WS = {
         ).button();
         $('[sbButtonGroup]').controlgroup();
         $(
-          '.sbShowOnSk, .sbShowOnPt, .sbShowOnPurePt, .sbShowOnLt, .sbShowOnPureLt, .sbShowOnPlt, .sbShowOnSheet, .sbShowOnWhiteboard, .sbShowOnOperator'
+          '.sbShowOnPbt, .sbShowOnSk, .sbShowOnPt, .sbShowOnPurePt, .sbShowOnLt, .sbShowOnPureLt, .sbShowOnPlt, .sbShowOnSheet, .sbShowOnWhiteboard, .sbShowOnOperator'
         ).addClass('sbShowBySheetStyle');
         $('[sbSet], [sbControl], [sbToggle], [sbCall]').not('input, select').addClass('sbClickable');
         WS.AutoRegister($('html'));
@@ -725,7 +725,10 @@ let WS = {
               } else if (!paren.children('[' + field + '="' + key + '"][sbSubId="' + subId + '"]').length) {
                 const newElem = elem.clone(true).attr(field, key).appendTo(paren);
                 if (!options.noContext) {
-                  newElem.attr('sbContext', context[0] + field + '(' + key + '):' + context[1]);
+                  newElem.attr(
+                    'sbContext',
+                    (key === k[field] ? '/' + k.upTo(field) + ':' : context[0] + field + '(' + key + '):') + context[1]
+                  );
                 }
                 if (key !== k[field]) {
                   newElem.attr('sbCount', 1).attr(subfieldId, k[field]);
@@ -734,7 +737,7 @@ let WS = {
                 if (elem.prop('tagName') === 'OPTION') {
                   const cached = WS._selectCache.get(paren[0]);
                   if (cached) {
-                    cached.callback(cached.path, WS.state[cached.path], paren);
+                    cached.callback(WS._enrichProp(cached.path), WS.state[cached.path], paren);
                   }
                 }
                 if (options.resort) {
@@ -907,6 +910,9 @@ let WS = {
           reevaluate = true;
           return field === '*' ? (skipCopyContext ? '[*]' : WS._pathCache.get(elem[0]).path[0]) : '*';
         });
+      }
+      if (isPreRegister && value.includes('*')) {
+        reevaluate = true;
       }
     }
     return [value, reevaluate];

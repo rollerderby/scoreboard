@@ -14,6 +14,10 @@ function sbAppendText(k, v, elem) {
   return (old ? old + '; ' : '') + elem.text();
 }
 
+function sbSubAnn(k, v, elem) {
+  return 'Substitute for #' + elem.attr('rosterNumber');
+}
+
 function sbToTime(k, v) {
   const isCountDown = isTrue(WS.state[k.upTo('Clock') + '.Direction']);
   return _timeConversions.msToMinSecNoZero(v, isCountDown);
@@ -22,6 +26,11 @@ function sbToTime(k, v) {
 function sbToLongTime(k, v) {
   const isCountDown = isTrue(WS.state[k.upTo('Clock') + '.Direction']);
   return _timeConversions.msToMinSec(v, isCountDown);
+}
+
+function sbToSeconds(k, v) {
+  const isCountDown = isTrue(WS.state[k.upTo('Clock') + '.Direction']);
+  return _timeConversions.msToSeconds(v, isCountDown);
 }
 
 function sbFromLongTime(k, v) {

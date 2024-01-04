@@ -23,18 +23,10 @@ public class ScoreBoardClock extends TimerTask {
     public String getLocalTime() { return dateFormat.format(new Date()) + "[" + TimeZone.getDefault().getID() + "]"; }
 
     public long getCurrentTime() {
-        synchronized (coreLock) {
-            updateTime();
-            return currentTime;
-        }
+        synchronized (coreLock) { return currentTime; }
     }
 
-    public long getCurrentWalltime() {
-        synchronized (coreLock) {
-            updateTime();
-            return currentTime + offset;
-        }
-    }
+    public long getCurrentWalltime() { return System.currentTimeMillis(); }
 
     public void rewindTo(long time) {
         synchronized (coreLock) {
@@ -90,9 +82,7 @@ public class ScoreBoardClock extends TimerTask {
 
     @Override
     public void run() {
-        synchronized (coreLock) {
-            if (stopCounter == 0) { updateTime(); }
-        }
+        synchronized (coreLock) { updateTime(); }
     }
 
     private long offset;

@@ -352,6 +352,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         synchronized (coreLock) {
             advanceFieldings(); // if this hasn't been manually triggered between jams, do it now
             getCurrentTrip().set(ScoringTrip.CURRENT, true);
+            for (BoxTrip bt : getAll(BOX_TRIP)) { bt.startJam(); }
         }
     }
 
@@ -368,6 +369,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
             set(FIELDING_ADVANCE_PENDING, true);
 
             updateTeamJams();
+            for (BoxTrip bt : getAll(BOX_TRIP)) { bt.stopJam(); }
 
             Map<Skater, Role> toField = new HashMap<>();
             TeamJam upcomingTJ = getRunningOrUpcomingTeamJam();
