@@ -18,6 +18,7 @@ public class PositionImpl extends ScoreBoardEventProviderImpl<Position> implemen
         setCopy(FLAGS, this, SKATER, Skater.FLAGS, true);
         setCopy(SKATER, this, CURRENT_FIELDING, Fielding.SKATER, false);
         setCopy(PENALTY_BOX, this, CURRENT_FIELDING, Fielding.PENALTY_BOX, false);
+        setCopy(PENALTY_TIME, this, CURRENT_FIELDING, Fielding.PENALTY_TIME, true);
         setCopy(CURRENT_BOX_SYMBOLS, this, CURRENT_FIELDING, Fielding.BOX_TRIP_SYMBOLS, true);
         setCopy(CURRENT_PENALTIES, this, SKATER, Skater.CURRENT_PENALTIES, true);
         setCopy(HAS_UNSERVED, this, SKATER, Skater.HAS_UNSERVED, true);

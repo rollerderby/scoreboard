@@ -37,6 +37,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         addWriteProtectionOverride(CURRENT_BOX_TRIP, Source.NON_WS);
         setInverseReference(SKATER, Skater.FIELDING);
         setRecalculated(NOT_FIELDED).addSource(this, SKATER);
+        setCopy(PENALTY_TIME, this, CURRENT_BOX_TRIP, BoxTrip.TIME, true);
     }
 
     @Override

@@ -104,6 +104,19 @@ function sbToIntermissionDisplay(k) {
   return ret;
 }
 
+function sbToWarnLevel(k, v) {
+  const limit = WS.state[k.upTo('Game') + '.Rule(Penalties.NumberToFoulout)'];
+  if (WS.state[k.upTo('Skater') + '.Penalty(0).Code'] || v >= limit) {
+    return 3;
+  } else if (v == limit - 1) {
+    return 2;
+  } else if (v == limit - 2) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
 function sbToJamNoDisplay(k, v) {
   if (isTrue(WS.state[k.upTo('Jam') + '.InjuryContinuation'])) {
     return isTrue(v) ? 'INJ*' : 'INJ';

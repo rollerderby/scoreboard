@@ -33,12 +33,13 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
     }
 
     private void setDefaults() {
-        set("Overlay.Interactive.Clock", "On");
+        set("Overlay.Interactive.Clock", "true");
         set("Overlay.Interactive.Scaling", "100");
         set("Overlay.Interactive.Score", "On");
-        set("Overlay.Interactive.ShowJammers", "On");
-        set("Overlay.Interactive.ShowLineups", "On");
-        set("Overlay.Interactive.ShowAllNames", "Off");
+        set("Overlay.Interactive.ShowJammers", "true");
+        set("Overlay.Interactive.ShowLineups", "true");
+        set("Overlay.Interactive.ShowNames", "true");
+        set("Overlay.Interactive.ShowPenaltyClocks", "true");
         set("ScoreBoard.Operator_Default.StartStopButtons", "false");
         set("ScoreBoard.Operator_Default.TabBar", "true");
         set("ScoreBoard.Operator_Default.ReplaceButton", "false");

@@ -38,6 +38,7 @@ public interface Fielding extends ParentOrderedScoreBoardEventProvider<Fielding>
         new Value<>(String.class, "BoxTripSymbolsBeforeSP", "", props);
     public static final Value<String> BOX_TRIP_SYMBOLS_AFTER_S_P =
         new Value<>(String.class, "BoxTripSymbolsAfterSP", "", props);
+    public static final Value<Long> PENALTY_TIME = new Value<>(Long.class, "PenaltyTime", null, props);
     public static final Value<String> ANNOTATION = new Value<>(String.class, "Annotation", "", props);
 
     public static final Child<BoxTrip> BOX_TRIP = new Child<>(BoxTrip.class, "BoxTrip", props);

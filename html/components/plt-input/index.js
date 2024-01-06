@@ -29,19 +29,6 @@
   ]);
 })();
 
-function pltToWarnLevel(k, v) {
-  const limit = WS.state['ScoreBoard.' + (k.Game ? 'Game(' + k.Game + ')' : 'CurrentGame') + '.Rule(Penalties.NumberToFoulout)'];
-  if (WS.state[k.upTo('Skater') + '.Penalty(0).Code'] || v >= limit) {
-    return 3;
-  } else if (v == limit - 1) {
-    return 2;
-  } else if (v == limit - 2) {
-    return 1;
-  } else {
-    return 0;
-  }
-}
-
 function pltAdvanceOrAnnotation(k, v, elem) {
   if (elem.hasClass('Advance')) {
     WS.Set(k.upTo('Team') + '.AdvanceFieldings', true);

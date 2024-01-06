@@ -69,8 +69,8 @@
     --button-unserved-hover-fg: var(--button-hover-fg);
 }
 
-
-body { font-size: 12pt; background-color: var(--outside-bg); color: var(--outside-fg); }
+html { font-size: 12pt; }
+body { background-color: var(--outside-bg); color: var(--outside-fg); }
 .sbSegmentGroup { display: flex; gap: var(--segment-gap); }
 .sbSegmentGroup > * { flex: 1; }
 .sbSegment { border-radius: var(--segment-corner-radius); margin-bottom: var(--segment-gap); }

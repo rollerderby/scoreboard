@@ -19,11 +19,8 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
-import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
@@ -78,18 +75,6 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
         setCopy(ROSTER_NUMBER, this, CURRENT_FIELDING, Fielding.SKATER_NUMBER, true);
         setCopy(CURRENT_SKATER, this, CURRENT_FIELDING, Fielding.SKATER, true);
         setCopy(TOTAL_PENALTIES, this, CURRENT_SKATER, Skater.PENALTY_COUNT, true);
-
-        addScoreBoardListener(
-            new ConditionalScoreBoardListener<>(Clock.class, getId(), Clock.TIME, new ScoreBoardListener() {
-                @Override
-                public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                    if (getClock().isTimeAtEnd() && getEndFielding() == null && game.isInJam()) {
-                        end();
-                    } else if (!getClock().isTimeAtEnd() && getEndFielding() != null) {
-                        unend();
-                    }
-                }
-            }));
     }
 
     @Override
@@ -177,6 +162,13 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
                 getClock().start();
             }
         }
+        if (prop == TIME && getClock() != null) {
+            if (getClock().isTimeAtEnd() && getEndFielding() == null && game.isInJam()) {
+                end();
+            } else if (!getClock().isTimeAtEnd() && getEndFielding() != null) {
+                unend();
+            }
+        }
     }
 
     @Override
@@ -236,6 +228,9 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
                     }
                 }
             }
+        }
+        if (prop == CLOCK) {
+            if (getClock() != null) { setCopy(TIME, getClock(), Clock.TIME, true); }
         }
     }
 
