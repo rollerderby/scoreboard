@@ -31,6 +31,8 @@ public interface Position extends ScoreBoardEventProvider {
     public static final Value<String> ROSTER_NUMBER = new Value<>(String.class, "RosterNumber", "", props);
     public static final Value<String> FLAGS = new Value<>(String.class, "Flags", "", props);
     public static final Value<Boolean> PENALTY_BOX = new Value<>(Boolean.class, "PenaltyBox", false, props);
+    public static final Value<Boolean> HAS_UNSERVED = new Value<>(Boolean.class, "HasUnserved", false, props);
+    public static final Value<Long> PENALTY_TIME = new Value<>(Long.class, "PenaltyTime", null, props);
 
     public static final Command CLEAR = new Command("Clear", props);
 }

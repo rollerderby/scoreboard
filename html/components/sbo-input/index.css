@@ -8,7 +8,7 @@
 
 #Operator .ClockControl .Name.Running { background-color: var(--element-active-bg); color: var(--element-active-fg); } 
 #Operator .ClockControl[Clock="Jam"] .Name.InJam { background-color: var(--element-active-bg); color: var(--element-active-fg); } 
-#Operator .ClockControl .Name.Running.NoMoreJam { background: #d33; color: #fff; } 
+#Operator .ClockControl .Name.Running.NoMoreJam { background: var(--element-inbox-bg); color: var(--element-inbox-fg); } 
 #Operator .ClockControl:not([Clock="Period"]):not([Clock="Jam"]) .InvertedTime { display: none; }
 #Operator .ClockControl .Name .InvertedTime { padding-left: .5em; font-size: .9rem; } 
 #Operator .ClockControl .Name .InvertedTime:before { content: "("; } 
@@ -17,7 +17,7 @@
 
 #Operator .Adjustments .AdjAmount { font-weight: bold; }
 
-#NewGameDialog button.MidGame { font-size: var(--nodetract-font-size); }
+#NewGameDialog button.MidGame { font-size: var(--nodistract-font-size); }
 
 #ClockDialog .Label { font-style: normal; }
 #ClockDialog .TimeControls { display: grid; grid: auto auto / 1fr 1fr 1fr; gap: var(--element-gap); }

@@ -37,9 +37,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
             providerName = type.getJsonName();
             providerClass = type.getType();
         }
-        if (elements.get(providerClass) == null) {
-            elements.put(providerClass, new HashMap<String, ScoreBoardEventProvider>());
-        }
+        if (elements.get(providerClass) == null) { elements.put(providerClass, new HashMap<>()); }
         addProperties(ID, READONLY);
 
         set(ID, id, Source.OTHER);
@@ -718,7 +716,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
                                                    prop.getJsonName());
             }
             properties.put(prop.getJsonName(), prop);
-            if (prop instanceof Child) { children.put((Child<?>) prop, new HashMap<String, ValueWithId>()); }
+            if (prop instanceof Child) { children.put((Child<?>) prop, new HashMap<>()); }
         }
     }
 

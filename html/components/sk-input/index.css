@@ -17,5 +17,3 @@ body:not([showTeam="2"]) [Team] ~ [Team]>.SkInput .ScoreRow  { flex-direction: r
 
 /* jammer/pivot rows */
 .SkInput .HasPlayed:not(.Active) { box-shadow: inset 0px 0px 4px 4px var(--element-active-bg); }
-.SkInput .Box.Sitting { background: var(--button-inbox-bg); color: var(--button-inbox-fg); }
-.SkInput .Box.Sitting:hover { background: var(--button-inbox-hover-bg); color: var(--button-inbox-hover-fg); }

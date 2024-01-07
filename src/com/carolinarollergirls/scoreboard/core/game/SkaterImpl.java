@@ -57,6 +57,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         setCopy(CURRENT_BOX_SYMBOLS, this, CURRENT_FIELDING, Fielding.BOX_TRIP_SYMBOLS, true);
         setRecalculated(CURRENT_PENALTIES).addSource(this, PENALTY).addSource(this, PENALTY_BOX);
         setRecalculated(PENALTY_COUNT).addSource(this, PENALTY);
+        setRecalculated(HAS_UNSERVED).addSource(this, PENALTY);
     }
 
     @Override
@@ -75,9 +76,8 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
             return last;
         }
         if (prop == CURRENT_PENALTIES) {
-            List<Penalty> penalties =
-                new ArrayList<>(isPenaltyBox() ? getCurrentFielding().getCurrentBoxTrip().getAll(BoxTrip.PENALTY)
-                                               : getUnservedPenalties());
+            if (isPenaltyBox()) { return getCurrentFielding().getCurrentBoxTrip().get(BoxTrip.PENALTY_CODES); }
+            List<Penalty> penalties = getUnservedPenalties();
             Collections.sort(penalties);
             value = penalties.stream().map(Penalty::getCode).collect(Collectors.joining(" "));
         }
@@ -87,6 +87,12 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
                 if (!FO_EXP_ID.equals(p.getProviderId())) { count++; }
             }
             return count;
+        }
+        if (prop == HAS_UNSERVED) {
+            for (Penalty p : getAll(PENALTY)) {
+                if (!FO_EXP_ID.equals(p.getProviderId()) && !p.get(Penalty.SERVED)) { return true; }
+            }
+            return false;
         }
         return value;
     }
@@ -325,7 +331,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     public List<Penalty> getUnservedPenalties() {
         List<Penalty> usp = new ArrayList<>();
         for (Penalty p : getAll(PENALTY)) {
-            if (!p.isServed()) { usp.add(p); }
+            if (!p.isServed() && !p.getProviderId().equals(FO_EXP_ID)) { usp.add(p); }
         }
         return usp;
     }

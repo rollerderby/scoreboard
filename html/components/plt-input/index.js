@@ -29,26 +29,6 @@
   ]);
 })();
 
-function pltToWarnLevel(k, v) {
-  const limit = WS.state['ScoreBoard.' + (k.Game ? 'Game(' + k.Game + ')' : 'CurrentGame') + '.Rule(Penalties.NumberToFoulout)'];
-  if (WS.state[k.upTo('Skater') + '.Penalty(0).Code'] || v >= limit) {
-    return 3;
-  } else if (v == limit - 1) {
-    return 2;
-  } else if (v == limit - 2) {
-    return 1;
-  } else {
-    return 0;
-  }
-}
-
-function pltUpdateSkaterUnserved(k, v, elem) {
-  elem
-    .siblings('.Box')
-    .toggleClass('Unserved', (v != null && !isTrue(v)) || elem.siblings('.Penalty:not([Penalty="0"]).Unserved').length > 0);
-  return v != null && !isTrue(v);
-}
-
 function pltAdvanceOrAnnotation(k, v, elem) {
   if (elem.hasClass('Advance')) {
     WS.Set(k.upTo('Team') + '.AdvanceFieldings', true);
@@ -201,10 +181,6 @@ function _pltOpenAnnotationEditor(gameId, teamId, skaterId) {
       },
     },
   });
-}
-
-function pltSubAnn(k, v, elem) {
-  return 'Substitute for #' + elem.attr('rosterNumber');
 }
 
 function pltNoUnend(k, v) {

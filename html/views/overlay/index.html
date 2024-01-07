@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html sbPrefix="$: ScoreBoard.Settings.Setting(Overlay.Interactive : )" sbCss="font-size: $.Scaling: 'calc(' + v + ' * .12pt)'">
   <head>
     <title>Stream Overlay | CRG ScoreBoard</title>
     <script type="text/javascript" src="/external/jquery/jquery.js"></script>
@@ -7,18 +7,14 @@
 
     <style type="text/css" title="jsStyle"></style>
   </head>
-  <body
-    class="preload sbNoConnectionStatus"
-    sbPrefix="$: ScoreBoard.Settings.Setting(Overlay.Interactive : )"
-    sbCss="background-color: $.BackgroundColor: ovlToBackground | font-size: $.Scaling: v + '%'"
-  >
+  <body class="preload sbNoConnectionStatus" sbCss="background-color: $.BackgroundColor: ovlToBackground" sbOn="keyup: ovlHandleKey">
     <div id="logo"></div>
 
     <div id="sb" sbContext="ScoreBoard.CurrentGame" class="JamScore StyleTraditional">
       <div class="PanelWrapperTop">
         <div
           class="TeamBox AnimatedPanel PanelHideTop Wrapper"
-          sbClass="InJam: InJam | Show: $.Score: === 'On' | JammerNames: $.ShowJammers: === 'On' | AllNames: $.ShowAllNames: === 'On' | Lineups: $.ShowLineups: === 'On' | UseLT: /ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)"
+          sbClass="InJam: InJam | Show: $.Score | ShowJammers: $.ShowJammers | ShowNames: $.ShowNames | Lineups: $.ShowLineups | PenaltyClocks: $.ShowPenaltyClocks | UseLT: /ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)"
         >
           <div sbForeach="Team: 1,2: only" sbClass="Lead: DisplayLead">
             <div class="Indicator Box" sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)">
@@ -41,19 +37,19 @@
               <div class="JammerBox ShowInJam Clock" sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)">
                 <div
                   sbForeach="Position: Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
-                  sbClass="InBox: PenaltyBox | Penalized: CurrentPenalties: !== ''"
+                  sbClass="Jamming: ^StarPass: ovlIsJamming | InBox: PenaltyBox | Penalized: CurrentPenalties: !== '' | HasClock: PenaltyTime: sbIsNotEmpty"
                 >
-                  <div class="Name" sbDisplay="Name"></div>
                   <div class="Number" sbDisplay="RosterNumber"></div>
+                  <div class="Name" sbDisplay="Name"></div>
+                  <div class="PenaltyClock" sbDisplay="PenaltyTime: sbToLongTime"></div>
                   <div class="Penalties" sbDisplay="CurrentPenalties"></div>
-                  <div class="Border"></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="ClockBox TopClock AnimatedPanel PanelHideTop Wrapper" sbClass="Show: $.Clock: === 'On'">
+        <div class="ClockBox TopClock AnimatedPanel PanelHideTop Wrapper" sbClass="Show: $.Clock">
           <div
             class="ClockBarTop Wrapper Row SlideDown ClockNames ShowInJam ShowInLineup ShowInTimeout ShowInIntermission ShowInNoClock barBackgroundTop"
           >
@@ -70,8 +66,7 @@
 
           <div
             class="ClockBarMiddle Wrapper SlideDown ShowInIntermission ShowInLineup ShowInTimeout ShowInNoClock Box BigName ClockDescription"
-            sbPrefix="#: ScoreBoard.Settings.Setting(ScoreBoard.Intermission : )"
-            sbDisplay="Clock.(Intermission).Number, Clock(*).Running, TimeoutOwner, OfficialReviews, #.*, OfficialScore, ClockDuringFinalScore, Rule(Period.Number): ovlToClockType"
+            sbDisplay="Clock(Intermission).Number, Clock(*).Running, TimeoutOwner, OfficialReviews, ^Settings.Setting(ScoreBoard.Intermission.*), OfficialScore, ClockDuringFinalScore, Rule(Period.Number): ovlToClockType"
           ></div>
           <div class="ClockBarBottom Wrapper Row BottomRow barBackgroundBottom">
             <div
@@ -92,22 +87,7 @@
       </div>
 
       <div class="PanelWrapperCenter">
-        <div class="ClockBox Wrapper OverlayPanel PanelHideBottom MediumPanel AnimatedPanel">
-          <div class="Wrapper Clock SlideDown ShowInIntermission ShowInLineup ShowInTimeout">
-            <div
-              class="Box BigName ShowInIntermission Clock"
-              sbPrefix="#: ScoreBoard.Settings.Setting(ScoreBoard.Intermission : )"
-              sbDisplay="#.*, OfficialScore, ClockDuringFinalScore, Clock(Intermission).Number, Rule(Period.Number): sbToIntermissionDisplay"
-            ></div>
-            <div
-              class="Box BoxLarge TextCenter Time Clock ShowInIntermission"
-              sbContext="Clock(Intermission)"
-              sbDisplay="Time, Direction: sbToTime"
-            ></div>
-          </div>
-        </div>
-
-        <div class="PPJBox Wrapper PanelHideLeft OverlayPanel LargePanel AnimatedPanel NoLogo" sbClass="Show: $.Panel: ==='PPJBox'">
+        <div class="PPJBox Wrapper PanelHideSide OverlayPanel LargePanel AnimatedPanel NoLogo" sbClass="Show: $.Panel: ==='PPJBox'">
           <h1>Points Per Jam</h1>
           <h4
             class="htop"
@@ -115,30 +95,18 @@
             sbDisplay="AlternateName(overlay),Name"
             sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)"
           ></h4>
-          <div class="PPJContainer Wrapper" sbPrefix="t: ScoreBoard.CurrentGame.Team">
-            <div class="Wrapper Team Team1">
-              <div class="Period" sbForeach="Period">
+          <div class="PPJContainer Wrapper">
+            <div class="Wrapper Team" sbForeach="Team: 1,2: only" sbPrefix="t:[*]">
+              <div class="Period" sbForeach="Period: -0: Period,num" sbContext="^">
                 <div
                   class="ColumnWidth GraphBlock"
-                  sbForeach="Jam"
-                  sbClass="Lead: TeamJam(1).Lead | Lost: TeamJam(1).Lost"
-                  sbCss="height: TeamJam(1).JamScore: v * 4 + 'px' | width: ScoreBoard.CurrentGame.Clock(Jam).Number: ovlToPpjColumnWidth | margin-top: TeamJam(1).JamScore: ovlToPpjMargin | background: t(1).Color(overlay.bg)"
+                  sbForeach="Jam:: Jam,num"
+                  sbContext=":TeamJam([Team])"
+                  sbClass="Lead: Lead | Lost: Lost"
+                  sbCss="height: JamScore: v * 4 + 'px' | width: Number: ovlToPpjColumnWidth | margin-top: JamScore: ovlToPpjMargin | background: t.Color(overlay.bg)"
                 >
                   <div class="JammerStar ColumnWidth"></div>
-                  <div class="Points ColumnWidth" sbDisplay="TeamJam(1).JamScore"></div>
-                </div>
-              </div>
-            </div>
-            <div class="Wrapper Team Team2">
-              <div class="Period" sbForeach="Period">
-                <div
-                  class="ColumnWidth GraphBlock"
-                  sbForeach="Jam"
-                  sbClass="Lead: TeamJam(2).Lead | Lost: TeamJam(2).Lost"
-                  sbCss="height: TeamJam(2).JamScore: v * 4 + 'px' | width: ScoreBoard.CurrentGame.Clock(Jam).Number: ovlToPpjColumnWidth | background: t(2).Color(overlay.bg)"
-                >
-                  <div class="JammerStar ColumnWidth"></div>
-                  <div class="Points ColumnWidth" sbDisplay="TeamJam(2).JamScore"></div>
+                  <div class="Points ColumnWidth" sbDisplay="JamScore"></div>
                 </div>
               </div>
             </div>
@@ -153,18 +121,18 @@
 
         <div sbForeach="Team: 1,2: only">
           <div
-            class="RosterTeam PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel"
-            sbClass="NoLogo: Logo: sbIsEmpty | Show1: $.Panel: ==='RosterTeam1' | Show2: $.Panel: ==='RosterTeam2'"
+            class="RosterTeam PanelHideSide Wrapper OverlayPanel LargePanel AnimatedPanel"
+            sbClass="NoLogo: Logo: sbIsEmpty | Show: $.Panel: ==='RosterTeam[Team]'"
           >
             <img class="TeamLogo" sbAttr="src: Logo" />
             <h1 sbDisplay="AlternateName(overlay),Name" sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)"></h1>
             <h2>Team Roster</h2>
           </div>
           <div
-            class="RosterTeam LowerPart AnimationDelay PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel"
-            sbClass="Show1: $.Panel: ==='RosterTeam1' | Show2: $.Panel: ==='RosterTeam2'"
+            class="RosterTeam LowerPart AnimationDelay PanelHideSide Wrapper OverlayPanel LargePanel AnimatedPanel"
+            sbClass="Show: $.Panel: ==='RosterTeam[Team]'"
           >
-            <div class="Wrapper Team Team1 SortBox">
+            <div class="Wrapper Team SortBox">
               <div
                 class="Skater"
                 sbForeach="Skater:: rosterNumber: resort=RosterNumber"
@@ -177,29 +145,29 @@
                   sbCss="color: ^Color(overlay.fg) | background: ^Color(overlay.bg)"
                 ></div>
                 <div class="Name" sbDisplay="Name: sbToNbspIfEmpty">&nbsp;</div>
-                <div class="Flags" sbAttr="data-flag: Flag">&nbsp;</div>
+                <div class="Flags" sbAttr="data-flag: Flags">&nbsp;</div>
               </div>
             </div>
           </div>
 
           <div
-            class="PenaltyTeam PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel"
-            sbClass="NoLogo: Logo: sbIsEmpty | Show1: $.Panel: ==='PenaltyTeam1' | Show2: $.Panel: ==='PenaltyTeam2'"
+            class="PenaltyTeam PanelHideSide Wrapper OverlayPanel LargePanel AnimatedPanel"
+            sbClass="NoLogo: Logo: sbIsEmpty | Show: $.Panel: ==='PenaltyTeam[Team]'"
           >
             <img class="TeamLogo" sbAttr="src: Logo" />
             <h1>Penalty Board</h1>
             <h2 sbDisplay="AlternateName(overlay),Name" sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)"></h2>
           </div>
           <div
-            class="PenaltyTeam AnimationDelay LowerPart PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel"
-            sbClass="Show1: $.Panel: ==='PenaltyTeam1' | Show2: $.Panel: ==='PenaltyTeam2'"
+            class="PenaltyTeam AnimationDelay LowerPart PanelHideSide Wrapper OverlayPanel LargePanel AnimatedPanel"
+            sbClass="Show: $.Panel: ==='PenaltyTeam[Team]'"
           >
-            <div class="Wrapper Team Team1 SortBox">
+            <div class="Wrapper Team SortBox">
               <div
                 class="Skater"
                 sbForeach="Skater:: rosterNumber: resort=RosterNumber"
                 sbClass="NoShow: Role: ==='NotInGame'"
-                sbAttr="rosterNumber: RosterNumber"
+                sbAttr="rosterNumber: RosterNumber | warn: PenaltyCount, Penalty(0).Code: sbToWarnLevel"
               >
                 <div
                   class="Number"
@@ -215,7 +183,7 @@
           </div>
         </div>
 
-        <div class="Upcoming PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel" sbClass="Show: $.Panel: ==='Upcoming'">
+        <div class="Upcoming PanelHideSide Wrapper OverlayPanel LargePanel AnimatedPanel" sbClass="Show: $.Panel: ==='Upcoming'">
           <div sbContext="Team(1)" sbClass="NoLogo: Logo: sbIsEmpty">
             <img class="TeamLogo" sbAttr="src: Logo" style="float: left" />
             <h1
@@ -237,13 +205,13 @@
       </div>
 
       <div class="PanelWrapperLeft">
-        <div class="LowerThird Wrapper OverlayPanel AnimatedPanel PanelHideLeft" sbClass="Show: $.Panel: ==='LowerThird'">
-          <h4 class="Line1" sbDisplay="$.LowerThird.Line1" />
+        <div class="LowerThird Wrapper OverlayPanel AnimatedPanel PanelHideSide" sbClass="Show: $.Panel: ==='LowerThird'">
+          <h4 class="Line1" sbDisplay="$.LowerThird.Line1"></h4>
           <h5
             class="Line2"
             sbDisplay="$.LowerThird.Line2"
             sbCss="color: $.LowerThird.Style,Team(*).Color(overlay.fg): ovlToLowerThirdColorFg | background: $.LowerThird.Style,Team(*).Color(overlay.bg): ovlToLowerThirdColorBg"
-          />
+          ></h5>
         </div>
       </div>
     </div>

@@ -14,6 +14,10 @@ function sbAppendText(k, v, elem) {
   return (old ? old + '; ' : '') + elem.text();
 }
 
+function sbSubAnn(k, v, elem) {
+  return 'Substitute for #' + elem.attr('rosterNumber');
+}
+
 function sbToTime(k, v) {
   const isCountDown = isTrue(WS.state[k.upTo('Clock') + '.Direction']);
   return _timeConversions.msToMinSecNoZero(v, isCountDown);
@@ -22,6 +26,11 @@ function sbToTime(k, v) {
 function sbToLongTime(k, v) {
   const isCountDown = isTrue(WS.state[k.upTo('Clock') + '.Direction']);
   return _timeConversions.msToMinSec(v, isCountDown);
+}
+
+function sbToSeconds(k, v) {
+  const isCountDown = isTrue(WS.state[k.upTo('Clock') + '.Direction']);
+  return _timeConversions.msToSeconds(v, isCountDown);
 }
 
 function sbFromLongTime(k, v) {
@@ -93,6 +102,19 @@ function sbToIntermissionDisplay(k) {
     (num == max || isOfficial) && !(isOfficial && showDuringOfficial)
   );
   return ret;
+}
+
+function sbToWarnLevel(k, v) {
+  const limit = WS.state[k.upTo('Game') + '.Rule(Penalties.NumberToFoulout)'];
+  if (WS.state[k.upTo('Skater') + '.Penalty(0).Code'] || v >= limit) {
+    return 3;
+  } else if (v == limit - 1) {
+    return 2;
+  } else if (v == limit - 2) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 function sbToJamNoDisplay(k, v) {

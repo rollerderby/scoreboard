@@ -1,77 +1,27 @@
 'use strict';
 
-(function () {
-  WS.Register('ScoreBoard.CurrentGame.Team(*).StarPass', function (k, v) {
-    $('[Team=' + k.Team + '] [Position="Jammer"]').toggleClass('Jamming', !isTrue(v));
-    $('[Team=' + k.Team + '] [Position="Pivot"]').toggleClass('Jamming', isTrue(v));
-  });
+WS.Register(
+  [
+    'ScoreBoard.CurrentGame.Clock(Timeout).Running',
+    'ScoreBoard.CurrentGame.TimeoutOwner',
+    'ScoreBoard.CurrentGame.OfficialReview',
+    'ScoreBoard.CurrentGame.Team(*).Timeouts',
+  ],
+  sbSetActiveTimeout
+);
 
-  WS.Register(
-    [
-      'ScoreBoard.CurrentGame.Clock(Timeout).Running',
-      'ScoreBoard.CurrentGame.TimeoutOwner',
-      'ScoreBoard.CurrentGame.OfficialReview',
-      'ScoreBoard.CurrentGame.Team(*).Timeouts',
-    ],
-    sbSetActiveTimeout
-  );
+WS.Register(['ScoreBoard.CurrentGame.Clock(*).Running', 'ScoreBoard.CurrentGame.InJam'], sbClockSelect);
 
-  // Show Clocks
-  WS.Register(['ScoreBoard.CurrentGame.Clock(*).Running', 'ScoreBoard.CurrentGame.InJam'], sbClockSelect);
+WS.Register('ScoreBoard.CurrentGame.Rule(Penalties.NumberToFoulout)');
 
-  $(document).on('keyup', function (e) {
-    switch (e.which) {
-      case 74: // j
-        _ovlToggleSetting('ShowJammers');
-        break;
-      case 76: // l
-        _ovlToggleSetting('ShowLineups');
-        break;
-      case 78: // n
-        _ovlToggleSetting('ShowAllNames');
-        break;
-      case 67: // c
-        _ovlToggleSetting('Clock');
-        break;
-      case 83: // s
-        _ovlToggleSetting('Score');
-        break;
-      case 48: // 0
-        _ovlTogglePanel('PPJBox');
-        break;
-      case 49: // 1
-        _ovlTogglePanel('RosterTeam1');
-        break;
-      case 50: // 2
-        _ovlTogglePanel('RosterTeam2');
-        break;
-      case 51: // 3
-        _ovlTogglePanel('PenaltyTeam1');
-        break;
-      case 52: // 4
-        _ovlTogglePanel('PenaltyTeam2');
-        break;
-      case 57: // 9
-        _ovlTogglePanel('LowerThird');
-        break;
-      case 85: // u
-        _ovlTogglePanel('Upcoming');
-        break;
-      case 32: // space
-        WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', '');
-        break;
-    }
-  });
-
-  setTimeout(function () {
-    $('body').removeClass('preload');
-  }, 1000);
-})();
+WS.AfterLoad(function () {
+  $('body').removeClass('preload');
+});
 
 function _ovlToggleSetting(s) {
   WS.Set(
     'ScoreBoard.Settings.Setting(Overlay.Interactive.' + s + ')',
-    WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.' + s + ')'] === 'On' ? 'Off' : 'On'
+    !isTrue(WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.' + s + ')'])
   );
 }
 
@@ -80,6 +30,53 @@ function _ovlTogglePanel(p) {
     'ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)',
     WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'] === p ? '' : p
   );
+}
+
+function ovlHandleKey(k, v, elem, e) {
+  switch (e.which) {
+    case 74: // j
+      _ovlToggleSetting('ShowJammers');
+      break;
+    case 76: // l
+      _ovlToggleSetting('ShowLineups');
+      break;
+    case 78: // n
+      _ovlToggleSetting('ShowAllNames');
+      break;
+    case 80: // p
+      _ovlToggleSetting('ShowPenaltyClocks');
+      break;
+    case 67: // c
+      _ovlToggleSetting('Clock');
+      break;
+    case 83: // s
+      _ovlToggleSetting('Score');
+      break;
+    case 48: // 0
+      _ovlTogglePanel('PPJBox');
+      break;
+    case 49: // 1
+      _ovlTogglePanel('RosterTeam1');
+      break;
+    case 50: // 2
+      _ovlTogglePanel('RosterTeam2');
+      break;
+    case 51: // 3
+      _ovlTogglePanel('PenaltyTeam1');
+      break;
+    case 52: // 4
+      _ovlTogglePanel('PenaltyTeam2');
+      break;
+    case 57: // 9
+      _ovlTogglePanel('LowerThird');
+      break;
+    case 85: // u
+      _ovlTogglePanel('Upcoming');
+      break;
+    case 32: // space
+      WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', '');
+      break;
+  }
 }
 
 function ovlToBackground(k, v) {
@@ -97,22 +94,28 @@ function ovlToIndicator(k, v) {
     : '';
 }
 
-function ovlToPpjColumnWidth() {
-  var ne1 = $('.PPJBox .Team1 .GraphBlock').length;
-  var ne2 = $('.PPJBox .Team2 .GraphBlock').length;
+function ovlIsJamming(k, v, elem) {
+  return (isTrue(v) && elem.attr('Position') === 'Pivot') || (!isTrue(v) && elem.attr('Position') === 'Jammer');
+}
+
+function ovlToPpjColumnWidth(k, v, elem) {
+  let ne1 = $('.PPJBox [Team="1"] .GraphBlock').length;
+  const ne2 = $('.PPJBox [Team="2"] .GraphBlock').length;
   if (ne2 > ne1) {
     ne1 = ne2;
   }
-  var nel = ne1 + 3;
-  var wid = parseInt($('.PPJBox').innerWidth());
-  var newWidth = parseInt(wid / nel) - 3;
+  const wid = parseInt(elem.parent().parent().innerWidth());
+  const newWidth = parseInt(wid / ne1) - 4;
   $('.ColumnWidth').css('width', newWidth);
 
   return newWidth;
 }
 
-function ovlToPpjMargin(k, v) {
-  return parseInt($('.PPJBox .Team1 .Period').innerHeight()) - v * 4;
+function ovlToPpjMargin(k, v, elem) {
+  if (k.TeamJam === '2') {
+    return 0;
+  }
+  return parseInt(elem.parent().innerHeight()) - v * 4;
 }
 
 function ovlToLowerThirdColorFg() {
