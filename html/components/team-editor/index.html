@@ -79,8 +79,10 @@
         <th></th>
         <th class="Title">Skaters</th>
         <th></th>
-        <th id="skaterCount" sbDisplay="Skater(*).Flags: tmeSkaterCount">0 skating</th>
-        <th></th>
+        <th class="normalSize" sbDisplay="Skater(*).Flags: tmeSkaterCount">0 skating</th>
+        <th class="normalSize">
+          <button sbProp="disabled: ^State: != null && v !== 'Prepared'" sbCall="tmeOpenRemoveAllSkatersDialog">Remove All</button>
+        </th>
       </tr>
       <tr class="sbSubHeader">
         <th>Number</th>
@@ -205,6 +207,16 @@
         <span class="Remove">Remove Skater: </span>
         <span class="Target" sbDisplay="RosterNumber"></span><br />
         <span class="Name">(Skater Name: <span sbDisplay="Name"></span>)</span>
+      </div>
+    </div>
+    <div class="sbGroup"><span class="AreYouSure">Are you sure?</span></div>
+  </div>
+
+  <div id="RemoveAllSkatersDialog" class="sbSegment">
+    <div class="sbGroup">
+      <div>
+        <span class="Title">Team: </span><span class="Title" sbDisplay="FullName"></span><br />
+        <span class="Remove">Remove All Skaters</span>
       </div>
     </div>
     <div class="sbGroup"><span class="AreYouSure">Are you sure?</span></div>

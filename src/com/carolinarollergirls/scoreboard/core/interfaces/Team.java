@@ -150,6 +150,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final Command ADVANCE_FIELDINGS = new Command("AdvanceFieldings", props);
     public static final Command TIMEOUT = new Command("Timeout", props);
     public static final Command OFFICIAL_REVIEW = new Command("OfficialReview", props);
+    public static final Command CLEAR_SKATERS = new Command("ClearSkaters", props);
 
     public enum AlternateNameId {
         SCOREBOARD("scoreboard"),

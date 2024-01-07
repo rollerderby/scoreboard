@@ -12,6 +12,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game.State;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
@@ -280,6 +281,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
             officialReview();
         } else if (prop == TIMEOUT) {
             timeout();
+        } else if (prop == CLEAR_SKATERS && game.get(Game.STATE) == State.PREPARED) {
+            for (Skater s : getAll(SKATER)) { remove(SKATER, s); }
         }
     }
 

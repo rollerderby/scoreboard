@@ -226,6 +226,29 @@ function tmeOpenRemoveSkaterDialog(k) {
   });
 }
 
+function tmeOpenRemoveAllSkatersDialog(k) {
+  WS.SetupDialog($('#RemoveAllSkatersDialog'), k, {
+    title: 'Remove All Skaters',
+    modal: true,
+    width: 700,
+    buttons: [
+      {
+        text: 'No, keep skaters.',
+        click: function () {
+          $(this).dialog('close');
+        },
+      },
+      {
+        text: 'Yes, remove all!',
+        click: function () {
+          WS.Set(k + '.ClearSkaters', true);
+          $(this).dialog('close');
+        },
+      },
+    ],
+  });
+}
+
 function tmeGetAlternateNameId(k) {
   return k.AlternateName;
 }

@@ -7,7 +7,7 @@
 #Team .RemoveColor button { padding: 2px 5px; } 
 #Team .RemoveColor { margin: 0px 5px; border-right: 1px solid black; }
 
-#Team table.Skaters th#skaterCount { font-size: 1rem; font-weight: normal; } 
+#Team table.Skaters th.normalSize { font-size: 1rem; font-weight: normal; } 
 #Team table.Skaters td.Name { width: 40%; } 
 #Team table.Skaters td.RosterNumber { width: 15%; } 
 #Team table.Skaters td.Button { width: 15%; } 
@@ -35,4 +35,8 @@
 #RemoveSkaterDialog span.Remove { font-size: 150%; } 
 #RemoveSkaterDialog span.Target { font-weight: bold; font-size: 250%; } 
 #RemoveSkaterDialog span.AreYouSure { font-weight: bold; font-size: 300%; } 
+
+#RemoveAllSkatersDialog span.Title { font-size: 125%; } 
+#RemoveAllSkatersDialog span.Remove { font-size: 150%; } 
+#RemoveAllSkatersDialog span.AreYouSure { font-weight: bold; font-size: 300%; } 
 /* End Teams Remove Dialog */
