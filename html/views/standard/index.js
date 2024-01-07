@@ -8,7 +8,6 @@
     $('div#video>video').each(function () {
       this.pause();
     });
-    $('.DisplayPane.Show').addClass('SlideOut');
     $('.DisplayPane').removeClass('Show');
     $('div#' + v + '.DisplayPane').addClass('Show');
     $('div#' + v + '.DisplayPane>video').each(function () {
@@ -97,28 +96,10 @@ function dspIsRight(k, v, elem) {
   return (elem.attr('Team') !== '1') !== isTrue(v);
 }
 
+function dspShowJammer(k, v, elem) {
+  return isTrue(v) === (elem.attr('Position') === 'Jammer');
+}
+
 function dspToJammerName(k, v) {
-  const id = k.Team;
-  const prefix = 'ScoreBoard.CurrentGame.Team(' + id + ').';
-  let jammerName = WS.state[prefix + 'Position(Jammer).Name'];
-  let pivotName = WS.state[prefix + 'Position(Pivot).Name'];
-  const leadJammer = isTrue(WS.state[prefix + 'DisplayLead']);
-  const starPass = isTrue(WS.state[prefix + 'StarPass']);
-  const inJam = isTrue(WS.state['ScoreBoard.CurrentGame.InJam']);
-
-  if (jammerName == null || jammerName === '') {
-    jammerName = leadJammer ? 'Lead' : '';
-  }
-  if (pivotName == null) {
-    pivotName = '';
-  }
-
-  var jn = !starPass ? jammerName : pivotName;
-  if (!inJam) {
-    jn = ''; // When no clocks are running, do not show jammer names.
-  }
-  $('[Team=' + id + '] .Lead').toggleClass('HasLead', leadJammer && !starPass);
-  $('[Team=' + id + ']').toggleClass('HasJammerName', jn !== '');
-  $('[Team=' + id + '] .Lead').toggleClass('HasStarPass', starPass);
-  return jn;
+  return v || (isTrue(WS.state[k.upTo('Team') + '.DisplayLead']) ? 'Lead' : '');
 }

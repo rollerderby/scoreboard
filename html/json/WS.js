@@ -254,7 +254,7 @@ let WS = {
     parts.reverse();
     prop.parts = parts;
     prop.upTo = function (key) {
-      return key === prop.field ? prop : prop.substring(0, prop.indexOf('.', prop.indexOf(key)));
+      return key === prop.field ? prop : prop.substring(0, prop.indexOf(key)) + key + (prop[key] ? '(' + prop[key] + ')' : '');
     };
     WS._enrichPropCache[prop] = prop;
     return prop;

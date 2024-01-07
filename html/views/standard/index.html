@@ -7,7 +7,7 @@
   </head>
   <body
     sbPrefix="&: ScoreBoard.Settings.Setting(ScoreBoard.View : )"
-    sbClass="box_flat: &_BoxStyle: dspIsFlat | bright: &_BoxStyle: dspIsBright"
+    sbClass="box_flat: &_BoxStyle: dspIsFlat | bright: &_BoxStyle: dspIsBright | PenaltyClocks: &_HidePenaltyClocks: !"
   >
     <div class="DisplayPane" id="image"><img class="object" sbAttr="src: &_Image" sbCss="object-fit: &_ImageScaling" /></div>
     <div class="DisplayPane" id="video">
@@ -59,9 +59,13 @@
           ></div>
         </div>
         <div
-          class="ShowInJam Clock Lead AutoFit"
-          sbDisplay="DisplayLead,StarPass,Position(Jammer).Name,Position(Pivot).Name,/ScoreBoard.CurrentGame.InJam: dspToJammerName"
-        ></div>
+          class="ShowInJam Clock Jammer"
+          sbForeach="Position: Jammer,Pivot: only"
+          sbClass="HasLead: DisplayLead | Hidden: StarPass: dspShowJammer | HasClock: PenaltyTime: sbIsNotEmpty"
+        >
+          <span class="Name AutoFit" sbAutoFitOn="PenaltyTime, &_HidePenaltyClocks" sbDisplay="Name, ^DisplayLead: dspToJammerName"></span>
+          <span class="PenaltyTime Box Red AutoFit" sbDisplay="PenaltyTime: sbToTime"></span>
+        </div>
       </div>
 
       <!-- Jam In Progress -->

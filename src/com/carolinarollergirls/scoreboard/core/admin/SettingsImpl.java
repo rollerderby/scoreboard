@@ -66,6 +66,7 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         setBothViews("Image", "/images/fullscreen/test-image.png");
         setBothViews("ImageScaling", "contain");
         setBothViews("HideLogos", "false");
+        setBothViews("HidePenaltyClocks", "false");
         setBothViews("SidePadding", "");
         setBothViews("SwapTeams", "false");
         setBothViews("Video", "/videos/fullscreen/test-video.webm");
