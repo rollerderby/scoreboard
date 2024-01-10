@@ -15,7 +15,7 @@
 
   WS.Register('ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Period(*).Jam(*).StarPass', {
     triggerBatchFunc: function () {
-      const selector = 'tr.Jam:not(.sbHide)';
+      const selector = 'tr.Jam:not(.sbHide), tr.SP:not(.sbHide)';
       $('.SkSheet>.Period').each(function (i, e) {
         const dark = $(e).closest('[sbSheetStyle="sheet"]').length ? 1 : $(e).find(selector).length % 2;
         $(e)

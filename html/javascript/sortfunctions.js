@@ -26,17 +26,17 @@ function _sbnumCompareAttrThenSubId(attr, a, b) {
   }
 }
 
-function _sbComparePeriod(a, b) {
+function sbComparePeriod(a, b) {
   const comp = _sbnumCompareAttrThenSubId('Period', a, b);
   return $(a).closest('[sbSheetStyle]').attr('sbSheetStyle') === 'sheet' ? comp : !comp;
 }
 
-function _sbCompareJam(a, b) {
+function sbCompareJam(a, b) {
   const comp = _sbnumCompareAttrThenSubId('Jam', a, b);
   return $(a).closest('[sbSheetStyle]').attr('sbSheetStyle') === 'sheet' ? comp : !comp;
 }
 
-function _sbOrderRsAsTree(a, b) {
+function sbOrderRsAsTree(a, b) {
   const rsA = $(a).attr('value');
   const rsB = $(b).attr('value');
   const setA = _sbRsGetParents(rsA);

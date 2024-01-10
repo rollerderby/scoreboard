@@ -1,0 +1,6 @@
+.OrSheet table { background-color: #fff; }
+.OrSheet thead { background-color: #333; color: #fff; font-size: 2em; font-weight: bold; }
+.OrSheet th { background-color: #ccc; border: 1px solid #777; }
+.OrSheet td.Unused { border: none; background-color: var(--group-bg);}
+
+.OrSheet textarea { width: calc(100% - 7px); }

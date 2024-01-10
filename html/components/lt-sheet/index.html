@@ -2,7 +2,7 @@
   <div class="sbGroup sbSheets LtSheet">
     <table
       sbContext="^"
-      sbForeach="Period: -0: _sbComparePeriod"
+      sbForeach="Period: -0: sbComparePeriod"
       class="Period"
       sbClass="Current: Number,^CurrentPeriodNumber: sbIsCurrentPeriod"
     >
@@ -44,7 +44,7 @@
           ></td>
         </tr>
       </tbody>
-      <tbody sbContext=":TeamJam([Team])" sbForeach="Jam:: _sbCompareJam: onInsert=sbReverseOnNonSheet">
+      <tbody sbContext=":TeamJam([Team])" sbForeach="Jam:: sbCompareJam: onInsert=sbReverseOnNonSheet">
         <tr class="Jam" sbClass="INJ: ^InjuryContinuation">
           <td class="JamNumber Darker" sbDisplay="Lead, ^Number, ^InjuryContinuation: sbToJamNoDisplay" sbSet="CopyLineupToCurrent"></td>
           <td class="NP Darker" sbControl="NoPivot: sbToX: sbFromX"></td>

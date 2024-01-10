@@ -6,7 +6,7 @@
       <select id="select" sbProp="disabled: State: !== 'Prepared'" sbControl="Ruleset: rsUpdateActive">
         <option value="">Custom</option>
         <option
-          sbForeach="Ruleset:: _sbOrderRsAsTree: resort=Parent"
+          sbForeach="Ruleset:: sbOrderRsAsTree: resort=Parent"
           sbContext="/ScoreBoard.Rulesets"
           sbAttr="value: Id"
           sbDisplay="Name: sbIndentByParents: html"
@@ -20,7 +20,7 @@
       Parent:
       <select id="parent" sbProp="disabled: §.Readonly" sbControl="§.Parent">
         <option
-          sbForeach="Ruleset:: _sbOrderRsAsTree: resort=Parent"
+          sbForeach="Ruleset:: sbOrderRsAsTree: resort=Parent"
           sbContext="/ScoreBoard.Rulesets"
           sbAttr="value: Id"
           sbDisplay="Name: sbIndentByParents: html"

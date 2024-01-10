@@ -23,6 +23,8 @@ public interface Timeout extends ScoreBoardEventProvider {
     public static final Value<TimeoutOwner> OWNER = new Value<>(TimeoutOwner.class, "Owner", null, props);
     public static final Value<Boolean> REVIEW = new Value<>(Boolean.class, "Review", false, props);
     public static final Value<Boolean> RETAINED_REVIEW = new Value<>(Boolean.class, "RetainedReview", false, props);
+    public static final Value<String> OR_REQUEST = new Value<>(String.class, "OrRequest", "", props);
+    public static final Value<String> OR_RESULT = new Value<>(String.class, "OrResult", "", props);
     public static final Value<Boolean> RUNNING = new Value<>(Boolean.class, "Running", true, props);
     public static final Value<Jam> PRECEDING_JAM = new Value<>(Jam.class, "PrecedingJam", null, props);
     public static final Value<Integer> PRECEDING_JAM_NUMBER =

@@ -1,3 +1,4 @@
-#SheetsTab .SheetSelector .Selectors { display: grid; grid: auto auto / auto auto auto auto; gap: 2px; }
+#SheetsTab .SheetSelector .Selectors { display: grid; grid: auto auto / auto auto auto auto auto; gap: 2px; }
 #SheetsTab .SheetSelector .TeamWrapper { display: contents; }
 #SheetsTab .SheetSelector .Name { place-self: center right; }
+#SheetsTab .SheetSelector .row2 { grid-row-start: 2; }

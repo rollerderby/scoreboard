@@ -57,7 +57,7 @@ function sbSetActiveTimeout(k) {
 }
 
 function sbReverseOnNonSheet(k, v, elem) {
-  if (elem.closest('[sbSheetType]').attr('sbSheetType') !== 'sheet') {
+  if (elem.closest('[sbSheetStyle]').attr('sbSheetStyle') !== 'sheet') {
     elem.append(elem.children('tr').get().reverse());
   }
 }
