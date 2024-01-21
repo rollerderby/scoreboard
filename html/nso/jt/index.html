@@ -10,18 +10,44 @@
   <body sbContext="ScoreBoard.CurrentGame">
     <div class="sbSegment Info">
       <div class="sbGroup Clocks">
-        <div sbForeach="Clock: Period, Jam, Lineup, Timeout, Intermission: only" class="sbStack">
-          <div class="ClockName" sbClass="Running: Running | InJam: ^InJam | NoMoreJam: ^NoMoreJam" sbDisplay="Name"></div>
+        <div class="Clock" sbClass="sbHide: ^Clock(Intermission).Running" sbContext="Clock(Period)">
+          <div class="ClockName" sbClass="Running: Running | NoMoreJam: ^NoMoreJam" sbDisplay="Name"></div>
           <div class="sbGroup Time">
             <button sbSet="Time: -1000: change">-</button>
             <div sbDisplay="Time: sbToLongTime"></div>
             <button sbSet="Time: +1000: change">+</button>
           </div>
         </div>
+        <div class="Clock" sbClass="sbHide: Running: !" sbContext="Clock(Intermission)">
+          <div class="ClockName" sbClass="Running: Running" sbDisplay="Name"></div>
+          <div class="sbGroup Time">
+            <button sbSet="Time: -1000: change">-</button>
+            <div sbDisplay="Time: sbToLongTime"></div>
+            <button sbSet="Time: +1000: change">+</button>
+          </div>
+        </div>
+        <div sbClass="sbHide: Clock(Intermission).Running">
+          <div
+            sbForeach="Clock: Jam, Timeout, Lineup: only"
+            class="Clock"
+            sbClass="Running: Running | InJam: ^InJam | NoMoreJam: ^NoMoreJam"
+          >
+            <div class="ClockName" sbDisplay="Name"></div>
+            <div class="sbGroup Time">
+              <button sbSet="Time: -1000: change">-</button>
+              <div sbDisplay="Time: sbToLongTime"></div>
+              <button sbSet="Time: +1000: change">+</button>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="sbGroup TimeoutType">
         <div class="sbStack" sbForeach="Team: 1,2: only: onInsert=jtMoveOto">
-          <div class="TeamName" sbDisplay="AlternateName(Operator),UniformColor,Name"></div>
+          <div>
+            <div class="Count" sbDisplay="OfficialReviews"></div>
+            <div class="TeamName" sbDisplay="AlternateName(Operator),UniformColor,Name"></div>
+            <div class="Count" sbDisplay="Timeouts"></div>
+          </div>
           <div>
             <button sbClass="sbActive: Id,^TimeoutOwner, ^OfficialReview: sbIsOrThisTeam" sbSet="OfficialReview">Review</button>
             <button sbClass="sbActive: Id,^TimeoutOwner, ^OfficialReview: sbIsToThisTeam" sbSet="Timeout">Timeout</button>
@@ -38,24 +64,25 @@
         <button sbClass="sbHide: Rule(Jam.InjuryContinuation), Team(1).Injury: jtPossiblInjCont" sbToggle="InjuryContinuationUpcoming">
           Continuation Upcoming
         </button>
-        <button id="ReplaceButton_Setting" sbCall="jtToggleSetting">Use Replace on Undo</button>
+        <button class="showOnUndoEnabled sbHide" id="ReplaceButton_Setting" sbCall="jtToggleSetting">Use Replace on Undo</button>
+        <button sbCall="jtToggleUndoEnabled">Show Undo</button>
       </div>
       <div class="sbGroup sbHeader ReplaceInfo sbHide" sbClass="sbHide: Label(Undo): !== 'No Action'">
         <span>Replace &quot;<span sbDisplay="Label(Replaced)"></span>&quot; with</span>
       </div>
       <div class="sbGroup JamControls">
+        <button sbClass="sbClickMe: InJam, Clock(Jam).Running: sbJamTooLong" sbSet="StopJam" sbDisplay="Label(Stop)"></button>
         <button
           sbClass="sbClickMe: Rule(Lineup.Duration), Rule(Lineup.OvertimeDuration), Clock(Lineup).Running, Clock(Lineup).Time, InOvertime: sbLineupTooLong"
           sbSet="StartJam"
           sbDisplay="Label(Start)"
         ></button>
-        <button sbClass="sbClickMe: InJam, Clock(Jam).Running: sbJamTooLong" sbSet="StopJam" sbDisplay="Label(Stop)"></button>
+        <button class="showOnUndoEnabled sbHide" sbCall="jtUndo" sbDisplay="Label(Undo)"></button>
         <button
           sbClass="sbClickMe: Rule(Lineup.Duration), Rule(Lineup.OvertimeDuration), Clock(Lineup).Running, Clock(Lineup).Time, InOvertime: sbLineupTooLong"
           sbSet="Timeout"
           sbDisplay="Label(Timeout)"
         ></button>
-        <button sbCall="jtUndo" sbDisplay="Label(Undo)"></button>
       </div>
     </div>
   </body>

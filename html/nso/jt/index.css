@@ -3,14 +3,17 @@ body { margin: 0; padding: 0; }
 .sbGroup { flex: 1; padding: 0; }
 
 .Clocks { flex: 2; }
+.Clocks [Clock]:not(.Running) { display: none; }
+.Clocks [Clock].Running ~ [Clock].Running { display: none; }
 .Clocks .ClockName { font-weight: bold; font-size: 5dvh; }
-.Clocks .ClockName.Running { background: #3f3; } 
-.Clocks [Clock="Jam"] .ClockName.InJam { background: #3f3; } 
-.Clocks .ClockName.Running.NoMoreJam { background: #f33; } 
+.Clocks .Running .ClockName { background: #3f3; } 
+.Clocks [Clock="Jam"].InJam .ClockName { background: #3f3; } 
+.Clocks .Running.NoMoreJam .ClockName { background: #f33; } 
 .Clocks .Time>button { font-size: 5dvh; padding: 0.1em 0.4em; }
-.Clocks .Time>div { font-size: 7dvh; }
+.Clocks .Time>div { font-size: 7dvh; margin: 0.2em;  }
 
-.TimeoutType { flex: 3; }
+.TimeoutType { flex: 3; display: flex; gap: 3dvh; }
+.TimeoutType .Count { font-size: 5vh; }
 .TimeoutType .TeamName { font-weight: bold; font-size: 5vh; }
 .TimeoutType>div { flex: 2; }
 .TimeoutType>.OTO { flex: 1; }

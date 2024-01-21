@@ -10,6 +10,11 @@ function jtToggleSetting(k, v, elem) {
   elem.toggleClass('sbActive');
 }
 
+function jtToggleUndoEnabled(k, v, elem) {
+  elem.toggleClass('sbActive');
+  $('.showOnUndoEnabled').toggleClass('sbHide', !elem.hasClass('sbActive'));
+}
+
 function jtPossiblInjCont(k) {
   return !isTrue(k.upTo('Game') + '.Rule(Jam.InjuryContinuation)') || !isTrue(k.upTo('Game') + '.Team(1).Injury');
 }
