@@ -3,7 +3,7 @@
     --outside-fg: black;
 
     --segment-corner-radius: 0.6rem;
-    --segment-gap: 1px;
+    --segment-gap: 0.5rem;
 
     --group-bg: #aaa;
     --group-fg: #000;
@@ -112,17 +112,17 @@ div.sbSheets { height: calc(100% - 10px); align-items: flex-start; flex-wrap: wr
 .ui-button.sbNoDistract { font-size: calc(.9 * var(--nodistract-font-size)); }
 .sbNoDistract.sbGroup, .sbNoDistract .sbGroup { background-color: var(--nodistract-bg); color: var(--nodistract-fg); }
 
-.sbImportant { font-size: var(--important-font-size); font-weight: var(--important-font-weight); }
+.sbImportant.sbImportant { font-size: var(--important-font-size); font-weight: var(--important-font-weight); }
 .ui-button.sbImportant { font-size: calc(.9 * var(--important-font-size)); font-weight: var(--important-font-weight); }
-.sbVeryImportant { font-size: var(--very-important-font-size); font-weight: var(--very-important-font-weight); }
+.sbVeryImportant.sbVeryImportant { font-size: var(--very-important-font-size); font-weight: var(--very-important-font-weight); }
 .ui-button.sbVeryImportant { font-size: calc(.9 * var(--very-important-font-size)); font-weight: var(--very-important-font-weight); }
-.sbVeryVeryImportant { font-size: var(--very-very-important-font-size); font-weight: var(--very-very-important-font-weight); }
+.sbVeryVeryImportant.sbVeryVeryImportant { font-size: var(--very-very-important-font-size); font-weight: var(--very-very-important-font-weight); }
 .ui-button.sbVeryVeryImportant { font-size: calc(.9 * var(--very-very-important-font-size)); font-weight: var(--very-very-important-font-weight); }
 
 .sbClickable { cursor: pointer; }
 
 .sbInvisible { visibility: hidden; }
-.sbHide, .sbSpinner.sbHide, .sbGroup.sbHide { display: none; } 
+.sbHide.sbHide.sbHide.sbHide { display: none; } 
 .sbTemplates { display: none; }
 
 [sbSheetStyle="pbt"] .sbShowBySheetStyle:not(.sbShowOnPbt) { display: none; }

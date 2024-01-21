@@ -11,8 +11,8 @@ body:not([showTeam="2"]) [Team] ~ [Team]>.SkInput .ScoreRow  { flex-direction: r
 /* timeout row */
 .SkInput .Timeouts > * { flex: 1; }
 .SkInput .Timeouts { position: relative; }
-[Team="1"] .SkInput .OfficialTimeout>div { position: absolute; left: 50%; width: 100%; }
-[Team="2"] .SkInput .OfficialTimeout>div { position: absolute; right: 50%; width: 100%; }
+[Team="1"] .SkInput .OfficialTimeout>div { display: none; }
+[Team="2"] .SkInput .OfficialTimeout>div { position: absolute; right: calc(50% + (0.5 * var(--segment-gap))); width: 100%; }
 .SkInput .OfficialTimeout button { transform: translateY(-50%); }
 
 /* jammer/pivot rows */
