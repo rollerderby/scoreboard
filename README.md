@@ -57,11 +57,3 @@ Assuming that your scoreboard computer is set up with a monitor/laptop screen as
 When the control panel displays, it will ask you for an operator name. Enter your name and click Login. This operator name is used to store your personalized settings such as key controls.
 
 Now you can go to the tab with the documentation and either go to the Quick Start Guide or dive in deep right away and proceed with the section on the Controls page.
-
-## Special Notes: Importing Stats books edited in Google Sheets
-
-There is an issue where users who have created a stats book (of WFTDA flavor) in Google sheets for convinence, when you export it back out. Google sheets breaks something within the sheet and it cannot be imported. Developers have a bug open to investigate however it is not high priority (as at 03/30/2024 - Easter Weekend 2024). Please use OpenOffice, LibreOffice or Microsoft Office when uploading sheets.
-
-## Special Notes: Unsupported JRDA Stats Sheets
-
-Currently JRDA stats sheets are not importable into the WFTDA built scoreboard. You can still copy/paste data into a WFTDA IGRF/Stats book and then import it as a workaround at this time.
