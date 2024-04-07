@@ -10,3 +10,5 @@ body { display: flex; flex-direction: column; height: 100dvh; }
 #Buttons { height: 33%; }
 #Buttons>div { height: 100%; }
 #Buttons>div>button {  flex: 1; height: 100%; font-size: 5dvh; padding: 1rem; }
+
+#LineupEditor>.sbGroup { display: block; }

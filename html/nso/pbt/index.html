@@ -48,12 +48,12 @@
 
     <div class="sbTemplates">
       <div id="LineupEditor" class="sbSegment" sbContext="Team(*).Position(*)">
-        <div class="sbGroup">
-          Set <span sbDisplay="^UniformColor,^AlternateName(operator),^Name"></span> <span sbDisplay="-:k.Position"></span> to <br />
+        <span class="sbGroup">
+          <span>Set <span sbDisplay="^UniformColor,^AlternateName(operator),^Name"></span> <span sbDisplay="-:k.Position"></span> to</span>
           <span sbButtonGroup sbPrefix="p:[*]"
             ><button sbClass="sbActive: p.Skater: sbIsEmpty" sbSet="p.Skater: ''" sbCall="sbCloseDialog">?</button>
             <button
-              sbForeach="Skater:: rosterNumber: resort=RosterNumber"
+              sbForeach="^Skater:: rosterNumber: resort=RosterNumber"
               sbAttr="rosterNumber: RosterNumber"
               sbDisplay="RosterNumber"
               sbClass="sbActive: p.Skater: === elem.attr('Skater') | sbHide: Role: === 'NotInGame'"
