@@ -142,7 +142,7 @@ function igrfPasteOfficials(k, v, elem, event) {
     }
 
     var id = knownNames[role + '_' + name];
-    addOfficial(k, type, role, name, league, cert, id);
+    _igrfAddOfficial(k, elem.closest('[officialType]').attr('officialType'), role, name, league, cert, id);
   }
   return false;
 }

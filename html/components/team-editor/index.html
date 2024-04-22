@@ -79,7 +79,7 @@
         <th></th>
         <th class="Title">Skaters</th>
         <th></th>
-        <th class="normalSize" sbDisplay="Skater(*).Flags: tmeSkaterCount">0 skating</th>
+        <th class="normalSize SkaterCount" sbDisplay="Skater(*).Flags: tmeSkaterCount">0 skating</th>
         <th class="normalSize">
           <button sbProp="disabled: ^State: != null && v !== 'Prepared'" sbCall="tmeOpenRemoveAllSkatersDialog">Remove All</button>
         </th>
@@ -111,7 +111,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr sbForeach="Skater:: rosterNumber: resort=RosterNumber" class="Skater" sbAttr="rosterNumber: RosterNumber">
+      <tr sbForeach="Skater:: rosterNumber: resort=RosterNumber,onInsert=tmeSkaterCount" class="Skater" sbAttr="rosterNumber: RosterNumber">
         <td class="RosterNumber"><input type="text" size="5" sbControl="RosterNumber" /></td>
         <td class="Name"><input type="text" size="20" sbControl="Name" /></td>
         <td class="Pronouns"><input type="text" size="10" sbControl="Pronouns" /></td>

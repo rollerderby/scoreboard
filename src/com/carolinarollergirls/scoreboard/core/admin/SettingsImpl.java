@@ -40,7 +40,6 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         set("Overlay.Interactive.ShowLineups", "true");
         set("Overlay.Interactive.ShowNames", "true");
         set("Overlay.Interactive.ShowPenaltyClocks", "true");
-        set("ScoreBoard.Operator_Default.StartStopButtons", "false");
         set("ScoreBoard.Operator_Default.TabBar", "true");
         set("ScoreBoard.Operator_Default.ReplaceButton", "false");
         set("ScoreBoard.Operator_Default.ScoreAdjustments", "false");
@@ -48,7 +47,7 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         set(ScoreBoard.SETTING_STATSBOOK_INPUT, "");
         set(ScoreBoard.SETTING_AUTO_START, "");
         set(ScoreBoard.SETTING_AUTO_START_BUFFER, "0:02");
-        set(ScoreBoard.SETTING_AUTO_END_JAM, "true");
+        set(ScoreBoard.SETTING_AUTO_END_JAM, "false");
         set(ScoreBoard.SETTING_AUTO_END_TTO, "false");
         set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, Clock.ID_LINEUP);
         set(Clock.SETTING_SYNC, "true");

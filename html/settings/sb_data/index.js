@@ -45,15 +45,15 @@ function datCreateRemoveSelectedDialog() {
 }
 
 function datUploadJson(k, v, elem) {
-  elem.closest('form').attr('action', 'Load/JSON').submit();
+  elem.closest('form').attr('action', '/Load/JSON').submit();
 }
 
 function datUloadXlsx(k, v, elem) {
-  elem.closest('form').attr('action', 'Load/xlsx').submit();
+  elem.closest('form').attr('action', '/Load/xlsx').submit();
 }
 
 function datUploadBlankXlsx(k, v, elem) {
-  elem.closest('form').attr('action', 'Load/blank_xlsx').submit();
+  elem.closest('form').attr('action', '/Load/blank_xlsx').submit();
 }
 
 function datUpdateUploadButtons(k, v, elem) {

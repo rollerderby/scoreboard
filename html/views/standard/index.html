@@ -61,7 +61,7 @@
         <div
           class="ShowInJam Clock Jammer"
           sbForeach="Position: Jammer,Pivot: only"
-          sbClass="HasLead: DisplayLead | Hidden: StarPass: dspShowJammer | HasClock: PenaltyTime: sbIsNotEmpty"
+          sbClass="HasLead: ^DisplayLead | Hidden: StarPass: dspShowJammer | HasClock: PenaltyTime: > 0"
         >
           <span class="Name AutoFit" sbAutoFitOn="PenaltyTime, &_HidePenaltyClocks" sbDisplay="Name, ^DisplayLead: dspToJammerName"></span>
           <span class="PenaltyTime Box Red AutoFit" sbDisplay="PenaltyTime: sbToTime"></span>

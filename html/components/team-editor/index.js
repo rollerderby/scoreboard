@@ -125,7 +125,10 @@ function tmeSkaterCount(k, v, elem) {
         count++;
       }
     });
-  return '(' + count + ' skating)';
+  elem
+    .closest('table')
+    .find('.SkaterCount')
+    .text('(' + count + ' skating)');
 }
 
 function tmeNewSkaterInput(k, v, elem, event) {
