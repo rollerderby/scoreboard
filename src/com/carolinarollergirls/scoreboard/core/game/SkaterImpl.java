@@ -163,7 +163,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
                 !getCurrentFielding().getTeamJam().getOtherTeam().isLead() && game.isInJam()) {
                 getTeam().set(Team.LOST, true);
             }
-            if (!p.isServed() && !game.isInJam()) {
+            if (!p.isServed() && !game.isInJam() && getRole(getTeam().getRunningOrUpcomingTeamJam()) == Role.BENCH) {
                 getTeam().field(this, getRole(getTeam().getRunningOrEndedTeamJam()),
                                 getTeam().getRunningOrUpcomingTeamJam());
             }
