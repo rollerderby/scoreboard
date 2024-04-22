@@ -38,7 +38,7 @@ body.box_flat .Box.FlatDark, .Team>.JamScore.NoInitial:not(.Overtime) { color: #
 .Clock { transition: all 0.25s; }
 .Clock.Show { transition-delay: 0.25s;}
 
-.Team>.Name { position: absolute; top: 0%; width: 41%; overflow: none; border-radius: 5px; } 
+.Team>.Name { position: absolute; top: 0%; width: 38%; overflow: none; border-radius: 5px; } 
 .Team.Left>.Name { left: 1%; } 
 .Team.Right>.Name { right: 1%; } 
 .Team:not(.HasName)>.Name { opacity: 0; } 
@@ -46,15 +46,21 @@ body.box_flat .Box.FlatDark, .Team>.JamScore.NoInitial:not(.Overtime) { color: #
 .Team.HasName>.Name { height: 30%; font-size: 33vh; } 
 .Team.HasName.HasLogo:not(.HideLogos)>.Name { height: 10%; font-size: 10vh; } 
 
-.Team>.Logo { position: absolute; top: 0%; width: 41%; background-repeat: no-repeat; background-position: center; background-size: contain; } 
+.Team>.Logo { position: absolute; top: 0%; width: 38%; background-repeat: no-repeat; background-position: center; background-size: contain; } 
 .Team.Left>.Logo { left: 1%; } 
 .Team.Right>.Logo { right: 1%; } 
 .Team.HasName.HasLogo:not(.HideLogos)>.Logo { top: 10%; height: 20%; } 
 .Team.HasLogo:not(.HideLogos)>.Logo { top: 0%;height: 30%; } 
 
-.Team>.Score { position: absolute; top: 31%; width: 36%; font-size: 20vh; height: 20%; line-height: 0.8; } 
-.Team.Left>.Score { left: 4%; width: 35%; } 
-.Team.Right>.Score { right: 4%; width: 35%; } 
+.Team>.Penalties { position: absolute; top: 1%; width: 10%; height: 30%; display: flex; flex-flow: column-reverse nowrap; gap: 4%; }
+.Team.Left>.Penalties { left: 39.5%; }
+.Team.Right>.Penalties { right: 39.5%; }
+.Team>.Penalties>div { width: 100%; height: 30%; font-size: 8vh; }
+.Team>.Penalties>:not(.InBox) { display: none; }
+
+.Team>.Score { position: absolute; top: 31%; width: 35%; font-size: 20vh; height: 20%; line-height: 0.8; } 
+.Team.Left>.Score { left: 4%; }
+.Team.Right>.Score { right: 4%; }
 
 .Team>.JamScore { position: absolute; width: 9%; height: 12%; top: 39%; font-size: 11vh; } 
 .Team.Left>.JamScore { left: 39.5%; } 
@@ -92,6 +98,7 @@ body.box_flat .Box.FlatDark, .Team>.JamScore.NoInitial:not(.Overtime) { color: #
 .Team.Right>.Jammer>.Name { right: 0%; }
 .Team.Right>.Jammer>.PenaltyTime { right: -100%; }
 .PenaltyClocks .Team.Right>.Jammer.HasClock>.PenaltyTime { right: 70%; }
+.Team>.Jammer.ShowInLineup { height: 10%; }
 
 
 .Clock.Period.Large { position: absolute; top: 65%; left: -40%; right: auto; width: 40%; height: 28%;  } 
@@ -106,7 +113,7 @@ body.box_flat .Clock.Period.Large>.Name { left: 0%; width: 100%; height: 40% }
 .Clock.Jam.Large>.Time { position: absolute; top: 40%; left: 0%; width: 100%; height: 60%; } 
 body.box_flat .Clock.Jam.Large>.Name { left: 0%; width: 100%; height: 40% } 
 
-.Clock.Small { position: absolute; top: 59%; height: 12%; opacity: 0; } 
+.Clock.Small { position: absolute; top: 62%; height: 12%; opacity: 0; } 
 .Clock.Small.Show { opacity: 1; } 
 .Clock.Period.Time.Small { left: 1%; width: 27%; line-height: 0.8; } 
 .Clock.Period.NameNumber.Small { left: 29%; width: 12%; } 
