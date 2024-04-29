@@ -15,7 +15,7 @@ function sbAppendText(k, v, elem) {
 }
 
 function sbSubAnn(k, v, elem) {
-  return 'Substitute for #' + elem.attr('rosterNumber');
+  return 'Substitute for #' + elem.parent().attr('oldNumber');
 }
 
 function sbToTime(k, v) {

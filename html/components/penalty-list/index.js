@@ -24,8 +24,8 @@ function penSubstitute(k) {
   WS.SetupDialog($('#SubstituteSelector'), k.upTo('Team') + '.Position(' + WS.state[k + '.CurrentFielding'].split('_')[2] + ')', {
     title:
       'Substitute for ' +
-      (WS.state[k.upTo('Team') + '.UniformColor'] ||
-        WS.state[k.upTo('Team') + '.AlternateName(operator)'] ||
+      (WS.state[k.upTo('Team') + '.AlternateName(box)'] ||
+        WS.state[k.upTo('Team') + '.UniformColor'] ||
         WS.state[k.upTo('Team') + '.Name']) +
       ' #' +
       WS.state[k + '.RosterNumber'],

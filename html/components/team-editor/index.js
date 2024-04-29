@@ -54,6 +54,8 @@ function tmeOpenAlternateNamesDialog(k) {
       minLength: 0,
       source: [
         { label: 'operator (Operator Controls)', value: 'operator' },
+        { label: 'plt (Penalty/Lineup Tracker)', value: 'plt' },
+        { label: 'box (Penalty Box)', value: 'box' },
         { label: 'overlay (Video Overlay)', value: 'overlay' },
         { label: 'scoreboard (Scoreboard Display)', value: 'scoreboard' },
         { label: 'whiteboard (Penalty Whiteboard)', value: 'whiteboard' },
@@ -74,11 +76,12 @@ function tmeOpenColorsDialog(k) {
       },
     },
   })
-    .children('#newType')
+    .find('#newType')
     .autocomplete({
       minLength: 0,
       source: [
         { label: 'operator (Operator Colors)', value: 'operator' },
+        { label: 'plt (PLT Colors)', value: 'plt' },
         { label: 'overlay (Video Overlay Colors)', value: 'overlay' },
         { label: 'scoreboard (Scoreboard Colors)', value: 'scoreboard' },
         { label: 'scoreboard_dots (Scoreboard Dot Colors)', value: 'scoreboard_dots' },

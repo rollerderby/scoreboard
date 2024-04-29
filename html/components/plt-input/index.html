@@ -7,8 +7,8 @@
             colspan="5"
             id="head"
             class="sbShowOnPureLt"
-            sbDisplay="AlternateName(operator),UniformColor,Name"
-            sbCss="color: Color(operator_fg) | background-color: Color(operator_bg) | text-shadow: Color(operator_glow): sbCssToShadow"
+            sbDisplay="AlternateName(plt),UniformColor,Name"
+            sbCss="color: Color(plt_fg) | background-color: Color(plt_bg) | text-shadow: Color(plt_glow): sbCssToShadow"
             sbCall="openOptionsDialog"
           ></td>
           <td class="sbShowOnPlt AutoFit">Bench</td>
@@ -22,8 +22,8 @@
             colspan="9"
             id="head"
             class="sbShowOnPurePt sbShowOnPlt sbShowOnSheet"
-            sbDisplay="AlternateName(operator),UniformColor,Name"
-            sbCss="color: Color(operator_fg) | background-color: Color(operator_bg) | text-shadow: Color(operator_glow): sbCssToShadow"
+            sbDisplay="AlternateName(plt),UniformColor,Name"
+            sbCss="color: Color(plt_fg) | background-color: Color(plt_bg) | text-shadow: Color(plt_glow): sbCssToShadow"
             sbCall="openOptionsDialog"
           ></td>
           <td
@@ -159,12 +159,17 @@
     <div class="sbSegment">
       <div class="sbGroup" sbPrefix="f:[*]">
         <span sbClass="sbHide: CurrentBoxTrip: sbIsEmpty">Substitute: </span>
-        <span sbClass="sbHide: f.CurrentBoxTrip: sbIsEmpty" sbContext="/ScoreBoard.Game([game]).Team([TeamJam])" sbButtonGroup>
+        <span
+          sbClass="sbHide: f.CurrentBoxTrip: sbIsEmpty"
+          sbContext="/ScoreBoard.Game([game]).Team([TeamJam])"
+          sbAttr="oldNumber: f.SkaterNumber"
+          sbButtonGroup
+        >
           <button
             sbForeach="Skater:: rosterNumber: resort=RosterNumber"
             sbAttr="rosterNumber: RosterNumber"
             sbDisplay="RosterNumber"
-            sbClass="sbActive: f.Skater: === elem.attr('Skater')"
+            sbClass="sbActive: f.Skater: === elem.attr('Skater') | sbHide: Role: === 'NotInGame'"
             sbSet="f.Annotation: sbSubAnn | f.Skater: elem.attr('Skater')"
             sbCall="sbCloseDialog"
           ></button>

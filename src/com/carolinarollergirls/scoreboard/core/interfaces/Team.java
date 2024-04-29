@@ -156,6 +156,8 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
         SCOREBOARD("scoreboard"),
         WHITEBOARD("whiteboard"),
         OPERATOR("operator"),
+        PLT("plt"),
+        BOX("box"),
         OVERLAY("overlay"),
         TWITTER("twitter");
 

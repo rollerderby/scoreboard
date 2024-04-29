@@ -9,7 +9,7 @@
   >
     <div class="Info">
       <span class="sbVeryVeryImportant">
-        <span sbDisplay="^UniformColor,^AlternateName(operator),^Name"></span> <span sbDisplay="RosterNumber"></span>
+        <span sbDisplay="^AlternateName(box),^UniformColor,^Name"></span> <span sbDisplay="RosterNumber"></span>
       </span>
       <span class="sbVeryVeryImportant Instruction" sbDisplay="Clock.Time, EndFielding: penToInstruction"></span>
       <span class="sbVeryVeryImportant" sbDisplay="Clock.Time: sbToSeconds"></span>
@@ -41,13 +41,13 @@
 <div class="sbTemplates">
   <div id="SubstituteSelector" class="sbSegment" sbContext="Team(*).Position(*)">
     <div class="sbGroup" sbPrefix="p:[*]">
-      <span sbButtonGroup>
+      <span sbAttr="oldNumber: RosterNumber" sbButtonGroup>
         <button
           sbContext="^"
           sbForeach="Skater:: rosterNumber: resort=RosterNumber"
           sbAttr="rosterNumber: RosterNumber"
           sbDisplay="RosterNumber"
-          sbClass="sbActive: p.Skater: === elem.attr('Skater')"
+          sbClass="sbActive: p.Skater: === elem.attr('Skater') | sbHide: Role: === 'NotInGame'"
           sbSet="p.Annotation: sbSubAnn | p.Skater: elem.attr('Skater')"
           sbCall="sbCloseDialog"
         ></button>
@@ -58,7 +58,7 @@
   <div id="ReassignmentSelector" class="sbSegment" sbContext="Team(*).BoxTrip(*)">
     <div class="sbGroup sbStack" sbPrefix="b:[*]">
       <span sbContext="^^" sbForeach="Team: 1,2: only">
-        <span sbDisplay="UniformColor, AlternateName(operator), Name"></span>
+        <span sbDisplay="AlternateName(box), UniformColor, Name"></span>
         <button
           sbForeach="Position: Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
           sbClass="sbUnserved: HasUnserved"

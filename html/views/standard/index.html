@@ -40,7 +40,7 @@
             class="Box Red"
             sbForeach="Position: -Jammer: penaltyTime,num: resort=PenaltyTime"
             sbAttr="penaltyTime:PenaltyTime"
-            sbDisplay="PenaltyTime: sbToTime"
+            sbDisplay="PenaltyTime: sbToSeconds"
             sbClass="InBox:PenaltyTime: > 0"
           ></div>
         </div>
@@ -73,15 +73,11 @@
           sbClass="HasLead: ^DisplayLead | Hidden: StarPass: dspShowJammer | HasClock: PenaltyTime: > 0"
         >
           <span class="Name AutoFit" sbAutoFitOn="PenaltyTime, &_HidePenaltyClocks" sbDisplay="Name, ^DisplayLead: dspToJammerName"></span>
-          <span class="PenaltyTime Box Red AutoFit" sbDisplay="PenaltyTime: sbToTime"></span>
+          <span class="PenaltyTime Box Red AutoFit" sbDisplay="PenaltyTime: sbToSeconds"></span>
         </div>
-        <div
-          class="ShowInLineup ShowInTimeout Clock Jammer"
-          sbForeach="Position: Jammer,Pivot: only"
-          sbClass="HasLead: ^DisplayLead | Hidden: StarPass: dspShowJammer | HasClock: PenaltyTime: > 0"
-        >
-          <span class="Name AutoFit" sbAutoFitOn="PenaltyTime, &_HidePenaltyClocks" sbDisplay="Name, ^DisplayLead: dspToJammerName"></span>
-          <span class="PenaltyTime Box Red AutoFit" sbDisplay="PenaltyTime: sbToTime"></span>
+        <div class="ShowInLineup ShowInTimeout Clock Jammer" sbContext="Position(Jammer)" sbClass="HasClock: PenaltyTime: > 0">
+          <span class="Name AutoFit" sbAutoFitOn="PenaltyTime, &_HidePenaltyClocks" sbDisplay="Name"></span>
+          <span class="PenaltyTime Box Red AutoFit" sbDisplay="PenaltyTime: sbToSeconds"></span>
         </div>
       </div>
 

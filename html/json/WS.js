@@ -512,7 +512,16 @@ let WS = {
     );
   },
 
-  _getParameters: function (elem, attr, pathIndex = -1, readFuncIndex = -1, writeFuncIndex = -1, isBool = false, isPreRegister = false) {
+  _getParameters: function (
+    elem,
+    attr,
+    pathIndex = -1,
+    readFuncIndex = -1,
+    writeFuncIndex = -1,
+    isBool = false,
+    isPreRegister = false,
+    alwaysReadState = false
+  ) {
     const val = WS._replacePathComponents(elem, attr, isPreRegister)[0];
     return val
       ? val.split('|').map(function (part) {
@@ -522,8 +531,8 @@ let WS = {
             const basePath = WS._getContext(elem, attr === 'sbForeach', isPreRegister);
             list[pathIndex] = list[pathIndex].split(',').map((item) => WS._combinePaths(basePath, [item.trim(), false], prefixes)[0]);
           }
-          if (readFuncIndex > -1 && (isBool || list[readFuncIndex] != null || list[pathIndex].length > 1)) {
-            list[readFuncIndex] = WS._getModifyFunc(list[pathIndex], list[readFuncIndex] || '', isBool);
+          if (readFuncIndex > -1 && (isBool || list[readFuncIndex] != null || list[pathIndex].length > 1 || alwaysReadState)) {
+            list[readFuncIndex] = WS._getModifyFunc(list[pathIndex], list[readFuncIndex] || '', isBool, alwaysReadState);
           }
           if (writeFuncIndex > -1) {
             list[writeFuncIndex] = WS._getModifyFunc([], list[writeFuncIndex] || '', isBool);
@@ -538,11 +547,11 @@ let WS = {
     return value.length ? value[0][0] : value;
   },
 
-  _getModifyFunc: function (paths, func, isBool) {
+  _getModifyFunc: function (paths, func, isBool, alwaysReadState = false) {
     if (typeof func !== 'function') {
       func = isBool ? WS._buildBoolFunc(func) : WS._buildNonBoolFunc(func);
     }
-    if (paths.length < 2) {
+    if (paths.length < 2 && !alwaysReadState) {
       return func;
     } else {
       return function (path, v, elem) {
@@ -785,7 +794,7 @@ let WS = {
         });
       });
 
-      WS._getParameters(elem, 'sbDisplay', 0, 1).forEach(function ([paths, func, options]) {
+      WS._getParameters(elem, 'sbDisplay', 0, 1, -1, false, false, true).forEach(function ([paths, func, options]) {
         autoFitNeeded = false;
         WS.Register(paths.concat(autoFitPaths), { preRegistered: true, element: elem, html: options === 'html', modifyFunc: func });
       });

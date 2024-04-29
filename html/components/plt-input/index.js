@@ -5,8 +5,8 @@
   const prefix = gameId ? 'ScoreBoard.Game(' + gameId + ').' : 'ScoreBoard.CurrentGame.';
 
   WS.Register([prefix + 'Rule(Penalties.NumberToFoulout)']);
-  WS.Register([prefix + 'Clock(Period).Number'], _pltUpdateCurrentPeriodStyle());
-  WS.Register([prefix + 'Clock(Jam).Number'], _pltUpdateCurrentJamStyle());
+  WS.Register([prefix + 'Clock(Period).Number'], _pltUpdateCurrentPeriodStyle);
+  WS.Register([prefix + 'Clock(Jam).Number'], _pltUpdateCurrentJamStyle);
   WS.Register(prefix + 'Team(*).Skater(*).Role', {
     triggerBatchFunc: function () {
       $('.PltInput>.Team').each(function (i, e) {
@@ -96,7 +96,7 @@ function _pltOpenPenaltyEditor(g, t, s, p) {
     return; // Whiteboard
   }
   let prefix = 'ScoreBoard.Game(' + g + ').Team(' + t + ')';
-  const teamName = WS.state[prefix + '.AlternateName(operator)'] || WS.state[prefix + '.UniformColor'] || WS.state[prefix + '.Name'];
+  const teamName = WS.state[prefix + '.AlternateName(plt)'] || WS.state[prefix + '.UniformColor'] || WS.state[prefix + '.Name'];
   prefix = 'ScoreBoard.Game(' + g + ').Team(' + t + ').Skater(' + s + ')';
   const skaterName = WS.state[prefix + '.Name'];
   const skaterNumber = WS.state[prefix + '.RosterNumber'];

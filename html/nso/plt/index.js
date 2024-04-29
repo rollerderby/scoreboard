@@ -45,9 +45,7 @@ function toTitle() {
   return (
     pos +
     ' ' +
-    (team === 'both'
-      ? 'both'
-      : WS.state[prefix + 'AlternateName(operator)'] || WS.state[prefix + 'UniformColor'] || WS.state[prefix + 'Name']) +
+    (team === 'both' ? 'both' : WS.state[prefix + 'AlternateName(plt)'] || WS.state[prefix + 'UniformColor'] || WS.state[prefix + 'Name']) +
     ' CRG ScoreBoard'
   );
 }
