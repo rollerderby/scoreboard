@@ -242,7 +242,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             if (getClock(Clock.ID_PERIOD).isTimeAtStart()) { return false; }
             Jam lastJam = getCurrentPeriod().getCurrentJam();
             long pcRemaining = getClock(Clock.ID_PERIOD).getMaximumTime() - lastJam.getPeriodClockElapsedEnd();
-            if (pcRemaining >= getLong(Rule.LINEUP_DURATION)) { return false; }
+            if (pcRemaining > getLong(Rule.LINEUP_DURATION)) { return false; }
             boolean ttoForcesJam = getBoolean(Rule.STOP_PC_ON_TO) || getBoolean(Rule.STOP_PC_ON_TTO);
             boolean orForcesJam = getBoolean(Rule.STOP_PC_ON_TO) || getBoolean(Rule.STOP_PC_ON_OR);
             boolean otoForcesJam = getBoolean(Rule.EXTRA_JAM_AFTER_OTO) &&
