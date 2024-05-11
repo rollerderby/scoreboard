@@ -13,6 +13,7 @@ WS.Register('ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Period(*
     });
   },
 });
+WS.Register(['ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Jam(*).TeamJam(*).Fielding(*).BoxTrip(*)']);
 
 function ltsEditFielding(k) {
   _ltsOpenFieldingEditor(k.Game, k.Period, k.Jam, k.TeamJam, k.Fielding, false);

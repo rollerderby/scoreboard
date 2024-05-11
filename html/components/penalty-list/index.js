@@ -52,7 +52,6 @@ function penReassign(k) {
 
 function penAdd(k) {
   const skaterPrefix = k.upTo('Team') + '.Skater(' + WS.state[k + '.CurrentSkater'] + ')';
-  console.log(k, WS.state[k + '.CurrentSkater'], skaterPrefix, WS.state[skaterPrefix + '.PenaltyCount']);
   penSelectCode(skaterPrefix + '.Penalty(' + (WS.state[skaterPrefix + '.PenaltyCount'] + 1) + ')');
 }
 

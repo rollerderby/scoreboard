@@ -14,7 +14,7 @@
       <span class="sbVeryVeryImportant Instruction" sbDisplay="Clock.Time, EndFielding: penToInstruction"></span>
       <span class="sbVeryVeryImportant" sbDisplay="Clock.Time: sbToSeconds"></span>
       <span class="sbImportant">
-        <span sbDisplay="PenaltyCodes"></span> | <span><span sbDisplay="TotalPenalties"></span> Total</span>
+        <span sbDisplay="PenaltyCodes"></span> | <span>Total: <span sbDisplay="TotalPenalties"></span></span>
       </span>
     </div>
     <div class="sbShowOnPbt Edit">
@@ -23,7 +23,7 @@
         <button sbCall="penReassign">Reassign</button>
       </span>
       <span>
-        <button sbClass="sbClickMe: EndFielding: sbIsNotEmpty" sbSet="IsCurrent: false">Has Left</button>
+        <button sbClass="sbClickMe: EndFielding: sbIsNotEmpty | sbHide: Clock.Time: > 0" sbSet="IsCurrent: false">Has Left</button>
       </span>
       <span>
         <button sbSet="Clock.Time:-1000:change">-1</button>

@@ -12,3 +12,4 @@ body { display: flex; flex-direction: column; height: 100dvh; }
 #Buttons>div>button {  flex: 1; height: 100%; font-size: 5dvh; padding: 1rem; }
 
 #LineupEditor>.sbGroup { display: block; }
+button.StartButton { width: 95%; height: 25dvh; font-size: 5dvh; }
