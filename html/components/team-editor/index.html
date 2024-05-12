@@ -48,16 +48,15 @@
           <span sbClass="sbHide:-: tmeIsPrepared">Uniform Color: </span><span sbClass="sbHide:-: tmeNotPrepared">Uniform Colors: </span>
         </td>
         <td class="Value">
-          <span id="PreparedUc" class="sbHide" sbClass="sbHide: PreparedTeam: !" sbPrefix="t:[*]">
+          <span id="PreparedUc" class="sbHide" sbClass="sbHide: PreparedTeam: sbIsEmpty" sbAttr="team: PreparedTeam" sbPrefix="t:[*]">
             <select
               sbForeach="PreparedTeam"
               sbContext="/ScoreBoard"
-              sbAttr="team: Id"
-              sbClass="sbHide: t.PreparedTeam: !== elem.attr('PreparedTeam')"
-              sbControl="t.UniformColor, UniformColor(*): tmeFilterOtherUc"
+              sbClass="sbHide: Id: !== elem.parent().attr('team')"
+              sbControl="t.UniformColor: tmeFilterOtherUc"
             >
               <option value="">Other</option>
-              <option sbForeach="UniformColor::value:noId" sbAttr="value:" sbDisplay=""></option>
+              <option sbForeach="UniformColor::value:noId" sbAttr="value:" sbDisplay=" "></option>
             </select>
           </span>
           <input type="text" class="Name" size="15" sbClass="sbHide: UniformColor: tmeIsNotOtherUc" sbControl="UniformColor" />
@@ -107,7 +106,7 @@
             <option value="B">Bench Staff</option>
           </select>
         </td>
-        <td><button class="AddSkater" sbCall="tmeAddSkater">Add Skater</button></td>
+        <td><button disabled class="AddSkater" sbCall="tmeAddSkater">Add Skater</button></td>
       </tr>
     </thead>
     <tbody>

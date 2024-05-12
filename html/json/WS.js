@@ -366,7 +366,7 @@ let WS = {
           } else {
             callback(WS._enrichProp(paths[0]), WS.state[paths[0]], elem);
           }
-          if (elem.prop('tagName') === 'SELECT') {
+          if (elem.prop('tagName') === 'SELECT' && options.set) {
             WS._selectCache.set(elem[0], { path: paths[0], callback: callback });
           }
 

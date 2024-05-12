@@ -100,20 +100,20 @@ function tmeNotPrepared(k) {
 }
 
 function tmeFilterOtherUc(k, v, elem) {
-  elem.children('[value="' + v + '"]').length ? v : '';
+  return elem.children('[value="' + v + '"]').length ? v : '';
 }
 
 function tmeIsNotOtherUc(k, v) {
   const preparedTeam = WS.state['ScoreBoard.Game(' + k.Game + ').Team(' + k.Team + ').PreparedTeam'];
-  return !k.Team || (preparedTeam && $('#PreparedUc [PreparedTeam="' + preparedTeam + '"] [value="' + v + '"]').length);
+  return !!WS.state['ScoreBoard.PreparedTeam(' + preparedTeam + ').UniformColor(' + v + ')'];
 }
 
 function tmeAddNewUc(k, v, elem, event) {
-  if (event && event.which !== 13) {
+  if (event && event.type === 'keyup' && event.which !== 13) {
     return;
   }
   if ($('#newUc').val() !== '') {
-    WS.Set(k + '.UniformColor(' + sbNewUuid() + ')', $('#newUc').val());
+    WS.Set(k + '.UniformColor(' + $('#newUc').val() + ')', $('#newUc').val());
     $('#newUc').val('');
   }
 }
@@ -135,17 +135,12 @@ function tmeSkaterCount(k, v, elem) {
 }
 
 function tmeNewSkaterInput(k, v, elem, event) {
-  elem
-    .parent()
-    .find('button.AddSkater')
-    .button(
-      'option',
-      'disabled',
-      !elem.parent().parent().children('.RosterNumber').val() && !elem.parent().parent().children('.Name').val()
-    );
-  if (!elem.parent().parent().find('button.AddSkater').button('option', 'disabled') && 13 === event.which) {
+  const button = elem.closest('tr').find('button.AddSkater');
+  const disable = !elem.closest('tr').find('input.RosterNumber').val() && !elem.closest('tr').find('input.Name').val();
+  button.prop('disabled', disable).toggleClass('ui-button-disabled ui-state-disabled', disable);
+  if (!disable && 13 === event.which) {
     // Enter
-    tmeAddSkater(k);
+    tmeAddSkater(k, v, elem);
   }
 }
 
@@ -193,20 +188,20 @@ function _tmeAddSkater(teamPrefix, number, name, pronouns, flags, id) {
   WS.Set(teamPrefix + '.Skater(' + id + ').Flags', flags);
 }
 
-function tmeAddSkater(k) {
+function tmeAddSkater(k, v, elem) {
+  const row = elem.closest('tr');
   _tmeAddSkater(
     k,
-    $('.AddSkater>>.RosterNumber').val(),
-    $('.AddSkater>>.Name').val(),
-    $('.AddSkater>>.Pronouns').val(),
-    $('.AddSkater>>.Flags').val()
+    row.children().children('.RosterNumber').val(),
+    row.children().children('.Name').val(),
+    row.children().children('.Pronouns').val(),
+    row.children().children('.Flags').val()
   );
-  $('.AddSkater>>.RosterNumber').val('').trigger('focus');
-  $('.AddSkater>>.Name').val('');
-  $('.AddSkater>>.Pronouns').val('');
-  $('.AddSkater>>.Flags').val('');
-  $('button.AddSkater').trigger('blur');
-  $('button.AddSkater').button('option', 'disabled', true);
+  row.children().children('.RosterNumber').val('').trigger('focus');
+  row.children().children('.Name').val('');
+  row.children().children('.Pronouns').val('');
+  row.children().children('.Flags').val('');
+  row.children().children('.AddSkater').prop('disabled', true).addClass('ui-button-disabled ui-state-disabled');
 }
 
 function tmeOpenRemoveSkaterDialog(k) {

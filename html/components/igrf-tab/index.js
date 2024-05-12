@@ -83,7 +83,7 @@ function igrfAddOfficial(k, v, elem) {
   );
   row.find('select').val('');
   row.find('input').val('');
-  elem.prop('disabled', true);
+  elem.prop('disabled', true).toggleClass('ui-button-disabled ui-state-disabled', true);
 }
 
 function _igrfAddOfficial(prefix, type, role, name, league, cert, id) {
@@ -97,8 +97,9 @@ function _igrfAddOfficial(prefix, type, role, name, league, cert, id) {
 
 function igrfUpdateAddButton(k, v, elem, event) {
   const button = elem.closest('tr').find('button.AddOfficial');
-  button.prop('disabled', !elem.closest('tr').find('input.Name').val());
-  if (!button.prop('disabled') && 13 === event.which) {
+  const disable = !elem.closest('tr').find('input.Name').val();
+  button.prop('disabled', disable).toggleClass('ui-button-disabled ui-state-disabled', disable);
+  if (!disable && 13 === event.which) {
     // Enter
     button.trigger('click');
   }
