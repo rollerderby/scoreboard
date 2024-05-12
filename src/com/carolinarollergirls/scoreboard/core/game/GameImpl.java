@@ -3,7 +3,9 @@ package com.carolinarollergirls.scoreboard.core.game;
 import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
@@ -14,6 +16,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.jr.ob.JSON;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Expulsion;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
@@ -242,7 +245,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             if (getClock(Clock.ID_PERIOD).isTimeAtStart()) { return false; }
             Jam lastJam = getCurrentPeriod().getCurrentJam();
             long pcRemaining = getClock(Clock.ID_PERIOD).getMaximumTime() - lastJam.getPeriodClockElapsedEnd();
-            if (pcRemaining >= getLong(Rule.LINEUP_DURATION)) { return false; }
+            if (pcRemaining > getLong(Rule.LINEUP_DURATION)) { return false; }
             boolean ttoForcesJam = getBoolean(Rule.STOP_PC_ON_TO) || getBoolean(Rule.STOP_PC_ON_TTO);
             boolean orForcesJam = getBoolean(Rule.STOP_PC_ON_TO) || getBoolean(Rule.STOP_PC_ON_OR);
             boolean otoForcesJam = getBoolean(Rule.EXTRA_JAM_AFTER_OTO) &&
@@ -392,6 +395,21 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                        Rule.NUMBER_RETAINS.toString().equals(item.getId()) ||
                        Rule.RDCL_PER_HALF_RULES.toString().equals(item.getId())) {
                 for (Team t : getAll(TEAM)) { t.recountTimeouts(); }
+            }
+        }
+        if (prop == EVENT_INFO && get(STATE) == State.PREPARED && INFO_START_TIME.equals(item.getId()) &&
+            scoreBoard.getCurrentGame().get(CurrentGame.GAME) == this) {
+            LocalTime time = LocalTime.parse(item.getValue());
+            LocalDate date = "".equals(get(EVENT_INFO, INFO_DATE).getValue())
+                                 ? LocalDate.now()
+                                 : LocalDate.parse(get(EVENT_INFO, INFO_DATE).getValue());
+            long timeToStart = ChronoUnit.MILLIS.between(LocalDateTime.now(), LocalDateTime.of(date, time));
+            if (timeToStart > 0) {
+                Clock ic = getClock(Clock.ID_INTERMISSION);
+                ic.stop();
+                ic.setMaximumTime(timeToStart);
+                ic.resetTime();
+                ic.start();
             }
         }
     }
