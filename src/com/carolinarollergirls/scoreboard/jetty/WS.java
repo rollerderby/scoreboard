@@ -28,7 +28,6 @@ import com.carolinarollergirls.scoreboard.core.game.GameImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients.Client;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients.Device;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
-import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
@@ -164,11 +163,12 @@ public class WS extends WebSocketServlet {
                             PreparedTeam t1 = sb.getPreparedTeam((String) data.get("Team1"));
                             PreparedTeam t2 = sb.getPreparedTeam((String) data.get("Team2"));
                             Ruleset rs = sb.getRulesets().getRuleset((String) data.get("Ruleset"));
-                            Game g = new GameImpl(sb, t1, t2, rs);
+                            GameImpl g = new GameImpl(sb, t1, t2, rs);
                             sb.add(ScoreBoard.GAME, g);
                             sb.getCurrentGame().load(g);
 
                             if ((Boolean) data.get("Advance")) {
+                                g.allowQuickClockControls(true);
                                 g.startJam();
                                 g.timeout();
                                 for (int i = 0; i < (Integer) data.get("TO1"); i++) {
@@ -215,6 +215,7 @@ public class WS extends WebSocketServlet {
                                 }
                                 long periodClock = Long.valueOf((String) data.get("PeriodClock"));
                                 if (periodClock > 0) { g.getClock(Clock.ID_PERIOD).setTime(periodClock); }
+                                g.allowQuickClockControls(false);
                             } else {
                                 String intermissionClock = (String) data.get("IntermissionClock");
                                 if (intermissionClock != null) {

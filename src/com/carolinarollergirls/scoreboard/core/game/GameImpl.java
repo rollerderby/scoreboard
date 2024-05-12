@@ -882,6 +882,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     }
 
     protected boolean quickClockControl(Button button) {
+        if (quickClockAlwaysAllowed) { return false; }
         long currentTime = ScoreBoardClock.getInstance().getCurrentTime();
         long lastTime = lastButtonTime;
         boolean differentButton = button != lastButton;
@@ -896,6 +897,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         }
         return true;
     }
+
+    public void allowQuickClockControls(boolean allow) { quickClockAlwaysAllowed = allow; }
 
     private String getSetting(String key) { return scoreBoard.getSettings().get(key); }
     private boolean getBooleanSetting(String key) { return Boolean.parseBoolean(scoreBoard.getSettings().get(key)); }
@@ -1057,6 +1060,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     protected Button lastButton = Button.UNDO;
     protected long lastButtonTime = ScoreBoardClock.getInstance().getCurrentTime();
     protected static long quickClockThreshold = 1000; // ms
+    protected boolean quickClockAlwaysAllowed = false;
 
     protected StatsbookExporter statsbookExporter;
     protected JSONStateSnapshotter jsonSnapshotter;
