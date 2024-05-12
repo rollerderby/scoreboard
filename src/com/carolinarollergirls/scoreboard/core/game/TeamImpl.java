@@ -155,6 +155,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
             }
         }
         if (prop == INITIALS) { return get(DISPLAY_NAME).replaceAll("[^\\p{Lu}]", ""); }
+        if (prop == UNIFORM_COLOR && "".equals(value)) { return null; }
         if (prop == IN_TIMEOUT) {
             Timeout t = game.getCurrentTimeout();
             return t.isRunning() && this == t.getOwner() && !t.isReview();

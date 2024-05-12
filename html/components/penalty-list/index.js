@@ -1,11 +1,19 @@
 'use strict';
 
 WS.Register([
+  'ScoreBoard.CurrentGame.Rule(Penalties.NumberToFoulout)',
   'ScoreBoard.CurrentGame.Team(*).BoxTrip(*).CurrentFielding',
   'ScoreBoard.CurrentGame.Team(*).BoxTrip(*).CurrentSkater',
   'ScoreBoard.CurrentGame.Team(*).Skater(*).PenaltyCount',
+  'ScoreBoard.CurrentGame.Team(*).Skater(*).Penalty(0).Code',
   'ScoreBoard.CurrentGame.Team(*).Position(*).RosterNumber',
 ]);
+
+function penFoOrExp(k, v) {
+  const limit = WS.state[k.upTo('Game') + '.Rule(Penalties.NumberToFoulout)'];
+  const skaterPrefix = k.upTo('Team') + '.Skater(' + v + ')';
+  return WS.state[skaterPrefix + '.Penalty(0).Code'] || WS.state[skaterPrefix + '.PenaltyCount'] >= limit;
+}
 
 function penToInstruction(k, v) {
   return WS.state[k.upTo('BoxTrip') + '.EndFielding'] ? 'Done' : v > 10000 ? 'Sit' : 'Stand';

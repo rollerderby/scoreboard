@@ -19,7 +19,7 @@
         <span class="perTeam" sbForeach="Team: 1,2: only">
           <button
             sbForeach="Position: Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
-            sbClass="sbUnserved: HasUnserved"
+            sbClass="sbUnserved: HasUnserved | sbInBox: PenaltyBox"
             sbDisplay="RosterNumber: questionMarkIfEmpty"
             sbCall="positionDetails"
           ></button>
@@ -33,7 +33,7 @@
         <span class="perTeam" sbContext="^" sbForeach="Team: 1,2: only">
           <button
             sbForeach="Position: Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
-            sbClass="sbUnserved: HasUnserved"
+            sbClass="sbUnserved: HasUnserved | sbInBox: PenaltyBox"
             sbDisplay="RosterNumber: questionMarkIfEmpty"
             sbSet="b.CurrentFielding: getFielding"
           ></button>
