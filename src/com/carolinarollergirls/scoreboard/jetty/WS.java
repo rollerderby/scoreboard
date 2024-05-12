@@ -209,7 +209,7 @@ public class WS extends WebSocketServlet {
                                     for (int i = 1; i < period; i++) {
                                         g.getCurrentPeriod().execute(Period.INSERT_BEFORE);
                                     }
-                                    for (int i = 1; i <= jam; i++) {
+                                    for (int i = 1; i < jam; i++) {
                                         g.getCurrentPeriod().getCurrentJam().execute(Jam.INSERT_BEFORE);
                                     }
                                 }
