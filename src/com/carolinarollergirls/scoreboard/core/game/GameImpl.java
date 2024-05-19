@@ -17,6 +17,7 @@ import com.fasterxml.jackson.jr.ob.JSON;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Expulsion;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
@@ -407,7 +408,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 for (Team t : getAll(TEAM)) { t.recountTimeouts(); }
             }
         }
-        if (prop == EVENT_INFO && get(STATE) == State.PREPARED && INFO_START_TIME.equals(item.getId())) {
+        if (prop == EVENT_INFO && get(STATE) == State.PREPARED && INFO_START_TIME.equals(item.getId()) &&
+            scoreBoard.getCurrentGame().get(CurrentGame.GAME) == this) {
             LocalTime time = LocalTime.parse(item.getValue());
             LocalDate date = "".equals(get(EVENT_INFO, INFO_DATE).getValue())
                                  ? LocalDate.now()
@@ -904,6 +906,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     }
 
     protected boolean quickClockControl(Button button) {
+        if (quickClockAlwaysAllowed) { return false; }
         long currentTime = ScoreBoardClock.getInstance().getCurrentTime();
         long lastTime = lastButtonTime;
         boolean differentButton = button != lastButton;
@@ -918,6 +921,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         }
         return true;
     }
+    public void allowQuickClockControls(boolean allow) { quickClockAlwaysAllowed = allow; }
 
     private void jammerBoxEntry() {
         // start a clock
@@ -1097,6 +1101,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     protected Button lastButton = Button.UNDO;
     protected long lastButtonTime = ScoreBoardClock.getInstance().getCurrentTime();
     protected static long quickClockThreshold = 1000; // ms
+    protected boolean quickClockAlwaysAllowed = false;
 
     protected StatsbookExporter statsbookExporter;
     protected JSONStateSnapshotter jsonSnapshotter;
