@@ -34,7 +34,7 @@ public class ScoreBoardJSONSetter {
         String version = (String) state.get("ScoreBoard.Version(release)");
         if (version == null) { version = getVersionFromKeys(state.keySet()); }
 
-        if (version.equals("v5")) { return; } // no update needed
+        if (version.startsWith("v2025")) { return; } // no update needed
 
         // When updating to v5 we need to move stuff to a newly created game which needs an id
         String newGameId = UUID.randomUUID().toString();
@@ -43,7 +43,7 @@ public class ScoreBoardJSONSetter {
             String newKey = oldKey;
             String keyVersion = version;
 
-            if (keyVersion.equals("v4")) {
+            if (keyVersion.startsWith("v4.0")) {
                 if ((newKey.startsWith("ScoreBoard.Clock(") && newKey.endsWith(".MinimumTime"))) {
                     newKey = "";
                 } else if (newKey.startsWith("ScoreBoard.Team(") && newKey.endsWith(".LastEndedTeamJam")) {
@@ -56,7 +56,7 @@ public class ScoreBoardJSONSetter {
                 keyVersion = "v4.1";
             }
 
-            if (keyVersion.equals("v4.1")) {
+            if (keyVersion.startsWith("v4.1")) {
                 if (newKey.startsWith("ScoreBoard.Rulesets.CurrentRule(")) {
                     newKey =
                         newKey.replace("ScoreBoard.Rulesets.CurrentRule(", "ScoreBoard.Game(" + newGameId + ").Rule(");
@@ -95,6 +95,36 @@ public class ScoreBoardJSONSetter {
                 keyVersion = "v5";
             }
 
+            if (keyVersion.startsWith("v5")) {
+                if (newKey.startsWith("ScoreBoard.Twitter")) { newKey = ""; }
+
+                keyVersion = "v2023";
+            }
+
+            if (keyVersion.startsWith("v2023")) {
+
+                if (newKey.startsWith("ScoreBoard.Clients.Client") ||
+                    (newKey.startsWith("ScoreBoard.Settings.Setting(ScoreBoard.Operator") &&
+                     newKey.endsWith("StartStopButtons)"))) {
+                    newKey = "";
+                }
+                if (newKey.contains("Jam.SuddenScoringMaxTrainingPoints")) {
+                    newKey = newKey.replace("Jam.SuddenScoringMaxTrainingPoints", "Jam.SuddenScoringMaxTrailingPoints");
+                }
+
+                // changed values
+                if (newKey.startsWith("ScoreBoard.Settings.Setting(Overlay.Interactive")) {
+                    String oldValue = (String) state.get(oldKey);
+                    if ("On".equals(oldValue)) { state.put(oldKey, "true"); }
+                    if ("Off".equals(oldValue)) { state.put(oldKey, "false"); }
+                }
+                if (newKey.startsWith("ScoreBoard.Settings.Setting(" + ScoreBoard.SETTING_AUTO_END_JAM)) {
+                    state.put(oldKey, "false");
+                }
+
+                keyVersion = "v2025";
+            }
+
             if (!newKey.equals(oldKey)) {
                 if (!newKey.equals("")) { state.put(newKey, state.get(oldKey)); }
                 state.remove(oldKey);
@@ -103,21 +133,53 @@ public class ScoreBoardJSONSetter {
     }
 
     private static String getVersionFromKeys(Set<String> keys) {
-        String minVersion = "v4"; // lowest version possible from the keys seen so far
-        String maxVersion = "v5"; // highest version possible from the keys seen so far
+        String minVersion = "v4.0";  // lowest version possible from the keys seen so far
+        String maxVersion = "v2025"; // highest version possible from the keys seen so far
 
         for (String key : keys) {
             minVersion = minVersionWith(key, minVersion);
             maxVersion = maxVersionWith(key, maxVersion);
             if (minVersion.equals(maxVersion)) return minVersion;
         }
-        // return highest possible version so unaplicable updates are skippped
+        // return highest possible version so unapplicable updates are skippped
         return maxVersion;
     }
 
     private static String minVersionWith(String key, String priorLimit) {
+        if (priorLimit.equals("v2025") || key.equals("ScoreBoard.Settings.Setting(Overlay.Interactive.ShowNames)") ||
+            key.equals("ScoreBoard.Settings.Setting(Overlay.Interactive.ShowPenaltyClocks)") ||
+            key.equals("ScoreBoard.Settings.Setting(ScoreBoard.Preview_HidePenaltyClocks)") ||
+            key.equals("ScoreBoard.Settings.Setting(ScoreBoard.View_HidePenaltyClocks)") ||
+            key.contains("Jam.SuddenScoringMaxTrailingPoints") ||
+            (key.contains("BoxTrip(") && key.endsWith("CurrentSkater")) ||
+            (key.contains("BoxTrip(") && key.endsWith("RosterNumber")) ||
+            (key.contains("BoxTrip(") && key.endsWith("PenaltyCodes")) ||
+            (key.contains("BoxTrip(") && key.endsWith("TotalPenalties")) ||
+            (key.contains("BoxTrip(") && key.endsWith("TimingStopped")) ||
+            (key.contains("BoxTrip(") && key.endsWith("Time")) ||
+            (key.contains("BoxTrip(") && key.endsWith("Shortened")) ||
+            (key.contains("BoxTrip(") && key.contains("Clock(")) || key.startsWith("ScoreBoard.Clients.Client(") ||
+            (key.contains("Fielding(") && key.endsWith("PenaltyTime")) ||
+            (key.contains("Position(") && key.endsWith("HasUnserved")) ||
+            (key.contains("Position(") && key.endsWith("PenaltyTime")) ||
+            (key.contains("Position(") && key.endsWith("PenaltyCount")) ||
+            (key.contains("Skater(") && key.endsWith("PenaltyCount")) ||
+            (key.contains("Skater(") && key.endsWith("HasUnserved")) ||
+            (key.contains("Timeout(") && key.endsWith("OrRequest")) ||
+            (key.contains("Timeout(") && key.endsWith("OrResult"))) {
+            return "v2025";
+        }
+        if (priorLimit.equals("v2023") || key.endsWith("ExportBlockedBy") || key.contains("ScoreAdjustment") ||
+            key.endsWith("Team(1).TotalPenalties") || key.endsWith("Team(2).TotalPenalties") ||
+            (key.contains("Skater(") && key.endsWith("Pronouns")) ||
+            (key.contains("Skater(") && key.endsWith("Color")) ||
+            (key.contains("Period(") && key.endsWith("PenaltyCount")) ||
+            (key.contains("Period(") && key.endsWith("Points"))) {
+            return "v2023";
+        }
         if (priorLimit.equals("v5") || key.startsWith("ScoreBoard.Game(") ||
-            key.startsWith("ScoreBoard.CurrentGame.")) {
+            key.startsWith("ScoreBoard.CurrentGame.") || key.equals("ScoreBoard.BlankStatsbookFound") ||
+            key.equals("ScoreBoard.ImportsInProgress")) {
             return "v5";
         }
         if (priorLimit.equals("v4.1") || key.startsWith("ScoreBoard.Clients.") || key.endsWith(".RosterNumber") ||
@@ -127,10 +189,10 @@ public class ScoreBoardJSONSetter {
         return priorLimit;
     }
     private static String maxVersionWith(String key, String priorLimit) {
-        if (priorLimit.equals("v4") || (key.startsWith("ScoreBoard.Clock(") && key.endsWith(".MinimumTime")) ||
+        if (priorLimit.equals("v4.0") || (key.startsWith("ScoreBoard.Clock(") && key.endsWith(".MinimumTime")) ||
             (key.startsWith("ScoreBoard.Team(") && key.endsWith(".LastEndedTeamJam")) ||
             (key.endsWith(".Number") && (key.contains(".Position(") || key.contains(".Skater(")))) {
-            return "v4";
+            return "v4.0";
         }
         if (priorLimit.equals("v4.1") || key.startsWith("ScoreBoard.Clock(") || key.startsWith("ScoreBoard.Period(") ||
             key.startsWith("ScoreBoard.Jam(") || key.startsWith("ScoreBoard.Team(") ||
@@ -144,6 +206,13 @@ public class ScoreBoardJSONSetter {
             key.equals("ScoreBoard.OfficialReview") || key.equals("ScoreBoard.NoMoreJam")) {
             return "v4.1";
         }
+        if (priorLimit.equals("v5") || key.startsWith("ScoreBoard.Twitter")) { return "v5"; }
+        if (priorLimit.equals("v2023") || key.equals("ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)") ||
+            (key.startsWith("ScoreBoard.Settings.Setting(ScoreBoard.Operator") && key.endsWith("StartStopButtons")) ||
+            key.contains("Jam.SuddenScoringMaxTrainingPoints")) {
+            return "v2023";
+        }
+
         return priorLimit;
     }
 
