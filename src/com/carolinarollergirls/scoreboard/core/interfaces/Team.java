@@ -135,6 +135,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final Value<Integer> ACTIVE_SCORE_ADJUSTMENT_AMOUNT =
         new Value<>(Integer.class, "ActiveScoreAdjustmentAmount", 0, props);
     public static final Value<Integer> TOTAL_PENALTIES = new Value<>(Integer.class, "TotalPenalties", 0, props);
+    public static final Value<Boolean> ALL_BLOCKERS_SET = new Value<>(Boolean.class, "AllBlockersSet", false, props);
 
     public static final Child<ValWithId> ALTERNATE_NAME = new Child<>(ValWithId.class, "AlternateName", preparedProps);
     public static final Child<ValWithId> COLOR = new Child<>(ValWithId.class, "Color", preparedProps);

@@ -53,7 +53,7 @@
           <td class="Role Pivot sbShowOnLt" rowspan="2" sbClass="OnTrack: Role: ==='Pivot'" sbSet="Role: 'Pivot'">
             <span class="Num" sbDisplay="RosterNumber"></span><span class="Pos">P</span>
           </td>
-          <td class="Role Blocker sbShowOnLt" rowspan="2" sbClass="OnTrack: Role: ==='Blocker'" sbSet="Role: 'Blocker'">
+          <td class="Role Blocker sbShowOnLt" rowspan="2" sbClass="OnTrack: Role: ==='Blocker'" sbCall="pltSetBlocker">
             <span class="Num" sbDisplay="RosterNumber"></span><span class="Pos">B</span>
           </td>
           <td class="Box Darker sbShowOnLt" rowspan="2" sbClass="Unserved: HasUnserved" sbToggle="PenaltyBox: Serving">Box</td>
@@ -104,6 +104,46 @@
 </div>
 
 <div class="sbTemplates">
+  <div id="BlockerReplaceDialog" sbContext="Skater(*)">
+    <div class="sbSegment">
+      <div class="sbGroup sbStack">
+        <span>There are no free Blocker spots in the lineup.</span><span> What to do?</span>
+        <button
+          class="Replace"
+          sbContext="^Position(Pivot)"
+          sbClass="sbHide: ^NoPivot: ! | sbInBox: ^PenaltyBox | sbUnserved: ^HasUnserved"
+          sbDisplay="RosterNumber: 'Replace ' + v"
+          sbSet="Skater: '[Skater]'"
+          sbCall="sbCloseDialog"
+        ></button>
+        <button
+          class="Replace"
+          sbContext="^Position(Blocker1)"
+          sbClass="sbInBox: ^PenaltyBox | sbUnserved: ^HasUnserved"
+          sbDisplay="RosterNumber: 'Replace ' + v"
+          sbSet="Skater: '[Skater]'"
+          sbCall="sbCloseDialog"
+        ></button>
+        <button
+          class="Replace"
+          sbContext="^Position(Blocker2)"
+          sbClass="sbInBox: ^PenaltyBox | sbUnserved: ^HasUnserved"
+          sbDisplay="RosterNumber: 'Replace ' + v"
+          sbSet="Skater: '[Skater]'"
+          sbCall="sbCloseDialog"
+        ></button>
+        <button
+          class="Replace"
+          sbContext="^Position(Blocker3)"
+          sbClass="sbInBox: ^PenaltyBox | sbUnserved: ^HasUnserved"
+          sbDisplay="RosterNumber: 'Replace ' + v"
+          sbSet="Skater: '[Skater]'"
+          sbCall="sbCloseDialog"
+        ></button>
+        <button sbCall="sbCloseDialog">Do not add <span sbDisplay="RosterNumber"></span></button>
+      </div>
+    </div>
+  </div>
   <div id="PenaltyEditor" sbContext="Skater(*).Penalty(*)">
     <div class="sbSegment" sbPrefix="p:[*]">
       <div class="sbGroup" sbContext="^^^">

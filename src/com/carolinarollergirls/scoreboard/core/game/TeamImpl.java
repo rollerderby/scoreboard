@@ -97,6 +97,11 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         setCopy(ALTERNATE_NAME, this, PREPARED_TEAM, ALTERNATE_NAME, false, PREPARED_TEAM_CONNECTED);
         setCopy(COLOR, this, PREPARED_TEAM, COLOR, false, PREPARED_TEAM_CONNECTED);
         setCopy(ACTIVE_SCORE_ADJUSTMENT_AMOUNT, this, ACTIVE_SCORE_ADJUSTMENT, ScoreAdjustment.AMOUNT, false);
+        setRecalculated(ALL_BLOCKERS_SET)
+            .addSource(getPosition(FloorPosition.PIVOT), Position.SKATER)
+            .addSource(getPosition(FloorPosition.BLOCKER1), Position.SKATER)
+            .addSource(getPosition(FloorPosition.BLOCKER2), Position.SKATER)
+            .addSource(getPosition(FloorPosition.BLOCKER3), Position.SKATER);
         providers.put(skaterListener, null);
     }
 
@@ -108,9 +113,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == FULL_NAME) {
-            String league = get(LEAGUE_NAME);
-            String team = get(TEAM_NAME);
-            String color = get(UNIFORM_COLOR);
+            String league = get(LEAGUE_NAME) == null ? "" : get(LEAGUE_NAME);
+            String team = get(TEAM_NAME) == null ? "" : get(TEAM_NAME);
+            String color = get(UNIFORM_COLOR) == null ? "" : get(UNIFORM_COLOR);
             String in = value == null ? "" : (String) value;
             if (!"".equals(league)) {
                 if (!"".equals(team)) {
@@ -136,9 +141,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         }
         if (prop == DISPLAY_NAME) {
             String setting = scoreBoard.getSettings().get(SETTING_DISPLAY_NAME);
-            if (OPTION_TEAM_NAME.equals(setting) && !"".equals(get(TEAM_NAME))) {
+            if (OPTION_TEAM_NAME.equals(setting) && get(TEAM_NAME) != null && !"".equals(get(TEAM_NAME))) {
                 return get(TEAM_NAME);
-            } else if (!OPTION_FULL_NAME.equals(setting) && !"".equals(get(LEAGUE_NAME))) {
+            } else if (!OPTION_FULL_NAME.equals(setting) && get(LEAGUE_NAME) != null && !"".equals(get(LEAGUE_NAME))) {
                 return get(LEAGUE_NAME);
             } else {
                 return get(FULL_NAME);
@@ -146,9 +151,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         }
         if (prop == FILE_NAME) {
             String setting = scoreBoard.getSettings().get(SETTING_FILE_NAME);
-            if (OPTION_TEAM_NAME.equals(setting) && !"".equals(get(TEAM_NAME))) {
+            if (OPTION_TEAM_NAME.equals(setting) && get(TEAM_NAME) != null && !"".equals(get(TEAM_NAME))) {
                 return get(TEAM_NAME);
-            } else if (OPTION_LEAGUE_NAME.equals(setting) && !"".equals(get(LEAGUE_NAME))) {
+            } else if (OPTION_LEAGUE_NAME.equals(setting) && get(LEAGUE_NAME) != null && !"".equals(get(LEAGUE_NAME))) {
                 return get(LEAGUE_NAME);
             } else {
                 return get(FULL_NAME);
@@ -240,6 +245,13 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
             int count = 0;
             for (Skater s : getAll(SKATER)) { count += s.get(Skater.PENALTY_COUNT); }
             return count;
+        }
+        if (prop == ALL_BLOCKERS_SET) {
+            for (Position p : getAll(POSITION)) {
+                if (p.getFloorPosition() == FloorPosition.JAMMER) { continue; }
+                if (p.getSkater() == null) { return false; }
+            }
+            return true;
         }
         return value;
     }

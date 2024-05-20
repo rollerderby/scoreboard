@@ -26,8 +26,17 @@
     prefix + 'Period(*).CurrentJamNumber',
     prefix + 'Team(*).Skater(*).Position',
     prefix + 'Team(*).Position(*).',
+    prefix + 'Team(*).AllBlockersSet',
   ]);
 })();
+
+function pltSetBlocker(k) {
+  if (isTrue(WS.state[k.upTo('Team') + '.AllBlockersSet'])) {
+    _pltOpenReplaceDialog(k);
+  } else {
+    WS.Set(k + '.Role', 'Blocker');
+  }
+}
 
 function pltAdvanceOrAnnotation(k, v, elem) {
   if (elem.hasClass('Advance')) {
@@ -83,6 +92,16 @@ function _pltUpdateCurrentJamStyle() {
   $('<style> .Penalty[period="' + periodNumber + '"][jam="' + jamNumber + '"] { text-decoration: underline; } </style>')
     .attr('id', 'current-jam-style')
     .appendTo('head');
+}
+
+//###################################################################
+//
+//  Replace Dialog
+//
+//###################################################################
+
+function _pltOpenReplaceDialog(k) {
+  WS.SetupDialog($('#BlockerReplaceDialog'), k, { modal: true, title: 'Replace Blocker', width: '400px' });
 }
 
 //###################################################################

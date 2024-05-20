@@ -166,7 +166,8 @@ public class ScoreBoardJSONSetter {
             (key.contains("Skater(") && key.endsWith("PenaltyCount")) ||
             (key.contains("Skater(") && key.endsWith("HasUnserved")) ||
             (key.contains("Timeout(") && key.endsWith("OrRequest")) ||
-            (key.contains("Timeout(") && key.endsWith("OrResult"))) {
+            (key.contains("Timeout(") && key.endsWith("OrResult")) ||
+            (key.contains("Team(") && key.endsWith("AllBlockersSet"))) {
             return "v2025";
         }
         if (priorLimit.equals("v2023") || key.endsWith("ExportBlockedBy") || key.contains("ScoreAdjustment") ||
