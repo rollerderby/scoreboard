@@ -706,7 +706,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
           <div class="nav-container">
             <div class="nav-inner" id="scroll-spy" style="width: min-content; overflow: auto; top: 60px; bottom: 0; padding 10px 0 10px 0;">
               <span class="toc">Table of contents</span>
-              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the v2023.6 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
+              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the v2023.7 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
 <h3 id="howtos">Howtos</h3>
 <ul class="nav"><li><strong><a href="#Installing-the-Scoreboard-Software">Installing the Scoreboard Software</a></strong><ul class="nav"><li><span>Instructions for getting the software installed and running on a standalone computer to provide a functioning scoreboard.</span></li></ul></li><li><strong><a href="#Quick-Start-Guide">Quick Start Guide</a></strong><ul class="nav"><li><span>Basic information to run a game with only what is mandatory for a regulation game. See the pages below for the full feature set.</span></li></ul></li><li><strong><a href="#Preparing-a-Game">Preparing a Game</a></strong></li><li><strong><a href="#Scoreboard-Operation">Scoreboard Operation</a></strong></li><li><strong><a href="#Configuring-Hotkeys">Configuring Hotkeys</a></strong></li><li><strong><a href="#Using-the-Scoreboard-on-a-Network">Using the Scoreboard on a Network</a></strong></li><li><strong><a href="#Penalty-Tracking">Penalty Tracking</a></strong></li><li><strong><a href="#Lineup-Tracking">Lineup Tracking</a></strong></li><li><span>The </span><strong>Penalty Lineup Tracking</strong> interface combines the PT and LT inputs for one team on a single screen. See those pages for info how to operate it.</li></ul><h3 id="tips-tricks">Tips &amp; Tricks</h3>
 <ul class="nav"><li><strong><a href="#Scoreboard-Best-Practices">Scoreboard Best Practices</a></strong></li><li><strong><a href="#Graphics">Graphics</a></strong><ul class="nav"><li><span>Information on graphics for use with CRG, such as team logos and sponsor banners.</span></li></ul></li><li><strong><a href="#External-Links">External Links</a></strong><ul class="nav"><li><span>Links to other sites with information about CRG Scoreboard.</span></li></ul></li></ul><h3 id="details-about-screens-tabs">Details about Screens / Tabs</h3>
@@ -2449,8 +2449,8 @@ manageScore(k, v) {
 <li>Types ending in &quot;Id&quot; are the <code>Id</code> of an element of the corresponding type.</li>
 <li>Valid Values for <code>_position_</code> are <code>Jammer</code>, <code>Pivot</code>, <code>Blocker1</code>, <code>Blocker2</code>, <code>Blocker3</code>. (As in the regular paperwork, the Pivot position is used for the 4th Blocker if there is no Pivot.)</li>
 <li>Valid values for <code>_clock_</code> are <code>Period</code>, <code>Jam</code>, <code>Lineup</code>, <code>Timeout</code>, and <code>Intermission</code>.</li>
-<li>TimeoutOwner in versions before 5.0 is <code>&quot;1&quot;</code> for Team 1, <code>&quot;2&quot;</code> for Team 2, <code>&quot;O&quot;</code> (the letter) for Official timeout, or <code>&quot;&quot;</code> for no timeout.</li>
-<li>Starting with version 5.0 TimeoutOwner for Team 1 is <code>&quot;&lt;gameId&gt;_1&quot;</code> and for Team 2 it&#39;s <code>&quot;&lt;gameId&gt;_2&quot;</code>.</li>
+<li>TimeoutOwner in versions before 5.0 is <code>&quot;1&quot;</code> for Team 1, <code>&quot;2&quot;</code> for Team 2, <code>&quot;O&quot;</code> (the letter) for Official timeout, or <code>&quot;&quot;</code> for an untyped timeout.</li>
+<li>Starting with version 5.0 TimeoutOwner for Team 1 is <code>&quot;&lt;gameId&gt;_1&quot;</code> and for Team 2 it&#39;s <code>&quot;&lt;gameId&gt;_2&quot;</code>. <code>&quot;o&quot;</code> and <code>&quot;&quot;</code> are unchanged.</li>
 <li>All times are in ms unless stated otherwise. Walltime is ms since some fixed point. (Usually midnight 1970-01-01)</li>
 <li>Durations that are still ongoing are set to 0.</li>
 <li>If a writable value is a copy of another value, writing to it will write to the original value.</li>
@@ -3806,7 +3806,7 @@ manageScore(k, v) {
 <td>string</td>
 <td>yes</td>
 <td>from 2023.0</td>
-<td>only <code>Jammer</code> nad <code>Pivot</code> currently have an effect</td>
+<td>only <code>Jammer</code> and <code>Pivot</code> currently have an effect</td>
 </tr>
 </tbody>
 </table>
@@ -6426,8 +6426,8 @@ manageScore(k, v) {
 <tr>
 <td><code>Name</code></td>
 <td>string</td>
+<td>no</td>
 <td>before 5.0</td>
-<td></td>
 <td></td>
 </tr>
 <tr>
