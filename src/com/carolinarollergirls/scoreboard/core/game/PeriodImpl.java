@@ -133,8 +133,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
                     game.add(ownType, new PeriodImpl(game, getNumber()));
             } else if (prop == INSERT_TIMEOUT) {
                 Timeout t = new TimeoutImpl(getCurrentJam());
-                t.stop();
-                t.set(Timeout.DURATION, 0L);
+                t.stop(false);
                 t.getParent().add(TIMEOUT, t); // if this period hasn't started, the timeout is added to the
                                                // previous period
             }

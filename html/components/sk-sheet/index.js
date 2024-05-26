@@ -207,10 +207,6 @@ function sksToToTypeName(k, v) {
   }
 }
 
-function sksToToDuration(k, v) {
-  return isTrue(v) ? 'Running' : _timeConversions.msToMinSec(WS.state[k.upTo('Timeout') + '.Duration'], true);
-}
-
 function _sksSetupTripEditor(gameId, p, j, teamId, t) {
   $(':not(.sbTemplates)>#TripEditor').dialog('close');
 

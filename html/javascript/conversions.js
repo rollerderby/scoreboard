@@ -66,6 +66,11 @@ function sbToTimeoutType(k) {
   }
 }
 
+function sbToTimeoutDuration(k, v) {
+  const duration = WS.state[k.upTo('Timeout') + '.Duration'];
+  return isTrue(v) ? 'Running' : duration == 0 ? 'Unknown' : _timeConversions.msToMinSec(WS.state[k.upTo('Timeout') + '.Duration'], true);
+}
+
 function sbToToTypeVal(k, v) {
   return WS.state[k.upTo('Timeout') + '.Owner'] + '.' + v;
 }

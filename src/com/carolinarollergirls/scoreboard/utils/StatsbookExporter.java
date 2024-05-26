@@ -434,6 +434,7 @@ public class StatsbookExporter extends Thread {
         int reviewRow = p.getNumber() == 1 ? 3 : 20;
         Cell reviewTotalCell = reviewSheet.getRow(reviewRow + 12).getCell(9);
         long reviewTotalTime = 0L;
+        boolean reviewTotalTimeKnown = true;
 
         List<Timeout> timeouts = new ArrayList<>(p.getAll(Period.TIMEOUT));
         Collections.sort(timeouts, new Comparator<Timeout>() {
@@ -460,16 +461,21 @@ public class StatsbookExporter extends Thread {
                         orCol[i]++;
                     }
 
+                    long duration = t.get(Timeout.DURATION);
                     Row statsRow = reviewSheet.getRow(reviewRow);
                     setCell(statsRow, 1, ((Team) t.getOwner()).get(Team.FULL_NAME));
                     setCell(statsRow, 4, t.get(Timeout.PRECEDING_JAM_NUMBER));
                     setCell(statsRow, 6, endTime);
-                    setCell(statsRow, 8, ClockConversion.toHumanReadable(t.get(Timeout.DURATION)));
+                    setCell(statsRow, 8, duration > 0L ? ClockConversion.toHumanReadable(duration) : "unknown");
                     setCell(statsRow, 10, orCol[i] <= 7 && t.isRetained() ? "YES" : "NO");
                     setCell(reviewSheet.getRow(reviewRow + 1), 1, t.get(Timeout.OR_REQUEST));
                     setCell(reviewSheet.getRow(reviewRow + 2), 1, t.get(Timeout.OR_RESULT));
 
-                    reviewTotalTime += t.get(Timeout.DURATION);
+                    if (duration > 0L) {
+                        reviewTotalTime += duration;
+                    } else {
+                        reviewTotalTimeKnown = false;
+                    }
                     reviewRow += 3;
 
                 } else {
@@ -481,7 +487,8 @@ public class StatsbookExporter extends Thread {
             }
         }
 
-        reviewTotalCell.setCellValue(ClockConversion.toHumanReadable(reviewTotalTime));
+        reviewTotalCell.setCellValue(reviewTotalTimeKnown ? ClockConversion.toHumanReadable(reviewTotalTime)
+                                                          : "unknown");
 
         if (p.getNumber() == 1) { // cross off timeouts for P2
             for (int i = 1; i <= 2; i++) {
