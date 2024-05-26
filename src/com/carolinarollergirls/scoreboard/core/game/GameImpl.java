@@ -674,11 +674,12 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         Clock pc = getClock(Clock.ID_PERIOD);
         Clock tc = getClock(Clock.ID_TIMEOUT);
 
-        if (pc.isTimeAtEnd() && !pc.isRunning() && !isInJam() && !tc.isRunning()) {
+        if (pc.isTimeAtEnd() && !pc.isRunning() && !isInJam() && !getCurrentTimeout().isRunning()) {
             setLabels(ACTION_START_JAM, ACTION_LINEUP, ACTION_TIMEOUT);
             setInPeriod(false);
             setOfficialScore(false);
             _endLineup();
+            tc.stop();
             _startIntermission();
         }
     }
