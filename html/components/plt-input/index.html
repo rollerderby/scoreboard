@@ -155,7 +155,7 @@
             </select>
             <button dir="next" class="small" sbCall="pltAdjust">+1</button>
           </span>
-          <span sbForeach="Period:-0" sbClass="sbHide: p.PeriodNumber: != elem.attr('Period')">
+          <span sbForeach="Period:-0" sbClass="sbHide: p.PeriodNumber: pltIsThisPeriod">
             <span>Jam: </span><button dir="prev" class="small" sbCall="pltAdjust">-1</button>
             <select class="Jam" sbControl="p.Jam: pltCurrentIfInvalid">
               <option sbForeach="Jam::number,num" sbAttr="value: Id | number: Number" sbDisplay="Number"></option>

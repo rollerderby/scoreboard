@@ -137,7 +137,19 @@ function pltCurrentIfNull(k, v) {
 }
 
 function pltCurrentIfInvalid(k, v, elem) {
-  return elem.children('[value="' + v + '"]').length ? v : WS.state[k.upTo('Period') + '.CurrentJam'];
+  return elem.children('[value="' + v + '"]').length
+    ? v
+    : WS.state[k.upTo('Period') + '.CurrentJam'] ||
+        WS.state[
+          'ScoreBoard.Game(' + k.Game + ').Period(' + WS.state['ScoreBoard.Game(' + k.Game + ').CurrentPeriodNumber'] + ').CurrentJam'
+        ];
+}
+
+function pltIsThisPeriod(k, v, elem) {
+  return (
+    (v != null && v != elem.attr('Period')) ||
+    (v == null && WS.state['ScoreBoard.Game(' + k.Game + ').CurrentPeriodNumber'] != elem.attr('Period'))
+  );
 }
 
 function pltAdjust(k, v, elem) {
@@ -146,7 +158,6 @@ function pltAdjust(k, v, elem) {
 }
 
 function pltUpdateJam(k, v) {
-  console.log(k, WS.state['ScoreBoard.Game(' + k.Game + ').Period(' + v + ').CurrentJam']);
   WS.Set(k.upTo('Penalty') + '.Jam', WS.state['ScoreBoard.Game(' + k.Game + ').Period(' + v + ').CurrentJam']);
   return v;
 }
