@@ -632,7 +632,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 } else {
                     createSnapshot(ACTION_TIMEOUT);
                 }
-                setLabels(ACTION_START_JAM, ACTION_STOP_TO, ACTION_RE_TIMEOUT);
+                setLabels(ACTION_NONE, ACTION_STOP_TO, ACTION_RE_TIMEOUT);
                 _startTimeout();
                 finishReplace();
             }
