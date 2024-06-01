@@ -11,7 +11,7 @@ import com.carolinarollergirls.scoreboard.event.Value;
 public interface Timeout extends ScoreBoardEventProvider {
     int compareTo(Timeout other);
 
-    public void stop(boolean markEndTime);
+    public void stop();
 
     public TimeoutOwner getOwner();
     public boolean isReview();

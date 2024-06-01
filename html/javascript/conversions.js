@@ -54,8 +54,11 @@ function sbToClockInitialNumber(k) {
 function sbToTimeoutType(k) {
   const to = WS.state[k.upTo('Game') + '.TimeoutOwner'];
   const or = isTrue(WS.state[k.upTo('Game') + '.OfficialReview']);
+  const lu = isTrue(WS.state[k.upTo('Game') + '.Clock(Lineup).Running']);
 
-  if (!to) {
+  if (lu) {
+    return 'Lineup';
+  } else if (!to) {
     return 'Timeout';
   } else if (to === 'O') {
     return 'Official Timeout';

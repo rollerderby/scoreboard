@@ -114,7 +114,11 @@
         sbDisplay="Name,Number: sbToClockInitialNumber"
       ></div>
       <div class="ShowInLineup Clock Description Small Box AutoFit">Lineup</div>
-      <div class="ShowInTimeout Clock Description Small Box Red AutoFit" sbDisplay="TimeoutOwner, OfficialReview: sbToTimeoutType"></div>
+      <div
+        class="ShowInTimeout Clock Description Small Box AutoFit"
+        sbDisplay="TimeoutOwner, OfficialReview: sbToTimeoutType"
+        sbClass="Red: Clock(Lineup).Running: !"
+      ></div>
       <div
         class="ShowInLineup Clock Lineup Small Box AutoFit"
         sbDisplay="Clock(Lineup).Time, Clock(Lineup).Direction: sbToTime"

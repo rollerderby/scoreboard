@@ -51,6 +51,8 @@ public enum Rule {
     EXTRA_JAM_AFTER_OTO(new BooleanRule(
         "Timeout.ExtraJamAfterOTO", "Can an OTO cause an extra Jam to be played when there wouldn't be one otherwise?",
         false, "True", "False")),
+    TO_JAM(new BooleanRule("Timeout.JamDuring", "Allow a jam to happen with stopped period clock?", false, "True",
+                           "False")),
 
     INTERMISSION_DURATIONS(new StringRule(
         "Intermission.Durations",

@@ -49,7 +49,7 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         set(ScoreBoard.SETTING_AUTO_START_BUFFER, "0:02");
         set(ScoreBoard.SETTING_AUTO_END_JAM, "false");
         set(ScoreBoard.SETTING_AUTO_END_TTO, "false");
-        set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, Clock.ID_LINEUP);
+        set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, Clock.ID_TIMEOUT);
         set(Clock.SETTING_SYNC, "true");
         set(Team.SETTING_DISPLAY_NAME, Team.OPTION_LEAGUE_NAME);
         set(Game.SETTING_DEFAULT_NAME_FORMAT, "%d %G %1 vs. %2 (%s: %S)");

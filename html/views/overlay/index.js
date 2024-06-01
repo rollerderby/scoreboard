@@ -3,6 +3,7 @@
 WS.Register(
   [
     'ScoreBoard.CurrentGame.Clock(Timeout).Running',
+    'ScoreBoard.CurrentGame.Clock(*).Name',
     'ScoreBoard.CurrentGame.TimeoutOwner',
     'ScoreBoard.CurrentGame.OfficialReview',
     'ScoreBoard.CurrentGame.Team(*).Timeouts',
@@ -146,7 +147,13 @@ function ovlToClockType() {
   const ic = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Running'];
   const jc = WS.state['ScoreBoard.CurrentGame.InJam'];
 
-  if (tc) {
+  if (jc) {
+    ret = 'Jam';
+    $('.ClockDescription').css('backgroundColor', '#888');
+  } else if (lc) {
+    ret = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Name'];
+    $('.ClockDescription').css('backgroundColor', '#888');
+  } else if (tc) {
     ret = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Name'];
     if (to !== '' && to !== 'O' && or) {
       ret = 'Official Review';
@@ -158,9 +165,6 @@ function ovlToClockType() {
       ret = 'Official Timeout';
     }
     $('.ClockDescription').css('backgroundColor', 'red');
-  } else if (lc) {
-    ret = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Name'];
-    $('.ClockDescription').css('backgroundColor', '#888');
   } else if (ic) {
     const num = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Number'];
     const max = WS.state['ScoreBoard.CurrentGame.Rule(Period.Number)'];
@@ -181,9 +185,6 @@ function ovlToClockType() {
     }
 
     $('.ClockDescription').css('backgroundColor', 'blue');
-  } else if (jc) {
-    ret = 'Jam';
-    $('.ClockDescription').css('backgroundColor', '#888');
   } else {
     ret = 'Coming Up';
     $('.ClockDescription').css('backgroundColor', 'blue');

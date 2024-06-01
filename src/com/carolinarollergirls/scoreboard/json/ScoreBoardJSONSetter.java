@@ -158,7 +158,7 @@ public class ScoreBoardJSONSetter {
             (key.contains("BoxTrip(") && key.endsWith("TimingStopped")) ||
             (key.contains("BoxTrip(") && key.endsWith("Time")) ||
             (key.contains("BoxTrip(") && key.endsWith("Shortened")) ||
-            (key.contains("BoxTrip(") && key.contains("Clock(")) || key.startsWith("ScoreBoard.Clients.Client(") ||
+            (key.contains("BoxTrip(") && key.contains("Clock(")) ||
             (key.contains("Fielding(") && key.endsWith("PenaltyTime")) ||
             (key.contains("Position(") && key.endsWith("HasUnserved")) ||
             (key.contains("Position(") && key.endsWith("PenaltyTime")) ||
@@ -167,7 +167,7 @@ public class ScoreBoardJSONSetter {
             (key.contains("Skater(") && key.endsWith("HasUnserved")) ||
             (key.contains("Timeout(") && key.endsWith("OrRequest")) ||
             (key.contains("Timeout(") && key.endsWith("OrResult")) ||
-            (key.contains("Team(") && key.endsWith("AllBlockersSet"))) {
+            (key.contains("Team(") && key.endsWith("AllBlockersSet")) || key.contains("(Timeout.JamDuring)")) {
             return "v2025";
         }
         if (priorLimit.equals("v2023") || key.endsWith("ExportBlockedBy") || key.contains("ScoreAdjustment") ||
@@ -210,7 +210,7 @@ public class ScoreBoardJSONSetter {
         if (priorLimit.equals("v5") || key.startsWith("ScoreBoard.Twitter")) { return "v5"; }
         if (priorLimit.equals("v2023") || key.equals("ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)") ||
             (key.startsWith("ScoreBoard.Settings.Setting(ScoreBoard.Operator") && key.endsWith("StartStopButtons")) ||
-            key.contains("Jam.SuddenScoringMaxTrainingPoints")) {
+            key.contains("Jam.SuddenScoringMaxTrainingPoints") || key.startsWith("ScoreBoard.Clients.Client(")) {
             return "v2023";
         }
 

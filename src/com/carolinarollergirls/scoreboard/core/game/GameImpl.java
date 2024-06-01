@@ -375,7 +375,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 if (isInJam()) { _endJam(false); }
                 if (tc.isRunning()) {
                     tc.stop();
-                    getCurrentTimeout().stop(true);
+                    getCurrentTimeout().stop();
                 }
                 if (lc.isRunning()) { lc.stop(); }
                 if (pc.isRunning()) { pc.stop(); }
@@ -555,7 +555,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
 
             createSnapshot(ACTION_OVERTIME);
 
-            _endTimeout(false, true);
+            _endTimeout(false);
             setInOvertime(true);
             setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
             long otLineupTime = getLong(Rule.OVERTIME_LINEUP_DURATION);
@@ -599,19 +599,23 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     public void stopJamTO() {
         synchronized (coreLock) {
             Clock lc = getClock(Clock.ID_LINEUP);
-            Clock tc = getClock(Clock.ID_TIMEOUT);
-            if (!lc.isRunning() && !isOfficialScore() && !quickClockControl(Button.STOP)) {
+            if ((getCurrentTimeout().isRunning() || !lc.isRunning()) && !isOfficialScore() &&
+                !quickClockControl(Button.STOP)) {
                 autostartRan = false;
 
                 if (isInJam()) {
                     createSnapshot(ACTION_STOP_JAM);
-                    setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
+                    if (getCurrentTimeout().isRunning()) {
+                        setLabels(ACTION_START_JAM, ACTION_STOP_TO, ACTION_RE_TIMEOUT);
+                    } else {
+                        setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
+                    }
                     _endJam(false);
                     finishReplace();
-                } else if (tc.isRunning()) {
+                } else if (getCurrentTimeout().isRunning()) {
                     createSnapshot(ACTION_STOP_TO);
                     setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
-                    _endTimeout(false, false);
+                    _endTimeout(false);
                     finishReplace();
                 } else if (!lc.isRunning()) {
                     createSnapshot(ACTION_LINEUP);
@@ -697,16 +701,19 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             _endLineup();
             tc.stop();
             _startIntermission();
+        } else if (!pc.isRunning() && getCurrentTimeout().isRunning()) {
+            setLabels(ACTION_NONE, ACTION_STOP_TO, ACTION_RE_TIMEOUT);
         }
     }
     private void _startJam() {
         Clock pc = getClock(Clock.ID_PERIOD);
         Clock jc = getClock(Clock.ID_JAM);
+        Clock tc = getClock(Clock.ID_TIMEOUT);
 
+        if (!getCurrentTimeout().isRunning()) { tc.stop(); }
         _endIntermission(false);
-        _endTimeout(false, true);
         _endLineup();
-        pc.start();
+        if (!getBoolean(Rule.TO_JAM) || !getCurrentTimeout().isRunning()) { pc.start(); }
         advanceUpcomingJam();
         getCurrentPeriod().startJam();
         set(IN_JAM, true);
@@ -743,6 +750,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     private void _startLineup() {
         Clock lc = getClock(Clock.ID_LINEUP);
 
+        if (lc.isRunning()) { return; }
+
         _endIntermission(false);
         setInPeriod(true);
         lc.changeNumber(1);
@@ -759,7 +768,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
 
         if (getCurrentTimeout().isRunning()) {
             // end the previous timeout before starting a new one
-            _endTimeout(true, false);
+            _endTimeout(true);
         }
 
         if (getBoolean(Rule.STOP_PC_ON_TO)) { pc.stop(); }
@@ -772,15 +781,14 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         tc.changeNumber(1);
         tc.restart();
     }
-    private void _endTimeout(boolean timeoutFollows, boolean forceClockStop) {
+    private void _endTimeout(boolean timeoutFollows) {
         Clock tc = getClock(Clock.ID_TIMEOUT);
         Clock pc = getClock(Clock.ID_PERIOD);
 
-        if (forceClockStop) { tc.stop(); }
         if (!getCurrentTimeout().isRunning()) { return; }
 
+        getCurrentTimeout().stop();
         if (!getSetting(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT).equals(Clock.ID_TIMEOUT)) { tc.stop(); }
-        getCurrentTimeout().stop(!forceClockStop);
         if (!timeoutFollows) {
             set(CURRENT_TIMEOUT, noTimeoutDummy);
             if (pc.isTimeAtEnd()) {
