@@ -1504,6 +1504,29 @@ public class GameImplTests {
     }
 
     @Test
+    public void testPeriodEndWithTimeoutClock() {
+        sb.getSettings().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, Clock.ID_TIMEOUT);
+
+        assertTrue(pc.isCountDirectionDown());
+        g.startJam();
+        pc.setTime(25000);
+        g.stopJamTO();
+        assertTrue(g.get(Game.NO_MORE_JAM));
+        g.timeout();
+        advance(35000);
+        assertTrue(g.get(Game.NO_MORE_JAM));
+        g.setTimeoutType(Timeout.Owners.OTO, false);
+        assertTrue(g.get(Game.NO_MORE_JAM));
+        g.stopJamTO();
+        assertTrue(g.get(Game.NO_MORE_JAM));
+        assertTrue(pc.isRunning());
+        advance(26000);
+        assertTrue(ic.isRunning());
+        assertFalse(tc.isRunning());
+        assertFalse(pc.isRunning());
+    }
+
+    @Test
     public void testP2StartLineupAfter() {
         // jam ended after 30s mark, no more jams.
         assertTrue(pc.isCountDirectionDown());
