@@ -5,14 +5,143 @@
 
     <script type="text/javascript" src="/external/jquery/jquery.js"></script>
     <script type="text/javascript" src="/json/core.js"></script>
-    <script type="text/javascript" src="/javascript/utils.js"></script>
-    <script type="text/javascript" src="/components/data-tab.js"></script>
-
-    <link rel="stylesheet" href="/components/data-tab.css" type="text/css" />
   </head>
 
-  <body>
-    <a id="indexLink" href="/" class="ui-widget ui-widget-content" style="float: right; border: none">Back to index page</a>
-    <div id="sbData"></div>
+  <body sbContext="ScoreBoard">
+    <a id="sbIndexLink" href="/" class="ui-widget ui-widget-content">Back to index page</a>
+    <div id="sbData">
+      <div class="sbSegment UpDown">
+        <div class="sbGroup sbHeader Name">
+          <span>Operations</span>
+        </div>
+        <div class="sbGroup Content">
+          <a download id="downloadAll" sbButton>Download All Data</a>
+          <a download id="downloadSelected" sbButton>Download Selected</a>
+          <button sbCall="datCreateRemoveSelectedDialog">Delete Selected</button>
+          <form method="post" enctype="multipart/form-data" target="UploadIframe">
+            <iframe id="UploadIframe" name="UploadIframe" style="display: none"></iframe>
+            <input type="file" name="file" sbButton sbCall="datUpdateUploadButtons" />
+            <button class="UploadButton" sbCall="datUploadJson">Import JSON</button>
+            <button class="UploadButton" sbCall="datUloadXlsx">Import Statsbook</button>
+            <button class="UploadButton" sbCall="datUploadBlankXlsx">Upload Blank Statsbook</button>
+            <div class="sbSpinner sbHide" sbClass="sbHide: ImportsInProgress: !"></div>
+          </form>
+        </div>
+      </div>
+      <div class="sbSegment">
+        <table class="sbGroup Type" id="games">
+          <thead class="sbHeader">
+            <tr>
+              <th>
+                <button class="SelectAll Left" sbCall="datSelectAll">All</button>
+                <span>Games</span>
+                <button class="New Left" sbCall="datNewGame">New</button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr sbForeach="Game:: name: resort=Name" sbAttr="name: Name" class="Content">
+              <td class="Name">
+                <button class="Select Left" sbCall="datSelect">Select</button>
+                <button class="Delete Left" sbCall="datDeleteElem">Delete</button>
+                <a download class="Download Left" sbAttr="href: Name: datGameDlLink" sbButton>Download</a>
+                <a class="Edit Left" sbAttr="href: -: '/nso/hnso?game=' + k.Game" sbButton>Edit</a>
+                <span class="Name" sbDisplay="Name"></span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sbSegment">
+        <table class="sbGroup Type" id="teams">
+          <thead class="sbHeader">
+            <tr>
+              <th>
+                <button class="SelectAll Left" sbCall="datSelectAll">All</button>
+                <span>Teams</span>
+                <button class="New Left" sbCall="datNewTeam">New</button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr sbForeach="PreparedTeam:: name: resort=FullName" sbAttr="name: FullName" class="Content">
+              <td class="Name">
+                <button class="Select Left" sbCall="datSelect">Select</button>
+                <button class="Delete Left" sbCall="datDeleteElem">Delete</button>
+                <a download class="Download Left" sbAttr="href: FullName: datTeamDlLink" sbButton>Download</a>
+                <a class="Edit Left" sbAttr="href: -: '/settings/teams?team=' + k.PreparedTeam" sbButton>Edit</a>
+                <span class="Name" sbDisplay="FullName"></span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sbSegment">
+        <table class="sbGroup Type" id="rulesets" sbContext="Rulesets">
+          <thead class="sbHeader">
+            <tr>
+              <th>
+                <button class="SelectAll Left" sbCall="datSelectAll">All</button>
+                <span>Rulesets</span>
+                <button class="New Left" sbCall="datNewRuleset">New</button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr sbForeach="Ruleset:: sbOrderRsAsTree: resort=Parent" sbAttr="value: Id" class="Content">
+              <td class="Name">
+                <button class="Select Left" sbCall="datSelect">Select</button>
+                <button class="Delete Left" sbProp="disabled: Readonly" sbCall="datDeleteElem">Delete</button>
+                <a download class="Download Left" sbAttr="href: Name: datRulesetDlLink" sbButton>Download</a>
+                <a
+                  class="Edit Left"
+                  sbAttr="href: -: '/settings/rulesets?ruleset=' + k.Ruleset"
+                  sbButton
+                  sbDisplay="Readonly: datToEditButtonLabel"
+                ></a>
+                <span class="Name" sbDisplay="Name: sbIndentByParents: html"></span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sbSegment">
+        <table class="sbGroup Type" id="operators" sbContext="Settings">
+          <thead class="sbHeader">
+            <tr>
+              <th>
+                <button class="SelectAll Left" sbCall="datSelectAll">All</button>
+                <span>Operators</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr sbForeach="Setting:: name: part=3, filter=ScoreBoard.Operator, noId" sbAttr="name:: datToOperatorName" class="Content">
+              <td class="Name">
+                <button class="Select Left" sbCall="datSelect">Select</button>
+                <button class="Delete Left" sbCall="datDeleteElem">Delete</button>
+                <a download class="Download Left" sbAttr="href: Name: datOperatorDlLink" sbButton>Download</a>
+                <button class="sbInvisible" sbButton disabled>Edit</button>
+                <span class="Name" sbDisplay=": datToOperatorName"></span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="sbTemplates">
+      <div class="RemoveDataDialog sbSegment">
+        <div class="sbGroup">
+          <div>
+            <p>
+              This will delete <a class="Elements"></a> elements. You cannot undo this operation. (But you can reimport this data if you
+              have it stored in a JSON file.)
+            </p>
+            <p>Are you sure?</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

@@ -1,0 +1,427 @@
+<div id="Operator" sbClass="Faded: Label(Replace): === 'No Action'">
+  <div class="sbSegment MetaControl sbNoDistract">
+    <div class="sbGroup LastGroup">
+      <button sbCall="opToggleKeyEdit">Edit Key Control</button>
+      <button sbToggle="^Settings.Setting(ScoreBoard.AutoEndJam)">Auto End Jams</button>
+      <button sbClass="sbHide: Rule(Jam.SuddenScoring), CurrentPeriodNumber: opSuddenScoringDisabled" sbToggle="InSuddenScoring">
+        Sudden Scoring
+      </button>
+      <button sbCall="opToggleOperatorSetting" id="ReplaceButton_Setting">Enable Replace on Undo</button>
+      <button sbCall="opToggleOperatorSetting" id="ScoreAdjustments_Setting">Use Score Adjustments</button>
+      <button sbCall="opToggleOperatorSetting" id="TabBar_Setting">Show Tab Bar</button>
+      <button sbClass="sbClickMe: OfficialScore" sbCall="opOpenNewGameDialog">Start New Game</button>
+      <button
+        sbClass="sbClickMe: InPeriod, OfficialScore, Clock(Period).Number, Rule(Period.Number): opClickEndOfPeriod"
+        sbCall="opToggleEndOfPeriod"
+      >
+        End of Period Controls
+      </button>
+    </div>
+    <div class="sbGroup sbHide" id="KeyEditHelp">
+      <span
+        >Key Control Edit mode enabled. Keys do not operate in this mode but clicking buttons still DOES perform the action. Move the mouse
+        over a button, then press a normal key (not ESC, Enter, F1, etc.) to assign. Backspace/Delete to remove.</span
+      >
+    </div>
+    <div class="sbGroup sbHide" id="EndOfPeriod">
+      <button
+        sbClass="sbClickMe: InPeriod, OfficialScore, Team(*).Score, Clock(Period).Number, Rule(Period.Number): opClickOfficial"
+        sbToggle="OfficialScore"
+      >
+        Official Score
+      </button>
+      <button sbCall="opOpenPeriodEndTimeoutDialog">Timeout before Period End</button>
+      <button
+        sbClass="sbClickMe: InPeriod, OfficialScore, Team(*).Score, Clock(Period).Number, Rule(Period.Number): opClickOvertime"
+        sbCall="opOpenOvertimeDialog"
+      >
+        Overtime
+      </button>
+      <button sbToggle="ClockDuringFinalScore">Show Clock during Final Score</button>
+    </div>
+  </div>
+  <div class="sbSegment JamControl">
+    <div class="sbGroup sbHeader ReplaceInfo sbHide" sbClass="sbHide: Label(Undo): !== 'No Action'">
+      <span>Replace &quot;<span sbDisplay="Label(Replaced)"></span>&quot; with</span>
+    </div>
+    <div class="sbGroup sbSubHeader">
+      <span
+        ><button
+          id="StartJam"
+          class="sbKeyControl"
+          sbClass="sbClickMe: Rule(Lineup.Duration), Rule(Lineup.OvertimeDuration), Clock(Lineup).Running, Clock(Lineup).Time, InOvertime: sbLineupTooLong"
+          sbSet="StartJam"
+        >
+          <span><span sbDisplay="Label(Start)">Start Jam</span></span>
+        </button>
+        <button
+          id="ContinuationUpcoming"
+          class="sbKeyControl sbNoDistract"
+          sbClass="sbHide: Rule(Jam.InjuryContinuation), Team(1).Injury: opPossiblInjCont"
+          sbToggle="InjuryContinuationUpcoming"
+        >
+          Continuation Upcoming
+        </button>
+      </span>
+      <button id="StopJam" class="sbKeyControl" sbClass="sbClickMe: InJam, Clock(Jam).Running: sbJamTooLong" sbSet="StopJam">
+        <span><span sbDisplay="Label(Stop)">Stop Jam</span></span>
+      </button>
+      <button
+        id="Timeout"
+        class="sbKeyControl"
+        sbClass="sbClickMe: Rule(Lineup.Duration), Rule(Lineup.OvertimeDuration), Clock(Lineup).Running, Clock(Lineup).Time, InOvertime: sbLineupTooLong"
+        sbSet="Timeout"
+      >
+        <span><span sbDisplay="Label(Timeout)">Timeout</span></span>
+      </button>
+      <button id="ClockUndo" class="sbKeyControl" sbCall="opUndo">
+        <span><span sbDisplay="Label(Undo)">Undo</span></span>
+      </button>
+    </div>
+  </div>
+  <div class="sbSegmentGroup">
+    <div sbForeach="Team: 1,2: only" sbInclude="/components/sk-input/" class="TeamControl"></div>
+  </div>
+  <div class="sbSegmentGroup">
+    <div sbForeach="Clock: Period, Jam, Lineup, Timeout, Intermission: only" class="sbSegment ClockControl">
+      <div class="sbGroup Name" sbClass="Running: Running | InJam: ^InJam | NoMoreJam: ^NoMoreJam" sbCall="opClockDialog">
+        <span>
+          <span class="sbImportant" sbDisplay="Name"></span>
+          <span class="InvertedTime" sbClass="CountDown: Direction" sbDisplay="InvertedTime: sbToLongTime"></span>
+        </span>
+      </div>
+      <div class="sbGroup Number"><span class="sbImportant" sbDisplay="Number" sbCall="opClockNumberDialog"></span></div>
+      <div class="sbGroup Time">
+        <button sbAttr="id:-:'Clock[Clock]TimeDown'" class="sbKeyControl" sbSet="Time: -1000: change">-1</button>
+        <span class="sbVeryImportant" sbDisplay="Time: sbToLongTime" sbCall="opClockDialog"></span>
+        <button sbAttr="id:-:'Clock[Clock]TimeUp'" class="sbKeyControl" sbSet="Time: +1000: change">+1</button>
+      </div>
+    </div>
+  </div>
+  <div class="sbSegmentGroup Adjustments sbHide" id="ScoreAdjustments">
+    <div sbForeach="Team: 1,2: only" class="sbSegment">
+      <div class="sbGroup">
+        <span
+          >New Adjustment:
+          <button class="sbKeyControl" sbAttr="id:-: 'Team[Team]AdjDown'" sbSet="ActiveScoreAdjustmentAmount: -1: change">-1</button>
+          <span sbDisplay="ActiveScoreAdjustmentAmount"></span>
+          <button class="sbKeyControl" sbAttr="id:-: 'Team[Team]AdjUp'" sbSet="ActiveScoreAdjustmentAmount: +1: change">+1</button>
+          <button class="sbKeyControl" sbAttr="id:-: 'Team[Team]AdjStash'" sbSet="ActiveScoreAdjustment: null">Stash</button>
+        </span>
+      </div>
+      <div
+        class="sbGroup"
+        sbForeach="ScoreAdjustment::sort: onInsert=opSetAdjSelects"
+        sbAttr="sort: PeriodNumberRecorded,JamNumberRecorded,RecordedDuringJam: opToAdjSort | Period: PeriodNumberRecorded | Jam: JamNumberRecorded"
+        sbClass="sbHide: Open"
+      >
+        <span>
+          <span class="AdjAmount" sbDisplay="Amount"></span> Points recorded <span sbClass="sbHide: RecordedDuringJam: !">during</span
+          ><span sbClass="sbHide: RecordedDuringJam">after</span> P<span sbDisplay="PeriodNumberRecorded"></span> J<span
+            sbDisplay="JamNumberRecorded"
+          ></span
+          >. Assign to Jam
+          <select class="Jam" sbControl="-:" sbCall="opUpdateTripSelects">
+            <option
+              sbContext="^^Period([Period])"
+              sbForeach="Jam::value,num"
+              sbClass="sbHide: Number: opAfterRecording"
+              sbAttr="value:Number"
+              sbDisplay="Number"
+            ></option>
+          </select>
+          Trip
+          <select
+            class="Trip"
+            sbContext="^^Period([Period]):TeamJam([Team])"
+            sbForeach="Jam"
+            sbControl="-:opSelectLast"
+            sbClass="sbHide: Number: opNotSelectedJam"
+          >
+            <option sbForeach="ScoringTrip::number,num" sbAttr="value: Id | number: Number" sbDisplay="Number:opToTripNo"></option>
+          </select>
+          <button sbSet="AppliedTo: opGetAppliedTrip">Apply</button>
+          <button sbSet="Discard">Discard</button>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="sbSegmentGroup SkSheets">
+    <div sbForeach="Team: 1,2: only" sbInclude="/components/sk-sheet/"></div>
+  </div>
+</div>
+
+<div class="sbTemplates">
+  <div id="NewGameDialog" sbContext="^">
+    <div class="sbSegment">
+      <div class="sbGroup sbHeader"><span>Start a Prepared Game</span></div>
+      <div class="sbGroup sbStack">
+        <select sbCall="opEnableStartButton">
+          <option value="">No Game Selected</option>
+          <option
+            sbForeach="Game:: name: resort=Name"
+            sbClass="sbHide: State, ^CurrentGame.Game: opIsStartableGame"
+            sbAttr="value:Id | name: Name"
+            sbDisplay="Name"
+          ></option>
+        </select>
+        <button disabled sbSet="CurrentGame.Game: opFetchGame" sbCall="sbCloseDialog">Start Prepared Game</button>
+      </div>
+    </div>
+    <div class="sbSegment">
+      <div class="sbGroup sbHeader"><span>Start an Adhoc Game</span></div>
+      <div class="sbGroup sbStack">
+        <span
+          >Team 1:
+          <select id="newTeam1">
+            <option value="">New Team</option>
+            <option sbForeach="PreparedTeam:: name: resort=Name" sbAttr="value: Id | name: Name" sbDisplay="Name"></option></select
+        ></span>
+        <span
+          >Team 2:
+          <select id="newTeam2">
+            <option value="">New Team</option>
+            <option sbForeach="PreparedTeam:: name: resort=Name" sbAttr="value: Id | name: Name" sbDisplay="Name"></option></select
+        ></span>
+        <span
+          >Ruleset:
+          <select id="newRuleset">
+            <option
+              sbForeach="Ruleset:: sbOrderRsAsTree: resort=Parent"
+              sbContext="/ScoreBoard.Rulesets"
+              sbAttr="value: Id"
+              sbDisplay="Name: sbIndentByParents: html"
+            ></option>
+          </select>
+        </span>
+        <span>Start Time: <input type="time" id="newStartTime" /></span>
+        <button class="MidGame" id="startMidGame" sbCall="opStartMidGame">Setup Mid-Game Start</button>
+        <table class="MidGame sbHide">
+          <tr>
+            <th></th>
+            <th>Team 1</th>
+            <th>Team 2</th>
+          </tr>
+          <tr>
+            <th>Points:</th>
+            <td><input type="number" min="0" size="5" id="newPoints1" /></td>
+            <td><input type="number" min="0" size="5" id="newPoints2" /></td>
+          </tr>
+          <tr>
+            <th>Timeouts Taken:</th>
+            <td><input type="number" min="0" size="5" id="newTo1" /></td>
+            <td><input type="number" min="0" size="5" id="newTo2" /></td>
+          </tr>
+          <tr>
+            <th>Reviews Taken:</th>
+            <td><input type="number" min="0" size="5" id="newOr1" /></td>
+            <td><input type="number" min="0" size="5" id="newOr2" /></td>
+          </tr>
+          <tr>
+            <th>Period:</th>
+            <td><input type="number" min="0" size="5" id="newPeriod" /></td>
+            <td></td>
+          </tr>
+          <tr>
+            <th>Prior Jam:</th>
+            <td><input type="number" min="0" size="5" id="newJam" /></td>
+            <td></td>
+          </tr>
+          <tr>
+            <th>Period Clock:</th>
+            <td><input type="text" size="5" id="newPeriodClock" /></td>
+            <td></td>
+          </tr>
+        </table>
+        <button sbCall="opStartAdHoc">Start Adhoc Game</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="PeriodEndTimeoutDialog" class="sbSegment">
+    <div class="sbGroup">
+      <span>Timeout with <input type="number" size="2" value="1" /> seconds left on Period clock:</span>
+    </div>
+  </div>
+
+  <div id="OvertimeDialog" class="sbSegment">
+    <div class="sbGroup">
+      <div>
+        <span>Note: Overtime can only be started at the end of Period <span sbDisplay="Rule(Period.Number)"></span></span><br />
+      </div>
+    </div>
+  </div>
+
+  <div id="ClockDialog" sbContext="Clock(*)">
+    <div class="sbSegment Time">
+      <div class="sbGroup sbHeader Value">
+        <span>
+          <span class="label">Time: </span>
+          <span sbDisplay="Time: sbToLongTime"></span>
+        </span>
+      </div>
+      <div class="sbGroup TimeControls">
+        <span><button sbSet="Start">Start</button></span>
+        <span><button sbSet="ResetTime">Reset</button></span>
+        <span><button sbSet="Stop">Stop</button></span>
+        <span><button sbSet="Time: -1000: change">-sec</button></span>
+        <span class="sbStack">
+          <input type="text" size="5" />
+          <button sbCall="opSetTime">Set</button>
+        </span>
+        <span><button sbSet="Time: +1000: change">+sec</button></span>
+      </div>
+    </div>
+    <div class="sbSegment MaximumTime">
+      <div class="sbGroup sbHeader Value">
+        <span>
+          <span class="label">Maximum Time: </span>
+          <span sbDisplay="MaximumTime: sbToLongTime"></span>
+        </span>
+      </div>
+      <div class="sbGroup">
+        <button sbSet="MaximumTime: -1000: change">-sec</button>
+        <input type="text" size="5" sbControl="MaximumTime: sbToLongTime: sbFromLongTime" />
+        <button sbSet="MaximumTime: +1000: change">+sec</button>
+      </div>
+    </div>
+    <div class="sbSegment Direction">
+      <div class="sbGroup"><button sbToggle="Direction">Count Down</button></div>
+    </div>
+  </div>
+
+  <div id="PeriodDialog" class="sbSegment">
+    <table class="sbGroup">
+      <thead class="sbHeader">
+        <tr>
+          <th>No</th>
+          <th>Jams</th>
+          <th>Duration</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr sbForeach="Period: -0">
+          <td sbDisplay="Number"></td>
+          <td sbDisplay="CurrentJamNumber"></td>
+          <td>
+            <span sbClass="sbHide: Running: !">running</span><span sbClass="sbHide: Running" sbDisplay="Duration: sbToLongTime"></span>
+          </td>
+          <td><button sbSet="Delete">Delete</button></td>
+          <td><button sbSet="InsertBefore">Insert Before</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="JamDialog" class="sbSegment" sbContext="Period(*)">
+    <table class="sbGroup">
+      <thead class="sbHeader">
+        <tr>
+          <th>No</th>
+          <th>Points</th>
+          <th>Duration</th>
+          <th>PC at end</th>
+          <th>Delete</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr sbForeach="Jam::Jam,num" sbClass="isRunning: WalltimeStart, WalltimeEnd: opJamIsRunning">
+          <td sbDisplay="Number"></td>
+          <td><span sbDisplay="TeamJam(1).JamScore"></span> - <span sbDisplay="TeamJam(2).JamScore"></span></td>
+          <td>
+            <span class="ifRunning">running</span>
+            <span class="ifNotRunning" sbDisplay="Duration: sbToLongTime"></span>
+          </td>
+          <td>
+            <span class="ifRunning">running</span>
+            <span class="ifNotRunning" sbDisplay="PeriodClockDisplayEnd: sbToLongTime"></span>
+          </td>
+          <td sbClass="hasPoints: TeamJam(*).JamScore,TeamJam(*).OsOffset: opHasPoints">
+            <span class="ifRunning">running</span>
+            <span class="ifNotRunning ifPoints">has points</span>
+            <button class="ifNotRunning ifNoPoints" sbSet="Delete">Delete</button>
+          </td>
+          <td><button sbSet="InsertBefore">Insert Before</button></td>
+        </tr>
+        <tr>
+          <td colspan="5">Upcoming</td>
+          <td><button sbCall="opInsertBeforeUpcoming">Insert Before</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="TimeoutDialog" class="sbSegment">
+    <table class="sbGroup" sbContext="Period(*)">
+      <thead class="sbHeader">
+        <tr>
+          <th>Period</th>
+          <th>After Jam</th>
+          <th>Duration</th>
+          <th>Period Clock</th>
+          <th>Type</th>
+          <th>Retained</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          sbForeach="Timeout:: sort: resort=PrecedingJam"
+          sbAttr="sort: PrecedingJamNumber, WalltimeStart: opToToSortString | Period: k.Period"
+        >
+          <td>
+            <select sbControl="PrecedingJam: k.Period: opToCurentJam">
+              <option sbContext="^^" sbForeach="Period:-0" sbAttr="value:Number" sbDisplay="Number"></option>
+            </select>
+          </td>
+          <td>
+            <select sbControl="PrecedingJam">
+              <option sbContext="^^Period([Period])" sbForeach="Jam:: Number,num" sbAttr="value:Id" sbDisplay="Number"></option>
+            </select>
+          </td>
+          <td>
+            <span sbDisplay="Running, Duration: sbToTimeoutDuration"></span>
+          </td>
+          <td>
+            <span sbClass="sbHide: Running: !" sbDisplay="PeriodClockEnd: sbToLongTime"></span>
+            <span sbClass="sbHide: Running" sbDisplay="^^Clock(Period).Time: sbToLongTime"></span>
+          </td>
+          <td>
+            <select sbControl="Review, Owner: sbToToTypeVal: sbFromToTypeVal">
+              <option value=".false">Untyped Timeout</option>
+              <option value="O.false">Official Timeout</option>
+              <option
+                sbContext="^^"
+                sbForeach="Team: 1,2: only"
+                sbAttr="value: Id: v + '.false'"
+                sbDisplay="UniformColor, Name: 'Team TO ' + v"
+              ></option>
+              <option
+                sbContext="^^"
+                sbForeach="Team: 1,2: only"
+                sbAttr="value: Id: v + '.true'"
+                sbDisplay="UniformColor, Name: 'Off. Review ' + v"
+              ></option>
+            </select>
+          </td>
+          <td><button sbClass="sbHide: Review: !" sbToggle="Retained">Retained</button></td>
+          <td><button sbSet="Delete">Delete</button></td>
+        </tr>
+        <tr sbContext="^">
+          <td class="Period">
+            <select>
+              <option sbForeach="Period:-0" sbAttr="value: Number" sbDisplay="Number"></option>
+            </select>
+          </td>
+          <td colspan="3"><button sbCall="opAddTimeout">Add Timeout</button></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

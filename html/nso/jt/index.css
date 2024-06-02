@@ -1,50 +1,26 @@
-/* ClockBubbles */
-span.ClockBubble { border-radius: 5px; font-weight: bold; background: rgba(255, 0, 0, 0.5); } 
-span.ClockBubble.Running { background: rgba(0, 255, 0, 0.5); } 
-/* END ClockBubbles */
+body { margin: 0; padding: 0; }
+.sbSegment { height: 50dvh; display: flex; flex-direction: column; }
+.sbGroup { flex: 1; padding: 0; }
 
-/* Alternate Names */
-.Name.HasAlternateName { display: none; } 
-.AlternateName:not(.HasAlternateName) { display: none; } 
-/* END Alternate Names */
+.Clocks { flex: 2; }
+.Clocks [Clock]:not(.Running) { display: none; }
+.Clocks [Clock].Running ~ [Clock].Running { display: none; }
+.Clocks .ClockName { font-weight: bold; font-size: 5dvh; }
+.Clocks .Running .ClockName { background: #3f3; } 
+.Clocks [Clock="Jam"].InJam .ClockName { background: #3f3; } 
+.Clocks .Running.NoMoreJam .ClockName { background: #f33; } 
+.Clocks .Time>button { font-size: 5dvh; padding: 0.1em 0.4em; }
+.Clocks .Time>div { font-size: 7dvh; margin: 0.2em;  }
 
+.TimeoutType { flex: 3; display: flex; gap: 3dvh; }
+.TimeoutType .Count { font-size: 5vh; }
+.TimeoutType .TeamName { font-weight: bold; font-size: 5vh; }
+.TimeoutType>div { flex: 2; }
+.TimeoutType>.OTO { flex: 1; }
+.TimeoutType>div>div { flex: 1; }
+.TimeoutType>[Team="2"]>div { flex-direction: row-reverse; }
+.TimeoutType button { font-size: 5dvh; padding: 0.3em; flex: 1; }
 
-/* JamControlPage */
-#JamControlPage div { text-align: center; } 
-#JamControlPage p.Clocks { text-align: center; } 
-#JamControlPage p.Clocks>span { padding: 0.5em 0.5em; margin: auto 0.5em; } 
-#JamControlPage div.Period div.PeriodNumber { width: 35%; } 
-#JamControlPage div.Period div.PeriodTime { width: 65%; } 
-#JamControlPage div.Period div.Title { font-size: 150%; } 
-#JamControlPage div.Period div.Number { font-size: 200% } 
-#JamControlPage div.Period div.PeriodTime { font-size: 500%; } 
-#JamControlPage div.Time a.Time { font-size: 150%; } 
-#JamControlPage span.Label { min-height: 1.4em; } 
-/* END JamControlPage */
-
-/* PeriodTimePage */
-#PeriodTimePage p { text-align: center; } 
-#PeriodTimePage a.Time { font-size: 150%; } 
-/* END PeriodTimePage */
-
-/* TeamScorePage */
-#TeamSetScorePage div { text-align: center; } 
-#TeamBothScorePage div { text-align: center; } 
-#Team1ScorePage div { text-align: center; } 
-#Team2ScorePage div { text-align: center; } 
-
-#TeamBothScorePage div.HV.Horizontal:not(.IsHorizontal) { display: none; } 
-#TeamBothScorePage div.HV.Vertical:not(.IsVertical) { display: none; } 
-
-@media (orientation:portrait) {#TeamBothScorePage div.Orientation:not(.Portrait) { display: none; } 
- }
-@media (orientation:landscape) {#TeamBothScorePage div.Orientation:not(.Landscape) { display: none; } 
- }
-/* END TeamScorePage */
-
-/* PenaltyPage */
-.TimeHeader { text-align: center; font-size: 150%; } 
-#JamTime,#PeriodTime { text-align: center; font-size: 300%; } 
-.PenaltyTime { font-size: 300%; } 
-#Jammer1Time,#Blocker1Team1Time,#Blocker2Team1Time,#Blocker3Team1Time { margin-left: .5em; } 
-#Jammer2Time,#Blocker1Team2Time,#Blocker2Team2Time,#Blocker3Team2Time { float: right; margin-right: .5em; } 
+.sbGroup.Settings, .sbGroup.ReplaceInfo { flex: 0; font-size: 3dvh; }
+.sbGroup.Settings>button, .sbGroup.ReplaceInfo>span { padding: 0.3em 0.6em; }
+.JamControls>button {  flex: 1; height: 100%; font-size: 10dvh; padding: 0.1em; }

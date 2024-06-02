@@ -1,0 +1,76 @@
+<div class="sbSegment definitions" sbPrefix="§:[*]">
+  <div class="sbGroup sbHeader buttons top"></div>
+  <div class="sbGroup sbSubHeader selection" sbClass="sbHide:-:sbNoGame">
+    <span
+      >Current Ruleset:
+      <select id="select" sbProp="disabled: State: !== 'Prepared'" sbControl="Ruleset: rsUpdateActive">
+        <option value="">Custom</option>
+        <option
+          sbForeach="Ruleset:: sbOrderRsAsTree: resort=Parent"
+          sbContext="/ScoreBoard.Rulesets"
+          sbAttr="value: Id"
+          sbDisplay="Name: sbIndentByParents: html"
+        ></option>
+      </select>
+    </span>
+  </div>
+  <div class="sbGroup metadata" sbClass="sbHide:-:sbIsGame">
+    <span>Name: <input type="text" id="name" size="20" sbProp="disabled: §.Readonly" sbControl="§.Name" /></span>
+    <span>
+      Parent:
+      <select id="parent" sbProp="disabled: §.Readonly" sbControl="§.Parent">
+        <option
+          sbForeach="Ruleset:: sbOrderRsAsTree: resort=Parent"
+          sbContext="/ScoreBoard.Rulesets"
+          sbAttr="value: Id"
+          sbDisplay="Name: sbIndentByParents: html"
+        ></option>
+      </select>
+    </span>
+  </div>
+  <table class="sbGroup rules" sbContext="/ScoreBoard.Rulesets">
+    <tbody sbForeach="RuleDefinition:: rsCompareChildIndex: part=1, noContext" class="section folded">
+      <tr>
+        <th colspan="2" class="sbSubHeader header" sbCall="rsTriggerFold" sbDisplay="-: rsSectionName"></th>
+      </tr>
+      <tr></tr>
+      <tr
+        sbForeach="RuleDefinition:: index: filter=^"
+        class="definition"
+        sbAttr="index: Index"
+        sbClass="Inherited: §.Rule([RuleDefinition]): == null"
+      >
+        <td class="name">
+          <input
+            type="checkbox"
+            class="Selector"
+            sbProp="checked: §.Rule([RuleDefinition]): != null | disabled: §.Readonly, §.Ruleset: rsDisableToggle"
+            sbSet="§.Rule([RuleDefinition]): rsDefinitionOverride"
+          />
+          <span sbDisplay="Name: rsPart2"></span>
+          <span class="tooltiptext" sbDisplay="Description"></span>
+        </td>
+        <td class="value">
+          <input
+            type="text"
+            class="override"
+            sbClass="sbHide: Type: === 'Boolean'"
+            sbProp="disabled: §.Readonly, §.Ruleset: rsDisableSetter"
+            sbControl="§.Rule([RuleDefinition])"
+          />
+          <select
+            class="override"
+            sbClass="sbHide: Type: !== 'Boolean'"
+            sbProp="disabled: §.Readonly, §.Ruleset: rsDisableSetter"
+            sbControl="§.Rule([RuleDefinition])"
+          >
+            <option value="true" sbDisplay="TrueValue"></option>
+            <option value="false" sbDisplay="FalseValue"></option>
+          </select>
+          <span class="inherit" sbDisplay="/ScoreBoard.Rulesets.Ruleset(*).Rule([RuleDefinition]): rsGetDisplayValue"> </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="sbGroup sbHeader buttons bottom"></div>
+</div>

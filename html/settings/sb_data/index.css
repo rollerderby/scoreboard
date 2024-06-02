@@ -1,0 +1,13 @@
+#sbData th { padding-left: 15px; padding-right: 15px; } 
+#sbData td { padding-left: 15px; padding-right: 15px; line-height: 27px; } 
+#sbData .SelectAll { margin-left: 1em; } 
+#sbData .New { margin-left: 1em; } 
+#sbData .Right { float: left; } 
+#sbData .Left { float: left; } 
+#sbData .Edit { min-width: 27px; } 
+#sbData .Type .ui-button { font-size: 75%; } 
+#sbData .Type th .ui-button { font-size: 50%; } 
+#sbData tr.Selected button.Select { background: #3f3; } 
+#sbData button.Delete:disabled { color: #bbb; } 
+#sbData .Name { text-align: left; }
+#sbData span.Name { padding-left: 5px; }

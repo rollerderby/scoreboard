@@ -1,36 +1,29 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Edit Game | CRG ScoreBoard</title>
+    <title sbDisplay="ScoreBoard.Game([game]).Name: toTitle">Edit Game | CRG ScoreBoard</title>
 
     <script type="text/javascript" src="/external/jquery/jquery.js"></script>
-    <script type="text/javascript" src="/javascript/utils.js"></script>
-    <script type="text/javascript" src="/javascript/windowfunctions.js"></script>
-    <script type="text/javascript" src="/javascript/timeconversions.js"></script>
     <script type="text/javascript" src="/json/core.js"></script>
-    <script type="text/javascript" src="/json/WSutils.js"></script>
-
-    <script type="text/javascript" src="/components/sk-sheet.js"></script>
-    <script type="text/javascript" src="/components/lt-sheet.js"></script>
-    <script type="text/javascript" src="/components/plt-input.js"></script>
-    <script type="text/javascript" src="/components/sheets-tab.js"></script>
-    <script type="text/javascript" src="/components/rulesets-tab.js"></script>
-    <script type="text/javascript" src="/components/teams-tab.js"></script>
-    <script type="text/javascript" src="/components/igrf-tab.js"></script>
-
-    <link rel="stylesheet" href="/components/sk-sheet.css" type="text/css" />
-    <link rel="stylesheet" href="/components/lt-sheet.css" type="text/css" />
-    <link rel="stylesheet" href="/components/plt-input.css" type="text/css" />
-    <link rel="stylesheet" href="/components/sheets-tab.css" type="text/css" />
-    <link rel="stylesheet" href="/components/rulesets-tab.css" type="text/css" />
-    <link rel="stylesheet" href="/components/teams-tab.css" type="text/css" />
-    <link rel="stylesheet" href="/components/igrf-tab.css" type="text/css" />
   </head>
 
-  <body>
+  <body sbContext="ScoreBoard.Game([game])">
     <div id="tabsDiv">
-      <a id="indexLink" href="/settings/sb_data/" class="ui-widget ui-widget-content">Back to overview page</a>
-      <ul id="tabBar"></ul>
+      <a id="sbIndexLink" href="/settings/sb_data/">Back to overview page</a>
+      <ul id="tabBar">
+        <li><a href="#IgrfTab">IGRF</a></li>
+        <li><a href="#TeamsTab">Teams</a></li>
+        <li><a href="#RulesetsTab">Rules</a></li>
+        <li><a href="#SheetsTab">Sheets</a></li>
+      </ul>
+      <div id="IgrfTab" class="TabContent" sbInclude="/components/igrf-tab/"></div>
+      <div id="TeamsTab" class="TabContent">
+        <div class="sbSegmentGroup">
+          <div sbForeach="Team: 1,2: only" sbInclude="/components/team-editor/"></div>
+        </div>
+      </div>
+      <div id="RulesetsTab" class="TabContent" sbInclude="/components/ruleset-tab/"></div>
+      <div id="SheetsTab" class="TabContent" sbInclude="/components/sheets-tab/"></div>
     </div>
   </body>
 </html>

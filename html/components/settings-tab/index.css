@@ -1,0 +1,10 @@
+#ScoreBoardSettings.UsePreview div.View { display: none; } 
+#ScoreBoardSettings:not(.UsePreview) div.Preview { display: none; } 
+
+#ScoreBoardSettings .ScoreBoardOptions { flex-wrap: wrap; gap: var(--element-gap); }
+#ScoreBoardSettings .DisplayOptions { display: grid; grid: auto auto auto / 1fr 1fr 1fr 1fr; gap: var(--element-gap); }
+#ScoreBoardSettings div.Preview { border-top: none; }
+
+#ScoreBoardSettings .ViewFrames iframe { max-width: 50%; height: 300px; }
+#ScoreBoardSettings .StatsFile.Readable::after { content: "✓"; color: green; font-size: 150%; }
+#ScoreBoardSettings .StatsFile:not(.Readable):not(.Progress)::after { content: "❌"; color: red; }

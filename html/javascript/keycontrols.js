@@ -1,9 +1,9 @@
 var _crgKeyControls = {
   /* This selector should be used to match key control buttons. */
-  keySelector: ':button.KeyControl,label.KeyControl',
+  keySelector: '.sbKeyControl',
 
   /* Setup all key control buttons.
-   * This finds all button-type elements with the class KeyControl
+   * This finds all button-type elements with the class sbKeyControl
    * and calls setupKeyControl, using the given controlParent.
    */
   setupKeyControls: function (operator) {
@@ -11,7 +11,7 @@ var _crgKeyControls = {
     _crgKeyControls.setupKeyControl($(_crgKeyControls.keySelector), operator);
   },
   /* Destroy all key control buttons.
-   * This finds all button-type elements with the class KeyControl
+   * This finds all button-type elements with the class sbKeyControl
    * and calls destroyKeyControl.
    */
   destroyKeyControls: function () {
@@ -30,7 +30,7 @@ var _crgKeyControls = {
    * destroyed and then re-setup.
    *
    * CSS notes:
-   * key control buttons have the class KeyControl
+   * key control buttons have the class sbKeyControl
    * there are new span elements added, which are button>span>span
    * the new span elements (under the child span) have the class Indicator
    * the span.Indicator element that stores the control key has class Key
@@ -41,8 +41,11 @@ var _crgKeyControls = {
     _crgKeyControls._start(operator);
     _crgKeyControls
       .destroyKeyControl(button)
-      .addClass('KeyControl')
+      .addClass('sbKeyControl')
       .on('mouseenter mouseleave', _crgKeyControls._hoverFunction)
+      .not(':has(>span)')
+      .wrapInner('<span>')
+      .end()
       .children('span')
       .append($('<span>').text(' [').addClass('Indicator'))
       .append($('<span>').addClass('Key Indicator'))
@@ -50,7 +53,7 @@ var _crgKeyControls = {
       .end()
       .each(function () {
         var btn = $(this);
-        var prop = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + operator + '.KeyControl.' + btn.attr('id') + ')';
+        var prop = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + operator + '.KeyControl.' + btn.attr('id') + ')';
         var key = WS.state[prop];
         btn.attr('_crgKeyControls_prop', prop).toggleClass('HasControlKey', key ? true : false);
         btn
@@ -69,7 +72,7 @@ var _crgKeyControls = {
    * This undoes the key control setup. If destroyButton
    * is true, is destroys the jQuery-UI button.
    * It returns the button element.
-   * Note this does not remove the KeyControl class from the button.
+   * Note this does not remove the sbKeyControl class from the button.
    */
   destroyKeyControl: function (button) {
     'use strict';
@@ -106,10 +109,6 @@ var _crgKeyControls = {
       'use strict';
       return !$('div.MultipleKeyAssignDialog').length;
     },
-    function () {
-      'use strict';
-      return !$('#TeamTimeTab:hidden').length;
-    }, //disable keys when Controls Tab is hidden.
   ],
 
   _start: function (operator) {
@@ -120,7 +119,7 @@ var _crgKeyControls = {
       $(document).on('keydown', _crgKeyControls._keyControlDown);
 
       WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.*)', function (k, v) {
-        if (!k.startsWith('ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + _crgKeyControls.operator + '.KeyControl.')) {
+        if (!k.startsWith('ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + _crgKeyControls.operator + '.KeyControl.')) {
           return;
         }
         var button = $('#' + k.substring(k.lastIndexOf('.') + 1, k.length - 1));
@@ -140,7 +139,7 @@ var _crgKeyControls = {
     'use strict';
     var ok = true;
     $.each(_crgKeyControls._conditions, function () {
-      if (ok && $.isFunction(this) && !this()) {
+      if (ok && typeof this === 'function' && !this()) {
         ok = false;
       }
     });
@@ -177,14 +176,7 @@ var _crgKeyControls = {
     var editing = controls.filter('.Editing');
 
     // Perform the corresponding button's action
-    var target = active.has('span.Key[data-keycontrol="' + event.which + '"]').trigger('click');
-    // FIXME - workaround seemingly broken jQuery-UI
-    // which does not fire change event for radio buttons when click() is called on their label...
-    if (target.is('label')) {
-      target.filter('label').each(function () {
-        $('#' + $(this).attr('for')).trigger('change');
-      });
-    }
+    active.has('span.Key[data-keycontrol="' + event.which + '"]').trigger('click');
 
     // Update the hovered button if in edit mode
     var editingTarget = editing.filter('.hover');

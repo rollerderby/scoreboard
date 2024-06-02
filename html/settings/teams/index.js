@@ -1,16 +1,9 @@
-$(function () {
-  'use strict';
-  var teamId = _windowFunctions.getParam('team');
-  createTeamsTab($('#TeamsTab'), null, teamId);
+'use strict';
 
-  WS.Register('ScoreBoard.PreparedTeam(' + teamId + ').Name', function (k, v) {
-    if (v == null) {
-      window.close();
-    } else {
-      document.title = v + ' | Edit Team | CRG ScoreBoard';
-    }
-  });
-
-  WS.AutoRegister();
-  WS.Connect();
-});
+function toTitle(k, v) {
+  if (v == null && $('#sbConnectionStatus').attr('status') === 'ready') {
+    window.close();
+  } else {
+    return v + ' | Edit Team | CRG ScoreBoard';
+  }
+}

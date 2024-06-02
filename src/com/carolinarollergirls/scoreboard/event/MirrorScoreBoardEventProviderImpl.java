@@ -91,6 +91,9 @@ public class MirrorScoreBoardEventProviderImpl<M extends ScoreBoardEventProvider
             MirrorScoreBoardEventProviderImpl<?, ?> paren =
                 (MirrorScoreBoardEventProviderImpl<?, ?>) toMirror(source.getParent());
             mirror = mirrorFactory.createMirror(paren, source);
+        } else if (mirror.getParent() instanceof MirrorScoreBoardEventProvider &&
+                   mirror.getParent() != toMirror(source.getParent())) {
+            ((MirrorScoreBoardEventProviderImpl<?, ?>) mirror).parent = toMirror(source.getParent());
         }
         return mirror;
     }

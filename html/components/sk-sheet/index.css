@@ -1,0 +1,48 @@
+/* Sizes */
+.SkSheet>.Period tr { height: 35px; } 
+.SkSheet>.Period thead>tr { height: 41px; } 
+.SkSheet>.Period .EditButton { width: 30px; }
+.SkSheet>.Period .JamNumber { min-width: 30px; } 
+.SkSheet>.Period .Jammer { min-width: 50px; } 
+.SkSheet>.Period .Narrow, .Period .SmallHead { width: 14px; } 
+.SkSheet>.Period .Trip, .Period .JamTotal, .Period .GameTotal { min-width: 30px; } 
+
+/* header row */
+.SkSheet>.Period thead th { font-size: 85%; background-color: #cccccc; color: #333333; } 
+.SkSheet>.Period .SmallHead>div { font-size: 75%; transform: rotate(270deg) translate(-50%); } 
+.SkSheet>.Period #head { font-size: calc(200% - 1px); } 
+
+/* Colors & Borders*/
+.SkSheet>.Period tr { background-color: #FFF; } 
+.SkSheet>.Period tr.Darker { background-color: #e9f6da; } 
+.SkSheet>.Period tbody.Timeout>tr { background-color: #e0d0f0; height: 31px; } 
+.SkSheet>.Period tr .Darker { background-color: #e9f6da; } 
+.SkSheet>.Period tr.Darker .Darker { background-color: #d3ecb6; } 
+.SkSheet>.Period tr .GameTotal { background-color: #d3ecb6; } 
+.SkSheet>.Period .GameTotal, .SkSheet>.Period .JamTotal,.SkSheet>.Period .Lost, .SkSheet>.Period [ScoringTrip="2"] { border-left-width: 2px; } 
+
+/* Edit Mode */
+.SkSheet>.Period tbody.Edit .EditButton .ui-button { background: var(--button-active-bg); color: var(--button-active-fg); }
+.SkSheet>.Period tbody.Edit .EditButton .ui-button:hover { background: var(--button-active-hover-bg); color: var(--button-active-hover-fg); }
+.SkSheet>.Period .EditButton .ui-button { padding: .4em; }
+.SkSheet>.Period tbody:not(.Edit)>tr.Edits { display: none; }
+.SkSheet>.Period tbody:not(.Edit) .EditOnly { display: none; }
+.SkSheet>.Period tbody.Edit .NoEditOnly { display: none; }
+.SkSheet>.Period tr.IgnoreEdit .EditOnly { display: none; }
+.SkSheet>.Period td:not(.Used)>.UsedOnly { display: none; }
+.SkSheet>.Period td:not(.OtherUsed)>.OtherUsedOnly { display: none; }
+.SkSheet>.Period td.Used>.FirstUnusedOnly { display: none; }
+.SkSheet>.Period td.OtherUsed>.FirstUnusedOnly { display: none; }
+.SkSheet>.Period td:not(.Used) + td>.FirstUnusedOnly { display: none; }
+.SkSheet>.Period tr.HasSP .AddSP { display: none; }
+.SkSheet>.Period tr:not(.HasSP) .InitialSP { display: none; }
+
+/* Misc */
+.SkSheet>.Period .Overtime .JamNumber::after { font-size: 50%; content: "OT"; vertical-align: top; padding-left: 1px; } 
+.SkSheet>.Period tr:not(.IsOR) .OROnly { display:none; }
+
+#TripEditor .sbGroup { flex-wrap: wrap; gap: 0.5em; }
+#TripEditor input[type="number"] { width: 50px; } 
+#TripEditor .header { font-weight: bold; } 
+
+#osOffsetEditor .Offset { width: 40px; }

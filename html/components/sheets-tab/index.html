@@ -1,0 +1,21 @@
+<div class="SheetSelector sbSegment">
+  <div class="sbGroup">
+    <div class="Selectors">
+      <button sbCall="shtSelectSheet">Reviews</button>
+      <span class="row2"></span>
+      <div sbForeach="Team: 1,2: only" class="TeamWrapper">
+        <span class="Name"><span sbDisplay="Name:"></span>:</span>
+        <button sbCall="shtSelectTeamSheet">Scores</button>
+        <button sbCall="shtSelectTeamSheet">Lineups</button>
+        <button sbCall="shtSelectTeamSheet">Penalties</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sbSegmentGroup" sbSheetStyle="sheet">
+  <div sbInclude="/components/or-sheet/" class="Sheet Reviews sbHide"></div>
+  <div sbForeach="Team: 1,2: only" sbInclude="/components/sk-sheet/" class="Sheet Scores sbHide"></div>
+  <div sbForeach="Team: 1,2: only" sbInclude="/components/lt-sheet/" class="Sheet Lineups sbHide"></div>
+  <div sbForeach="Team: 1,2: only" sbInclude="/components/plt-input/" class="Sheet Penalties sbHide"></div>
+</div>

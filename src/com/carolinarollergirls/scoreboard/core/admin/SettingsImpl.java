@@ -33,13 +33,13 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
     }
 
     private void setDefaults() {
-        set("Overlay.Interactive.Clock", "On");
+        set("Overlay.Interactive.Clock", "true");
         set("Overlay.Interactive.Scaling", "100");
         set("Overlay.Interactive.Score", "On");
-        set("Overlay.Interactive.ShowJammers", "On");
-        set("Overlay.Interactive.ShowLineups", "On");
-        set("Overlay.Interactive.ShowAllNames", "Off");
-        set("ScoreBoard.Operator_Default.StartStopButtons", "false");
+        set("Overlay.Interactive.ShowJammers", "true");
+        set("Overlay.Interactive.ShowLineups", "true");
+        set("Overlay.Interactive.ShowNames", "true");
+        set("Overlay.Interactive.ShowPenaltyClocks", "true");
         set("ScoreBoard.Operator_Default.TabBar", "true");
         set("ScoreBoard.Operator_Default.ReplaceButton", "false");
         set("ScoreBoard.Operator_Default.ScoreAdjustments", "false");
@@ -47,9 +47,9 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         set(ScoreBoard.SETTING_STATSBOOK_INPUT, "");
         set(ScoreBoard.SETTING_AUTO_START, "");
         set(ScoreBoard.SETTING_AUTO_START_BUFFER, "0:02");
-        set(ScoreBoard.SETTING_AUTO_END_JAM, "true");
+        set(ScoreBoard.SETTING_AUTO_END_JAM, "false");
         set(ScoreBoard.SETTING_AUTO_END_TTO, "false");
-        set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, Clock.ID_LINEUP);
+        set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, Clock.ID_TIMEOUT);
         set(Clock.SETTING_SYNC, "true");
         set(Team.SETTING_DISPLAY_NAME, Team.OPTION_LEAGUE_NAME);
         set(Game.SETTING_DEFAULT_NAME_FORMAT, "%d %G %1 vs. %2 (%s: %S)");
@@ -65,6 +65,7 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         setBothViews("Image", "/images/fullscreen/test-image.png");
         setBothViews("ImageScaling", "contain");
         setBothViews("HideLogos", "false");
+        setBothViews("HidePenaltyClocks", "false");
         setBothViews("SidePadding", "");
         setBothViews("SwapTeams", "false");
         setBothViews("Video", "/videos/fullscreen/test-video.webm");

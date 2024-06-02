@@ -5,8 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,13 +20,13 @@ public class JSONStateManagerTests {
     }
 
     public class TestListener implements JSONStateListener {
-        public Map<String, Object> state;
-        public Set<String> changed;
+        public StateTrie state;
+        public StateTrie changed;
         public int num_updates;
 
         @SuppressWarnings("hiding")
         @Override
-        public void sendUpdates(Map<String, Object> state, Set<String> changed) {
+        public void sendUpdates(StateTrie state, StateTrie changed) {
             this.state = state;
             this.changed = changed;
             num_updates++;
@@ -44,7 +42,7 @@ public class JSONStateManagerTests {
 
         jsm.waitForSent();
         assertEquals(1, listener.num_updates);
-        assertEquals(hm, listener.state);
+        assertEquals(hm, listener.state.getAll(false));
     }
 
     @Test
@@ -72,6 +70,25 @@ public class JSONStateManagerTests {
         jsm.updateState("foo.12", null);
         jsm.waitForSent();
         assertEquals(1, listener.state.size());
+        assertEquals(2, listener.changed.size());
+    }
+
+    @Test
+    public void replace_subtree() {
+        jsm.updateState("foo.12.34", "bar");
+        jsm.updateState("foo.12.34.56", "bar");
+        jsm.updateState("foo.78.90", "bar");
+        jsm.register(listener);
+        jsm.waitForSent();
+        assertEquals(3, listener.state.size());
+
+        List<WSUpdate> updates = new ArrayList<>();
+        updates.add(new WSUpdate("foo.12", null));
+        updates.add(new WSUpdate("foo.12.78", "bar"));
+        jsm.updateState(updates);
+        jsm.waitForSent();
+        assertEquals(2, listener.state.size());
+        assertEquals(3, listener.changed.size());
     }
 
     @Test
@@ -82,10 +99,12 @@ public class JSONStateManagerTests {
         jsm.register(listener);
         jsm.waitForSent();
         assertEquals(3, listener.state.size());
+        assertEquals(1, listener.num_updates);
 
         jsm.updateState("foo.1", null);
         jsm.waitForSent();
         assertEquals(3, listener.state.size());
+        assertEquals(1, listener.num_updates);
     }
 
     @Test
@@ -110,6 +129,7 @@ public class JSONStateManagerTests {
         HashMap<String, Object> hm = new HashMap<>();
         hm.put("foo.1", "baz");
         jsm.waitForSent();
-        assertEquals(hm, listener.state);
+        assertEquals(hm, listener.state.getAll(false));
+        assertEquals(1, listener.changed.size());
     }
 }

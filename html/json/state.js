@@ -1,5 +1,4 @@
-WS.Connect();
-WS.Register('', display);
+WS.Register('ScoreBoard', display);
 
 function display(k, v) {
   'use strict';

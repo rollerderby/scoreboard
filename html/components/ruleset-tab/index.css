@@ -1,0 +1,13 @@
+#RulesetsTab .definitions .rules { text-align: left; } 
+#RulesetsTab .definitions .section .header { border-top: 1px solid var(--outside-bg); } 
+#RulesetsTab .definitions .section .header { font-size: 1.1em; } 
+#RulesetsTab .definitions .section .definition .name { position: relative; width: 22rem; } 
+#RulesetsTab .definitions .section:not(.folded) .header:before { content: "-- "; } 
+#RulesetsTab .definitions .section.folded .header:before { content: "+ "; } 
+#RulesetsTab .definitions .section.folded .definition { display:none; } 
+#RulesetsTab .definitions .definition.Inherited .override { display:none; } 
+#RulesetsTab .definitions .definition:not(.Inherited) .inherit { display:none; } 
+
+#RulesetsTab .tooltiptext { visibility: hidden; background-color: black; color: #fff; text-align: center; padding: 5px; border-radius: 6px; bottom: 100%; left: 10%; width: 80%; position: absolute; z-index: 1; } 
+#RulesetsTab .definitions .section .definition .name:hover .tooltiptext { visibility: visible; } 
+#RulesetsTab .tooltiptext::after { content: " "; position: absolute; top: 100%; left: 10%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: black transparent transparent transparent; } 

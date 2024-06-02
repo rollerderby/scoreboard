@@ -4,35 +4,72 @@
     <title>Devices | CRG ScoreBoard</title>
 
     <script type="text/javascript" src="/external/jquery/jquery.js"></script>
-    <script type="text/javascript" src="/javascript/windowfunctions.js"></script>
     <script type="text/javascript" src="/json/core.js"></script>
-    <script type="text/javascript" src="/json/WSutils.js"></script>
   </head>
-  <body>
-    <a id="indexLink" href="/" class="ui-widget ui-widget-content" style="float: right; border: none">Back to index page</a>
-    <div class="Buttons"></div>
-    <br />
-    <div id="writeAccess">Write access for new devices:</div>
-    <br />
-    <div id="writeAccessLocal">Devices appearing to be on the computer running CRG:</div>
-    <br />
-    <table class="Devices">
-      <thead>
-        <tr>
-          <th rowspan="2">Name</th>
-          <th rowspan="2">Access</th>
-          <th>Comment</th>
-          <th rowspan="2">Platform</th>
-          <th rowspan="2">Address</th>
-          <th rowspan="2">Last<br />Seen</th>
-          <th rowspan="2">Last<br />Write</th>
-          <th rowspan="2">Age</th>
-        </tr>
-        <tr>
-          <th>Page</th>
-        </tr>
-      </thead>
-    </table>
-    <p>Page and Platform are provided by the client.</p>
+  <body sbContext="ScoreBoard.Clients">
+    <a id="sbIndexLink" href="/">Back to index page</a>
+    <div class="sbSegment">
+      <div class="sbGroup Buttons">
+        <span>Show:</span>
+        <button class="sbActive" sbCall="devToggleSelection">Comments</button>
+        <button class="sbActive" sbCall="devToggleSelection">Writers</button>
+        <button class="sbActive" sbCall="devToggleSelection">Active</button>
+        <button sbCall="devToggleSelection">Inactive</button>
+      </div>
+      <div class="sbGroup">
+        <span>Settings:</span>
+        <button sbToggle="NewDeviceWrite">Write access for new Devices</button>
+        <button sbToggle="AllLocalDevicesWrite">Override for the computer running CRG</button>
+      </div>
+      <table class="sbGroup Devices ShowComments ShowWriters ShowActive" sbClass="ForceLocal: AllLocalDevicesWrite">
+        <thead class="sbHeader">
+          <tr>
+            <th rowspan="2">Name</th>
+            <th rowspan="2">Access</th>
+            <th>Comment</th>
+            <th rowspan="2">Platform</th>
+            <th rowspan="2">Address</th>
+            <th rowspan="2">Last<br />Seen</th>
+            <th rowspan="2">Last<br />Write</th>
+            <th rowspan="2">Age</th>
+          </tr>
+          <tr>
+            <th>Page</th>
+          </tr>
+        </thead>
+        <tbody
+          class="Device"
+          sbForeach="Device:: name: resort=Name,onInsert=devColorRows"
+          sbAttr="name: Name"
+          sbClass="HasComment: Comment: !== '' | HasWritten: Wrote: !== 0 | HasClients: NumClients: > 0 | Own: Id: devIsOwnId"
+        >
+          <tr sbClass="Local: RemoteAddr: devIsLocalAddr">
+            <td class="Name" sbDisplay="Name" sbAttr="rowspan: NumClients: v + 1"></td>
+            <td class="Access" sbAttr="rowspan: NumClients: v + 1">
+              <span class="ForcedWrite">Read + Write</span>
+              <span class="RegularWrite">
+                <span class="OwnAccess" sbDisplay="MayWrite: devToRwStatus"></span>
+                <button class="OtherAccess" sbToggle="MayWrite">Write</button>
+              </span>
+            </td>
+            <td class="Comment"><input type="text" sbControl="Comment" /></td>
+            <td class="Platform" sbDisplay="Platform"></td>
+            <td class="RemoteAddr" sbDisplay="RemoteAddr"></td>
+            <td class="LastSeenActive" sbAttr="rowspan: NumClients: v + 1">0s</td>
+            <td class="LastSeenInactive" sbAttr="rowspan: NumClients: v + 1 | age: Accessed | title: Accessed: devToDate"></td>
+            <td class="LastWrite" sbAttr="age: Wrote | title: Wrote: devToDate"></td>
+            <td class="Created" sbAttr="age: Created | title: Created: devToDate"></td>
+          </tr>
+          <tr sbForeach="Client:: created: onInsert=devColorRows" sbAttr="created: Created">
+            <td class="Source" sbDisplay="Source"></td>
+            <td class="Platform" sbDisplay="Platform"></td>
+            <td class="RemoteAddr" sbDisplay="RemoteAddr"></td>
+            <td class="LastWrite" sbAttr="age: Wrote | title: Wrote: devToDate"></td>
+            <td class="Created" sbAttr="age: Created | title: Created: devToDate"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="sbGroup">Page and Platform are provided by the client.</div>
+    </div>
   </body>
 </html>

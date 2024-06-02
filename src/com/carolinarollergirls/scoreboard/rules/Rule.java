@@ -18,7 +18,7 @@ public enum Rule {
         new IntegerRule("Jam.SuddenScoringMinPointsDifference",
                         "Minimal score difference at halftime at which sudden scoring is activated.", 150)),
     SUDDEN_SCORING_MAX_TRAILING_POINTS(
-        new IntegerRule("Jam.SuddenScoringMaxTrainingPoints",
+        new IntegerRule("Jam.SuddenScoringMaxTrailingPoints",
                         "Maximum points the trailing team may have at halftime to trigger sudden scoring.", 25)),
     SUDDEN_SCORING_JAM_DURATION(new TimeRule("Jam.SuddenScoringDuration",
                                              "Maximum duration of a jam when sudden scoring is in effect", "1:00")),
@@ -51,6 +51,8 @@ public enum Rule {
     EXTRA_JAM_AFTER_OTO(new BooleanRule(
         "Timeout.ExtraJamAfterOTO", "Can an OTO cause an extra Jam to be played when there wouldn't be one otherwise?",
         false, "True", "False")),
+    TO_JAM(new BooleanRule("Timeout.JamDuring", "Allow a jam to happen with stopped period clock?", false, "True",
+                           "False")),
 
     INTERMISSION_DURATIONS(new StringRule(
         "Intermission.Durations",
@@ -83,7 +85,8 @@ public enum Rule {
     FO_LIMIT(new IntegerRule(
         "Penalties.NumberToFoulout",
         "After how many penalties a skater has fouled out of the game. Note that the software currently does not support more than 9 penalties per skater.",
-        7));
+        7)),
+    PENALTY_DURATION(new TimeRule("Penalties.Duration", "How long does a penalty last.", "0:30"));
 
     private Rule(RuleDefinition r) { rule = r; }
 

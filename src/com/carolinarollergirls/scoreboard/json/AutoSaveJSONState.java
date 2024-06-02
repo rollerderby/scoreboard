@@ -8,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -62,7 +61,7 @@ public class AutoSaveJSONState implements Runnable {
             String json = JSON.std.with(JSON.Feature.PRETTY_PRINT_OUTPUT)
                               .composeString()
                               .startObject()
-                              .putObject("state", new TreeMap<>(jsm.getState()))
+                              .putObject("state", jsm.getState())
                               .end()
                               .finish();
             tmp = File.createTempFile(file.getName(), ".tmp", dir);

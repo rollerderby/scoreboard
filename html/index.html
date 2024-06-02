@@ -4,299 +4,115 @@
     <title>Main Menu | CRG ScoreBoard</title>
 
     <script type="text/javascript" src="/external/jquery/jquery.js"></script>
-    <script type="text/javascript" src="/external/jquery-ui/jquery-ui.js"></script>
     <script type="text/javascript" src="/external/jquery-qrcode/jquery.qrcode.min.js"></script>
     <script type="text/javascript" src="/json/core.js"></script>
-    <link rel="stylesheet" href="external/jquery-ui/css/default/jquery-ui.css" />
     <link rel="stylesheet" href="external/fontawesome/css/font-awesome.min.css" />
-
-    <script type="text/javascript">
-      $(function () {
-        $.get('/urls', function (data) {
-          var urls = data.trim();
-          if (!urls) {
-            $('#URLtext').html('<b>The scoreboard is not networked</b>.	 You can access it only from this computer.');
-          } else {
-            $.each(urls.split('\n'), function (i, e) {
-              $('<li>')
-                .append(
-                  $('<a>')
-                    .addClass('qrButton')
-                    .on('click', function () {
-                      $('#qrcode').empty().qrcode(e);
-                      $('.qrButton').removeClass('Active');
-                      $(this).addClass('Active');
-                    })
-                    .text('QR')
-                    .button()
-                )
-                .append($('<a>').attr('href', e).text(e))
-                .appendTo('#URLs');
-            });
-            $('a.qrButton').first().trigger('click');
-          }
-        });
-        WS.Register(['WS.Device.Id', 'WS.Device.Name', 'ScoreBoard.Clients.Device(*).Comment'], function (k, v) {
-          var name = WS.state['WS.Device.Name'];
-          var comment = WS.state['ScoreBoard.Clients.Device(' + WS.state['WS.Device.Id'] + ').Comment'];
-          if (comment) {
-            name += ' (' + comment + ')';
-          }
-          $('#deviceName').text(name);
-        });
-        WS.Register('ScoreBoard.CurrentGame.Game', function (k, v) {
-          var gId = v || '';
-          $('.curGame').each(function () {
-            var old = $(this).attr('href');
-            $(this).attr('href', old.substring(0, old.lastIndexOf('=') + 1) + v);
-          });
-        });
-        WS.AutoRegister();
-        WS.Connect();
-      });
-    </script>
-
-    <style>
-      body {
-        box-sizing: border-box;
-        padding: 0;
-        margin: 0;
-        font-size: 2vmin;
-      }
-
-      a,
-      a:hover,
-      a:visited,
-      a:active {
-        color: darkblue;
-        text-decoration: none;
-      }
-      a:hover {
-        text-decoration: underline;
-        color: red;
-        cursor: pointer;
-      }
-
-      table {
-        margin: 0;
-      }
-      td,
-      th {
-        vertical-align: top;
-        width: 25%;
-      }
-      .btn {
-        margin: 5px;
-        border: 1px inset #999;
-      }
-      .btn span {
-        display: inline-block;
-      }
-      .btn h2 span {
-        float: right;
-      }
-      span.pill {
-        display: inline-block;
-        margin: 0 10px;
-        background: red;
-        color: white;
-        border-radius: 10%;
-        font-size: 80%;
-        line-height: 80%;
-        padding: 3px;
-        border-radius: 4px;
-      }
-      .row {
-        width: 100%;
-        clear: both;
-      }
-      .column {
-        width: 25%;
-        float: left;
-      }
-
-      h1,
-      h2 {
-        color: white;
-        display: block;
-        font-size: 2vmin;
-        line-height: 4vmin;
-      }
-      .heading h1 {
-        font-size: 4vmin;
-        line-height: 5vmin;
-        margin: 0;
-        text-align: center;
-      }
-      .btn h2 {
-        margin: 0 0 10px 0;
-        text-align: left;
-        padding: 4px 4px 4px 10px;
-      }
-      h1 img {
-        margin-top: 4px;
-        float: left;
-        height: 80px;
-        opacity: 0.8;
-      }
-
-      ul {
-        -webkit-padding-start: 0;
-        list-style: none;
-        font-size: 80%;
-      }
-      ul li {
-        display: block;
-        padding-left: 1em;
-        margin-left: 0;
-        text-indent: 0;
-      }
-      .qrButton {
-        font-size: 60%;
-      }
-      .qrButton.Active {
-        background: #0c0;
-      }
-      .footer {
-        font-size: 75%;
-        padding-top: 10px;
-        padding-bottom: 80px;
-        margin-top: 100px;
-        color: #333;
-        clear: both;
-      }
-      .footer a {
-        color: red;
-      }
-      h1,
-      h2 {
-        background-image: linear-gradient(to bottom, #282537 0%, #282537 10%, #999 100%);
-        /*
-      background: #282537;
-      background-image: -webkit-radial-gradient(top, circle cover, #3c3b52 0%, #252233 80%);
-      background-image: -moz-radial-gradient(top, circle cover, #3c3b52 0%, #252233 80%);
-      background-image: -o-radial-gradient(top, circle cover, #3c3b52 0%, #252233 80%);
-      background-image: radial-gradient(top, circle cover, #3c3b52 0%, #252233 80%);
-        */
-      }
-    </style>
   </head>
 
   <body>
-    <div class="heading">
-      <h1>CRG SCOREBOARD</h1>
+    <div class="sbSegment fullWidth">
+      <div class="sbGroup sbHeader sbVeryVeryImportant">CRG SCOREBOARD</div>
     </div>
 
-    <div class="row">
-      <div class="column">
-        <div class="btn">
-          <h2><span class="fa fa-2x fa-desktop"></span> DISPLAYS</h2>
-          <ul>
-            <li>
-              <a href="views/standard"><strong>Main Scoreboard</strong></a>
-            </li>
-          </ul>
-          <ul>
-            <li><a class="curGame" href="views/wb?game=">Penalty Whiteboard Display</a></li>
-            <li><a href="views/roster">Roster Display</a></li>
-            <li><a href="custom/">Custom Screens</a></li>
-          </ul>
-        </div>
-        <div class="btn">
-          <h2><span class="fa fa-2x fa-video-camera"></span> BROADCAST OVERLAYS</h2>
-          <ul>
-            <li><a href="views/overlay">Broadcast Overlay</a></li>
-            <li><a href="views/overlay/admin">Overlay Admin Page</a></li>
-          </ul>
-        </div>
+    <div class="sbSegment">
+      <div class="sbGroup sbSubHeader sbImportant"><span>DISPLAYS</span><span class="fa fa-2x fa-desktop"></span></div>
+      <div class="sbGroup">
+        <ul>
+          <li><a href="views/standard" class="sbImportant">Main Scoreboard</a></li>
+          <li><a href="views/wb">Penalty Whiteboard Display</a></li>
+          <li><a href="views/box">Penalty Clocks Display</a></li>
+          <li><a href="views/roster">Roster Display</a></li>
+          <li><a href="custom/view">Custom Screens</a></li>
+        </ul>
       </div>
-      <!-- column -->
-      <div class="column">
-        <div class="btn">
-          <h2><span class="fa fa-2x fa-gamepad"></span> INPUTS</h2>
-          <ul>
-            <li>
-              <a class="curGame" href="nso/sbo?game="><strong>Scoreboard Operator Panel</strong></a>
-            </li>
-          </ul>
-          <ul>
-            <li><a href="nso/jt">Jam Timer (Mobile Control)</a></li>
-          </ul>
-          <ul>
-            <li><a class="curGame" href="nso/pt?game=">Penalty Tracking</a></li>
-          </ul>
-          <ul>
-            <li><a class="curGame" href="nso/lt?game=">Lineup Tracking</a></li>
-          </ul>
-          <ul>
-            <li><a class="curGame" href="nso/plt?game=">Penalty + Lineup Tracking</a></li>
-          </ul>
-        </div>
-        <div class="btn">
-          <h2><span class="fa fa-2x fa-list-alt"></span> MANAGE DATA</h2>
-          <ul>
-            <li><a href="settings/sb_data">Games / Teams / Rulesets</a></li>
-            <li><a href="settings/file_management">Files</a></li>
-          </ul>
-        </div>
-      </div>
-      <!-- column -->
-      <div class="column">
-        <div class="btn" style="text-align: left">
-          <h2><span class="fa fa-2x fa-info-circle"></span> DOCUMENTATION</h2>
-          <ul>
-            <li>
-              <a href="https://github.com/rollerderby/scoreboard/wiki/" target="_blank">Wiki</a> (most up-to-date; recommended when internet
-              is reachable)
-            </li>
-            <li>
-              Local <a href="documentation/wiki-snapshot.html" target="_blank">Wiki-Snapshot</a> (available without internet; taken when
-              this version was released)
-            </li>
-          </ul>
-        </div>
-        <div class="btn">
-          <h2><span class="fa fa-2x fa-cogs"></span> UTILITIES &amp; SETTINGS</h2>
-          <ul>
-            <li><a href="settings/scoreboard">ScoreBoard Settings</a></li>
-            <li><a href="settings/devices">Devices</a></li>
-          </ul>
-        </div>
-      </div>
-      <!-- column -->
-      <div class="column">
-        <div class="btn" style="text-align: left">
-          <h2><span class="fa fa-2x fa-wifi"></span> NETWORK</h2>
-          <div style="padding: 4px; font-size: 80%">
-            <div id="qrcode"></div>
-            <p>To access this scoreboard from other computers on this network, try one of these URLs:</p>
-
-            <ul id="URLs"></ul>
-            <p>Information about your device:</p>
-            <ul>
-              <li>Name: <span id="deviceName"></span></li>
-              <li>Address: <span sbContext="WS" sbDisplay="Client.RemoteAddress"></span></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <!-- column -->
-      <div style="clear: both"></div>
     </div>
-    <!-- row -->
 
-    <div class="row footer">
-      <center>
-        <p>Version: <a sbContext="ScoreBoard" sbDisplay="Version(release)"></a></p>
-      </center>
+    <div class="sbSegment inputs">
+      <div class="sbGroup sbSubHeader sbImportant"><span>INPUTS</span><span class="fa fa-2x fa-gamepad"></span></div>
+      <div class="sbGroup">
+        <ul>
+          <li><a href="nso/sbo?game=" class="curGame sbImportant">Scoreboard Operator Panel</a></li>
+          <li><a href="nso/sk?game=" class="curGame">Scorekeeping</a></li>
+          <li><a href="nso/jt">Jam Timer (Mobile Control)</a></li>
+          <li><a href="nso/plt?pos=pt&team=both&game=" class="curGame">Penalty Tracking</a></li>
+          <li><a href="nso/plt?pos=lt&game=" class="curGame">Lineup Tracking</a></li>
+          <li><a href="nso/plt?pos=plt&game=" class="curGame">Penalty + Lineup Tracking</a></li>
+          <li><a href="nso/pbt">Penalty Box Timing</a></li>
+          <li><a href="nso/alt?game=" class="curGame">Official Reviews</a></li>
+        </ul>
+      </div>
+    </div>
 
-      <p><b>Getting Help:</b></p>
-      <p>
-        Documentation for getting the scoreboard installed is available in the included README file. To check for the latest release of this
-        software or report bugs or feature requests, please visit the
-        <a href="https://github.com/rollerderby/scoreboard/releases">project home on GitHub</a>. In order to reach out to the developers,
-        it's best to use the <a href="https://github.com/rollerderby/scoreboard/issues">Github Issues Page</a>.
-      </p>
+    <div class="sbSegment data">
+      <div class="sbGroup sbSubHeader sbImportant"><span>MANAGE DATA</span><span class="fa fa-2x fa-list-alt"></span></div>
+      <div class="sbGroup">
+        <ul>
+          <li><a href="settings/sb_data">Games / Teams / Rulesets</a></li>
+          <li><a href="settings/file_management">Files</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sbSegment">
+      <div class="sbGroup sbSubHeader sbImportant"><span>BROADCAST OVERLAYS</span><span class="fa fa-2x fa-video-camera"></span></div>
+      <div class="sbGroup">
+        <ul>
+          <li><a href="views/overlay">Broadcast Overlay</a></li>
+          <li><a href="views/overlay/admin">Overlay Admin Page</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sbSegment">
+      <div class="sbGroup sbSubHeader sbImportant"><span>UTILITIES &amp; SETTINGS</span><span class="fa fa-2x fa-cogs"></span></div>
+      <div class="sbGroup">
+        <ul>
+          <li><a href="settings/scoreboard">ScoreBoard Settings</a></li>
+          <li><a href="settings/devices">Devices</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sbSegment documentation">
+      <div class="sbGroup sbSubHeader sbImportant"><span>DOCUMENTATION</span><span class="fa fa-2x fa-info-circle"></span></div>
+      <div class="sbGroup">
+        <ul>
+          <li>
+            <a href="https://github.com/rollerderby/scoreboard/wiki/" target="_blank">Wiki</a> (most up-to-date; recommended when internet
+            is reachable)
+          </li>
+          <li>
+            Local <a href="documentation/wiki-snapshot.html" target="_blank">Wiki-Snapshot</a> (available without internet; taken when this
+            version was released)
+          </li>
+          <li>
+            To check for the latest release of this software or report bugs or feature requests, please visit the
+            <a href="https://github.com/rollerderby/scoreboard/releases">project home on GitHub</a>.
+          </li>
+          <li>
+            In order to reach out to the developers, it's best to use the
+            <a href="https://github.com/rollerderby/scoreboard/issues">Github Issues Page</a>.
+          </li>
+          <li>Version: <a sbContext="ScoreBoard" sbDisplay="Version(release)"></a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sbSegment network">
+      <div class="sbGroup sbSubHeader sbImportant"><span>NETWORK</span><span class="fa fa-2x fa-wifi"></span></div>
+      <div class="sbGroup">
+        <div id="qrcode"></div>
+        <div id="URLtext">
+          <p>To access this scoreboard from other computers on this network, try one of these URLs:</p>
+
+          <ul id="URLs"></ul>
+          <p>Information about your device:</p>
+          <ul>
+            <li>Name: <span id="deviceName"></span></li>
+            <li>Address: <span sbContext="WS" sbDisplay="Client.RemoteAddress"></span></li>
+          </ul>
+        </div>
+      </div>
     </div>
   </body>
 </html>

@@ -1,25 +1,47 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Penalty Lineup Tracker | CRG ScoreBoard</title>
+    <title sbContext="ScoreBoard.Game([game]).Team(*)" sbDisplay="AlternateName(plt), UnifomrColor, Name: toTitle">
+      Penalty Lineup Tracker | CRG ScoreBoard
+    </title>
 
     <script type="text/javascript" src="/external/jquery/jquery.js"></script>
     <script type="text/javascript" src="/json/core.js"></script>
-    <script type="text/javascript" src="/javascript/windowfunctions.js"></script>
-    <script type="text/javascript" src="/components/plt-input.js"></script>
-    <script type="text/javascript" src="/components/lt-sheet.js"></script>
-
-    <link rel="stylesheet" href="/components/plt-input.css" type="text/css" />
-    <link rel="stylesheet" href="/components/lt-sheet.css" type="text/css" />
   </head>
-  <body>
-    <div id="gameAdvance"></div>
-    <div id="input"></div>
-    <div id="sheet" width="100%"></div>
-    <div id="PenaltyEditor"></div>
-    <div id="AnnotationEditor"></div>
-    <div id="FieldingEditor"></div>
-    <div id="OptionsDialog"></div>
-    <div id="UseLTDialog"></div>
+  <body sbContext="ScoreBoard.Game([game])">
+    <div class="Content">
+      <div class="GameAdvance" sbInclude="/components/game-advance/"></div>
+      <div sbForeach="Team: 1,2: only" sbInclude="/components/plt-input/" class="Input"></div>
+      <div class="sbShowOnLt Sheet" sbForeach="Team: 1,2: only" sbInclude="/components/lt-sheet/"></div>
+    </div>
+    <div class="SettingsButton sbSegment">
+      <div class="sbGroup"><button sbCall="openOptionsDialog">Settings</button></div>
+    </div>
+
+    <div id="OptionsDialog" sbPrefix="$: ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)">
+      <div class="sbSegment">
+        <div class="sbGroup sbHeader">Select Team</div>
+        <div class="sbGroup Teams">
+          <button team="1" sbCall="setTeam" sbContext="Team(1)" sbDisplay="AlternateName(plt),UniformColor,Name">Team 1</button>
+          <button team="2" sbCall="setTeam" sbContext="Team(2)" sbDisplay="AlternateName(plt),UniformColor,Name">Team 2</button>
+          <button team="both" sbCall="setTeam">Both Teams</button>
+        </div>
+      </div>
+      <div class="sbSegment">
+        <div class="sbGroup sbHeader">Select Position</div>
+        <div class="sbGroup Positions">
+          <button pos="pt" sbCall="setPos">PT</button>
+          <button pos="plt" sbProp="disabled: $: !" sbCall="setPos">PLT</button>
+          <button pos="lt" sbProp="disabled: $: !" sbCall="setPos">LT</button>
+        </div>
+      </div>
+      <div class="sbSegment">
+        <div class="sbGroup sbHeader">Options</div>
+        <div class="sbGroup"><button sbToggle="$">Enable Lineup Tracking</button></div>
+        <div class="sbGroup"><button sbCall="setZoom">Allow Pinch Zoom</button></div>
+      </div>
+    </div>
+
+    <div id="UseLTDialog">Use of Lineup Tracking is disabled.</div>
   </body>
 </html>

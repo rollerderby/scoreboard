@@ -1,0 +1,147 @@
+<div class="sbSegment sbFillArea" sbPrefix="t:[*]">
+  <div class="sbGroup sbSheets LtSheet">
+    <table
+      sbContext="^"
+      sbForeach="Period: -0: sbComparePeriod"
+      class="Period"
+      sbClass="Current: Number,^CurrentPeriodNumber: sbIsCurrentPeriod"
+    >
+      <thead class="sbShowOnSheet">
+        <tr>
+          <th colspan="12"><span sbDisplay="t.Name"></span></th>
+        </tr>
+        <tr>
+          <th class="JamNumber">Jam</th>
+          <th class="NP">NP</th>
+          <th class="Skater">Jammer</th>
+          <th class="Box">Box</th>
+          <th class="Skater">Pivot</th>
+          <th class="Box">Box</th>
+          <th class="Skater">Blocker</th>
+          <th class="Box">Box</th>
+          <th class="Skater">Blocker</th>
+          <th class="Box">Box</th>
+          <th class="Skater">Blocker</th>
+          <th class="Box">Box</th>
+        </tr>
+      </thead>
+      <tbody class="Upcoming">
+        <tr class="Jam" sbContext="t" sbClass="sbHide: ^InJam">
+          <td class="JamNumber Darker" sbDisplay="^UpcomingJamNumber"></td>
+          <td class="NP Darker" sbDisplay="NoPivot: sbToX"></td>
+          <td
+            sbForeach="Position:Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
+            class="Skater"
+            sbClass="hasAnnotation: Annotation: sbIsNotEmpty"
+            sbDisplay="RosterNumber"
+            sbCall="ltsEditUpcomingFielding"
+          ></td>
+          <td
+            sbForeach="Position:Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
+            class="Box"
+            sbDisplay="CurrentBoxSymbols"
+            sbCall="ltsEditUpcomingFielding"
+          ></td>
+        </tr>
+      </tbody>
+      <tbody sbContext=":TeamJam([Team])" sbForeach="Jam:: sbCompareJam: onInsert=sbReverseOnNonSheet">
+        <tr class="Jam" sbClass="INJ: ^InjuryContinuation">
+          <td class="JamNumber Darker" sbDisplay="Lead, ^Number, ^InjuryContinuation: sbToJamNoDisplay" sbSet="CopyLineupToCurrent"></td>
+          <td class="NP Darker" sbControl="NoPivot: sbToX: sbFromX"></td>
+          <td
+            sbForeach="Fielding:Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
+            class="Skater"
+            sbClass="hasAnnotation: Annotation: sbIsNotEmpty"
+            sbDisplay="SkaterNumber, ^^InjuryContinuation, ^Lead: ltsEmptyIfInjAst"
+            sbCall="ltsEditFielding"
+          ></td>
+          <td
+            sbForeach="Fielding:Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
+            class="Box"
+            sbDisplay="BoxTripSymbolsBeforeSP, ^^InjuryContinuation, ^Lead: ltsEmptyIfInjAst"
+            sbCall="ltsEditFielding"
+          ></td>
+        </tr>
+        <tr class="SP" sbClass="sbHide: ^StarPass: !">
+          <td class="JamNumber Darker" sbDisplay="StarPass: sbToSpJamNo"></td>
+          <td class="NP Darker" sbDisplay="StarPass: sbToX"></td>
+          <td
+            sbForeach="Fielding:Pivot, Jammer, Blocker1, Blocker2, Blocker3: only"
+            class="Skater"
+            sbDisplay="SkaterNumber, ^StarPass: sbToEmptyIfNoSp"
+            sbCall="ltsEditFielding"
+          ></td>
+          <td
+            sbForeach="Fielding:Pivot, Jammer, Blocker1, Blocker2, Blocker3: only"
+            class="Box"
+            sbDisplay="BoxTripSymbolsAfterSP"
+            sbCall="ltsEditFielding"
+          ></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sbTemplates">
+  <div id="FieldingEditor" sbContext="^Period(*).Jam(*).TeamJam(*).Fielding(*)">
+    <div class="sbSegment">
+      <div class="sbGroup sbHeader"><span>Skater</span></div>
+      <div class="sbGroup Skater">
+        <span sbPrefix="f:[*]" sbButtonGroup>
+          <button sbSet="Skater: null">?</button>
+          <button sbClass="sbHide:-: sbIsUpcomingJam" sbSet="Skater: null" sbToggle="NotFielded">n/a</button>
+          <button
+            sbContext="/ScoreBoard.Game([game]).Team([TeamJam])"
+            sbForeach="Skater:: rosterNumber: resort=RosterNumber"
+            sbAttr="rosterNumber: RosterNumber"
+            sbDisplay="RosterNumber"
+            sbClass="sbActive: f.Skater: == elem.attr('Skater') | sbHide: Role: === 'NotInGame'"
+            sbSet="f.Skater: elem.attr('Skater')"
+          ></button>
+        </span>
+        <button sbToggle="SitFor3">Sit out next 3</button>
+      </div>
+      <div class="sbGroup Skater">
+        <span>Annotation: </span>
+        <input type="text" size="60" id="annotation" sbControl="Annotation:: sbToNullIfEmpty" />
+        <span sbClass="sbHide: CurrentBoxTrip: sbIsEmpty">Quick Add: </span>
+        <button sbClass="sbHide: CurrentBoxTrip: sbIsEmpty" sbSet="Annotation: sbAppendText">Self Report</button>
+        <button sbClass="sbHide: CurrentBoxTrip: sbIsEmpty" sbSet="Annotation: sbAppendText">Penalty Overturned</button>
+      </div>
+    </div>
+    <div class="sbSegment">
+      <div class="sbGroup sbHeader"><span>Box Trips</span></div>
+      <table class="sbGroup">
+        <thead class="sbSubHeader">
+          <tr>
+            <th colspan="3">Start</th>
+            <th colspan="3">End</th>
+            <td><button id="addTrip" sbSet="AddBoxTrip">Add</button></td>
+          </tr>
+        </thead>
+        <tbody class="sbGroup">
+          <tr sbForeach="BoxTrip::: noId" sbContext=":/ScoreBoard.Game([game]).Team([TeamJam]).BoxTrip([BoxTrip])">
+            <td class="Earlier">
+              <button class="tripModify" sbSet="StartEarlier">-</button>
+            </td>
+            <td class="Text" sbDisplay="StartJamNumber, StartBetweenJams, StartAfterSP: ltsToBtStartText"></td>
+            <td class="Later">
+              <button class="tripModify" sbSet="StartLater">+</button>
+            </td>
+            <td class="Earlier">
+              <button class="tripModify" sbSet="EndEarlier">-</button>
+            </td>
+            <td class="Text" sbDisplay="EndJamNumber, EndBetweenJams, EndAfterSP: ltsToBtEndText"></td>
+            <td class="Later">
+              <button class="tripModify" sbSet="EndLater">+</button>
+            </td>
+            <td class="Remove">
+              <button class="tripRemove" sbSet="Delete">Remove</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

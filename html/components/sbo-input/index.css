@@ -1,0 +1,28 @@
+#Operator .Faded>:not(.JamControl) { opacity: 0.2; }
+#Operator .NoBorder { border: none; }
+
+#Operator>.MetaControl>.LastGroup { border-bottom-left-radius: var(--segment-corner-radius); border-bottom-right-radius: var(--segment-corner-radius); }
+
+#Operator>.JamControl { font-size: var(--imprtant-font-size); } 
+#Operator>.JamControl>.ReplaceInfo.sbHide + .sbGroup { border-top-left-radius: var(--segment-corner-radius); border-top-right-radius: var(--segment-corner-radius); }
+
+#Operator .ClockControl .Name.Running { background-color: var(--element-active-bg); color: var(--element-active-fg); } 
+#Operator .ClockControl[Clock="Jam"] .Name.InJam { background-color: var(--element-active-bg); color: var(--element-active-fg); } 
+#Operator .ClockControl .Name.Running.NoMoreJam { background: var(--element-inbox-bg); color: var(--element-inbox-fg); } 
+#Operator .ClockControl:not([Clock="Period"]):not([Clock="Jam"]) .InvertedTime { display: none; }
+#Operator .ClockControl .Name .InvertedTime { padding-left: .5em; font-size: .9rem; } 
+#Operator .ClockControl .Name .InvertedTime:before { content: "("; } 
+#Operator .ClockControl .Name .InvertedTime.CountDown:after { content: " elapsed)"; } 
+#Operator .ClockControl .Name .InvertedTime:not(.CountDown):after { content: " remaining)"; } 
+
+#Operator .Adjustments .AdjAmount { font-weight: bold; }
+
+#NewGameDialog button.MidGame { font-size: var(--nodistract-font-size); }
+
+#ClockDialog .Label { font-style: normal; }
+#ClockDialog .TimeControls { display: grid; grid: auto auto / 1fr 1fr 1fr; gap: var(--element-gap); }
+
+#JamDialog tr.isRunning .ifNotRunning { display: none; }
+#JamDialog tr:not(.isRunning) .ifRunning { display: none; }
+#JamDialog td.hasPoints .ifNoPoints { display: none; }
+#JamDialog td:not(.hasPoints) .ifPoints { display: none; }

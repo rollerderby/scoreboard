@@ -1,0 +1,42 @@
+#Team div.Name { height: 2rem; }
+#Team div.Name select { font-size: 1rem; } 
+#Team div.Name button { font-size: 1rem; margin: 2px 5px; } 
+#Team .LogoPreview>img { max-width: 50%; max-height: 11rem;  }
+#Team .Value { text-align: left; }
+#Team .Label { text-align: right; }
+#Team .RemoveColor button { padding: 2px 5px; } 
+#Team .RemoveColor { margin: 0px 5px; border-right: 1px solid black; }
+
+#Team table.Skaters th.normalSize { font-size: 1rem; font-weight: normal; } 
+#Team table.Skaters td.Name { width: 40%; } 
+#Team table.Skaters td.RosterNumber { width: 15%; } 
+#Team table.Skaters td.Button { width: 15%; } 
+#Team table.Skaters td.Pronoun { width: 15%; } 
+
+/* Alternate Names Dialog */
+#AlternateNamesDialog table tr>th.Id { width: 45%; } 
+#AlternateNamesDialog table tr>th.Name { width: 45%; } 
+#AlternateNamesDialog table tr>th.X { width: 10%; } 
+#AlternateNamesDialog table tr>th { font-size: 1rem; } 
+/* End Alternate Names Dialog */
+
+/* Colors Dialog */
+#ColorsDialog table thead tr>th.X { width: 10%; } 
+#ColorsDialog table thead tr>th.Id { width: 30%; } 
+#ColorsDialog table thead tr>th.Color { width: 20%; } 
+#ColorsDialog table thead tr>th { font-size: 1rem; } 
+#ColorsDialog table tbody tr input[type="color"] { padding: 0; width: 75%; } 
+#ColorsDialog table tbody tr input[type="color"].cleared + button { background: #ff0000; } 
+#ColorsDialog table tbody tr button.ClearPrev { padding: 0; width: 20%; } 
+/* End Colors Dialog */
+
+/* Teams Remove Dialog */
+#RemoveSkaterDialog span.Title { font-size: 125%; } 
+#RemoveSkaterDialog span.Remove { font-size: 150%; } 
+#RemoveSkaterDialog span.Target { font-weight: bold; font-size: 250%; } 
+#RemoveSkaterDialog span.AreYouSure { font-weight: bold; font-size: 300%; } 
+
+#RemoveAllSkatersDialog span.Title { font-size: 125%; } 
+#RemoveAllSkatersDialog span.Remove { font-size: 150%; } 
+#RemoveAllSkatersDialog span.AreYouSure { font-weight: bold; font-size: 300%; } 
+/* End Teams Remove Dialog */

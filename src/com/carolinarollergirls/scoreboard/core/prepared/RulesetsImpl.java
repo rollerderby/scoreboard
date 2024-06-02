@@ -7,6 +7,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
@@ -130,6 +131,12 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
         }
 
         @Override
+        protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
+            if (prop == PARENT && this.isAncestorOf((Ruleset) value)) { return last; }
+            return value;
+        }
+
+        @Override
         public String get(Rule r) {
             return get(RULE, r.toString()).getValue();
         }
@@ -149,6 +156,12 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
         @Override
         public void setParentRuleset(Ruleset rs) {
             set(PARENT, rs);
+        }
+        @Override
+        public boolean isAncestorOf(Ruleset rs) {
+            if (rs == null) { return false; }
+            Ruleset parentRs = rs.getParentRuleset();
+            return this == rs || this.isAncestorOf(parentRs);
         }
         @Override
         public void setRule(String id, String value) {

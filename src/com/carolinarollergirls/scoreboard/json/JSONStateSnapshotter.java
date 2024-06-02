@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 import com.fasterxml.jackson.jr.ob.JSON;
 
@@ -21,24 +18,14 @@ public class JSONStateSnapshotter implements JSONStateListener {
     public JSONStateSnapshotter(JSONStateManager jsm, Game g) {
         this.directory = BasePath.get();
         game = g;
-        pathPrefix = "ScoreBoard.Game(" + game.getId() + ")";
+        filters.add("ScoreBoard.Version");
+        filters.add("ScoreBoard.Game(" + game.getId() + ")");
         jsm.register(this);
     }
 
     @Override
-    public synchronized void sendUpdates(Map<String, Object> newState, Set<String> changed) {
-        boolean initialUpdate = state.isEmpty();
-        if (initialUpdate) {
-            for (String key : changed) {
-                if (key.startsWith(pathPrefix) || key.startsWith("ScoreBoard.Version")) {
-                    state.put(key, newState.get(key));
-                }
-            }
-        } else {
-            for (String key : changed) {
-                if (key.startsWith(pathPrefix)) { state.put(key, newState.get(key)); }
-            }
-        }
+    public synchronized void sendUpdates(StateTrie newState, StateTrie changedState) {
+        state = newState;
         if (writeOnNextUpdate) {
             writeOnNextUpdate = false;
             writeFile();
@@ -61,7 +48,7 @@ public class JSONStateSnapshotter implements JSONStateListener {
             String json = JSON.std.with(JSON.Feature.PRETTY_PRINT_OUTPUT)
                               .composeString()
                               .startObject()
-                              .putObject("state", state)
+                              .putObject("state", state.filter(filters, true))
                               .end()
                               .finish();
             tmp = File.createTempFile(file.getName(), ".tmp", directory);
@@ -88,10 +75,9 @@ public class JSONStateSnapshotter implements JSONStateListener {
 
     private File directory;
     private Game game;
-    private String pathPrefix;
     private boolean writeOnNextUpdate = false;
-    // Use a TreeMap so output is sorted.
-    private Map<String, Object> state = new TreeMap<>();
+    private StateTrie state = new StateTrie();
+    private PathTrie filters = new PathTrie();
 
     private static final Histogram updateStateDuration = Histogram.build()
                                                              .name("crg_json_state_disk_snapshot_duration_seconds")

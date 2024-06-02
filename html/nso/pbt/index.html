@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Penalty Box Timer | CRG ScoreBoard</title>
+
+    <script type="text/javascript" src="/external/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/json/core.js"></script>
+  </head>
+
+  <body sbContext="ScoreBoard.CurrentGame" sbSheetStyle="pbt">
+    <div class="sbSegment" id="List" sbInclude="/components/penalty-list/"></div>
+    <div class="sbSegment" id="Unassigned">
+      <div class="sbGroup sbHeader">
+        <span class="col1"><button class="sbNoDistract" id="SwapTeams" sbCall="toggleSwap">Swap Teams</button></span>
+        <span class="perTeam" sbForeach="Team: 1,2: only" sbDisplay="AlternateName(box),UniformColor,Name"></span>
+      </div>
+      <div class="sbGroup">
+        <span class="col1">Edit/Pre-Select:</span>
+        <span class="perTeam" sbForeach="Team: 1,2: only">
+          <button
+            sbForeach="Position: Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
+            sbClass="sbUnserved: HasUnserved | sbInBox: PenaltyBox"
+            sbDisplay="RosterNumber: questionMarkIfEmpty"
+            sbCall="positionDetails"
+          ></button>
+        </span>
+      </div>
+      <div class="sbGroup" sbForeach="BoxTrip:: time" sbAttr="time: Clock.Time" sbPrefix="b: [*]">
+        <span class="col1 sbStack">
+          <button sbSet="Delete">Cancel</button>
+          <span>Remaining: <span class="sbImportant" sbDisplay="Clock.Time: sbToSeconds"></span></span>
+        </span>
+        <span class="perTeam" sbContext="^" sbForeach="Team: 1,2: only">
+          <button
+            sbForeach="Position: Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
+            sbClass="sbUnserved: HasUnserved | sbInBox: PenaltyBox"
+            sbDisplay="RosterNumber: questionMarkIfEmpty"
+            sbSet="b.CurrentFielding: getFielding"
+          ></button>
+        </span>
+      </div>
+    </div>
+    <div class="sbSegment" id="Buttons">
+      <div class="sbGroup">
+        <button sbSet="StartBoxTrip">Blocker Sat Down</button>
+        <button sbSet="StartJammerBoxTrip">Jammer Sat Down</button>
+      </div>
+    </div>
+
+    <div class="sbTemplates">
+      <div id="PositionDetails" class="sbSegment" sbContext="Team(*).Position(*)">
+        <div class="sbGroup">
+          <span>Skater: </span>
+          <span sbButtonGroup sbPrefix="p:[*]">
+            <button sbClass="sbActive: p.Skater: sbIsEmpty" sbSet="p.Skater: ''" sbCall="sbCloseDialog">?</button>
+            <button
+              sbForeach="^Skater:: rosterNumber: resort=RosterNumber"
+              sbAttr="rosterNumber: RosterNumber"
+              sbDisplay="RosterNumber"
+              sbClass="sbActive: p.Skater: === elem.attr('Skater') | sbHide: Role: === 'NotInGame'"
+              sbSet="p.Skater: elem.attr('Skater')"
+            ></button>
+          </span>
+        </div>
+        <div class="sbGroup">
+          <span>Penalties:</span>
+          <span sbDisplay="CurrentPenalties"></span>
+          <span><button sbCall="addPenalty">Add</button></span>
+          |
+          <span>Total: <span sbDisplay="PenaltyCount"></span></span>
+          <span
+            ><button sbClass="sbHide: PenaltyBox, CurrentBoxSymbols: noUnend" sbSet="UnendBoxTrip" sbCall="sbCloseDialog">
+              Unend Box Trip
+            </button></span
+          >
+        </div>
+        <div class="sbGroup">
+          <button class="StartButton" sbClass="sbHide: PenaltyBox" sbSet="StartBoxClock" sbCall="sbCloseDialog">Skater Sat Down</button>
+          <button sbClass="sbHide: PenaltyBox: !" sbSet="PenaltyBox: false" sbCall="sbCloseDialog">Has Left</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

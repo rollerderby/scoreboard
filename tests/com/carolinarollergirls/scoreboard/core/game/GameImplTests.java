@@ -405,6 +405,7 @@ public class GameImplTests {
         tj1.set(TeamJam.INJURY, true);
 
         g.set(Game.INJURY_CONTINUATION_UPCOMING, true);
+        g.stopJamTO();
         g.startJam();
 
         assertEquals(Game.ACTION_START_JAM, g.snapshot.getType());
@@ -462,13 +463,13 @@ public class GameImplTests {
         assertTrue(jc.isTimeAtStart());
         assertEquals(18, jc.getNumber());
         assertFalse(lc.isRunning());
-        assertFalse(tc.isRunning());
+        assertTrue(tc.isRunning());
         assertEquals(3, tc.getNumber());
-        assertEquals(Timeout.Owners.NONE, g.getTimeoutOwner());
-        assertFalse(g.isOfficialReview());
+        assertEquals(g.getTeam(Team.ID_2), g.getTimeoutOwner());
+        assertTrue(g.isOfficialReview());
         assertFalse(ic.isRunning());
         assertFalse(g.getTeam(Team.ID_2).inTimeout());
-        assertFalse(g.getTeam(Team.ID_2).inOfficialReview());
+        assertTrue(g.getTeam(Team.ID_2).inOfficialReview());
         checkLabels(Game.ACTION_NONE, Game.ACTION_STOP_JAM, Game.ACTION_TIMEOUT,
                     Game.UNDO_PREFIX + Game.ACTION_START_JAM);
     }
@@ -747,12 +748,14 @@ public class GameImplTests {
     @Test
     public void testStopJam_endTimeoutKeepTimeoutClock() {
         sb.getSettings().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, "Timeout");
+
+        g.startJam();
+        g.timeout();
         assertFalse(pc.isRunning());
         assertFalse(pc.isTimeAtEnd());
         assertFalse(jc.isRunning());
         assertFalse(lc.isRunning());
         tc.setTime(32000);
-        tc.start();
         tc.setNumber(8);
         assertFalse(ic.isRunning());
         assertEquals(Timeout.Owners.NONE, g.getTimeoutOwner());
@@ -762,7 +765,7 @@ public class GameImplTests {
 
         assertFalse(pc.isRunning());
         assertFalse(jc.isRunning());
-        assertFalse(lc.isRunning());
+        assertTrue(lc.isRunning());
         assertTrue(tc.isRunning());
         assertEquals(32000, tc.getTimeElapsed());
         assertEquals(8, tc.getNumber());
@@ -880,7 +883,7 @@ public class GameImplTests {
         assertFalse(ic.isRunning());
         assertEquals(Timeout.Owners.NONE, g.getTimeoutOwner());
         assertFalse(g.isOfficialReview());
-        checkLabels(Game.ACTION_START_JAM, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
+        checkLabels(Game.ACTION_NONE, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
                     Game.UNDO_PREFIX + Game.ACTION_TIMEOUT);
     }
 
@@ -902,7 +905,7 @@ public class GameImplTests {
         assertTrue(tc.isRunning());
         assertTrue(tc.isTimeAtStart());
         assertFalse(ic.isRunning());
-        checkLabels(Game.ACTION_START_JAM, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
+        checkLabels(Game.ACTION_NONE, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
                     Game.UNDO_PREFIX + Game.ACTION_TIMEOUT);
     }
 
@@ -924,7 +927,7 @@ public class GameImplTests {
         assertTrue(tc.isRunning());
         assertTrue(tc.isTimeAtStart());
         assertFalse(ic.isRunning());
-        checkLabels(Game.ACTION_START_JAM, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
+        checkLabels(Game.ACTION_NONE, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
                     Game.UNDO_PREFIX + Game.ACTION_TIMEOUT);
     }
 
@@ -945,7 +948,7 @@ public class GameImplTests {
         assertTrue(tc.isRunning());
         assertTrue(tc.isTimeAtStart());
         assertFalse(ic.isRunning());
-        checkLabels(Game.ACTION_START_JAM, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
+        checkLabels(Game.ACTION_NONE, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
                     Game.UNDO_PREFIX + Game.ACTION_TIMEOUT);
     }
 
@@ -971,7 +974,7 @@ public class GameImplTests {
         assertEquals(8, tc.getNumber());
         assertFalse(ic.isRunning());
         assertEquals(Timeout.Owners.NONE, g.getTimeoutOwner());
-        checkLabels(Game.ACTION_START_JAM, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
+        checkLabels(Game.ACTION_NONE, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
                     Game.UNDO_PREFIX + Game.ACTION_RE_TIMEOUT);
         GameImpl.setQuickClockThreshold(1000L);
 
@@ -1663,7 +1666,7 @@ public class GameImplTests {
         assertTrue(tc.isRunning());
         assertTrue(tc.isTimeAtStart());
         assertFalse(ic.isRunning());
-        checkLabels(Game.ACTION_START_JAM, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
+        checkLabels(Game.ACTION_NONE, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
                     Game.UNDO_PREFIX + Game.ACTION_TIMEOUT);
 
         g.setTimeoutType(g.getTeam(Team.ID_2), false);
@@ -1688,7 +1691,7 @@ public class GameImplTests {
         assertTrue(tc.isRunning());
         assertTrue(tc.isTimeAtStart());
         assertFalse(ic.isRunning());
-        checkLabels(Game.ACTION_START_JAM, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
+        checkLabels(Game.ACTION_NONE, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
                     Game.UNDO_PREFIX + Game.ACTION_TIMEOUT);
 
         advance(25000);
@@ -1698,7 +1701,7 @@ public class GameImplTests {
         assertFalse(lc.isRunning());
         assertTrue(tc.isRunning());
         assertFalse(ic.isRunning());
-        checkLabels(Game.ACTION_START_JAM, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
+        checkLabels(Game.ACTION_NONE, Game.ACTION_STOP_TO, Game.ACTION_RE_TIMEOUT,
                     Game.UNDO_PREFIX + Game.ACTION_TIMEOUT);
     }
 
@@ -2076,6 +2079,7 @@ public class GameImplTests {
         assertEquals(0, tj.getTeam().getOfficialReviews());
 
         // Start jam 2, confirm score.
+        g.stopJamTO();
         g.startJam();
         advance(1000);
         j = p.getJam(2);

@@ -1,0 +1,53 @@
+<div id="RosterTab" sbContext="ScoreBoard.CurrentGame" class="sbSegmentGroup">
+  <div sbForeach="Team: 1,2: only" class="sbSegment">
+    <div class="sbGroup sbHeader Name">
+      <span sbDisplay="Name"></span>
+    </div>
+    <div class="sbGroup League">
+      <img class="Logo" sbAttr="src: Logo" sbClass="sbHide: Logo: sbIsEmpty" />
+      <div class="sbStack">
+        <table class="Names">
+          <tr class="League">
+            <td class="Label">League:</td>
+            <td class="Value" sbDisplay="LeagueName"></td>
+          </tr>
+          <tr class="LTeam">
+            <td class="Label">Team:</td>
+            <td class="Value" sbDisplay="TeamName"></td>
+          </tr>
+          <tr class="Color">
+            <td class="Label">Uniform Color:</td>
+            <td class="Value" sbDisplay="UniformColor"></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <table class="sbGroup Skaters">
+      <col class="RosterNumber" />
+      <col class="Name" />
+      <col class="Pronouns" />
+      <col class="Flags" />
+      <thead class="sbHeader">
+        <tr>
+          <th></th>
+          <th class="Title">Skaters</th>
+          <th></th>
+          <th id="skaterCount" />
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          class="Skater"
+          sbForeach="Skater:: rosterNumber: resort=RosterNumber"
+          sbAttr="flag: Flags: rstUpdateSkaterCount | role: Role | rosterNumber: RosterNumber"
+        >
+          <td class="RosterNumber" sbDisplay="RosterNumber" />
+          <td class="Name" sbDisplay="Name" />
+          <td class="Pronouns" sbDisplay="Pronouns" />
+          <td class="Flags" sbDisplay="Flags,Role: rstToPositionDisplay"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

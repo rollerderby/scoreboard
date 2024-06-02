@@ -4,56 +4,81 @@
     <title>Display | CRG ScoreBoard</title>
     <script type="text/javascript" src="/external/jquery/jquery.js"></script>
     <script type="text/javascript" src="/json/core.js"></script>
-    <script type="text/javascript" src="/json/WS.js"></script>
-    <script type="text/javascript" src="/views/common.js"></script>
   </head>
-  <body>
-    <div class="ConnectionError">Not connected</div>
-    <div class="DisplayPane" id="image"><img class="object" /></div>
-    <div class="DisplayPane" id="video"><video class="object" onended="this.play();"></video></div>
-    <div class="DisplayPane" id="html"><iframe class="object"></iframe></div>
-    <div class="DisplayPane" id="whiteboard"><iframe class="object" src="../wb/?"></iframe></div>
-    <div class="DisplayPane Show" id="scoreboard" sbContext="ScoreBoard.CurrentGame" class="JamScore">
-      <div class="Team Team1 Left" sbContext="Team(1)">
-        <div class="Name AutoFit" sbModify="nameUpdate" sbDisplay="AlternateName(scoreboard),Name"></div>
-        <div class="Logo" sbTrigger="logoUpdate" sbTriggerOn="Logo">&nbsp;</div>
+  <body
+    sbPrefix="&: ScoreBoard.Settings.Setting(ScoreBoard.View : )"
+    sbClass="box_flat: &_BoxStyle: dspIsFlat | bright: &_BoxStyle: dspIsBright | PenaltyClocks: &_HidePenaltyClocks: !"
+  >
+    <div class="DisplayPane" id="image"><img class="object" sbAttr="src: &_Image" sbCss="object-fit: &_ImageScaling" /></div>
+    <div class="DisplayPane" id="video">
+      <video class="object" onended="this.play();" sbAttr="src: &_Video" sbCss="object-fit: &_VideoScaling"></video>
+    </div>
+    <div class="DisplayPane" id="html"><iframe class="object" sbAttr="src: &_CustomHtml"></iframe></div>
+    <div class="DisplayPane" id="whiteboard"><iframe class="object" src="../wb/"></iframe></div>
+    <div
+      class="DisplayPane Show"
+      id="scoreboard"
+      sbContext="ScoreBoard.CurrentGame"
+      class="JamScore"
+      sbCss="left: &_SidePadding: dspToLeftMargin | width: &_SidePadding: dspToWidth"
+    >
+      <div
+        class="Team"
+        sbForeach="Team: 1,2: only"
+        sbClass="HasName: AlternateName(scoreboard),Name: sbIsNotEmpty | HasLogo: Logo: sbIsNotEmpty | HideLogos: &_HideLogos | Left: &_SwapTeams: dspIsLeft | Right: &_SwapTeams: dspIsRight"
+      >
+        <div
+          class="Name AutoFit"
+          sbDisplay="AlternateName(scoreboard),Name"
+          sbAutoFitOn="Logo, &_HideLogos"
+          sbCss="color: Color(scoreboard.fg) | background-color: Color(scoreboard.bg) | text-shadow: Color(scoreboard.glow): sbCssToShadow"
+        ></div>
+        <div class="Logo" sbCss="background-image: Logo: sbCssToUrl">&nbsp;</div>
         <div class="Score Box AutoFit" sbDisplay="Score"></div>
-        <div class="JamScore Box AutoFit" sbDisplay="JamScore"></div>
-        <div class="ShowInJam StarPass AutoFit" sbDisplay="StarPass" sbModify="toSP"></div>
-        <div class="DotTimeouts Box">
-          <div class="Dot Timeout1"></div>
-          <div class="Dot Timeout2"></div>
-          <div class="Dot Timeout3"></div>
-        </div>
-        <div class="DotOfficialReviews Box">
-          <div class="Dot OfficialReview1"></div>
+        <div class="Penalties" sbClass="sbHide:&_HidePenaltyClocks">
+          <div
+            class="Box Red"
+            sbForeach="Position: -Jammer: penaltyTime,num: resort=PenaltyTime"
+            sbAttr="penaltyTime:PenaltyTime"
+            sbDisplay="PenaltyTime: sbToSeconds"
+            sbClass="InBox:PenaltyTime: > 0"
+          ></div>
         </div>
         <div
-          class="ShowInJam Clock Lead AutoFit"
-          sbDisplay="DisplayLead,StarPass,Position(Jammer).Name,Position(Pivot).Name,/ScoreBoard.CurrentGame.InJam"
-          sbModify="jammer"
+          class="JamScore Box AutoFit"
+          sbDisplay="JamScore"
+          sbClass="NoInitial: NoInitial | Overtime: /ScoreBoard.CurrentGame.InOvertime"
         ></div>
-      </div>
-
-      <div class="Team Team2 Right" sbContext="Team(2)">
-        <div class="Name AutoFit" sbModify="nameUpdate" sbDisplay="AlternateName(scoreboard),Name"></div>
-        <div class="Logo" sbTrigger="logoUpdate" sbTriggerOn="Logo">&nbsp;</div>
-        <div class="Score Box AutoFit" sbDisplay="Score"></div>
-        <div class="JamScore Box AutoFit" sbDisplay="JamScore"></div>
-        <div class="ShowInJam StarPass AutoFit" sbDisplay="StarPass" sbModify="toSP"></div>
-        <div class="DotTimeouts Box">
-          <div class="Dot Timeout1"></div>
-          <div class="Dot Timeout2"></div>
-          <div class="Dot Timeout3"></div>
+        <div class="ShowInJam Clock StarPass AutoFit" sbDisplay="StarPass: sbToSP"></div>
+        <div class="DotTimeouts Box" sbCss="background: Color(scoreboard_dots_bg)">
+          <div class="Dot Timeout1" sbClass="Used: Timeouts: <1" sbCss="background: Color(scoreboard_dots.fg)"></div>
+          <div class="Dot Timeout2" sbClass="Used: Timeouts: <2" sbCss="background: Color(scoreboard_dots.fg)"></div>
+          <div class="Dot Timeout3" sbClass="Used: Timeouts: <3" sbCss="background: Color(scoreboard_dots.fg)"></div>
         </div>
-        <div class="DotOfficialReviews Box">
-          <div class="Dot OfficialReview1"></div>
+        <div class="DotOfficialReviews Box" sbCss="background: Color(scoreboard_dots.bg)">
+          <div
+            class="Dot OfficialReview1"
+            sbClass="Retained: RetainedOfficialReview | Used: OfficialReviews: <1"
+            sbCss="background: Color(scoreboard_dots.fg)"
+          ></div>
+          <div
+            class="Dot OfficialReviewHelper"
+            sbClass="Retained: RetainedOfficialReview | Used: OfficialReviews: <1"
+            sbCss="background: Color(scoreboard_dots.fg)"
+          ></div>
         </div>
         <div
-          class="ShowInJam Clock Lead AutoFit"
-          sbDisplay="DisplayLead,StarPass,Position(Jammer).Name,Position(Pivot).Name,/ScoreBoard.CurrentGame.InJam"
-          sbModify="jammer"
-        ></div>
+          class="ShowInJam Clock Jammer"
+          sbForeach="Position: Jammer,Pivot: only"
+          sbClass="HasLead: ^DisplayLead | Hidden: StarPass: dspShowJammer | HasClock: PenaltyTime: > 0"
+        >
+          <span class="Name AutoFit" sbAutoFitOn="PenaltyTime, &_HidePenaltyClocks" sbDisplay="Name, ^DisplayLead: dspToJammerName"></span>
+          <span class="PenaltyTime Box Red AutoFit" sbDisplay="PenaltyTime: sbToSeconds"></span>
+        </div>
+        <div class="ShowInLineup ShowInTimeout Clock Jammer" sbContext="Position(Jammer)" sbClass="HasClock: PenaltyTime: > 0">
+          <span class="Name AutoFit" sbAutoFitOn="PenaltyTime, &_HidePenaltyClocks" sbDisplay="Name"></span>
+          <span class="PenaltyTime Box Red AutoFit" sbDisplay="PenaltyTime: sbToSeconds"></span>
+        </div>
       </div>
 
       <!-- Jam In Progress -->
@@ -62,44 +87,49 @@
           <span class="Name" sbDisplay="Name"></span>
           <span class="Number" sbDisplay="Number"></span>
         </div>
-        <div class="Box Time FlatTop AutoFit" sbDisplay="Time" sbModify="toTime"></div>
+        <div class="Box Time FlatTop AutoFit" sbDisplay="Time, Direction: sbToTime"></div>
       </div>
       <div class="ShowInJam Clock Jam Large" sbContext="Clock(Jam)">
         <div class="Box Name FlatDark FlatBottom AutoFit">
           <span class="Name" sbDisplay="Name"></span>
           <span class="Number" sbDisplay="Number"></span>
         </div>
-        <div class="Box Time FlatTop AutoFit" sbDisplay="Time" sbModify="toTime"></div>
+        <div class="Box Time FlatTop AutoFit" sbDisplay="Time, Direction: sbToTime"></div>
       </div>
 
-      <!-- Lineup / Timeout Clocks Running -->
+      <!-- Lineup / Timeout / No Clocks Running -->
       <div
         class="ShowInLineup ShowInTimeout Clock Period Small Time Box AutoFit"
         sbContext="Clock(Period)"
-        sbDisplay="Time"
-        sbModify="toTime"
+        sbDisplay="Time, Direction: sbToTime"
       ></div>
       <div class="ShowInNoClock Clock Period Small Time Box AutoFit"></div>
       <div
         class="ShowInLineup ShowInTimeout ShowInNoClock Clock Period Small NameNumber Box AutoFit"
-        sbContext="Clock(Period)"
-        sbDisplay="Name,Number"
-        sbModify="toClockInitialNumber"
+        sbDisplay="Clock(Period).Name,Clock(Period).Number,Rule(Period.Number): sbToClockInitialNumber"
       ></div>
       <div
         class="ShowInLineup ShowInTimeout Clock Jam Small NameNumber Box AutoFit"
         sbContext="Clock(Jam)"
-        sbDisplay="Name,Number"
-        sbModify="toClockInitialNumber"
+        sbDisplay="Name,Number: sbToClockInitialNumber"
+      ></div>
+      <div class="ShowInLineup Clock Description Small Box AutoFit">Lineup</div>
+      <div
+        class="ShowInTimeout Clock Description Small Box AutoFit"
+        sbDisplay="TimeoutOwner, OfficialReview: sbToTimeoutType"
+        sbClass="Red: Clock(Lineup).Running: !"
       ></div>
       <div
-        class="ShowInLineup ShowInTimeout Clock Description Small Box AutoFit"
-        sbDisplay="Clock(Lineup).Name, Clock(Lineup).Running, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReview, Team(1).Timeouts, Team(1).OfficialReviews, Team(1).RetainedOfficialReview, Team(2).Timeouts, Team(2).OfficialReviews, Team(2).RetainedOfficialReview"
-        sbModify="smallDescriptionUpdate"
+        class="ShowInLineup Clock Lineup Small Box AutoFit"
+        sbDisplay="Clock(Lineup).Time, Clock(Lineup).Direction: sbToTime"
+        sbClass="Red: NoMoreJam"
       ></div>
-      <div class="ShowInLineup Clock Lineup Small Box AutoFit" sbContext="Clock(Lineup)" sbDisplay="Time" sbModify="toTime"></div>
-      <div class="ShowInTimeout Clock Timeout Small Box AutoFit" sbContext="Clock(Timeout)" sbDisplay="Time" sbModify="toTime"></div>
-      <div class="ShowInNoClock Clock None Small Box AutoFit" sbContext="Clock(Jam)" sbDisplay="Name" sbModify="toComingUp"></div>
+      <div
+        class="ShowInTimeout Clock Timeout Small Box AutoFit"
+        sbDisplay="Clock(Timeout).Time, Clock(Timeout).Direction: sbToTime"
+        sbClass="Red: NoMoreJam"
+      ></div>
+      <div class="ShowInNoClock Clock None Small Box AutoFit">Coming Up</div>
 
       <!-- Sponsor Banners -->
       <div class="ShowInTimeout ShowInLineup ShowInNoClock Clock" id="SponsorBox">
@@ -118,10 +148,16 @@
       <div class="ShowInIntermission Clock Intermission">
         <div
           class="Message Box AutoFit"
-          sbDisplay="/ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official), /ScoreBoard.Settings.Setting(ScoreBoard.Intermission.OfficialWithClock), OfficialScore, ClockDuringFinalScore, Clock(Intermission).Number, Rule(Period.Number)"
-          sbModify="intermissionDisplay"
+          sbPrefix="#: ScoreBoard.Settings.Setting(ScoreBoard.Intermission : )"
+          sbDisplay="#.*, OfficialScore, ClockDuringFinalScore, Clock(Intermission).Number, Rule(Period.Number): sbToIntermissionDisplay"
         ></div>
-        <div class="Time Box AutoFit" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
+        <div class="Time Box AutoFit" sbContext="Clock(Intermission)" sbDisplay="Time, Direction: sbToTime"></div>
+      </div>
+    </div>
+
+    <div class="sbTemplates">
+      <div id="Banners" sbContext="ScoreBoard.Media.Format(images).Type(sponsor_banner)">
+        <div sbForeach="File" sbAttr="src: Src"></div>
       </div>
     </div>
   </body>

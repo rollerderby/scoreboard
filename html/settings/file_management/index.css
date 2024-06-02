@@ -1,0 +1,25 @@
+/* Tab divs */
+#tabsDiv > div { padding: 0px; } 
+/* End Tab divs */
+
+/* Type groups */
+/* width, font size, text alignment */
+table.Type > thead > tr.Type > th:first-child { text-align: left; } 
+table.Type > thead > tr.Type > th { padding-left: 15px; padding-right: 15px; } 
+table.Type tr.Type .ui-button { font-size: 66%; } 
+table.Type col.Remove { width: 15%; } 
+table.Type col.Name { width: 20%; } 
+table.Type col.Preview { width: 50%; } 
+table.Type col.Download { width: 15%; } 
+
+/* Show/Hide Type groups */
+table.Type:not(.Hide) tr.Type > th > button.ShowTable { display: none; } 
+table.Type.Hide tr.Type > th > button.HideTable { display: none; } 
+table.Type.Hide tr.Type > th > button.Available { display: none; } 
+table.Type.Hide tr:not(.Type) > th { display: none; } 
+table.Type.Hide tr:not(.Type) > td { display: none; } 
+
+/* Preview elements */
+#images table.Type tr.Item td.Preview { background: #000; } 
+table.Type tr.Item > td.Preview > * { max-width: 400px; max-height: 100px; } 
+/* End Type groups */

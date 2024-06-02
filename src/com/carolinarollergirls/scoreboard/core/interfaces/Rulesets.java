@@ -34,6 +34,7 @@ public interface Rulesets extends ScoreBoardEventProvider {
         public void setName(String n);
         public Ruleset getParentRuleset();
         public void setParentRuleset(Ruleset rs);
+        public boolean isAncestorOf(Ruleset rs);
         public void setRule(String id, String value);
 
         @SuppressWarnings("hiding")

@@ -3,7 +3,6 @@ package com.carolinarollergirls.scoreboard.json;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.core.interfaces.Media;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Property;
@@ -21,7 +20,8 @@ import com.carolinarollergirls.scoreboard.utils.Logger;
 public class ScoreBoardJSONListener implements ScoreBoardListener {
     public ScoreBoardJSONListener(ScoreBoard sb, JSONStateManager jsm) {
         this.jsm = jsm;
-        initialize(sb);
+        process(sb, false);
+        updateState();
         sb.addScoreBoardListener(this);
     }
 
@@ -104,17 +104,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                 }
             }
         }
-    }
-
-    private void initialize(ScoreBoard sb) {
-        process(sb, false);
-
-        // announce empty directories to the frontend
-        for (Media.MediaFormat mf : sb.getMedia().getAll(Media.FORMAT)) {
-            for (Media.MediaType mt : mf.getAll(Media.MediaFormat.TYPE)) { updates.add(new WSUpdate(getPath(mt), "")); }
-        }
-
-        updateState();
     }
 
     String getPath(ScoreBoardEventProvider p) {

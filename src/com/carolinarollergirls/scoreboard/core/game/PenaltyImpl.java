@@ -4,6 +4,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
@@ -25,8 +26,11 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
         setCopy(SERVING, this, BOX_TRIP, BoxTrip.IS_CURRENT, true);
         setCopy(JAM_NUMBER, this, JAM, Jam.NUMBER, true);
         setCopy(PERIOD_NUMBER, this, JAM, Jam.PERIOD_NUMBER, true);
+        set(FORCE_SERVED, !Boolean.valueOf(scoreBoard.getSettings().get(ScoreBoard.SETTING_USE_LT)));
         if (s.isPenaltyBox()) { set(BOX_TRIP, s.getCurrentFielding().getCurrentBoxTrip()); }
         set(SERVED, get(BOX_TRIP) != null);
+        set(CODE, "?");
+        set(JAM, game.getCurrentPeriod().getCurrentJam(), Flag.SPECIAL_CASE);
     }
 
     @Override
@@ -46,7 +50,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     }
     @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == JAM && !Skater.FO_EXP_ID.equals(getProviderId())) {
+        if (prop == JAM && !Skater.FO_EXP_ID.equals(getProviderId()) && flag != Flag.SPECIAL_CASE && !source.isFile()) {
             int newPos = getNumber();
             if (value == null || ((Jam) value).compareTo((Jam) last) > 0) {
                 Penalty comp = getNext();
@@ -79,6 +83,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
                 game.add(Game.EXPULSION, new ExpulsionImpl(game, this));
             }
         }
+        if (prop == SERVED) { parent.set(Skater.HAS_UNSERVED, (Boolean) value); }
     }
 
     @Override
@@ -88,6 +93,9 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
 
     private void possiblyUpdateSkater() {
         if ("".equals(getCode()) || Skater.FO_EXP_ID.equals(getId())) { return; }
+        if (get(BOX_TRIP) != null) {
+            get(BOX_TRIP).set(BoxTrip.PENALTY_CODES, get(BoxTrip.PENALTY_CODES), Source.RECALCULATE);
+        }
         skater.set(Skater.CURRENT_PENALTIES, skater.get(Skater.CURRENT_PENALTIES), Source.RECALCULATE);
     }
 

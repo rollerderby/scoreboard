@@ -108,6 +108,7 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> implements
     @Override
     public void stop() {
         set(RUNNING, false);
+        if (getOwner() == Owners.NONE) { set(OWNER, Owners.OTO); }
         set(DURATION, game.getClock(Clock.ID_TIMEOUT).getTimeElapsed());
         set(WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
         set(PERIOD_CLOCK_ELAPSED_END, game.getClock(Clock.ID_PERIOD).getTimeElapsed());

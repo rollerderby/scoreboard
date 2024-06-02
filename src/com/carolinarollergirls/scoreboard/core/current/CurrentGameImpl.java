@@ -152,7 +152,8 @@ public class CurrentGameImpl extends MirrorScoreBoardEventProviderImpl<Game, Cur
         classMap.put(Official.class, CurrentOfficial.class);
         classMap.put(Expulsion.class, CurrentExpulsion.class);
 
-        addPropertyMapping(Game.CLOCK, Game.TEAM, Game.PERIOD, Period.JAM, Game.REF, Game.NSO, Game.EXPULSION);
+        addPropertyMapping(Game.CLOCK, Game.TEAM, Game.PERIOD, Period.JAM, Team.BOX_TRIP, Game.REF, Game.NSO,
+                           Game.EXPULSION);
     }
 
     @Override
@@ -208,6 +209,10 @@ public class CurrentGameImpl extends MirrorScoreBoardEventProviderImpl<Game, Cur
     public static class CurrentBoxTripImpl
         extends MirrorScoreBoardEventProviderImpl<BoxTrip, CurrentBoxTrip> implements CurrentBoxTrip {
         CurrentBoxTripImpl(ScoreBoardEventProvider parent, BoxTrip sourceElement) { super(parent, sourceElement); }
+        @Override
+        protected void fillMaps() {
+            addPropertyMapping(BoxTrip.CLOCK);
+        }
     }
     public static class CurrentPeriodImpl
         extends MirrorScoreBoardEventProviderImpl<Period, CurrentPeriod> implements CurrentPeriod {

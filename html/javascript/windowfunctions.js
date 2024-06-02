@@ -1,7 +1,8 @@
-var _windowFunctions = {
+'use strict';
+
+const _windowFunctions = {
   /* Display area dimensions */
   getAspectDimensions: function (aspect, overflow) {
-    'use strict';
     var width, height, top, bottom, left, right;
     if (aspect > $(window).width() / $(window).height() === (overflow === true)) {
       width = Math.round(aspect * $(window).height());
@@ -17,32 +18,25 @@ var _windowFunctions = {
     return { width: width, height: height, top: top, bottom: bottom, left: left, right: right };
   },
   get4x3Dimensions: function (overflow) {
-    'use strict';
     return this.getAspectDimensions(4 / 3, overflow);
   },
   get16x9Dimensions: function (overflow) {
-    'use strict';
     return this.getAspectDimensions(16 / 9, overflow);
   },
 
   /* URL parameters */
   getParam: function (param) {
-    'use strict';
-    var value = $.string(window.location.search).toQueryParams()[param];
-    return $.isArray(value) ? value[0] : value;
+    return new URL(window.location).searchParams.get(param);
   },
   hasParam: function (param) {
-    'use strict';
-    return $.string(window.location.search).toQueryParams().hasOwnProperty(param);
+    return this.getParam(param) != null;
   },
   checkParam: function (param, value) {
-    'use strict';
     return value === _windowFunctions.getParam(param);
   },
 
   /* Zoom for mobile views */
   configureZoom: function () {
-    'use strict';
     if (!_windowFunctions.checkParam('zoomable', 1)) {
       $('head').append('<meta name="viewport" content="width=device-width, user-scalable=no">');
     } else {
@@ -70,7 +64,6 @@ var _windowFunctions = {
    * are inserted.
    */
   appendSorted: function (parent, newChild, comparator, startIndex) {
-    'use strict';
     var child = null;
     startIndex = startIndex || 0;
     parent.children().each(function (i) {
@@ -98,61 +91,52 @@ var _windowFunctions = {
    * to the "Alpha" sort.
    */
   appendAlphaSorted: function (parent, newChild, startIndex) {
-    'use strict';
     var comp = _windowFunctions.alphaCompareByNodeName;
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
   appendAlphaSortedByAttr: function (parent, newChild, attrName, startIndex) {
-    'use strict';
     var comp = function (a, b) {
       return _windowFunctions.alphaCompareByAttr(attrName, a, b);
     };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
   appendAlphaNumSortedByAttr: function (parent, newChild, attrName, startIndex) {
-    'use strict';
     var comp = function (a, b) {
       return _windowFunctions.numCompareByAttr(attrName, a, b);
     };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
   appendAlphaSortedByProp: function (parent, newChild, propName, startIndex) {
-    'use strict';
     var comp = function (a, b) {
       return _windowFunctions.alphaCompareByProp(propName, a, b);
     };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
   appendAlphaNumSortedByProp: function (parent, newChild, propName, startIndex) {
-    'use strict';
     var comp = function (a, b) {
       return _windowFunctions.numCompareByProp(propName, a, b);
     };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
   appendAlphaSortedByData: function (parent, newChild, dataName, startIndex) {
-    'use strict';
     var comp = function (a, b) {
       return _windowFunctions.alphaCompareByData(dataName, a, b);
     };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
   appendAlphaNumSortedByData: function (parent, newChild, dataName, startIndex) {
-    'use strict';
     var comp = function (a, b) {
       return _windowFunctions.numCompareByData(dataName, a, b);
     };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
   appendAlphaSortedByText: function (parent, newChild, startIndex) {
-    'use strict';
     var comp = function (a, b) {
       return _windowFunctions.alphaCompareByText(a, b);
     };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
   appendAlphaNumSortedByText: function (parent, newChild, startIndex) {
-    'use strict';
     var comp = function (a, b) {
       return _windowFunctions.numCompareByText(a, b);
     };
@@ -160,31 +144,24 @@ var _windowFunctions = {
   },
 
   alphaCompare: function (a, b) {
-    'use strict';
     return a > b;
   },
   alphaCompareByNodeName: function (a, b) {
-    'use strict';
     return _windowFunctions.alphaCompare(a.nodeName, b.nodeName);
   },
   alphaCompareByAttr: function (n, a, b) {
-    'use strict';
     return _windowFunctions.alphaCompare($(a).attr(n), $(b).attr(n));
   },
   alphaCompareByProp: function (n, a, b) {
-    'use strict';
     return _windowFunctions.alphaCompare($(a).prop(n), $(b).prop(n));
   },
   alphaCompareByData: function (n, a, b) {
-    'use strict';
     return _windowFunctions.alphaCompare($(a).data(n), $(b).data(n));
   },
   alphaCompareByText: function (a, b) {
-    'use strict';
     return _windowFunctions.alphaCompare($(a).text(), $(b).text());
   },
   numCompare: function (a, b) {
-    'use strict';
     var numA = Number(a),
       numB = Number(b);
     if (!isNaN(numA) && !isNaN(numB)) {
@@ -199,23 +176,18 @@ var _windowFunctions = {
     }
   },
   numCompareByAttr: function (n, a, b) {
-    'use strict';
     return _windowFunctions.numCompare($(a).attr(n), $(b).attr(n));
   },
   numCompareByProp: function (n, a, b) {
-    'use strict';
     return _windowFunctions.numCompare($(a).prop(n), $(b).prop(n));
   },
   numCompareByData: function (n, a, b) {
-    'use strict';
     return _windowFunctions.numCompare($(a).data(n), $(b).data(n));
   },
   numCompareByText: function (a, b) {
-    'use strict';
     return _windowFunctions.numCompare($(a).text(), $(b).text());
   },
   fullscreenRequest: function (a) {
-    'use strict';
     var isFullscreen = false;
     if (document.fullscreen) {
       isFullscreen = true;

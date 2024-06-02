@@ -1,0 +1,19 @@
+/* mirror team 2 */
+body:not([showTeam="2"]) [Team] ~ [Team]>.SkInput>.sbGroup:not(.sbStack)  { flex-direction: row-reverse; }
+body:not([showTeam="2"]) [Team] ~ [Team]>.SkInput .ScoreRow  { flex-direction: row-reverse; }
+
+/* name/logo row */
+.SkInput img.Logo { height: 50px; max-width: 200px; }
+.SkInput .sbGroup.Name { height: 50px; }
+.SkInput .sbGroup.Name>div { flex:content; }
+.SkInput .sbGroup.Name>div.Name { flex: 3 0 content; }
+
+/* timeout row */
+.SkInput .Timeouts > * { flex: 1; }
+.SkInput .Timeouts { position: relative; }
+[Team="1"] .SkInput .OfficialTimeout>div { display: none; }
+[Team="2"] .SkInput .OfficialTimeout>div { position: absolute; right: calc(50% + (0.5 * var(--segment-gap))); width: 100%; }
+.SkInput .OfficialTimeout button { transform: translateY(-50%); }
+
+/* jammer/pivot rows */
+.SkInput .HasPlayed:not(.Active) { box-shadow: inset 0px 0px 4px 4px var(--element-active-bg); }

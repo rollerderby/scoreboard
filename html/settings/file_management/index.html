@@ -5,14 +5,69 @@
 
     <script type="text/javascript" src="/external/jquery/jquery.js"></script>
     <script type="text/javascript" src="/json/core.js"></script>
-    <script type="text/javascript" src="/javascript/utils.js"></script>
-    <script type="text/javascript" src="/components/file-management-tab.js"></script>
-
-    <link rel="stylesheet" href="/components/file-management-tab.css" type="text/css" />
   </head>
 
   <body>
-    <a id="indexLink" href="/" class="ui-widget ui-widget-content" style="float: right; border: none">Back to index page</a><br />
-    <div id="tabsDiv"></div>
+    <a id="sbIndexLink" href="/" class="ui-widget ui-widget-content">Back to index page</a><br />
+    <div id="tabsDiv" sbContext="ScoreBoard.Media">
+      <ul id="fileTabBar">
+        <li><a href="#images">Image</a></li>
+        <li><a href="#videos">Video</a></li>
+        <li><a href="#custom">Custom Screens</a></li>
+        <li><a href="#game-data">Game Files</a></li>
+      </ul>
+      <div sbForeach="Format: images, videos, custom, game-data: only" sbAttr="id: Id | aria-hidden: Id: v !== 'images'">
+        <div sbForeach="Type" class="sbSegment">
+          <table class="sbGroup Type">
+            <col class="Download" />
+            <col class="Name" />
+            <col class="Preview" />
+            <col class="Remove" />
+            <thead>
+              <tr class="sbHeader Type">
+                <th colspan="3">
+                  <button class="ShowTable" sbCall="filShowTable">Show</button>
+                  <button class="HideTable" sbCall="filHideTable">Hide</button>
+                  <span class="Label">Type: <span class="Type" sbDisplay="Id: filGetSubId"></span></span>
+                </th>
+                <th>
+                  <button class="Upload Right" sbCall="filCreateUploadDialog">Upload</button>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr sbForeach="File:: name: resort=Name" sbAttr="name: Name" class="Item">
+                <td class="Download"><a download class="Download" sbAttr="href: Id: sbToMediaPath" sbButton>Download</a></td>
+                <td class="Name" sbClass="sbHide: Id: filIsGameData"><input type="text" class="Name" sbControl="Name" /></td>
+                <td class="Preview" sbClass="sbHide: Id: filIsGameData" sbDisplay="Id: filToPreviewElem: html"></td>
+                <td colspan="2" class="Src" sbClass="sbHide: Id: filNoGameData" sbDisplay="Id"></td>
+                <td class="Remove"><button class="Remove" sbCall="filCreateRemoveDialog">Remove</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="sbTemplates">
+      <div class="UploadMediaDialog sbSegment">
+        <div class="sbGroup">
+          <div class="Upload"></div>
+          <p><span class="File">File: </span><input type="file" multiple class="File" /></p>
+          <p><span class="Status"></span></p>
+        </div>
+      </div>
+
+      <div class="RemoveMediaDialog sbSegment" sbContext="ScoreBoard.Media.Format(*).Type(*).File(*)">
+        <div class="sbGroup">
+          <div>
+            <p>Media File : <span class="File" sbDisplay=":sbToMediaPath"></span></p>
+            <p class="Warning">This will delete the media file from your system. You cannot undo this operation.</p>
+            <p class="Confirm">Are you sure?</p>
+            <p class="Status"></p>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

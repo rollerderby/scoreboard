@@ -95,7 +95,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final Value<String> TEAM_NAME = new Value<>(String.class, "TeamName", "", preparedProps);
     public static final Value<String> FILE_NAME = new Value<>(String.class, "FileName", "", props);
     public static final Value<String> INITIALS = new Value<>(String.class, "Initials", "", props);
-    public static final Value<String> UNIFORM_COLOR = new Value<>(String.class, "UniformColor", "", props);
+    public static final Value<String> UNIFORM_COLOR = new Value<>(String.class, "UniformColor", null, props);
     public static final Value<String> LOGO = new Value<>(String.class, "Logo", "", preparedProps);
     public static final Value<TeamJam> RUNNING_OR_UPCOMING_TEAM_JAM =
         new Value<>(TeamJam.class, "RunningOrUpcomingTeamJam", null, props);
@@ -135,6 +135,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final Value<Integer> ACTIVE_SCORE_ADJUSTMENT_AMOUNT =
         new Value<>(Integer.class, "ActiveScoreAdjustmentAmount", 0, props);
     public static final Value<Integer> TOTAL_PENALTIES = new Value<>(Integer.class, "TotalPenalties", 0, props);
+    public static final Value<Boolean> ALL_BLOCKERS_SET = new Value<>(Boolean.class, "AllBlockersSet", false, props);
 
     public static final Child<ValWithId> ALTERNATE_NAME = new Child<>(ValWithId.class, "AlternateName", preparedProps);
     public static final Child<ValWithId> COLOR = new Child<>(ValWithId.class, "Color", preparedProps);
@@ -150,11 +151,14 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final Command ADVANCE_FIELDINGS = new Command("AdvanceFieldings", props);
     public static final Command TIMEOUT = new Command("Timeout", props);
     public static final Command OFFICIAL_REVIEW = new Command("OfficialReview", props);
+    public static final Command CLEAR_SKATERS = new Command("ClearSkaters", props);
 
     public enum AlternateNameId {
         SCOREBOARD("scoreboard"),
         WHITEBOARD("whiteboard"),
         OPERATOR("operator"),
+        PLT("plt"),
+        BOX("box"),
         OVERLAY("overlay"),
         TWITTER("twitter");
 

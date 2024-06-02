@@ -1,0 +1,23 @@
+/* Sizes */
+.LtSheet tr { height: 35px; } 
+.LtSheet thead>tr { height: 20px; } 
+.LtSheet>.Period .JamNumber { width: 30px; } 
+.LtSheet>.Period .NP { width: 25px; } 
+.LtSheet>.Period .Skater { width: 12%; } 
+.LtSheet>.Period .Box { width: 8%; } 
+.LtSheet>.Period:Not(.Current) .Upcoming { display: none; }
+[sbSheetStyle="sheet"] .LtSheet>.Period .Upcoming { display: none; }
+
+/* header row */
+.LtSheet>.Period th { font-size: 95%; background-color: #cccccc; color: #333333; } 
+
+/* Colors & Borders*/
+.LtSheet>.Period { background-color: #FFF; } 
+.LtSheet>.Period .Darker { background-color: #e7f3ff; } 
+.LtSheet>.Period .Darker .Darker { background-color: #cee7ff; } 
+.LtSheet>.Period td.Box { background-color: #b6daff; }
+
+#FieldingEditor .Skater { flex-wrap: wrap; gap: var(--element-gap); }
+#FieldingEditor td.Earlier { text-align: right; width: 80px; }
+#FieldingEditor td.Later { text-align: left; width: 80px; }
+#FieldingEditor td.Text { width: 100px; }

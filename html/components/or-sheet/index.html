@@ -1,0 +1,39 @@
+<div class="sbSegment">
+  <div class="sbGroup sbSheets OrSheet">
+    <table sbForeach="Period: -0: sbComparePeriod" class="Period">
+      <thead>
+        <tr>
+          <td colspan="9" sbDisplay="Number: 'Period ' + v"></td>
+        </tr>
+      </thead>
+      <tbody sbForeach="Timeout:: sbCompareJam" sbAttr="Jam: PrecedingJamNumber,WalltimeStart: orToJamNumber" sbClass="sbHide: Review: !">
+        <tr>
+          <th>Team:</th>
+          <td class="sbImportant" sbDisplay="Owner,^^Team(*).Name: orToTeamName"></td>
+          <th>Jam Number:</th>
+          <td class="sbImportant" sbDisplay="PrecedingJamNumber"></td>
+          <th>Period Clock:</th>
+          <td class="sbImportant" sbDisplay="PeriodClockEnd: sbToLongTime"></td>
+          <th>Length of Review:</th>
+          <td class="sbImportant" sbAttr="Duration: Duration" sbDisplay="Duration: sbToLongTime"></td>
+          <td><button sbToggle="RetainedReview">Retained</button></td>
+        </tr>
+        <tr>
+          <th>Details:</th>
+          <td colspan="8"><textarea rows="5" sbControl="OrRequest"></textarea></td>
+        </tr>
+        <tr>
+          <th>Result:</th>
+          <td colspan="8"><textarea rows="2" sbControl="OrResult"></textarea></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="6" class="Unused"></td>
+          <th colspan="2">Total Time Elapsed</th>
+          <th class="TotalTime"></th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>

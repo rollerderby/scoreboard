@@ -54,7 +54,7 @@ public class ClientsImplTests {
         assertEquals(d.get(Device.ACCESSED), d.get(Device.CREATED));
 
         Client c = clients.addClient(d.getId(), "remoteaddr", "source", "platform");
-        assertEquals(d, c.get(Client.DEVICE));
+        assertEquals(d, c.getParent());
         assertNotEquals(0, (long) c.get(Client.CREATED));
         assertEquals(0L, (long) c.get(Client.WROTE));
         assertEquals("remoteaddr", c.get(Client.REMOTE_ADDR));
@@ -82,7 +82,7 @@ public class ClientsImplTests {
 
         // 2nd client
         Client c2 = clients.addClient(d.getId(), "remoteaddr2", "source2", null);
-        assertEquals(d, c2.get(Client.DEVICE));
+        assertEquals(d, c2.getParent());
         assertEquals(c2, d.get(Device.CLIENT, c2.getId()));
         assertEquals(2, d.numberOf(Device.CLIENT));
         assertNotEquals(0, (long) c2.get(Client.CREATED));
@@ -103,7 +103,6 @@ public class ClientsImplTests {
         assertEquals(null, d.get(Device.CLIENT, c2.getId()));
         assertEquals(0, d.numberOf(Device.CLIENT));
         assertEquals(d, clients.get(Clients.DEVICE, d.getId()));
-        assertEquals(0, clients.numberOf(Clients.CLIENT));
         assertNotEquals(0, (long) d.get(Device.WROTE));
 
         d.set(Device.COMMENT, "comment");
@@ -114,16 +113,14 @@ public class ClientsImplTests {
     public void testLoadSave() {
         // Device with one client.
         Map<String, Object> save = new HashMap<>();
-        save.put("ScoreBoard.Clients.Client(c3).Id", "c3");
-        save.put("ScoreBoard.Clients.Client(c3).Device", "d2");
         save.put("ScoreBoard.Clients.Device(d2).Id", "d2");
-        save.put("ScoreBoard.Clients.Device(d2).Client(c3)", "c3");
+        save.put("ScoreBoard.Clients.Device(d2).Client(c3).Id", "c3");
         save.put("ScoreBoard.Clients.Device(d2).SessionIdSecret", "asecret");
         ScoreBoardJSONSetter.set(sb, save, Source.JSON);
 
         // No clients after the load is done.
         assertEquals(1, clients.numberOf(Clients.DEVICE));
-        assertEquals(0, clients.numberOf(Clients.CLIENT));
+        assertEquals(0, clients.get(Clients.DEVICE, "d2").numberOf(Device.CLIENT));
         assertEquals(0, clients.getDevice("asecret").numberOf(Device.CLIENT));
     }
 
@@ -153,31 +150,24 @@ public class ClientsImplTests {
         // Try to remove existing device and client.
         save.put("ScoreBoard.Clients.Device(" + d.getId() + ")", null);
         save.put("ScoreBoard.Clients.Device(" + d.getId() + ").Client(" + c2.getId() + ")", null);
-        save.put("ScoreBoard.Clients.Client(" + c2.getId() + ")", null);
         // Try to add a client.
-        save.put("ScoreBoard.Clients.Client(abc).Id", "abc");
-        save.put("ScoreBoard.Clients.Client(abc).Device", d.getId());
-        save.put("ScoreBoard.Clients.Device(" + d.getId() + ").Client(abc)", "abc");
+        save.put("ScoreBoard.Clients.Device(" + d.getId() + ").Client(abc).Id", "abc");
         // New device and client.
-        save.put("ScoreBoard.Clients.Client(c3).Id", "c3");
-        save.put("ScoreBoard.Clients.Client(c3).Device", "d2");
         save.put("ScoreBoard.Clients.Device(d2).Id", "d2");
-        save.put("ScoreBoard.Clients.Device(d2).Client(c3)", "c3");
+        save.put("ScoreBoard.Clients.Device(d2).Client(c3).Id", "c3");
         save.put("ScoreBoard.Clients.Device(d2).SessionIdSecret", "d2s");
         save.put("ScoreBoard.Clients.Device(d2).RemoteAddr", "d2r");
         save.put("ScoreBoard.Clients.Device(d2).Comment", "d2c");
         ScoreBoardJSONSetter.set(sb, save, Source.JSON);
 
         // New clients have not been added, existing clients remain.
-        assertEquals(c, clients.get(Clients.CLIENT, c.getId()));
-        assertEquals(c2, clients.get(Clients.CLIENT, c2.getId()));
-        assertNull(clients.get(Clients.CLIENT, "c3"));
-        assertEquals(2, clients.numberOf(Clients.CLIENT));
-        assertEquals(c, clients.get(Clients.CLIENT, c.getId()));
-        assertEquals(c2, clients.get(Clients.CLIENT, c2.getId()));
+        assertEquals(d, clients.get(Clients.DEVICE, d.getId()));
+        assertEquals(c, d.get(Device.CLIENT, c.getId()));
+        assertEquals(c2, d.get(Device.CLIENT, c2.getId()));
+        assertNull(d.get(Device.CLIENT, "c3"));
+        assertEquals(2, d.numberOf(Device.CLIENT));
         // New device has been added, without a client.
         Device d2 = clients.getDevice("d2s");
-        assertEquals(d, clients.get(Clients.DEVICE, d.getId()));
         assertEquals(d2, clients.get(Clients.DEVICE, "d2"));
         assertEquals(2, clients.numberOf(Clients.DEVICE));
 
@@ -240,7 +230,7 @@ public class ClientsImplTests {
         String dId = "ScoreBoard.Clients.Device(" + d.getId() + ")";
         d.set(Device.COMMENT, "original comment");
         Client c = clients.addClient(d.getId(), "remoteaddr", "source", "platform");
-        String cId = "ScoreBoard.Clients.Client(" + c.getId() + ")";
+        String cId = "ScoreBoard.Clients.Device(" + d.getId() + ").Client(" + c.getId() + ")";
         c.write();
         long created = d.get(Device.CREATED);
         long accessed = d.get(Device.ACCESSED);
@@ -264,13 +254,11 @@ public class ClientsImplTests {
         fuzzSet(dId + ".Wrote");
         fuzzSet(dId + ".Accessed");
         fuzzSet(dId + ".NoSuchProperty");
-        fuzzSet(dId + ".Client(foo)");
-        fuzzSet(dId + ".Client(" + c.getId() + ")");
-        fuzzSet("ScoreBoard.Clients.Client(foo).Id");
+        fuzzSet(dId + ".Client(foo).Id");
+        fuzzSet(dId + ".Client(" + c.getId() + ").Id");
+        fuzzSet("ScoreBoard.Clients.Device(" + d.getId() + ").Client(foo).Id");
         fuzzSet(cId);
         fuzzSet(cId + ".Id");
-        fuzzSet(cId + ".Device(foo)");
-        fuzzSet(cId + ".Device(" + d.getId() + ")");
         fuzzSet(cId + ".RemoteAddr");
         fuzzSet(cId + ".Platform");
         fuzzSet(cId + ".Source");
@@ -284,10 +272,10 @@ public class ClientsImplTests {
 
         // Clients.
         assertNotNull(sb.getClients());
-        assertEquals(1, clients.numberOf(Clients.CLIENT));
         assertEquals(1, clients.numberOf(Clients.DEVICE));
-        assertEquals(c, clients.get(Clients.CLIENT, c.getId()));
         assertEquals(d, clients.get(Clients.DEVICE, d.getId()));
+        assertEquals(1, d.numberOf(Device.CLIENT));
+        assertEquals(c, d.get(Device.CLIENT, c.getId()));
 
         // Device.
         assertEquals(1, d.numberOf(Device.CLIENT));
@@ -302,7 +290,6 @@ public class ClientsImplTests {
         assertEquals("new comment", d.get(Device.COMMENT));
 
         // Client.
-        assertEquals(d, c.get(Client.DEVICE));
         assertEquals(wrote, (long) c.get(Client.WROTE));
         assertEquals("remoteaddr", c.get(Client.REMOTE_ADDR));
         assertEquals("platform", c.get(Client.PLATFORM));

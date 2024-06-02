@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.Map;
-import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -27,6 +25,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.prepared.RulesetsImpl;
+import com.carolinarollergirls.scoreboard.json.JSONStateListener.StateTrie;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.BasePath;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -43,10 +42,10 @@ public class ScoreBoardJSONListenerTests {
     public TemporaryFolder dir = new TemporaryFolder();
     private File oldDir;
 
-    private Map<String, Object> state;
+    private StateTrie state;
     private JSONStateListener jsonListener = new JSONStateListener() {
         @Override
-        public void sendUpdates(Map<String, Object> s, Set<String> changed) {
+        public void sendUpdates(StateTrie s, StateTrie changed) {
             state = s;
         }
     };
@@ -439,8 +438,8 @@ public class ScoreBoardJSONListenerTests {
 
     @Test
     public void testMediaEvents() throws Exception {
-        assertEquals("", state.get("ScoreBoard.Media.Format(images).Type(fullscreen)"));
-        assertEquals("", state.get("ScoreBoard.Media.Format(images).Type(teamlogo)"));
+        assertEquals(null, state.get("ScoreBoard.Media.Format(images).Type(fullscreen)"));
+        assertEquals(null, state.get("ScoreBoard.Media.Format(images).Type(teamlogo)"));
         assertEquals("init.png", state.get("ScoreBoard.Media.Format(images).Type(teamlogo).File(init.png).Id"));
         assertEquals("init", state.get("ScoreBoard.Media.Format(images).Type(teamlogo).File(init.png).Name"));
         assertEquals("/images/teamlogo/init.png",
@@ -453,7 +452,7 @@ public class ScoreBoardJSONListenerTests {
         assertEquals(null, state.get("ScoreBoard.Media.Format(images).Type(teamlogo.File(init.png).Id"));
         assertEquals(null, state.get("ScoreBoard.Media.Format(images).Type(teamlogo.File(init.png).Name"));
         assertEquals(null, state.get("ScoreBoard.Media.Format(images).Type(teamlogo.File(init.png).Src"));
-        assertEquals("", state.get("ScoreBoard.Media.Format(images).Type(teamlogo)"));
+        assertEquals(null, state.get("ScoreBoard.Media.Format(images).Type(teamlogo)"));
         assertEquals("new.png", state.get("ScoreBoard.Media.Format(images).Type(fullscreen).File(new.png).Id"));
         assertEquals("new", state.get("ScoreBoard.Media.Format(images).Type(fullscreen).File(new.png).Name"));
         assertEquals("/images/fullscreen/new.png",
