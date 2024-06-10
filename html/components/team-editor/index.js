@@ -270,7 +270,7 @@ function tmeStartAutocomplete(k, v, elem) {
 }
 
 function tmeAddColor(k, v, elem) {
-  const typeinput = elem.closest('#ColorsDialog').children('#newType');
+  const typeinput = elem.closest('#ColorsDialog').find('#newType');
   WS.Set(k + '.Color(' + typeinput.val() + '.fg)', '');
   WS.Set(k + '.Color(' + typeinput.val() + '.bg)', '');
   WS.Set(k + '.Color(' + typeinput.val() + '.glow)', '');
