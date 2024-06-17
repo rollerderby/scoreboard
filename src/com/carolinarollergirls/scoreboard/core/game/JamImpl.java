@@ -55,7 +55,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
             if (parent instanceof Period && this == ((Period) parent).getCurrentJam()) {
                 parent.set(Period.CURRENT_JAM, getPrevious());
             }
-            for (Penalty p : getAll(PENALTY)) { p.set(Penalty.JAM, getNext()); }
+            for (Penalty p : getAll(PENALTY)) { p.set(Penalty.JAM, hasNext() ? getNext() : getPrevious()); }
             for (Timeout t : getAll(TIMEOUTS_AFTER)) { t.set(Timeout.PRECEDING_JAM, getPrevious()); }
         }
         super.delete(source);

@@ -94,6 +94,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         addWriteProtectionOverride(IN_JAM, Source.NON_WS);
         addWriteProtectionOverride(IN_OVERTIME, Source.NON_WS);
         addWriteProtectionOverride(CURRENT_TIMEOUT, Source.NON_WS);
+        addWriteProtectionOverride(UPCOMING_JAM, Source.NON_WS);
         setRecalculated(NO_MORE_JAM)
             .addSource(this, IN_JAM)
             .addSource(this, IN_PERIOD)
@@ -239,8 +240,15 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == UPCOMING_JAM && !(value instanceof Jam)) {
-            if (getCurrentPeriod() != null) { value = new JamImpl(this, getCurrentPeriod().getCurrentJam()); }
+        if (prop == UPCOMING_JAM && !source.isFile()) {
+            Jam j = getCurrentPeriod().getCurrentJam().getNext();
+            if (j == null) { j = new JamImpl(this, getCurrentPeriod().getCurrentJam()); }
+            if (j.getParent() != this) {
+                j.getParent().remove(Period.JAM, j);
+                j.setParent(this);
+            }
+            while (j.hasNext()) { j.getNext().delete(); }
+            return j;
         } else if (prop == NO_MORE_JAM) {
             if (isInJam() || !isInPeriod()) { return false; }
             if (!getBoolean(Rule.PERIOD_END_BETWEEN_JAMS)) { return false; }
@@ -345,6 +353,9 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             return;
         }
         if (prop == CURRENT_PERIOD) {
+            Period p = (Period) value;
+            if (p.getCurrentJam().getNext() != getUpcomingJam()) { set(UPCOMING_JAM, p.getCurrentJam().getNext()); }
+            while (p.hasNext()) { p.getNext().delete(); }
             for (Team t : getAll(TEAM)) { t.recountTimeouts(); }
         }
         if (prop == STATE && (State) value == State.RUNNING && (State) last == State.PREPARED) {
@@ -391,6 +402,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             getRuleset().add(Ruleset.RULE, (ValWithId) item);
             return false;
         }
+        if (prop == Period.JAM && item != getUpcomingJam()) { return false; }
         return true;
     }
 
@@ -464,7 +476,15 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         synchronized (coreLock) {
             if (prop == CLOCK) { return new ClockImpl(this, id); }
             if (prop == TEAM) { return new TeamImpl(this, id); }
-            if (prop == Period.JAM) { return new JamImpl(this, Integer.parseInt(id)); }
+            if (prop == Period.JAM) {
+                int num = Integer.parseInt(id);
+                if (source.isFile()) {
+                    return new JamImpl(this, num);
+                } else if (num == getCurrentPeriod().getCurrentJamNumber()) {
+                    // could be a race around jam start
+                    return getCurrentPeriod().getCurrentJam();
+                }
+            }
             if (prop == PERIOD) {
                 int num = Integer.parseInt(id);
                 if (0 <= num && num <= getInt(Rule.NUMBER_PERIODS)) { return new PeriodImpl(this, num); }
@@ -520,13 +540,6 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     @Override
     public Jam getUpcomingJam() {
         return get(UPCOMING_JAM);
-    }
-    protected void advanceUpcomingJam() {
-        Jam upcoming = getUpcomingJam();
-        Jam next = new JamImpl(this, upcoming);
-        set(UPCOMING_JAM, next);
-        upcoming.setParent(getCurrentPeriod());
-        getCurrentPeriod().add(Period.JAM, upcoming);
     }
 
     @Override
@@ -714,7 +727,6 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         _endIntermission(false);
         _endLineup();
         if (!getBoolean(Rule.TO_JAM) || !getCurrentTimeout().isRunning()) { pc.start(); }
-        advanceUpcomingJam();
         getCurrentPeriod().startJam();
         set(IN_JAM, true);
         jc.restart();
@@ -851,18 +863,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     }
     protected void restoreSnapshot() {
         ScoreBoardClock.getInstance().rewindTo(snapshot.getSnapshotTime());
-        if (getCurrentPeriod() != snapshot.getCurrentPeriod()) {
-            if (getCurrentPeriod().numberOf(Period.JAM) > 0) {
-                // We're undoing a period advancement. Move the upcoming Jam
-                // (and any associated Fieldings) back out before deleting the period.
-                Jam movedJam = getCurrentPeriod().getFirst(Period.JAM);
-                getCurrentPeriod().remove(Period.JAM, movedJam);
-                movedJam.setParent(this);
-                set(UPCOMING_JAM, movedJam);
-            }
-            getCurrentPeriod().delete();
-            set(CURRENT_PERIOD, snapshot.getCurrentPeriod());
-        }
+        set(CURRENT_PERIOD, snapshot.getCurrentPeriod());
         getCurrentPeriod().restoreSnapshot(snapshot.getPeriodSnapshot());
         if (getCurrentTimeout() != snapshot.getCurrentTimeout() && getCurrentTimeout() != noTimeoutDummy) {
             getCurrentTimeout().delete();

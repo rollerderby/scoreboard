@@ -98,7 +98,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     }
     @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == CURRENT_FIELDING) {
+        if (prop == CURRENT_FIELDING && !source.isFile()) {
             Fielding f = (Fielding) value;
             Fielding lf = (Fielding) last;
             setRole(value == null ? getBaseRole() : f.getCurrentRole());

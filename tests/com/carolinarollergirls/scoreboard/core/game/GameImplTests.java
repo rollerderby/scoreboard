@@ -3,6 +3,7 @@ package com.carolinarollergirls.scoreboard.core.game;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -103,6 +104,16 @@ public class GameImplTests {
 
     @After
     public void tearDown() throws Exception {
+        // check invariants around current period and upcoming jam
+        assertNotNull(g.getCurrentPeriod());
+        assertNull(g.getCurrentPeriod().getNext());
+        assertNotNull(g.getUpcomingJam());
+        assertNull(g.getUpcomingJam().getNext());
+        assertEquals(g.getUpcomingJam(), g.getCurrentPeriod().getCurrentJam().getNext());
+        assertEquals(g, g.getUpcomingJam().getParent());
+        assertEquals(1, g.numberOf(Period.JAM));
+        assertEquals(g.getUpcomingJam(), g.getFirst(Period.JAM));
+
         ScoreBoardClock.getInstance().start(false);
         GameImpl.setQuickClockThreshold(1000L);
         // Check all started batches were ended.

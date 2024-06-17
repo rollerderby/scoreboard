@@ -96,8 +96,15 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
                     set(WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
                 }
             }
-        } else if (prop == CURRENT_JAM && hasNext() && getNext().get(CURRENT_JAM) == last) {
-            getNext().set(CURRENT_JAM, (Jam) value);
+        } else if (prop == CURRENT_JAM && value != null) {
+            Jam j = (Jam) value;
+            if (hasNext() && getNext().get(CURRENT_JAM) == last) { getNext().set(CURRENT_JAM, j); }
+            if (j.getParent() != this && (!hasPrevious() || getPrevious().getCurrentJam() != j)) {
+                j.getParent().remove(JAM, j);
+                j.setParent(this);
+                add(JAM, j);
+            }
+            if (this == game.getCurrentPeriod()) { game.set(Game.UPCOMING_JAM, j.getNext()); }
         } else if (prop == PREVIOUS && value != null && numberOf(JAM) > 0) {
             getFirst(JAM).setPrevious(getPrevious().getCurrentJam());
         }
@@ -124,10 +131,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     public void execute(Command prop, Source source) {
         synchronized (coreLock) {
             if (prop == DELETE) {
-                if (!isRunning()) {
-                    if (this == game.getCurrentPeriod()) { game.set(Game.CURRENT_PERIOD, getPrevious()); }
-                    delete(source);
-                }
+                if (!isRunning()) { delete(source); }
             } else if (prop == INSERT_BEFORE) {
                 if (game.getCurrentPeriodNumber() < game.getInt(Rule.NUMBER_PERIODS))
                     game.add(ownType, new PeriodImpl(game, getNumber()));
@@ -142,16 +146,24 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
 
     @Override
     public void delete(Source source) {
-        if (source != Source.UNLINK && numberOf(JAM) > 0) {
-            Jam prevJam = getFirst(JAM).getPrevious();
-            Jam nextJam = getLast(JAM).getNext();
-            if (prevJam != null) {
-                prevJam.setNext(nextJam);
-            } else if (nextJam != null) {
-                nextJam.setPrevious(null);
+        if (source != Source.UNLINK) {
+            if (!hasPrevious()) { return; }
+            if (numberOf(JAM) > 0) {
+                Jam prevJam = getFirst(JAM).getPrevious();
+                Jam nextJam = getLast(JAM).getNext();
+                if (prevJam != null) {
+                    prevJam.setNext(nextJam);
+                } else if (nextJam != null) {
+                    nextJam.setPrevious(null);
+                }
+                for (Jam j : getAll(JAM)) {
+                    for (Penalty p : j.getAll(Jam.PENALTY)) { p.set(Penalty.JAM, nextJam != null ? nextJam : prevJam); }
+                }
             }
-            for (Jam j : getAll(JAM)) {
-                for (Penalty p : j.getAll(Jam.PENALTY)) { p.set(Penalty.JAM, nextJam); }
+            if (this == game.getCurrentPeriod()) {
+                Period prev = getPrevious();
+                prev.setNext(getNext());
+                game.set(Game.CURRENT_PERIOD, prev);
             }
         }
         super.delete(source);
@@ -165,13 +177,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     public void restoreSnapshot(PeriodSnapshot s) {
         synchronized (coreLock) {
             if (s.getId() != getId()) { return; }
-            if (getCurrentJam() != s.getCurrentJam()) {
-                Jam movedJam = getCurrentJam();
-                remove(JAM, movedJam);
-                movedJam.setParent(game);
-                game.set(Game.UPCOMING_JAM, movedJam);
-                set(CURRENT_JAM, s.getCurrentJam());
-            }
+            set(CURRENT_JAM, s.getCurrentJam());
         }
     }
 
@@ -207,7 +213,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     public void startJam() {
         synchronized (coreLock) {
             set(RUNNING, true);
-            set(CURRENT_JAM, getCurrentJam().getNext());
+            set(CURRENT_JAM, game.getUpcomingJam());
             getCurrentJam().start();
         }
     }
