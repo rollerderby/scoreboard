@@ -16,6 +16,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
@@ -93,6 +94,10 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
                 if (!FO_EXP_ID.equals(p.getProviderId()) && !p.get(Penalty.SERVED)) { return true; }
             }
             return false;
+        }
+        if (prop == PENALTY_BOX && source == Source.WS &&
+            Boolean.parseBoolean(scoreBoard.getSettings().get(ScoreBoard.SETTING_USE_PBT))) {
+            return last;
         }
         return value;
     }

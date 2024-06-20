@@ -150,6 +150,7 @@ public class ScoreBoardJSONSetter {
             key.equals("ScoreBoard.Settings.Setting(Overlay.Interactive.ShowPenaltyClocks)") ||
             key.equals("ScoreBoard.Settings.Setting(ScoreBoard.Preview_HidePenaltyClocks)") ||
             key.equals("ScoreBoard.Settings.Setting(ScoreBoard.View_HidePenaltyClocks)") ||
+            key.equals("ScoreBoard.Settings.Setting(ScoreBoard.UsePBT)") ||
             key.contains("Jam.SuddenScoringMaxTrailingPoints") ||
             (key.contains("BoxTrip(") && key.endsWith("CurrentSkater")) ||
             (key.contains("BoxTrip(") && key.endsWith("RosterNumber")) ||
