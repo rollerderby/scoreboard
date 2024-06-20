@@ -194,6 +194,11 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
                 f.updateBoxTripSymbols();
                 Skater s = f.getSkater();
                 if (s != null) {
+                    if (getClock() != null && s.getUnservedPenalties().isEmpty()) {
+                        s.add(Skater.PENALTY,
+                              new PenaltyImpl(s, s.numberOf(Skater.PENALTY) == 0 ? 1
+                                                                                 : s.getMaxNumber(Skater.PENALTY) + 1));
+                    }
                     for (Penalty p : s.getUnservedPenalties()) { add(PENALTY, p); }
                 }
             }
@@ -206,7 +211,8 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
                 } else {
                     initialTimeAdjusted = true;
                 }
-                if (getCurrentFielding().getCurrentRole() == Role.JAMMER && numberOf(PENALTY) > get(SHORTENED)) {
+                if (!source.isFile() && getCurrentFielding().getCurrentRole() == Role.JAMMER &&
+                    numberOf(PENALTY) > get(SHORTENED)) {
                     Position otherPos = getTeam().getOtherTeam().getPosition(
                         getTeam().getOtherTeam().isStarPass() ? FloorPosition.PIVOT : FloorPosition.JAMMER);
                     if (otherPos.isPenaltyBox()) {

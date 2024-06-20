@@ -346,12 +346,12 @@ public class BoxTripImplTests {
         newBt.set(BoxTrip.CURRENT_FIELDING, s.getCurrentFielding(), Source.WS);
         assertNotNull(newBt.getCurrentFielding());
         assertEquals(s.getCurrentFielding(), newBt.getCurrentFielding());
-        assertEquals(0, s.numberOf(Skater.PENALTY));
+        assertEquals(1, s.numberOf(Skater.PENALTY));
         assertEquals(0, g.numberOf(Team.BOX_TRIP));
         assertEquals(30000L, newBt.getClock().getMaximumTime());
         assertEquals(30000L, newBt.getClock().getTimeRemaining());
 
-        s.add(Skater.PENALTY, new PenaltyImpl(s, 1));
+        s.getOrCreate(Skater.PENALTY, 1);
         assertEquals(1, s.numberOf(Skater.PENALTY));
         assertEquals(30000L, newBt.getClock().getMaximumTime());
         assertEquals(30000L, newBt.getClock().getTimeRemaining());
