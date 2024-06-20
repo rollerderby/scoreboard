@@ -45,9 +45,15 @@ function toTitle() {
   return (
     pos +
     ' ' +
-    (team === 'both' ? 'both' : WS.state[prefix + 'AlternateName(plt)'] || WS.state[prefix + 'UniformColor'] || WS.state[prefix + 'Name']) +
-    ' CRG ScoreBoard'
+    (team === 'both'
+      ? 'both'
+      : WS.state[prefix + 'AlternateName(plt)'] || WS.state[prefix + 'UniformColor'] || WS.state[prefix + 'Name'] || '') +
+    ' | CRG ScoreBoard'
   );
+}
+
+function updateTitle() {
+  $('title').text(toTitle());
 }
 
 function openOptionsDialog() {
@@ -60,6 +66,7 @@ function setTeam(k, v, elem) {
   elem.addClass('sbActive');
   $('body').attr('showTeam', elem.attr('team'));
   _sbUpdateUrl('team', elem.attr('team'));
+  updateTitle();
 }
 
 function setPos(k, v, elem) {
@@ -68,6 +75,7 @@ function setPos(k, v, elem) {
   elem.addClass('sbActive');
   $('body').attr('sbSheetStyle', elem.attr('pos'));
   _sbUpdateUrl('pos', elem.attr('pos'));
+  updateTitle();
 }
 
 function setZoom(k, v, elem) {

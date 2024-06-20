@@ -27,9 +27,13 @@ function toTitle() {
     'SK ' +
     (team === 'both'
       ? 'both'
-      : WS.state[prefix + 'AlternateName(operator)'] || WS.state[prefix + 'UniformColor'] || WS.state[prefix + 'Name']) +
-    ' CRG ScoreBoard'
+      : WS.state[prefix + 'AlternateName(operator)'] || WS.state[prefix + 'UniformColor'] || WS.state[prefix + 'Name'] || '') +
+    ' | CRG ScoreBoard'
   );
+}
+
+function updateTitle() {
+  $('title').text(toTitle());
 }
 
 function openOptionsDialog() {
@@ -41,6 +45,7 @@ function setTeam(k, v, elem) {
   elem.addClass('sbActive');
   $('body').attr('showTeam', elem.attr('team'));
   _sbUpdateUrl('team', elem.attr('team'));
+  updateTitle();
 }
 
 function setZoom(k, v, elem) {
