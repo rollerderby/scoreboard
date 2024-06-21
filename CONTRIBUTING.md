@@ -18,7 +18,9 @@ Anyone can add to the scoreboard wiki pages, so if you see an area that doesn't 
 ## Reporting issues
 
 You can report issues with the scoreboard software or its documentation via [our issues page](https://github.com/rollerderby/scoreboard/issues). This is also the best place to ask questions or reach out to the developers.
+Before posting an issue, check to see whether the issue is being discussed already.
 
+When [creating a new issue](https://github.com/rollerderby/scoreboard/issues/new/choose), choose the template that best represents what you are looking to report, and fill out all applicable fields.
 
 ## Contributing to testing
 
