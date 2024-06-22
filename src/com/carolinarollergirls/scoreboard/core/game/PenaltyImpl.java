@@ -120,6 +120,11 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
         return get(SERVED);
     }
 
+    @Override
+    public String getDetails() {
+        return skater.getId() + "_" + getProviderId();
+    }
+
     private Game game;
     private Skater skater;
 }

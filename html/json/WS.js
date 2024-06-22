@@ -309,6 +309,10 @@ let WS = {
         } else if (options.html) {
           callback = function (k, v) {
             elem.html(v);
+            elem.find('button').button();
+            elem.children().each(function () {
+              WS.AutoRegister($(this));
+            });
           };
         } else {
           if (elem.hasClass('AutoFit')) {

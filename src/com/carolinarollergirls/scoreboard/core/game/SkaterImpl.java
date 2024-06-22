@@ -59,6 +59,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         setRecalculated(CURRENT_PENALTIES).addSource(this, PENALTY).addSource(this, PENALTY_BOX);
         setRecalculated(PENALTY_COUNT).addSource(this, PENALTY);
         setRecalculated(HAS_UNSERVED).addSource(this, PENALTY);
+        setRecalculated(PENALTY_DETAILS).addSource(this, CURRENT_PENALTIES);
     }
 
     @Override
@@ -81,6 +82,12 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
             List<Penalty> penalties = getUnservedPenalties();
             Collections.sort(penalties);
             value = penalties.stream().map(Penalty::getCode).collect(Collectors.joining(" "));
+        }
+        if (prop == PENALTY_DETAILS) {
+            if (isPenaltyBox()) { return getCurrentFielding().getCurrentBoxTrip().get(BoxTrip.PENALTY_DETAILS); }
+            List<Penalty> penalties = getUnservedPenalties();
+            Collections.sort(penalties);
+            value = penalties.stream().map(Penalty::getDetails).collect(Collectors.joining(","));
         }
         if (prop == PENALTY_COUNT) {
             int count = 0;

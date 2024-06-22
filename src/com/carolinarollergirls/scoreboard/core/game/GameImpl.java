@@ -402,7 +402,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             getRuleset().add(Ruleset.RULE, (ValWithId) item);
             return false;
         }
-        if (prop == Period.JAM && item != getUpcomingJam()) { return false; }
+        if (prop == Period.JAM && item != getUpcomingJam() && !source.isFile()) { return false; }
         return true;
     }
 

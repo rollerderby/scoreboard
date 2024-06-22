@@ -34,6 +34,7 @@ public interface Position extends ScoreBoardEventProvider {
     public static final Value<Boolean> HAS_UNSERVED = new Value<>(Boolean.class, "HasUnserved", false, props);
     public static final Value<Long> PENALTY_TIME = new Value<>(Long.class, "PenaltyTime", null, props);
     public static final Value<Integer> PENALTY_COUNT = new Value<>(Integer.class, "PenaltyCount", 0, props);
+    public static final Value<String> PENALTY_DETAILS = new Value<>(String.class, "PenaltyDetails", "", props);
 
     public static final Command CLEAR = new Command("Clear", props);
     public static final Command UNEND_BOX_TRIP = new Command("UnendBoxTrip", props);
