@@ -22,7 +22,7 @@
 #ClockDialog .Label { font-style: normal; }
 #ClockDialog .TimeControls { display: grid; grid: auto auto / 1fr 1fr 1fr; gap: var(--element-gap); }
 
-#JamDialog tr.isRunning .ifNotRunning { display: none; }
-#JamDialog tr:not(.isRunning) .ifRunning { display: none; }
-#JamDialog td.hasPoints .ifNoPoints { display: none; }
-#JamDialog td:not(.hasPoints) .ifPoints { display: none; }
+tr.isRunning .ifNotRunning { display: none; }
+tr:not(.isRunning) .ifRunning { display: none; }
+td.hasPoints .ifNoPoints { display: none; }
+td:not(.hasPoints) .ifPoints { display: none; }

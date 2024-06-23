@@ -23,7 +23,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     public TeamJamImpl(Jam j, String teamId) {
         super(j, teamId, Jam.TEAM_JAM);
         addProperties(props);
-        game = j.getPeriod().getGame();
+        game = j.getGame();
         team = game.getTeam(teamId);
         setRecalculated(CURRENT_TRIP).addSource(this, SCORING_TRIP);
         setCopy(CURRENT_TRIP_NUMBER, this, CURRENT_TRIP, ScoringTrip.NUMBER, true);
@@ -97,7 +97,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
 
     @Override
     protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
-        if (prop == SCORING_TRIP) {
+        if (prop == SCORING_TRIP && source != Source.RENUMBER) {
             jamScoreListener.addSource((ScoreBoardEventProvider) item, ScoringTrip.SCORE);
             afterSPScoreListener.addSource((ScoreBoardEventProvider) item, ScoringTrip.SCORE);
             afterSPScoreListener.addSource((ScoreBoardEventProvider) item, ScoringTrip.AFTER_S_P);

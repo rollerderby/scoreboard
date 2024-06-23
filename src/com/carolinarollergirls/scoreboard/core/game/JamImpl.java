@@ -21,6 +21,7 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements Jam {
     public JamImpl(ScoreBoardEventProvider parent, Jam prev) {
         this(parent, prev.getNumber() + 1);
+        setNext(prev.getNext());
         setPrevious(prev);
     }
     public JamImpl(ScoreBoardEventProvider p, int j) {
@@ -42,19 +43,18 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
     @Override
     public void setParent(ScoreBoardEventProvider p) {
         if (parent == p) { return; }
+        parent.remove(ownType, this);
         parent.removeScoreBoardListener(periodNumberListener);
         providers.remove(periodNumberListener);
         parent = p;
         periodNumberListener =
             setCopy(PERIOD_NUMBER, parent, parent instanceof Game ? Game.CURRENT_PERIOD_NUMBER : Period.NUMBER, true);
+        parent.add(ownType, this);
     }
 
     @Override
     public void delete(Source source) {
         if (source != Source.UNLINK) {
-            if (parent instanceof Period && this == ((Period) parent).getCurrentJam()) {
-                parent.set(Period.CURRENT_JAM, getPrevious());
-            }
             for (Penalty p : getAll(PENALTY)) { p.set(Penalty.JAM, hasNext() ? getNext() : getPrevious()); }
             for (Timeout t : getAll(TIMEOUTS_AFTER)) { t.set(Timeout.PRECEDING_JAM, getPrevious()); }
         }
@@ -85,7 +85,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
             if (prop == DELETE) {
                 if (game.isInJam() && (parent == game.getCurrentPeriod()) &&
                     (this == ((Period) parent).getCurrentJam())) {
-                    Logger.printMessage("Refusing to delete current Jam.");
+                    Logger.printMessage("Refusing to delete running Jam.");
                     return;
                 }
                 if (getTeamJam(Team.ID_1).getJamScore() + getTeamJam(Team.ID_1).getOsOffset() != 0 ||
@@ -95,18 +95,14 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
                 }
 
                 delete(source);
-                game.updateTeamJams();
             } else if (prop == INSERT_BEFORE) {
                 if (parent instanceof Period) {
                     parent.add(ownType, new JamImpl(parent, getNumber()));
-                    game.updateTeamJams();
                 } else if (!game.isInJam()) {
                     Period currentPeriod = game.getCurrentPeriod();
                     Jam newJam = new JamImpl(currentPeriod, getNumber());
                     currentPeriod.add(ownType, newJam);
-                    currentPeriod.set(Period.CURRENT_JAM, newJam);
                     set(NUMBER, 1, Source.RENUMBER, Flag.CHANGE);
-                    game.updateTeamJams();
                 }
             } else if (prop == INSERT_TIMEOUT_AFTER) {
                 Timeout newTo = new TimeoutImpl(this);
@@ -126,6 +122,10 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
     @Override
     public Period getPeriod() {
         return parent instanceof Game ? game.getCurrentPeriod() : (Period) parent;
+    }
+    @Override
+    public Game getGame() {
+        return parent instanceof Game ? (Game) parent : ((Period) parent).getGame();
     }
 
     @Override

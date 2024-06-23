@@ -94,7 +94,6 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         addWriteProtectionOverride(IN_JAM, Source.NON_WS);
         addWriteProtectionOverride(IN_OVERTIME, Source.NON_WS);
         addWriteProtectionOverride(CURRENT_TIMEOUT, Source.NON_WS);
-        addWriteProtectionOverride(UPCOMING_JAM, Source.NON_WS);
         setRecalculated(NO_MORE_JAM)
             .addSource(this, IN_JAM)
             .addSource(this, IN_PERIOD)
@@ -126,7 +125,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         noTimeoutDummy = new TimeoutImpl(getCurrentPeriod(), "noTimeout");
         getCurrentPeriod().add(Period.TIMEOUT, noTimeoutDummy);
         set(CURRENT_TIMEOUT, noTimeoutDummy);
-        set(UPCOMING_JAM, new JamImpl(this, getCurrentPeriod().getCurrentJam()));
+        setRecalculated(UPCOMING_JAM).addIndirectSource(this, CURRENT_PERIOD, Period.CURRENT_JAM);
         updateTeamJams();
 
         setInPeriod(false);
@@ -243,10 +242,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         if (prop == UPCOMING_JAM && !source.isFile()) {
             Jam j = getCurrentPeriod().getCurrentJam().getNext();
             if (j == null) { j = new JamImpl(this, getCurrentPeriod().getCurrentJam()); }
-            if (j.getParent() != this) {
-                j.getParent().remove(Period.JAM, j);
-                j.setParent(this);
-            }
+            j.setParent(this);
             while (j.hasNext()) { j.getNext().delete(); }
             return j;
         } else if (prop == NO_MORE_JAM) {
@@ -349,6 +345,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         } else if (prop == UPCOMING_JAM) {
             removeAll(Period.JAM);
             add(Period.JAM, (Jam) value);
+            updateTeamJams();
         } else if (prop == CURRENT_TIMEOUT && value == null) {
             return;
         }
@@ -440,6 +437,10 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     @Override
     protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
         if (prop == EXPULSION) { ((Expulsion) item).delete(); }
+        if (prop == PERIOD && item == getCurrentPeriod() && source != Source.RENUMBER) {
+            set(CURRENT_PERIOD, getLast(PERIOD));
+            if (!getClock(Clock.ID_INTERMISSION).isRunning()) { _preparePeriod(); }
+        }
     }
 
     @Override

@@ -105,7 +105,8 @@ public class ScoreBoardJSONSetter {
 
                 if (newKey.startsWith("ScoreBoard.Clients.Client") ||
                     (newKey.startsWith("ScoreBoard.Settings.Setting(ScoreBoard.Operator") &&
-                     newKey.endsWith("StartStopButtons)"))) {
+                     newKey.endsWith("StartStopButtons)")) ||
+                    newKey.endsWith("FirstJam") || newKey.endsWith("FirstJamNumber")) {
                     newKey = "";
                 }
                 if (newKey.contains("Jam.SuddenScoringMaxTrainingPoints")) {
@@ -211,7 +212,8 @@ public class ScoreBoardJSONSetter {
         if (priorLimit.equals("v5") || key.startsWith("ScoreBoard.Twitter")) { return "v5"; }
         if (priorLimit.equals("v2023") || key.equals("ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)") ||
             (key.startsWith("ScoreBoard.Settings.Setting(ScoreBoard.Operator") && key.endsWith("StartStopButtons")) ||
-            key.contains("Jam.SuddenScoringMaxTrainingPoints") || key.startsWith("ScoreBoard.Clients.Client(")) {
+            key.contains("Jam.SuddenScoringMaxTrainingPoints") || key.startsWith("ScoreBoard.Clients.Client(") ||
+            key.endsWith("FirstJam") || key.endsWith("FirstJamNumber")) {
             return "v2023";
         }
 
