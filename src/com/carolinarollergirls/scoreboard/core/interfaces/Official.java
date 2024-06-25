@@ -3,12 +3,15 @@ package com.carolinarollergirls.scoreboard.core.interfaces;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Official extends ScoreBoardEventProvider {
     public int compareTo(Official other);
+
+    public Child<Official> getType();
 
     public static Collection<Property<?>> props = new ArrayList<>();
 

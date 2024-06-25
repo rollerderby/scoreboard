@@ -24,6 +24,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Media.MediaFile;
 import com.carolinarollergirls.scoreboard.core.interfaces.Media.MediaType;
+import com.carolinarollergirls.scoreboard.core.interfaces.Official;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period.PeriodSnapshot;
@@ -58,18 +59,33 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game {
     public GameImpl(ScoreBoard sb, PreparedTeam team1, PreparedTeam team2, Ruleset rs) {
         super(sb, UUID.randomUUID().toString(), ScoreBoard.GAME);
-        initReferences(rs);
+        initReferences(rs, null);
         getTeam(Team.ID_1).loadPreparedTeam(team1);
         getTeam(Team.ID_2).loadPreparedTeam(team2);
         jsonSnapshotter = new JSONStateSnapshotter(sb.getJsm(), this);
     }
     public GameImpl(ScoreBoard parent, String id) {
         super(parent, id, ScoreBoard.GAME);
-        initReferences(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID));
+        initReferences(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID), null);
         jsonSnapshotter = new JSONStateSnapshotter(getScoreBoard().getJsm(), this);
     }
+    public GameImpl(Game source) {
+        super(source.getScoreBoard(), UUID.randomUUID().toString(), ScoreBoard.GAME);
+        initReferences(source.getRuleset(), source);
+        set(NAME_FORMAT, source.get(NAME_FORMAT));
+        for (ValWithId ei : source.getAll(EVENT_INFO)) { add(EVENT_INFO, ei); }
+        for (Official nso : source.getAll(NSO)) { add(NSO, new OfficialImpl(this, nso)); }
+        for (Official so : source.getAll(REF)) { add(REF, new OfficialImpl(this, so)); }
+        Official hnso = source.get(HEAD_NSO);
+        if (hnso != null) {
+            String hnsoName = hnso.get(Official.NAME);
+            for (Official nso : getAll(NSO)) {
+                if (nso.get(Official.NAME) == hnsoName) { set(HEAD_NSO, nso); }
+            }
+        }
+    }
 
-    private void initReferences(Ruleset rs) {
+    private void initReferences(Ruleset rs, Game source) {
         addProperties(props);
 
         setCopy(CURRENT_PERIOD_NUMBER, this, CURRENT_PERIOD, Period.NUMBER, true);
@@ -81,8 +97,11 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         setCopy(OFFICIAL_REVIEW, this, CURRENT_TIMEOUT, Timeout.REVIEW, false);
         setCopy(RULESET_NAME, this, RULESET, Ruleset.NAME, true);
         setRuleset(rs);
-        add(TEAM, new TeamImpl(this, Team.ID_1));
-        add(TEAM, new TeamImpl(this, Team.ID_2));
+        if (rs == null) {
+            for (Rule r : Rule.values()) { set(r, source.get(r)); }
+        }
+        add(TEAM, source != null ? new TeamImpl(this, source.getTeam(Team.ID_1)) : new TeamImpl(this, Team.ID_1));
+        add(TEAM, source != null ? new TeamImpl(this, source.getTeam(Team.ID_2)) : new TeamImpl(this, Team.ID_2));
         addWriteProtection(TEAM);
         add(CLOCK, new ClockImpl(this, Clock.ID_PERIOD));
         add(CLOCK, new ClockImpl(this, Clock.ID_JAM));
@@ -469,6 +488,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             add(Team.BOX_TRIP, new BoxTripImpl(this));
         } else if (prop == START_JAMMER_BOX_TRIP) {
             jammerBoxEntry();
+        } else if (prop == COPY) {
+            parent.add(ownType, new GameImpl(this));
         }
     }
 
@@ -480,7 +501,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             if (prop == Period.JAM) {
                 int num = Integer.parseInt(id);
                 if (source.isFile()) {
-                    return new JamImpl(this, num);
+                    getUpcomingJam().set(Jam.NUMBER, num, Source.RENUMBER);
+                    return getUpcomingJam();
                 } else if (num == getCurrentPeriod().getCurrentJamNumber()) {
                     // could be a race around jam start
                     return getCurrentPeriod().getCurrentJam();

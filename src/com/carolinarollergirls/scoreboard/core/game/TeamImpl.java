@@ -104,6 +104,20 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
             .addSource(getPosition(FloorPosition.BLOCKER3), Position.SKATER);
         providers.put(skaterListener, null);
     }
+    public TeamImpl(Game g, Team source) {
+        this(g, source.getProviderId());
+        set(PREPARED_TEAM_CONNECTED, source.get(PREPARED_TEAM_CONNECTED));
+        set(PREPARED_TEAM, source.get(PREPARED_TEAM));
+        set(UNIFORM_COLOR, source.get(UNIFORM_COLOR));
+        if (!get(PREPARED_TEAM_CONNECTED)) {
+            set(LEAGUE_NAME, source.get(LEAGUE_NAME));
+            set(TEAM_NAME, source.get(TEAM_NAME));
+            set(LOGO, source.get(LOGO));
+        }
+        for (ValWithId an : source.getAll(ALTERNATE_NAME)) { add(ALTERNATE_NAME, an); }
+        for (ValWithId c : source.getAll(COLOR)) { add(COLOR, c); }
+        for (Skater s : source.getAll(SKATER)) { add(SKATER, new SkaterImpl(this, s)); }
+    }
 
     @Override
     public String getProviderId() {
@@ -484,8 +498,10 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     @Override
     public void loadPreparedTeam(PreparedTeam pt) {
         synchronized (coreLock) {
-            set(PREPARED_TEAM_CONNECTED, pt != null, Flag.SPECIAL_CASE);
-            set(PREPARED_TEAM, pt);
+            if (pt != null) {
+                set(PREPARED_TEAM_CONNECTED, pt != null, Flag.SPECIAL_CASE);
+                set(PREPARED_TEAM, pt);
+            }
         }
     }
 

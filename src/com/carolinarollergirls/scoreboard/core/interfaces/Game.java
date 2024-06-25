@@ -162,6 +162,7 @@ public interface Game extends ScoreBoardEventProvider {
     public static final Command EXPORT = new Command("Export", props);
     public static final Command START_BOX_TRIP = new Command("StartBoxTrip", props);
     public static final Command START_JAMMER_BOX_TRIP = new Command("StartJammerBoxTrip", props);
+    public static final Command COPY = new Command("Copy", props);
 
     public static final String SETTING_DEFAULT_NAME_FORMAT = "ScoreBoard.Game.DefaultNameFormat";
 

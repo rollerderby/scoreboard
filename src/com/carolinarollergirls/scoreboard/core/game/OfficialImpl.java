@@ -1,5 +1,7 @@
 package com.carolinarollergirls.scoreboard.core.game;
 
+import java.util.UUID;
+
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Official;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
@@ -12,6 +14,15 @@ public class OfficialImpl extends ScoreBoardEventProviderImpl<Official> implemen
         super(g, id, type);
         game = g;
         addProperties(props);
+    }
+    public OfficialImpl(Game g, Official source) {
+        this(g, UUID.randomUUID().toString(), source.getType());
+        set(ROLE, source.get(ROLE));
+        set(NAME, source.get(NAME));
+        set(LEAGUE, source.get(LEAGUE));
+        set(CERT, source.get(CERT));
+        if (source.get(P1_TEAM) != null) { set(P1_TEAM, g.getTeam(source.get(P1_TEAM).getProviderId())); }
+        set(SWAP, source.get(SWAP));
     }
 
     @Override
@@ -81,6 +92,11 @@ public class OfficialImpl extends ScoreBoardEventProviderImpl<Official> implemen
 
         default: return 15;
         }
+    }
+
+    @Override
+    public Child<Official> getType() {
+        return ownType;
     }
 
     private Game game;
