@@ -724,7 +724,9 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     public void cleanupAliases() {
         synchronized (coreLock) {
             for (Map<String, ScoreBoardEventProvider> list : elements.values()) {
-                list.entrySet().removeIf(o -> (o.getValue() == null || !o.getKey().equals(o.getValue().getId())));
+                list.entrySet().removeIf(o
+                                         -> (o.getValue() == null || (!o.getKey().equals(o.getValue().getId()) &&
+                                                                      !"".equals(o.getValue().getId()))));
             }
         }
     }

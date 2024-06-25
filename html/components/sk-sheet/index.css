@@ -38,6 +38,7 @@
 .SkSheet>.Period tr:not(.HasSP) .InitialSP { display: none; }
 
 /* Misc */
+.SkSheet>.Period tbody.emptyOnly:not(:only-of-type) { display: none; }
 .SkSheet>.Period .Overtime .JamNumber::after { font-size: 50%; content: "OT"; vertical-align: top; padding-left: 1px; } 
 .SkSheet>.Period tr:not(.IsOR) .OROnly { display:none; }
 

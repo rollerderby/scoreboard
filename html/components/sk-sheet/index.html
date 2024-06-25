@@ -35,6 +35,13 @@
           <th class="AutoFit Gametotal">TOTAL</th>
         </tr>
       </thead>
+      <tbody class="emptyOnly">
+        <tr class="Darker">
+          <td colspan="19" class="Buttons Darker">
+            <button sbSet="AddInitialJam" sbDisplay="Number: 'Add Jam to Period ' + v;"></button>
+          </td>
+        </tr>
+      </tbody>
       <tbody sbForeach="Jam:: sbCompareJam: onInsert=sbReverseOnNonSheet" sbContext=":TeamJam([Team])" class="Jam">
         <tr class="Edits" sbContext="^">
           <td class="EditButton Darker"></td>

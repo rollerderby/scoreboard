@@ -189,9 +189,10 @@ public class MirrorScoreBoardEventProviderImpl<M extends ScoreBoardEventProvider
     public static void addClassMapping(Class<? extends ScoreBoardEventProvider> source,
                                        Class<? extends MirrorScoreBoardEventProvider<?>> mirror) {
         classMap.put(source, mirror);
+        if (elements.get(mirror) == null) { elements.put(mirror, new HashMap<>()); }
     }
 
-    protected static Map<Class<? extends ScoreBoardEventProvider>, Class<? extends MirrorScoreBoardEventProvider<?>>>
+    private static Map<Class<? extends ScoreBoardEventProvider>, Class<? extends MirrorScoreBoardEventProvider<?>>>
         classMap = new HashMap<>();
     protected static MirrorFactory mirrorFactory;
 }

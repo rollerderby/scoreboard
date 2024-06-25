@@ -70,6 +70,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
         setInverseReference(PENALTY, Penalty.BOX_TRIP);
         setRecalculated(DURATION).addSource(this, JAM_CLOCK_START).addSource(this, JAM_CLOCK_END);
         setRecalculated(PENALTY_CODES).addSource(this, PENALTY);
+        setRecalculated(PENALTY_DETAILS).addSource(this, PENALTY_CODES);
         setCopy(START_JAM_NUMBER, this, START_FIELDING, Fielding.NUMBER, true);
         setCopy(END_JAM_NUMBER, this, END_FIELDING, Fielding.NUMBER, true);
         setCopy(ROSTER_NUMBER, this, CURRENT_FIELDING, Fielding.SKATER_NUMBER, true);
@@ -130,6 +131,14 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
                         .filter(p -> !p.getProviderId().equals(Skater.FO_EXP_ID))
                         .map(Penalty::getCode)
                         .collect(Collectors.joining(" "));
+        }
+        if (prop == PENALTY_DETAILS) {
+            List<Penalty> penalties = new ArrayList<>(getAll(PENALTY));
+            Collections.sort(penalties);
+            value = penalties.stream()
+                        .filter(p -> !p.getProviderId().equals(Skater.FO_EXP_ID))
+                        .map(Penalty::getDetails)
+                        .collect(Collectors.joining(","));
         }
         return value;
     }
@@ -194,6 +203,11 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
                 f.updateBoxTripSymbols();
                 Skater s = f.getSkater();
                 if (s != null) {
+                    if (getClock() != null && s.getUnservedPenalties().isEmpty()) {
+                        s.add(Skater.PENALTY,
+                              new PenaltyImpl(s, s.numberOf(Skater.PENALTY) == 0 ? 1
+                                                                                 : s.getMaxNumber(Skater.PENALTY) + 1));
+                    }
                     for (Penalty p : s.getUnservedPenalties()) { add(PENALTY, p); }
                 }
             }
@@ -201,12 +215,13 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
         if (prop == PENALTY) {
             Clock clock = getClock();
             if (clock != null && ((Penalty) item).getProviderId() != Skater.FO_EXP_ID) {
-                if (initialTimeAdjusted) {
+                if (initialTimeAdjusted && !source.isFile()) {
                     clock.changeMaximumTime(game.getLong(Rule.PENALTY_DURATION));
                 } else {
                     initialTimeAdjusted = true;
                 }
-                if (getCurrentFielding().getCurrentRole() == Role.JAMMER && numberOf(PENALTY) > get(SHORTENED)) {
+                if (!source.isFile() && getCurrentFielding().getCurrentRole() == Role.JAMMER &&
+                    numberOf(PENALTY) > get(SHORTENED)) {
                     Position otherPos = getTeam().getOtherTeam().getPosition(
                         getTeam().getOtherTeam().isStarPass() ? FloorPosition.PIVOT : FloorPosition.JAMMER);
                     if (otherPos.isPenaltyBox()) {

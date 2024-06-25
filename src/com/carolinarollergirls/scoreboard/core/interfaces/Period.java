@@ -21,6 +21,7 @@ public interface Period extends NumberedScoreBoardEventProvider<Period> {
     public boolean isRunning();
 
     public Jam getJam(int j);
+    public Jam getInitialJam();
     public Jam getCurrentJam();
     public int getCurrentJamNumber();
 
@@ -35,8 +36,6 @@ public interface Period extends NumberedScoreBoardEventProvider<Period> {
 
     public static final Value<Jam> CURRENT_JAM = new Value<>(Jam.class, "CurrentJam", null, props);
     public static final Value<Integer> CURRENT_JAM_NUMBER = new Value<>(Integer.class, "CurrentJamNumber", 0, props);
-    public static final Value<Jam> FIRST_JAM = new Value<>(Jam.class, "FirstJam", null, props);
-    public static final Value<Integer> FIRST_JAM_NUMBER = new Value<>(Integer.class, "FirstJamNumber", 0, props);
     public static final Value<Boolean> SUDDEN_SCORING = new Value<>(Boolean.class, "SuddenScoring", false, props);
     public static final Value<Boolean> RUNNING = new Value<>(Boolean.class, "Running", false, props);
     public static final Value<Long> DURATION = new Value<>(Long.class, "Duration", 0L, props);
@@ -55,6 +54,7 @@ public interface Period extends NumberedScoreBoardEventProvider<Period> {
     public static final Command DELETE = new Command("Delete", props);
     public static final Command INSERT_BEFORE = new Command("InsertBefore", props);
     public static final Command INSERT_TIMEOUT = new Command("InsertTimeout", props);
+    public static final Command ADD_INITIAL_JAM = new Command("AddInitialJam", props);
 
     public static interface PeriodSnapshot {
         public String getId();

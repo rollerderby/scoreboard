@@ -23,16 +23,15 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         super(g, p, Game.PERIOD);
         game = g;
         addProperties(props);
-        setCopy(CURRENT_JAM_NUMBER, this, CURRENT_JAM, Jam.NUMBER, true);
-        setRecalculated(FIRST_JAM).addSource(this, JAM);
-        setCopy(FIRST_JAM_NUMBER, this, FIRST_JAM, Jam.NUMBER, true);
         penaltyListener = setRecalculated(TEAM_1_PENALTY_COUNT).addSource(this, JAM);
         if (hasPrevious()) {
-            set(CURRENT_JAM, getPrevious().get(CURRENT_JAM));
+            set(CURRENT_JAM, getPrevious().get(CURRENT_JAM), Flag.SPECIAL_CASE);
             set(SUDDEN_SCORING, getPrevious().isSuddenScoring());
         } else {
-            set(CURRENT_JAM, getOrCreate(JAM, "0"));
+            set(CURRENT_JAM, getOrCreate(JAM, "0"), Flag.SPECIAL_CASE);
         }
+        setRecalculated(CURRENT_JAM).addIndirectSource(this, PREVIOUS, CURRENT_JAM);
+        setRecalculated(CURRENT_JAM_NUMBER).addIndirectSource(this, CURRENT_JAM, NUMBER);
         setRecalculated(DURATION).addSource(this, WALLTIME_END).addSource(this, WALLTIME_START);
         addWriteProtectionOverride(RUNNING, Source.NON_WS);
         addWriteProtectionOverride(JAM, Source.NON_WS);
@@ -47,7 +46,21 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == FIRST_JAM) { return getFirst(JAM); }
+        if (prop == CURRENT_JAM && source == Source.RECALCULATE) {
+            if (numberOf(JAM) > 0) {
+                return getLast(JAM);
+            } else if (hasPrevious()) {
+                return getPrevious().getCurrentJam();
+            }
+        }
+        if (prop == CURRENT_JAM_NUMBER) {
+            if (getCurrentJam() != null && getCurrentJam().getParent() == this ||
+                !game.getBoolean(Rule.JAM_NUMBER_PER_PERIOD)) {
+                return getCurrentJam().getNumber();
+            } else {
+                return 0;
+            }
+        }
         if (prop == DURATION) {
             if (getWalltimeEnd() == 0L) {
                 return 0L;
@@ -73,14 +86,14 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
             return t1Count;
         }
         if (prop == TEAM_1_POINTS) {
-            return getAll(JAM).size() > 0 ? getCurrentJam().getTeamJam(Team.ID_1).get(TeamJam.TOTAL_SCORE) -
-                                                getFirst(JAM).getTeamJam(Team.ID_1).get(TeamJam.LAST_SCORE)
-                                          : 0;
+            return getAll(JAM).isEmpty() ? 0
+                                         : getCurrentJam().getTeamJam(Team.ID_1).get(TeamJam.TOTAL_SCORE) -
+                                               getFirst(JAM).getTeamJam(Team.ID_1).get(TeamJam.LAST_SCORE);
         }
         if (prop == TEAM_2_POINTS) {
-            return getAll(JAM).size() > 0 ? getCurrentJam().getTeamJam(Team.ID_2).get(TeamJam.TOTAL_SCORE) -
-                                                getFirst(JAM).getTeamJam(Team.ID_2).get(TeamJam.LAST_SCORE)
-                                          : 0;
+            return getAll(JAM).isEmpty() ? 0
+                                         : getCurrentJam().getTeamJam(Team.ID_2).get(TeamJam.TOTAL_SCORE) -
+                                               getFirst(JAM).getTeamJam(Team.ID_2).get(TeamJam.LAST_SCORE);
         }
         return value;
     }
@@ -96,16 +109,32 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
                     set(WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
                 }
             }
-        } else if (prop == CURRENT_JAM && hasNext() && getNext().get(CURRENT_JAM) == last) {
-            getNext().set(CURRENT_JAM, (Jam) value);
-        } else if (prop == PREVIOUS && value != null && numberOf(JAM) > 0) {
-            getFirst(JAM).setPrevious(getPrevious().getCurrentJam());
+        } else if (prop == CURRENT_JAM && this == game.getCurrentPeriod()) {
+            game.updateTeamJams();
         }
     }
 
     @Override
     protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
-        if (prop == JAM) { penaltyListener.addSource((ScoreBoardEventProvider) item, Jam.PENALTY); }
+        if (prop == JAM && source != Source.RENUMBER) {
+            Jam j = (Jam) item;
+            penaltyListener.addSource(j, Jam.PENALTY);
+            if (j == getFirst(JAM)) { j.setPrevious(hasPrevious() ? getPrevious().getCurrentJam() : null); }
+            if (j == getLast(JAM)) {
+                Jam next = hasNext() ? getNext().getInitialJam() : game.getUpcomingJam();
+                if (next == null || next == j) { next = new JamImpl(game, j); }
+                j.setNext(next);
+                set(CURRENT_JAM, j);
+            }
+        }
+    }
+
+    @Override
+    protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
+        if (prop == JAM && source != Source.RENUMBER) {
+            Jam j = (Jam) item;
+            if (j == getLast(JAM)) { set(CURRENT_JAM, j.getPrevious()); }
+        }
     }
 
     @Override
@@ -124,10 +153,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     public void execute(Command prop, Source source) {
         synchronized (coreLock) {
             if (prop == DELETE) {
-                if (!isRunning()) {
-                    if (this == game.getCurrentPeriod()) { game.set(Game.CURRENT_PERIOD, getPrevious()); }
-                    delete(source);
-                }
+                if (!isRunning() && get(TEAM_1_POINTS) == 0 && get(TEAM_2_POINTS) == 0) { delete(source); }
             } else if (prop == INSERT_BEFORE) {
                 if (game.getCurrentPeriodNumber() < game.getInt(Rule.NUMBER_PERIODS))
                     game.add(ownType, new PeriodImpl(game, getNumber()));
@@ -136,23 +162,37 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
                 t.stop();
                 t.getParent().add(TIMEOUT, t); // if this period hasn't started, the timeout is added to the
                                                // previous period
+            } else if (prop == ADD_INITIAL_JAM) {
+                if (!getAll(JAM).isEmpty()) { return; }
+                Jam j = new JamImpl(
+                    this, game.getBoolean(Rule.JAM_NUMBER_PER_PERIOD) ? 1 : (getCurrentJam().getNumber() + 1));
+                if (!game.getBoolean(Rule.JAM_NUMBER_PER_PERIOD) && j.hasNext()) {
+                    j.getNext().set(NUMBER, 1, Source.RENUMBER, Flag.CHANGE);
+                }
+                add(JAM, j);
             }
         }
     }
 
     @Override
     public void delete(Source source) {
-        if (source != Source.UNLINK && numberOf(JAM) > 0) {
-            Jam prevJam = getFirst(JAM).getPrevious();
-            Jam nextJam = getLast(JAM).getNext();
-            if (prevJam != null) {
-                prevJam.setNext(nextJam);
-            } else if (nextJam != null) {
-                nextJam.setPrevious(null);
+        if (source != Source.UNLINK) {
+            if (!hasPrevious()) { return; }
+            if (numberOf(JAM) > 0) {
+                Jam prevJam = getFirst(JAM).getPrevious();
+                Jam nextJam = getLast(JAM).getNext();
+                nextJam.setPrevious(prevJam);
+                nextJam.set(NUMBER, game.getBoolean(Rule.JAM_NUMBER_PER_PERIOD) ? 1 : prevJam.getNumber() + 1,
+                            Source.RENUMBER);
+                for (Jam j : getAll(JAM)) {
+                    for (Penalty p : j.getAll(Jam.PENALTY)) { p.set(Penalty.JAM, nextJam); }
+                }
             }
-            for (Jam j : getAll(JAM)) {
-                for (Penalty p : j.getAll(Jam.PENALTY)) { p.set(Penalty.JAM, nextJam); }
-            }
+            Period prev = getPrevious();
+            Period next = getNext();
+            prev.setNext(next);
+            game.remove(Game.PERIOD, this);
+            if (next != null) { next.set(NUMBER, -1, Source.RENUMBER, Flag.CHANGE); }
         }
         super.delete(source);
     }
@@ -165,13 +205,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     public void restoreSnapshot(PeriodSnapshot s) {
         synchronized (coreLock) {
             if (s.getId() != getId()) { return; }
-            if (getCurrentJam() != s.getCurrentJam()) {
-                Jam movedJam = getCurrentJam();
-                remove(JAM, movedJam);
-                movedJam.setParent(game);
-                game.set(Game.UPCOMING_JAM, movedJam);
-                set(CURRENT_JAM, s.getCurrentJam());
-            }
+            set(CURRENT_JAM, s.getCurrentJam());
         }
     }
 
@@ -195,6 +229,16 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         return get(JAM, j);
     }
     @Override
+    public Jam getInitialJam() {
+        if (numberOf(JAM) > 0) {
+            return getFirst(JAM);
+        } else if (hasNext()) {
+            return getNext().getInitialJam();
+        } else {
+            return ((Game) parent).getUpcomingJam();
+        }
+    }
+    @Override
     public Jam getCurrentJam() {
         return get(CURRENT_JAM);
     }
@@ -207,7 +251,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     public void startJam() {
         synchronized (coreLock) {
             set(RUNNING, true);
-            set(CURRENT_JAM, getCurrentJam().getNext());
+            game.getUpcomingJam().setParent(this);
             getCurrentJam().start();
         }
     }

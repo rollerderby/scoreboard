@@ -302,13 +302,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr sbForeach="Period: -0">
+        <tr sbForeach="Period: -0" sbClass="isRunning: Running">
           <td sbDisplay="Number"></td>
           <td sbDisplay="CurrentJamNumber"></td>
-          <td>
-            <span sbClass="sbHide: Running: !">running</span><span sbClass="sbHide: Running" sbDisplay="Duration: sbToLongTime"></span>
+          <td><span class="ifRunning">running</span><span class="ifNotRunning" sbDisplay="Duration: sbToLongTime"></span></td>
+          <td sbClass="hasPoints: Team1Points,Team2Points: opPerHasPoints">
+            <span class="ifRunning">running</span>
+            <span class="ifNotRunning ifPoints">has points</span>
+            <button class="ifNotRunning ifNoPoints" sbSet="Delete">Delete</button>
           </td>
-          <td><button sbSet="Delete">Delete</button></td>
           <td><button sbSet="InsertBefore">Insert Before</button></td>
         </tr>
       </tbody>

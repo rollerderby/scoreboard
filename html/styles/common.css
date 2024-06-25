@@ -137,8 +137,8 @@ div.sbSheets { height: calc(100% - 10px); align-items: flex-start; flex-wrap: wr
 
 .sbKeyControl span.Indicator { font-size: 0.75em; } 
 .sbKeyControl:not(.HasControlKey) span.Indicator { display: none; } 
-.sbKeyControl.Editing { border: 1px solid #f00; } 
-.sbKeyControl.Editing:hover { background: #faa; } 
+.sbKeyControl.sbKeyControl.Editing { border: 1px solid #f00; pointer-events: auto; } 
+.sbKeyControl.sbKeyControl.Editing.hover { background: #faa; } 
 
 #sbIndexLink { float: right; border: none; }
 

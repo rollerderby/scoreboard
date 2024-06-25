@@ -1,5 +1,24 @@
 'use strict';
 
+WS.AfterLoad(function () {
+  'use strict';
+  $('#UsePBTDialog').dialog({
+    modal: true,
+    closeOnEscape: false,
+    title: 'Use Penalty Box Timing',
+    buttons: {
+      Enable: function () {
+        WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UsePBT)', true);
+      },
+    },
+    width: '300px',
+    autoOpen: false,
+  });
+  WS.Register(['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UsePBT)'], function (k, v) {
+    $('#UsePBTDialog').dialog(isTrue(v) ? 'close' : 'open');
+  });
+});
+
 WS.Register('ScoreBoard.CurrentGame.Team(*).Position(*).CurrentFielding');
 
 function toggleSwap() {

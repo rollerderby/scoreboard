@@ -19,6 +19,25 @@ function penToInstruction(k, v) {
   return WS.state[k.upTo('BoxTrip') + '.EndFielding'] ? 'Done' : v > 10000 ? 'Sit' : 'Stand';
 }
 
+function penDetailButtons(k, v) {
+  var content = '<span>';
+  v.split(',').forEach(function (detailsText) {
+    if (detailsText) {
+      const details = detailsText.split('_');
+      content =
+        content +
+        '<button sbContext="/' +
+        k.upTo('Team') +
+        '.Skater(' +
+        details[0] +
+        ').Penalty(' +
+        details[1] +
+        ')" sbDisplay="Code" sbCall="penSelectCode | sbCloseDialog"></button>';
+    }
+  });
+  return content + '</span>';
+}
+
 function penToPenaltyCodeDisplay(k, v) {
   let output = '<div class="Code">' + k.PenaltyCode + '</div><div class="Description">';
   v.split(',').forEach(function (d) {

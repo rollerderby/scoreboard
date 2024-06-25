@@ -18,6 +18,8 @@ public interface Penalty extends NumberedScoreBoardEventProvider<Penalty> {
 
     public boolean isServed();
 
+    public String getDetails();
+
     public static Collection<Property<?>> props = new ArrayList<>();
 
     public static final Value<Long> TIME = new Value<>(Long.class, "Time", 0L, props);

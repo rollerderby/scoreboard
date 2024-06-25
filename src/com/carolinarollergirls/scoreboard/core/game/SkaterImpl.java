@@ -16,6 +16,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
@@ -58,6 +59,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         setRecalculated(CURRENT_PENALTIES).addSource(this, PENALTY).addSource(this, PENALTY_BOX);
         setRecalculated(PENALTY_COUNT).addSource(this, PENALTY);
         setRecalculated(HAS_UNSERVED).addSource(this, PENALTY);
+        setRecalculated(PENALTY_DETAILS).addSource(this, CURRENT_PENALTIES);
     }
 
     @Override
@@ -81,6 +83,12 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
             Collections.sort(penalties);
             value = penalties.stream().map(Penalty::getCode).collect(Collectors.joining(" "));
         }
+        if (prop == PENALTY_DETAILS) {
+            if (isPenaltyBox()) { return getCurrentFielding().getCurrentBoxTrip().get(BoxTrip.PENALTY_DETAILS); }
+            List<Penalty> penalties = getUnservedPenalties();
+            Collections.sort(penalties);
+            value = penalties.stream().map(Penalty::getDetails).collect(Collectors.joining(","));
+        }
         if (prop == PENALTY_COUNT) {
             int count = 0;
             for (Penalty p : getAll(PENALTY)) {
@@ -94,11 +102,15 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
             }
             return false;
         }
+        if (prop == PENALTY_BOX && source == Source.WS &&
+            Boolean.parseBoolean(scoreBoard.getSettings().get(ScoreBoard.SETTING_USE_PBT))) {
+            return last;
+        }
         return value;
     }
     @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == CURRENT_FIELDING) {
+        if (prop == CURRENT_FIELDING && !source.isFile()) {
             Fielding f = (Fielding) value;
             Fielding lf = (Fielding) last;
             setRole(value == null ? getBaseRole() : f.getCurrentRole());
