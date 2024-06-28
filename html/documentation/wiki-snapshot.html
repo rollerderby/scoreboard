@@ -706,7 +706,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
           <div class="nav-container">
             <div class="nav-inner" id="scroll-spy" style="width: min-content; overflow: auto; top: 60px; bottom: 0; padding 10px 0 10px 0;">
               <span class="toc">Table of contents</span>
-              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the v2025-beta1 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
+              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the v2025-beta2 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
 <h3 id="howtos">Howtos</h3>
 <ul class="nav"><li><strong><a href="#Installing-the-Scoreboard-Software">Installing the Scoreboard Software</a></strong><ul class="nav"><li><span>Instructions for getting the software installed and running on a standalone computer to provide a functioning scoreboard.</span></li></ul></li><li><strong><a href="#Quick-Start-Guide">Quick Start Guide</a></strong><ul class="nav"><li><span>Basic information to run a game with only what is mandatory for a regulation game. See the pages below for the full feature set.</span></li></ul></li><li><strong><a href="#Preparing-a-Game">Preparing a Game</a></strong></li><li><strong><a href="#Scoreboard-Operation">Scoreboard Operation</a></strong></li><li><strong><a href="#Configuring-Hotkeys">Configuring Hotkeys</a></strong></li><li><strong><a href="#Using-the-Scoreboard-on-a-Network">Using the Scoreboard on a Network</a></strong></li><li><strong><a href="#Penalty-Tracking">Penalty Tracking</a></strong></li><li><strong><a href="#Lineup-Tracking">Lineup Tracking</a></strong></li><li><span>The </span><strong>Penalty Lineup Tracking</strong> interface combines the PT and LT inputs for one team on a single screen. See those pages for info how to operate it.</li><li><strong><a href="#Penalty-Box-Timing">Penalty Box Timing</a></strong></li></ul><h3 id="tips-tricks">Tips &amp; Tricks</h3>
 <ul class="nav"><li><strong><a href="#Scoreboard-Best-Practices">Scoreboard Best Practices</a></strong></li><li><strong><a href="#Graphics">Graphics</a></strong><ul class="nav"><li><span>Information on graphics for use with CRG, such as team logos and sponsor banners.</span></li></ul></li><li><strong><a href="#External-Links">External Links</a></strong><ul class="nav"><li><span>Links to other sites with information about CRG Scoreboard.</span></li></ul></li></ul><h3 id="details-about-screens-tabs">Details about Screens / Tabs</h3>
@@ -1077,7 +1077,7 @@ visible on the main operator screen can be assigned a hotkey.</p>
 <p>Jammer and Pivot selection buttons can also be assigned hotkeys. These will be remembered, if the same stored team is assigned to the same side of the scoreboard later on.</p>
 <p>Each operator can set their own hotkeys, which will be retained on the local computer only.  Setting hotkeys
 on one server does NOT configure them on another, and a hard reset of the scoreboard will delete saved
-configurations.</p>
+configurations.  You can however import/export operator profiles (see <a href="https://github.com/rollerderby/scoreboard/wiki/Data-Management#games-teams-rulesets-and-operators-sections">Data-Management</a>).</p>
 <h2 id="assigning-hotkeys">Assigning Hotkeys</h2>
 <p>To begin assigning hotkeys, click the &quot;Edit Key Controls&quot; button near the top of the screen.</p>
 <p><strong>Important:</strong> When you are done assigning hotkeys, <em>do not forget</em> to press the &quot;Edit Key Controls&quot;
@@ -2268,9 +2268,26 @@ The editor for stored teams will always be a screen with a single team while the
 <p>See <a href="#Graphics">Graphics</a> for info on resultions etc.</p>
 <p class="page" id="Scoreboard-Video-Overlays"></p><h1>Scoreboard Video Overlays</h1>
 <p>The scoreboard features a video overlay that can be used during event livestreams, for example on Twitch or YouTube.</p>
-<p>[TODO: screenshot]</p>
+<p><img src="https://github.com/rollerderby/scoreboard/assets/87659206/7e593cd0-d3f2-4666-ae69-dc47d7e5e47c" /></p>
+<h1 id="connecting-a-broadcaster-to-the-scoreboard-overlay">Connecting a Broadcaster to the Scoreboard Overlay</h1>
+<p>This section outlines the procedure for connecting a broadcaster to the Derby Scoreboard software in order to display the scoreboard overlay on the stream. This is known to work in <strong>OBS Studio</strong> and <strong>vMix</strong>.</p>
+<h2 id="steps">Steps</h2>
+<ol>
+<li>Ensure both the derby scoreboard computer and the broadcaster computer running the stream are connected to the same WiFi network
+In the Derby Scoreboard main screen, there will be a network pane on the right side with a QR code and several URLs:</li>
+</ol>
+<p><img src="https://github.com/rollerderby/scoreboard/assets/87659206/313d00a0-b562-4c97-bd47-e8ae560aab98" /></p>
+<ol start="2">
+<li>Copy the URL at the top into an email or text and type “views/overlay/” after the final slash in the address and send to the broadcaster</li>
+</ol>
+<p>Example: &quot;<strong><a href="https://192.168.1.73:8000/views/overlay/">https://192.168.1.73:8000/views/overlay/</a></strong>&quot;</p>
+<ol start="3">
+<li>Have them add the URL you sent as a <strong>browser</strong> or <strong>webpage</strong> source to their streaming software</li>
+</ol>
 <h2 id="using-in-obs-studio">Using in OBS Studio</h2>
 <p>You can use the video overlay in <a href="https://obsproject.com/">OBS Studio</a> by adding a <a href="https://obsproject.com/kb/browser-source">browser source</a>.</p>
+<h2 id="using-in-vmix">Using in vMix</h2>
+<p>You can use the video overlay in <a href="https://www.vmix.com/">vMix</a> by adding a <a href="https://www.vmix.com/help23/index.htm?WebBrowser.html">webpage source</a>.</p>
 <p class="page" id="Building-the-Scoreboard-from-Source"></p><h1>Building the Scoreboard from Source</h1>
 <p>Packages you will need installed (on a Debian/Ubuntu system - there are probably similar names for other platforms) are:</p>
 <ul>
@@ -2280,6 +2297,9 @@ The editor for stored teams will always be a screen with a single team while the
 <p>Clone or download the sourcecode and change into the directory containing the source. To build CRG simply run <code>ant</code>. This will also run the bundled tests; if you want to skip those you can run <code>ant compile</code> instead.
 If you want to create a zip archive that you can install on other computers, run <code>ant zip</code> instead. The archive will be placed in the folder <code>release</code>.</p>
 <p class="page" id="Custom-Screen-Creation-Tutorial"></p><h1>Custom Screen Creation Tutorial</h1>
+<hr>
+<p><strong>Caution:</strong> The architecture of the frontend will significantly change in CRG 2025 and this page has not yet been updated to reflect this change.</p>
+<hr>
 <p>All CRG frontend screens are web pages.  This tutorial constructs a simple example screen as an illustration of how to construct CRG frontend pages. It assumes you already have the latest CRG version installed on your computer.</p>
 <p>The only Javascript add-on used by CRG is jQuery.  While it would certainly be possible to write a custom page without using it, because it is universally used by the existing CRG codebase, this tutorial will also employ it.  (Plus, it really DOES make things easier.)</p>
 <p>While you can create the files for this tutorial anywhere on your computer, best practice would be the subdirectory of the /html/custom/ directory of your scoreboard installation that fits the purpose of the screen.</p>
