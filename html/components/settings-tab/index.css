@@ -6,5 +6,5 @@
 #ScoreBoardSettings div.Preview { border-top: none; }
 
 #ScoreBoardSettings .ViewFrames iframe { max-width: 50%; height: 300px; }
-#ScoreBoardSettings .StatsFile.Readable::after { content: "✓"; color: green; font-size: 150%; }
-#ScoreBoardSettings .StatsFile:not(.Readable):not(.Progress)::after { content: "❌"; color: red; }
+#ScoreBoardSettings .StatsFile.Readable::after { content: "✓"; font-size: 150%; font-weight: bold; }
+#ScoreBoardSettings .StatsFile:not(.Readable):not(.Progress)::after { content: "❌"; font-weight: bold; color: red; }
