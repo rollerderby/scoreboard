@@ -44,7 +44,7 @@
     --element-unserved-fg: var(--group-fg);
 
     --button-bg: linear-gradient(0deg, #bbb, #eee);
-    --button-fg: #004276;
+    --button-fg: #000;
     --button-border: 1px solid #d8dcdf;
     --button-font-size: 0.9em;
     --button-font-weight: bold;
@@ -69,6 +69,7 @@
     --button-unserved-hover-fg: var(--button-hover-fg);
 }
 
+a { color: inherit; }
 html { font-size: 12pt; }
 body { background-color: var(--outside-bg); color: var(--outside-fg); }
 .sbSegmentGroup { display: flex; gap: var(--segment-gap); }
