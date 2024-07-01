@@ -96,8 +96,12 @@ function dspIsRight(k, v, elem) {
   return (elem.attr('Team') !== '1') !== isTrue(v);
 }
 
-function dspShowJammer(k, v, elem) {
-  return isTrue(v) === (elem.attr('Position') === 'Jammer');
+function dspIsJamming(k, v, elem) {
+  return (!isTrue(v) && elem.attr('Position') === 'Jammer') || (isTrue(v) && elem.attr('Position') === 'Pivot');
+}
+
+function dspIsNotJamming(k, v, elem) {
+  return !dspIsJamming(k, v, elem);
 }
 
 function dspToJammerName(k, v) {
