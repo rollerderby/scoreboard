@@ -26,7 +26,7 @@ function toggleSwap() {
 }
 
 function questionMarkIfEmpty(k, v) {
-  return v == null ? '?' : v;
+  return v || '?';
 }
 
 function positionDetails(k, v, elem) {

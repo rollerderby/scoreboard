@@ -33,17 +33,11 @@
 	background: var(--outside-bg);
 	color: var(--outside-fg);
 }
-.ui-widget-content a {
-	color: #333333;
-}
 .ui-widget-header {
 	border: var(--header-border);
 	background: var(--header-bg);
 	color: var(--header-fg);
 	font-weight: var(--header-font-weight);
-}
-.ui-widget-header a {
-	color: #ffffff;
 }
 
 /* Interaction states
@@ -52,7 +46,6 @@
 .ui-widget-content .ui-state-default,
 .ui-widget-header .ui-state-default,
 .ui-button,
-
 /* We use html here because we need a greater specificity to make sure disabled
 works properly when clicked or hovered */
 html .ui-button.ui-state-disabled:hover,
@@ -61,68 +54,23 @@ html .ui-button.ui-state-disabled:active {
 	background: var(--button-bg);
 	font-weight: var(--button-font-weight);
 	color: var(--button-fg);
-}
-.ui-state-default a,
-.ui-state-default a:link,
-.ui-state-default a:visited,
-a.ui-button,
-a:link.ui-button,
-a:visited.ui-button,
-.ui-button {
-	color: var(--button-fg);
-	text-decoration: none;
-}
-.ui-state-hover,
-.ui-widget-content .ui-state-hover,
-.ui-widget-header .ui-state-hover,
-.ui-state-focus,
-.ui-widget-content .ui-state-focus,
-.ui-widget-header .ui-state-focus,
-.ui-button:hover,
-.ui-button:focus {
-	border: var(--button-hover-border);
-	background: var(--button-hover-bg);
-	font-weight: var(--button-font-weight);
-	color: var(--button-hover-fg);
-}
-.ui-state-hover a,
-.ui-state-hover a:hover,
-.ui-state-hover a:link,
-.ui-state-hover a:visited,
-.ui-state-focus a,
-.ui-state-focus a:hover,
-.ui-state-focus a:link,
-.ui-state-focus a:visited,
-a.ui-button:hover,
-a.ui-button:focus {
-	color: var(--button-hover-fg);
-	text-decoration: none;
-}
-
-.ui-visual-focus {
-	box-shadow: 0 0 3px 1px rgb(94, 158, 214);
+	box-shadow: var(--button-shadow);
+	transform: var(--button-transform);
 }
 .ui-state-active,
 .ui-widget-content .ui-state-active,
-.ui-widget-header .ui-state-active,
-a.ui-button:active,
-.ui-button:active,
-.ui-button.ui-state-active:hover {
+.ui-widget-header .ui-state-active {
 	border: 1px solid #eeeeee;
 	background: #ffffff;
 	font-weight: bold;
 	color: #cc0000;
+	box-shadow: none;
+	transform: none;
 }
 .ui-icon-background,
 .ui-state-active .ui-icon-background {
 	border: #eeeeee;
 	background-color: #cc0000;
-}
-.ui-state-active a,
-.ui-state-active a:link,
-.ui-state-active a:visited {
-	color: #cc0000;
-	text-decoration: none;
 }
 
 /* Interaction Cues
@@ -130,18 +78,18 @@ a.ui-button:active,
 .ui-state-highlight,
 .ui-widget-content .ui-state-highlight,
 .ui-widget-header .ui-state-highlight {
-	border: 1px solid #fcd3a1;
-	background: #fbf8ee url("images/ui-bg_glass_55_fbf8ee_1x400.png") 50% 50% repeat-x;
-	color: #444444;
+	border: var(--button-clickme-border);
+	background: var(--buton-clickme-bg);
+	color: var(--buton-clickme-fg);
 }
 .ui-state-checked {
-	border: 1px solid #fcd3a1;
-	background: #fbf8ee;
+	border: var(--button-active-border);
+	background: var(--buton-active-bg);
 }
 .ui-state-highlight a,
 .ui-widget-content .ui-state-highlight a,
 .ui-widget-header .ui-state-highlight a {
-	color: #444444;
+	color:  var(--buton-clickme-fg);
 }
 .ui-state-error,
 .ui-widget-content .ui-state-error,
