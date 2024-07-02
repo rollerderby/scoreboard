@@ -55,13 +55,17 @@ function _ltsOpenFieldingEditor(g, p, j, t, pos, upcoming) {
   WS.SetupDialog($('#FieldingEditor'), prefix, {
     modal: true,
     title: (upcoming ? 'Upcoming Jam' : 'Period ' + p + ' Jam ' + j) + ' ' + posName,
-    width: '700px',
+    width: '800px',
     buttons: {
       Close: function () {
         $(this).dialog('close');
       },
     },
   });
+}
+
+function ltsIsUnknownSkater(k) {
+  return !WS.state[k.upTo('Fielding') + '.Skater'] && !isTrue(WS.state[k.upTo('Fielding') + '.NotFielded']);
 }
 
 function ltsToBtStartText(k) {

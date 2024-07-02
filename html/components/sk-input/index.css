@@ -13,7 +13,9 @@ body:not([showTeam="2"]) [Team] ~ [Team]>.SkInput .ScoreRow  { flex-direction: r
 .SkInput .Timeouts { position: relative; }
 [Team="1"] .SkInput .OfficialTimeout>div { display: none; }
 [Team="2"] .SkInput .OfficialTimeout>div { position: absolute; right: calc(50% + (0.5 * var(--segment-gap))); width: 100%; }
-.SkInput .OfficialTimeout button { transform: translateY(-50%); }
+.SkInput .OfficialTimeout button { transform: translateY(-50%) var(--button-transform); }
+.SkInput .OfficialTimeout button:hover { transform: translateY(-50%) var(--button-hover-transform); }
 
 /* jammer/pivot rows */
-.SkInput .HasPlayed:not(.Active) { box-shadow: inset 0px 0px 4px 4px var(--element-active-bg); }
+.SkInput .HasPlayed:not(.sbActive) { box-shadow: inset 0px 0px 4px 4px var(--element-active-bg), var(--button-shadow); }
+.SkInput .HasPlayed:not(.sbActive):hover { box-shadow: inset 0px 0px 4px 4px var(--element-active-bg), var(--button-hover-shadow); }

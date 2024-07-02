@@ -5,7 +5,7 @@
     --segment-corner-radius: 0.6rem;
     --segment-gap: 0.5rem;
 
-    --group-bg: #aaa;
+    --group-bg: #bbb;
     --group-fg: #000;
     --group-border-top: 1px dashed #eee;
     --group-gap: 1rem;
@@ -31,7 +31,7 @@
     --very-very-important-font-size: 3rem;
     --very-very-important-font-weight: var(--very-important-font-weight);
 
-    --table-row-stripe: #bbb;
+    --table-row-stripe: #ccc;
 
     --element-gap: 0.5rem;
     --element-active-bg: #6fdf6f;
@@ -43,30 +43,21 @@
     --element-unserved-bg: #0ee;
     --element-unserved-fg: var(--group-fg);
 
-    --button-bg: linear-gradient(0deg, #bbb, #eee);
+
+    --button-border-color: #555;
+    --button-bg: #eee;
     --button-fg: #000;
-    --button-border: 1px solid #d8dcdf;
+    --button-border: 1px solid var(--button-border-color);
+    --button-shadow: var(--button-border-color) 2px 2px;
+    --button-transform: translate(-2px, -2px);
     --button-font-size: 0.9em;
     --button-font-weight: bold;
-    --button-hover-bg: linear-gradient(0deg, #ccc, #fff);
-    --button-hover-fg: #111;
-    --button-hover-border: 1px solid #cdd5da;
-    --button-active-bg: linear-gradient(0deg, #4b4, #7e7);
-    --button-active-fg: var(--button-fg);
-    --button-active-hover-bg: linear-gradient(0deg, #5c5, #8f8);
-    --button-active-hover-fg: var(--button-hover-fg);
-    --button-clickme-bg: linear-gradient(0deg, #cc700c, #ff9010);
-    --button-clickme-fg: var(--button-fg);
-    --button-clickme-hover-bg: linear-gradient(0deg, #dd800d, #ffa020);
-    --button-clickme-hover-fg: var(--button-hover-fg);
-    --button-inbox-bg: linear-gradient(0deg, #b44, #e33);
-    --button-inbox-fg: var(--button-fg);
-    --button-inbox-hover-bg: linear-gradient(0deg, #c55, #f44);
-    --button-inbox-hover-fg: var(--button-hover-fg);
-    --button-unserved-bg: linear-gradient(0deg, #0bb, #0ee);
-    --button-unserved-fg: var(--button-fg);
-    --button-unserved-hover-bg: linear-gradient(0deg, #0cc, #0ff);
-    --button-unserved-hover-fg: var(--button-hover-fg);
+    --button-hover-shadow: var(--button-border-color) 1px 1px;
+    --button-hover-transform: translate(-1px, -1px);
+    --button-clicked-shadow: var(--button-border-color) 3px 3px inset;
+    --button-clicked-transform: translate(0, 0);
+    --button-active-shadow: var(--button-border-color) 1px 1px inset;
+    --button-active-hover-shadow: var(--button-border-color) 2px 2px inset;
 }
 
 a { color: inherit; }
@@ -100,14 +91,13 @@ div.sbSheets { height: calc(100% - 10px); align-items: flex-start; flex-wrap: wr
 .sbSheets .hasAnnotation { position: relative; background-clip: padding-box; } 
 .sbSheets .hasAnnotation::after { position: absolute; right: 2px; top: 2px; height: 5px; width: 5px; background-color: red; content: ""; } 
 
-.sbActive, .ui-button.sbActive { background: var(--button-active-bg); color: var(--button-active-fg); }
-.ui-button:hover.sbActive { background: var(--button-active-hover-bg); color: var(--button-active-hover-fg); }
-.sbClickMe, .ui-button.sbClickMe { background: var(--button-clickme-bg); color: var(--button-clickme-fg); }
-.ui-button:hover.sbClickMe { background: var(--button-clickme-hover-bg); color: var(--button-clickme-hover-fg); }
-.sbUnserved, .ui-button.sbUnserved { background: var(--button-unserved-bg); color: var(--button-unserved-fg); }
-.ui-button:hover.sbUnserved { background: var(--button-unserved-hover-bg); color: var(--button-unserved-hover-fg); }
-.sbInBox, .ui-button.sbInBox { background: var(--button-inbox-bg); color: var(--button-inbox-fg); }
-.ui-button:hover.sbInBox { background: var(--button-inbox-hover-bg); color: var(--button-inbox-hover-fg); }
+.sbActive, .ui-button.sbActive { background: var(--element-active-bg); color: var(--element-active-fg); box-shadow: var(--button-active-shadow); transform: var(--button-active-transform); }
+.sbClickMe, .ui-button.sbClickMe { background: var(--element-clickme-bg); color: var(--element-clickme-fg); }
+.sbUnserved, .ui-button.sbUnserved { background: var(--element-unserved-bg); color: var(--element-unserved-fg); }
+.sbInBox, .ui-button.sbInBox { background: var(--element-inbox-bg); color: var(--button-inbox-fg); box-shadow: var(--button-active-shadow); transform: var(--button-active-transform); }
+.ui-button:hover { box-shadow: var(--button-hover-shadow); transform: var(--button-hover-transform); }
+.ui-button:hover.sbActive, .ui-button:hover.sbInBox { box-shadow: var(--button-active-hover-shadow);  transform: var(--button-active-transform); }
+.ui-button:active, .ui-button:active.sbActive { box-shadow: var(--button-clicked-shadow); transform: var(--button-clicked-transform); }
 
 .sbNoDistract { font-size: var(--nodistract-font-size); }
 .ui-button.sbNoDistract { font-size: calc(.9 * var(--nodistract-font-size)); }
