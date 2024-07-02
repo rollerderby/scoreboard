@@ -4,6 +4,7 @@ body { color: #FFFFFF; font-weight: bold; background: #000000; height: 100%; wid
 .DisplayPane { opacity: 0; position: absolute; left: 0; top: 0; width: 100%; height: 100%; transition: opacity 1s; } 
 .DisplayPane>.object { width: 100%;height: 100%; border: 0px; object-fit: contain; }
 .DisplayPane.Show { opacity: 1; }
+#cover { background: #000; transition-delay: 1s; transition-timing-function: ease-in;}
 
 /* Colors, Shapes, Contents */
 div { text-align: center; overflow: hidden; }
