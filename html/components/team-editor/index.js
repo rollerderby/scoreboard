@@ -82,9 +82,11 @@ function tmeOpenColorsDialog(k) {
       source: [
         { label: 'operator (Operator Colors)', value: 'operator' },
         { label: 'plt (PLT Colors)', value: 'plt' },
+        { label: 'penalty (Penalty Clock Colors)', value: 'penalty' },
         { label: 'overlay (Video Overlay Colors)', value: 'overlay' },
         { label: 'scoreboard (Scoreboard Colors)', value: 'scoreboard' },
         { label: 'scoreboard_dots (Scoreboard Dot Colors)', value: 'scoreboard_dots' },
+        { label: 'whiteboard (Penalty Whiteboard)', value: 'whiteboard' },
       ],
     })
     .end()
