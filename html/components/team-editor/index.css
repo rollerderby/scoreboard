@@ -21,13 +21,11 @@
 /* End Alternate Names Dialog */
 
 /* Colors Dialog */
-#ColorsDialog table thead tr>th.X { width: 10%; } 
-#ColorsDialog table thead tr>th.Id { width: 30%; } 
-#ColorsDialog table thead tr>th.Color { width: 20%; } 
-#ColorsDialog table thead tr>th { font-size: 1rem; } 
+#ColorsDialog table thead tr>th { font-size: 1rem; width: 20%; } 
 #ColorsDialog table tbody tr input[type="color"] { padding: 0; width: 75%; } 
 #ColorsDialog table tbody tr input[type="color"].cleared + button { background: #ff0000; } 
 #ColorsDialog table tbody tr button.ClearPrev { padding: 0; width: 20%; } 
+#ColorsDialog table tbody tr.Separator { height: 0.5em; }
 /* End Colors Dialog */
 
 /* Teams Remove Dialog */
