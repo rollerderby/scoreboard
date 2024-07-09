@@ -99,7 +99,13 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
             teamJam.setNoPivot((Boolean) value);
         }
         if (prop == SKATER && value != null && isInBox() && !source.isFile()) {
-            for (Penalty p : ((Skater) value).getUnservedPenalties()) { getCurrentBoxTrip().add(BoxTrip.PENALTY, p); }
+            Skater s = (Skater) value;
+            if (getCurrentBoxTrip().getClock() != null && last == null &&
+                getCurrentBoxTrip().numberOf(BoxTrip.PENALTY) == 0 && s.getUnservedPenalties().isEmpty()) {
+                s.add(Skater.PENALTY,
+                      new PenaltyImpl(s, s.numberOf(Skater.PENALTY) == 0 ? 1 : s.getMaxNumber(Skater.PENALTY) + 1));
+            }
+            for (Penalty p : s.getUnservedPenalties()) { getCurrentBoxTrip().add(BoxTrip.PENALTY, p); }
         }
     }
 

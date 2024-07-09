@@ -69,5 +69,4 @@ public interface BoxTrip extends ScoreBoardEventProvider {
     public static final Command END_EARLIER = new Command("EndEarlier", props);
     public static final Command END_LATER = new Command("EndLater", props);
     public static final Command DELETE = new Command("Delete", props);
-    public static final Command REMOVE_PENALTY = new Command("RemovePenalty", props);
 }

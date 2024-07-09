@@ -1,4 +1,4 @@
-body { display: flex; flex-direction: column; height: 100dvh; }
+body { display: flex; flex-direction: column; height: calc(100dvh - 16px); }
 #List { flex: 1; }
 
 #Unassigned { 
@@ -27,5 +27,6 @@ body { display: flex; flex-direction: column; height: 100dvh; }
 #Buttons>div { height: 100%; }
 #Buttons>div>button {  flex: 1; height: 100%; font-size: 5dvh; padding: 1rem; }
 
-#LineupEditor>.sbGroup { display: block; }
+#PositionDetails .edit>.onNoEdit, #PositionDetails .forceEdit>.onNoEdit, #PositionDetails :not(.edit):not(.forceEdit)>.onEdit { display: none; }
+
 button.StartButton { width: 95%; height: 25dvh; font-size: 5dvh; }
