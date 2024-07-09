@@ -82,9 +82,11 @@ function tmeOpenColorsDialog(k) {
       source: [
         { label: 'operator (Operator Colors)', value: 'operator' },
         { label: 'plt (PLT Colors)', value: 'plt' },
+        { label: 'penalty (Penalty Clock Colors)', value: 'penalty' },
         { label: 'overlay (Video Overlay Colors)', value: 'overlay' },
         { label: 'scoreboard (Scoreboard Colors)', value: 'scoreboard' },
         { label: 'scoreboard_dots (Scoreboard Dot Colors)', value: 'scoreboard_dots' },
+        { label: 'whiteboard (Penalty Whiteboard)', value: 'whiteboard' },
       ],
     })
     .end()
@@ -271,10 +273,19 @@ function tmeStartAutocomplete(k, v, elem) {
 
 function tmeAddColor(k, v, elem) {
   const typeinput = elem.closest('#ColorsDialog').find('#newType');
-  WS.Set(k + '.Color(' + typeinput.val() + '.fg)', '');
-  WS.Set(k + '.Color(' + typeinput.val() + '.bg)', '');
-  WS.Set(k + '.Color(' + typeinput.val() + '.glow)', '');
+  _tmeCopyColor(k, 'preset', typeinput.val());
   typeinput.val('').trigger('focus');
+}
+
+function tmeUsePresetColor(k, v, elem) {
+  const type = elem.closest('[Color]').attr('Color').split('.')[0];
+  _tmeCopyColor(k, 'preset', type);
+}
+
+function _tmeCopyColor(k, source, target) {
+  WS.Set(k + '.Color(' + target + '.fg)', WS.state[k + '.Color(' + source + '.fg)'] || '');
+  WS.Set(k + '.Color(' + target + '.bg)', WS.state[k + '.Color(' + source + '.bg)'] || '');
+  WS.Set(k + '.Color(' + target + '.glow)', WS.state[k + '.Color(' + source + '.glow)'] || '');
 }
 
 function tmeClearColor(k, v, elem) {

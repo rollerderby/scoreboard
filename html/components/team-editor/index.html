@@ -58,8 +58,8 @@
               <option value="">Other</option>
               <option sbForeach="UniformColor::value:noId" sbAttr="value:" sbDisplay=" "></option>
             </select>
+            <input type="text" class="Name" size="15" sbClass="sbHide: UniformColor: tmeIsNotOtherUc" sbControl="UniformColor" />
           </span>
-          <input type="text" class="Name" size="15" sbClass="sbHide: UniformColor: tmeIsNotOtherUc" sbControl="UniformColor" />
           <span sbClass="sbHide:-: tmeNotPrepared">
             <span sbForeach="UniformColor:: name:noId" sbAttr="name:" class="RemoveColor">
               <span sbDisplay=":"></span>
@@ -187,13 +187,23 @@
         </tr>
       </thead>
       <tbody>
-        <tr sbForeach="Color:::part=1, noContext, noId">
+        <tr Color="preset.*">
+          <td class="Id">Preset</td>
+          <td sbForeach="Color:fg,bg,glow:only:filter=^, noId" class="Color">
+            <input type="color" sbClass="cleared:: sbIsEmpty" sbControl=":tmeDefaultColorIfEmpy" />
+            <button class="ClearPrev" sbSet=": null">X</button>
+          </td>
+        </tr>
+        <tr class="sbSubHeader Separator">
+          <th colspan="5"></th>
+        </tr>
+        <tr sbForeach="Color:-preset.*::part=1, noContext, noId">
           <td class="Id" sbDisplay=": tmeToColorType"></td>
           <td sbForeach="Color:fg,bg,glow:only:filter=^, noId" class="Color">
             <input type="color" sbClass="cleared:: sbIsEmpty" sbControl=":tmeDefaultColorIfEmpy" />
             <button class="ClearPrev" sbSet=": null">X</button>
           </td>
-          <td class="X"><button sbCall="tmeClearColor">X</button></td>
+          <td class="X"><button sbCall="tmeUsePresetColor">Preset</button><button sbCall="tmeClearColor">X</button></td>
         </tr>
       </tbody>
     </table>

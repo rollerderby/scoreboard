@@ -8,12 +8,15 @@
     sbClass="sbHide: IsCurrent: ! | Stand: Clock.Time: <=10000 | Done: EndFielding: sbIsNotEmpty"
   >
     <div class="Info">
-      <span class="sbVeryImportant">
+      <span
+        class="sbVeryImportant"
+        sbCss="color: ^Color(penalty.fg) | background-color: ^Color(penalty.bg) | text-shadow: ^Color(penalty.glow): sbCssToShadow"
+      >
         <span sbDisplay="^AlternateName(box),^UniformColor,^Name"></span> <span sbDisplay="RosterNumber"></span>
       </span>
       <span class="sbVeryImportant Instruction" sbDisplay="Clock.Time, EndFielding: penToInstruction"></span>
       <span class="sbVeryVeryImportant" sbDisplay="Clock.Time: sbToSeconds"></span>
-      <span class="sbImportant">
+      <span class="sbImportant" sbAttr="warn: TotalPenalties, CurrentSkater, ^^Rule(Penalties.NumberToFoulout): sbToWarnLevel">
         <span class="sbShowOnBoxView"><span sbDisplay="PenaltyCodes"></span> | </span>
         <span>Total: <span sbDisplay="TotalPenalties"></span></span>
       </span>
@@ -83,6 +86,6 @@
         sbCall="sbCloseDialog"
       ></div>
     </div>
-    <div class="sbGroup"><button sbSet="Remove">Delete</button></div>
+    <div class="sbGroup"><button sbSet="Remove" sbCall="sbCloseDialog">Delete</button></div>
   </div>
 </div>

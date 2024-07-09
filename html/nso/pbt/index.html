@@ -12,7 +12,12 @@
     <div class="sbSegment" id="Unassigned">
       <div class="sbGroup sbHeader">
         <span class="col1"><button class="sbNoDistract" id="SwapTeams" sbCall="toggleSwap">Swap Teams</button></span>
-        <span class="perTeam" sbForeach="Team: 1,2: only" sbDisplay="AlternateName(box),UniformColor,Name"></span>
+        <span
+          class="perTeam"
+          sbForeach="Team: 1,2: only"
+          sbDisplay="AlternateName(box),UniformColor,Name"
+          sbCss="color: Color(penalty.fg) | background-color: Color(penalty.bg) | text-shadow: Color(penalty.glow): sbCssToShadow"
+        ></span>
       </div>
       <div class="sbGroup">
         <span class="col1">Edit/Pre-Select:</span>
