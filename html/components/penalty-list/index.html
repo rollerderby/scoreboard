@@ -18,12 +18,15 @@
       <span class="sbVeryVeryImportant" sbDisplay="Clock.Time: sbToSeconds"></span>
       <span class="sbImportant" sbAttr="warn: TotalPenalties, CurrentSkater, ^^Rule(Penalties.NumberToFoulout): sbToWarnLevel">
         <span class="sbShowOnBoxView"><span sbDisplay="PenaltyCodes"></span> | </span>
-        <span>Total: <span sbDisplay="TotalPenalties"></span></span>
+        <span sbClass="sbHide: CurrentSkater: sbIsEmpty">Total: <span sbDisplay="TotalPenalties"></span></span>
       </span>
     </div>
     <div class="sbShowOnPbt Edit">
       <span>
-        <button sbClass="sbClickMe: CurrentSkater, TotalPenalties: penFoOrExp" sbCall="penSubstitute">Substitute</button>
+        <button sbClass="sbClickMe: CurrentSkater, TotalPenalties: penFoOrExp" sbCall="penSubstitute">
+          <span sbClass="sbHide: CurrentSkater: sbIsEmpty">Substitute</span>
+          <span sbClass="sbHide: CurrentSkater: sbIsNotEmpty">Select Skater</span>
+        </button>
         <button sbCall="penReassign">Change</button>
       </span>
       <span>
@@ -36,7 +39,7 @@
       </span>
       <span>
         <span sbDisplay="PenaltyDetails: penDetailButtons: html"></span>
-        <button sbCall="penAdd">Add</button>
+        <button sbClass="sbHide: CurrentSkater: sbIsEmpty" sbCall="penAdd">Add</button>
       </span>
     </div>
   </div>
@@ -62,7 +65,7 @@
   <div id="ReassignmentSelector" class="sbSegment" sbContext="Team(*).BoxTrip(*)">
     <div class="sbGroup sbStack" sbPrefix="b:[*]">
       <span sbContext="^^" sbForeach="Team: 1,2: only">
-        <span sbDisplay="AlternateName(box), UniformColor, Name"></span>
+        <span sbDisplay="AlternateName(box), UniformColor, Name"></span><span>: &nbsp;</span>
         <button
           sbForeach="Position: Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
           sbClass="sbUnserved: HasUnserved"

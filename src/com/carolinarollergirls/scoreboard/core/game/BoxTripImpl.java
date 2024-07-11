@@ -344,18 +344,6 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
                 // moved end past the present point in the game -> make ongoing
                 unend();
             }
-        } else if (prop == REMOVE_PENALTY) {
-            List<Penalty> penalties = new ArrayList<>(getAll(PENALTY));
-            if (!penalties.isEmpty()) {
-                Collections.sort(penalties, Collections.reverseOrder());
-                for (Penalty p : penalties) {
-                    if ("?".equals(p.getCode())) {
-                        remove(PENALTY, p);
-                        return;
-                    }
-                }
-                remove(PENALTY, penalties.get(0));
-            }
         }
     }
 

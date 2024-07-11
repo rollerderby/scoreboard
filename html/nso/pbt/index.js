@@ -36,7 +36,7 @@ function positionDetails(k, v, elem) {
     title: teamName + ' ' + k.Position,
     width: 700,
     buttons: {
-      Cancel: function () {
+      Close: function () {
         $(this).dialog('close');
       },
     },
@@ -59,4 +59,16 @@ function addPenalty(k) {
 function removePenalty(k) {
   const skaterPrefix = k.upTo('Team') + '.Skater(' + WS.state[k + '.Skater'] + ')';
   WS.Set(skaterPrefix + '.Penalty(' + WS.state[skaterPrefix + '.PenaltyCount'] + ').Remove', true);
+}
+
+function closeDialogIfSkater(k, v, elem) {
+  if (!!WS.state[k + '.Skater']) {
+    sbCloseDialog(k, v, elem);
+  }
+}
+
+function closeDialogIfInBox(k, v, elem) {
+  if (isTrue(WS.state[WS._getContext(elem.parent())[0] + '.PenaltyBox'])) {
+    sbCloseDialog(k, v, elem);
+  }
 }

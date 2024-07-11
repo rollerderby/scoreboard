@@ -12,7 +12,7 @@ WS.Register([
 function penFoOrExp(k, v) {
   const limit = WS.state[k.upTo('Game') + '.Rule(Penalties.NumberToFoulout)'];
   const skaterPrefix = k.upTo('Team') + '.Skater(' + v + ')';
-  return WS.state[skaterPrefix + '.Penalty(0).Code'] || WS.state[skaterPrefix + '.PenaltyCount'] >= limit;
+  return !v || !!WS.state[skaterPrefix + '.Penalty(0).Code'] || WS.state[skaterPrefix + '.PenaltyCount'] >= limit;
 }
 
 function penToInstruction(k, v) {
