@@ -121,19 +121,17 @@ function tmeAddNewUc(k, v, elem, event) {
 }
 
 function tmeSkaterCount(k, v, elem) {
+  return _tmeSkaterCount(elem.closest('table').find('tr.Skater'));
+}
+
+function _tmeSkaterCount(rows) {
   var count = 0;
-  elem
-    .closest('table')
-    .find('tr.Skater td.Flags select')
-    .each(function (_, f) {
-      if (f.value === '' || f.value === 'C' || f.value === 'A') {
-        count++;
-      }
-    });
-  elem
-    .closest('table')
-    .find('.SkaterCount')
-    .text('(' + count + ' skating)');
+  rows.find('td.Flags select').each(function (_, f) {
+    if (f.value === '' || f.value === 'C' || f.value === 'A') {
+      count++;
+    }
+  });
+  return '(' + count + ' skating)';
 }
 
 function tmeNewSkaterInput(k, v, elem, event) {
@@ -204,6 +202,32 @@ function tmeAddSkater(k, v, elem) {
   row.children().children('.Pronouns').val('');
   row.children().children('.Flags').val('');
   row.children().children('.AddSkater').prop('disabled', true).addClass('ui-button-disabled ui-state-disabled');
+}
+
+function _tmeCheckDuplicateSkaters(rows) {
+  var lastNumber = null;
+  var lastElem = null;
+  rows.removeClass('duplicateNumber').each(function () {
+    const loopElem = $(this);
+    const thisNumber = loopElem.attr('rosterNumber');
+    if (lastNumber === thisNumber) {
+      loopElem.add(lastElem).addClass('duplicateNumber');
+    }
+    lastElem = loopElem;
+    lastNumber = thisNumber;
+  });
+}
+
+function tmeSkaterAdded(k, v, elem) {
+  const rows = elem.siblings().addBack();
+  elem.closest('table').find('.SkaterCount').text(_tmeSkaterCount(rows));
+  _tmeCheckDuplicateSkaters(rows);
+}
+
+function tmeSkaterRemoved(k, v, elem) {
+  const rows = elem.siblings();
+  elem.closest('table').find('.SkaterCount').text(_tmeSkaterCount(rows));
+  _tmeCheckDuplicateSkaters(rows);
 }
 
 function tmeOpenRemoveSkaterDialog(k) {

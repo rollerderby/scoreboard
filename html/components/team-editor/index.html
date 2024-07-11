@@ -110,7 +110,11 @@
       </tr>
     </thead>
     <tbody>
-      <tr sbForeach="Skater:: rosterNumber: resort=RosterNumber,onInsert=tmeSkaterCount" class="Skater" sbAttr="rosterNumber: RosterNumber">
+      <tr
+        sbForeach="Skater:: rosterNumber: resort=RosterNumber,onInsert=tmeSkaterAdded,onRemove=tmeSkaterRemoved"
+        class="Skater"
+        sbAttr="rosterNumber: RosterNumber"
+      >
         <td class="RosterNumber"><input type="text" size="5" sbControl="RosterNumber" /></td>
         <td class="Name"><input type="text" size="20" sbControl="Name" /></td>
         <td class="Pronouns"><input type="text" size="10" sbControl="Pronouns" /></td>

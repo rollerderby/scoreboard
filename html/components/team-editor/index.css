@@ -8,10 +8,11 @@
 #Team .RemoveColor { margin: 0px 5px; border-right: 1px solid black; }
 
 #Team table.Skaters th.normalSize { font-size: 1rem; font-weight: normal; } 
-#Team table.Skaters td.Name { width: 40%; } 
 #Team table.Skaters td.RosterNumber { width: 15%; } 
+#Team table.Skaters td.Name { width: 40%; } 
+#Team table.Skaters td.Pronoun { width: 15%; }
 #Team table.Skaters td.Button { width: 15%; } 
-#Team table.Skaters td.Pronoun { width: 15%; } 
+#Team table.Skaters tr.duplicateNumber>td.RosterNumber { background: var(--element-clickme-bg); }
 
 /* Alternate Names Dialog */
 #AlternateNamesDialog table tr>th.Id { width: 45%; } 
