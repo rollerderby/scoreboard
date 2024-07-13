@@ -664,6 +664,9 @@ let WS = {
         if (options.onInsert) {
           options.onInsert = WS._buildNonBoolFunc(options.onInsert);
         }
+        if (options.onRemove) {
+          options.onRemove = WS._buildNonBoolFunc(options.onRemove);
+        }
       }
       let context = elem.attr('sbContext');
       context = context ? (context + ':').split(':', 2) : ['', ''];
@@ -727,12 +730,24 @@ let WS = {
                     .attr('sbCount', target.attr('sbCount') - 1)
                     .filter('[sbCount="0"]');
                   if (removed.length) {
+                    if (options.onRemove) {
+                      removed.each(function () {
+                        const removedElem = $(this);
+                        options.onRemove(WS._enrichProp(WS._getContext(removedElem)[0]), null, removedElem);
+                      });
+                    }
                     WS.Forget(removed);
                     removed.remove();
                   }
                 } else {
                   const removed = paren.children('[' + field + '="' + key + '"][sbSubId="' + subId + '"]:not(.sbFixed)');
                   if (removed.length) {
+                    if (options.onRemove) {
+                      removed.each(function () {
+                        const removedElem = $(this);
+                        options.onRemove(WS._enrichProp(WS._getContext(removedElem)[0]), null, removedElem);
+                      });
+                    }
                     WS.Forget(removed);
                     removed.remove();
                   }
