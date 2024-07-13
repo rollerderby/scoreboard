@@ -48,17 +48,23 @@
           <span sbClass="sbHide:-: tmeIsPrepared">Uniform Color: </span><span sbClass="sbHide:-: tmeNotPrepared">Uniform Colors: </span>
         </td>
         <td class="Value">
-          <span id="PreparedUc" class="sbHide" sbClass="sbHide: PreparedTeam: sbIsEmpty" sbAttr="team: PreparedTeam" sbPrefix="t:[*]">
+          <span id="PreparedUc" class="sbHide" sbClass="sbHide:-: tmeIsPrepared" sbAttr="team: PreparedTeam" sbPrefix="t:[*]">
             <select
               sbForeach="PreparedTeam"
               sbContext="/ScoreBoard"
-              sbClass="sbHide: Id: !== elem.parent().attr('team')"
+              sbClass="sbHide: Id,t.PreparedTeam: !== elem.parent().attr('team')"
               sbControl="t.UniformColor: tmeFilterOtherUc"
             >
               <option value="">Other</option>
               <option sbForeach="UniformColor::value:noId" sbAttr="value:" sbDisplay=" "></option>
             </select>
-            <input type="text" class="Name" size="15" sbClass="sbHide: UniformColor: tmeIsNotOtherUc" sbControl="UniformColor" />
+            <input
+              type="text"
+              class="Name"
+              size="15"
+              sbClass="sbHide: UniformColor, PreparedTeam: tmeIsNotOtherUc"
+              sbControl="UniformColor"
+            />
           </span>
           <span sbClass="sbHide:-: tmeNotPrepared">
             <span sbForeach="UniformColor:: name:noId" sbAttr="name:" class="RemoveColor">
