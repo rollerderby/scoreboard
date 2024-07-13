@@ -1,6 +1,6 @@
 'use strict';
 
-WS.Register(['ScoreBoeard.Game(' + _windowFunctions.getParam('game') + ').CurrentJam', 'ScoreBoard.Rulesets.Ruleset(*).Parent']);
+WS.Register(['ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').CurrentJam', 'ScoreBoard.Rulesets.Ruleset(*).Parent']);
 
 function opToggleKeyEdit(k, v, elem) {
   elem.toggleClass('sbActive');
