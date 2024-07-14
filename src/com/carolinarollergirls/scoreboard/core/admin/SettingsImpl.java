@@ -22,12 +22,18 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
 
     @Override
     protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
-        if (item != null && ScoreBoard.SETTING_STATSBOOK_INPUT.equals(item.getId())) {
-            boolean found = Paths.get(item.getValue()).toFile().canRead();
-            if (found && scoreBoard.isInitialLoadDone()) {
-                StatsbookExporter.preload(item.getValue(), getScoreBoard());
-            } else if (!found) {
-                getScoreBoard().set(ScoreBoard.BLANK_STATSBOOK_FOUND, "none");
+        if (item != null) {
+            if (ScoreBoard.SETTING_STATSBOOK_INPUT.equals(item.getId())) {
+                boolean found = Paths.get(item.getValue()).toFile().canRead();
+                if (found && scoreBoard.isInitialLoadDone()) {
+                    StatsbookExporter.preload(item.getValue(), getScoreBoard());
+                } else if (!found) {
+                    getScoreBoard().set(ScoreBoard.BLANK_STATSBOOK_FOUND, "none");
+                }
+            } else if (ScoreBoard.SETTING_USE_PBT.equals(item.getId()) && "true".equals(item.getValue())) {
+                set(ScoreBoard.SETTING_USE_LT, "true");
+            } else if (ScoreBoard.SETTING_USE_LT.equals(item.getId()) && "false".equals(item.getValue())) {
+                set(ScoreBoard.SETTING_USE_PBT, "false");
             }
         }
     }
