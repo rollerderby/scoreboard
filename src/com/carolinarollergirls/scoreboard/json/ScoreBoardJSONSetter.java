@@ -36,6 +36,8 @@ public class ScoreBoardJSONSetter {
 
         if (version.startsWith("v2025")) { return; } // no update needed
 
+        Logger.printMessage("Updating import from version " + version);
+
         // When updating to v5 we need to move stuff to a newly created game which needs an id
         String newGameId = UUID.randomUUID().toString();
 
@@ -121,6 +123,15 @@ public class ScoreBoardJSONSetter {
                 }
                 if (newKey.startsWith("ScoreBoard.Settings.Setting(" + ScoreBoard.SETTING_AUTO_END_JAM)) {
                     state.put(oldKey, "false");
+                }
+                if (newKey.contains("Color(") && newKey.contains("_fg)")) { newKey = newKey.replace("_fg)", ".fg)"); }
+                if (newKey.contains("Color(") && newKey.contains("_bg)")) { newKey = newKey.replace("_bg)", ".bg)"); }
+                if (newKey.contains("Color(") && newKey.contains("_glow)")) {
+                    newKey = newKey.replace("_glow)", ".glow)");
+                }
+                if (newKey.startsWith("ScoreBoard.PreparedTeam") && newKey.contains("UniformColor(")) {
+                    String teamId = newKey.substring("ScoreBoard.PreparedTeam(".length(), newKey.indexOf(")"));
+                    newKey = "ScoreBoard.PreparedTeam(" + teamId + ").UniformColor(" + state.get(oldKey) + ")";
                 }
 
                 keyVersion = "v2025";
