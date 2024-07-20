@@ -12,6 +12,12 @@
     <div class="Content">
       <div class="GameAdvance" sbInclude="/components/game-advance/"></div>
       <div sbForeach="Team: 1,2: only" sbInclude="/components/plt-input/" class="Input"></div>
+      <div
+        class="JamAdvance sbShowOnLt sbImportant"
+        sbClass="adv1pending: Team(1).FieldingAdvancePending | adv2pending: Team(2).FieldingAdvancePending"
+      >
+        <button class="sbClickMe" sbCall="advanceFieldings">Go To Next Jam</button>
+      </div>
       <div class="sbShowOnLt Sheet" sbForeach="Team: 1,2: only" sbInclude="/components/lt-sheet/"></div>
     </div>
     <div class="SettingsButton sbSegment">

@@ -84,3 +84,14 @@ function setZoom(k, v, elem) {
   _sbUpdateUrl('zoomable', elem.filter('.sbActive').length);
   _windowFunctions.configureZoom();
 }
+
+function advanceFieldings(k) {
+  'use strict';
+  const team = _windowFunctions.getParam('team');
+  if (team === 'both') {
+    WS.Set(k + '.Team(1).AdvanceFieldings', true);
+    WS.Set(k + '.Team(2).AdvanceFieldings', true);
+  } else {
+    WS.Set(k + '.Team(' + team + ').AdvanceFieldings', true);
+  }
+}
