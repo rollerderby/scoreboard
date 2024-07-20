@@ -1,11 +1,5 @@
 'use strict';
 
-function jtMoveOto(k, v, elem) {
-  if (k.Team === '2') {
-    elem.siblings('.OTO').insertBefore(elem);
-  }
-}
-
 function jtToggleSetting(k, v, elem) {
   elem.toggleClass('sbActive');
 }
@@ -13,6 +7,7 @@ function jtToggleSetting(k, v, elem) {
 function jtToggleUndoEnabled(k, v, elem) {
   elem.toggleClass('sbActive');
   $('.showOnUndoEnabled').toggleClass('sbHide', !elem.hasClass('sbActive'));
+  $(window).trigger('resize');
 }
 
 function jtPossiblInjCont(k) {
