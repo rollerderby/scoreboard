@@ -92,7 +92,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         for (Property<?> prop : p.getProperties()) {
             if (prop instanceof Value) {
                 Object v = p.get((Value<?>) prop);
-                if (v == null) { v = ""; }
                 update(path, prop, v);
             } else if (prop instanceof Child) {
                 for (ValueWithId c : p.getAll((Child<?>) prop)) {

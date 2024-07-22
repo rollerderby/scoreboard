@@ -206,8 +206,8 @@ public class ScoreBoardJSONListenerTests {
                                      ").Team(1).Skater(00000000-0000-0000-0000-000000000001).RosterNumber"));
         assertEquals("", state.get("ScoreBoard.Game(" + gameId +
                                    ").Team(1).Skater(00000000-0000-0000-0000-000000000001).Flags"));
-        assertEquals("", state.get("ScoreBoard.Game(" + gameId +
-                                   ").Team(1).Skater(00000000-0000-0000-0000-000000000001).Position"));
+        assertEquals(null, state.get("ScoreBoard.Game(" + gameId +
+                                     ").Team(1).Skater(00000000-0000-0000-0000-000000000001).Position"));
         assertEquals("Bench", state.get("ScoreBoard.Game(" + gameId +
                                         ").Team(1).Skater(00000000-0000-0000-0000-000000000001).Role"));
         assertEquals(false, state.get("ScoreBoard.Game(" + gameId +
