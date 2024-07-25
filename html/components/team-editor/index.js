@@ -107,7 +107,7 @@ function tmeFilterOtherUc(k, v, elem) {
 
 function tmeIsNotOtherUc(k, v) {
   const preparedTeam = WS.state['ScoreBoard.Game(' + k.Game + ').Team(' + k.Team + ').PreparedTeam'];
-  return !!WS.state['ScoreBoard.PreparedTeam(' + preparedTeam + ').UniformColor(' + v + ')'];
+  return k.field === 'UniformColor' && !!WS.state['ScoreBoard.PreparedTeam(' + preparedTeam + ').UniformColor(' + v + ')'];
 }
 
 function tmeAddNewUc(k, v, elem, event) {
