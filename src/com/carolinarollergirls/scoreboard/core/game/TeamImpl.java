@@ -77,7 +77,10 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
             .addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.OWNER)
             .addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.REVIEW)
             .addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.RUNNING);
-        setRecalculated(FULL_NAME).addSource(this, LEAGUE_NAME).addSource(this, TEAM_NAME);
+        setRecalculated(FULL_NAME)
+            .addSource(this, LEAGUE_NAME)
+            .addSource(this, TEAM_NAME)
+            .addSource(this, UNIFORM_COLOR);
         setRecalculated(DISPLAY_NAME)
             .addSource(this, LEAGUE_NAME)
             .addSource(this, TEAM_NAME)
@@ -521,9 +524,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                 break;
             }
         }
-        if (!hasColor) {
-            pt.add(PreparedTeam.UNIFORM_COLOR, new ValWithId(UUID.randomUUID().toString(), get(UNIFORM_COLOR)));
-        }
+        if (!hasColor) { pt.add(PreparedTeam.UNIFORM_COLOR, new ValWithId(get(UNIFORM_COLOR), get(UNIFORM_COLOR))); }
         for (ValWithId an : getAll(ALTERNATE_NAME)) {
             if (pt.get(ALTERNATE_NAME, an.getId()) == null) {
                 pt.add(ALTERNATE_NAME, new ValWithId(an.getId(), an.getValue()));
