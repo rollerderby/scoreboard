@@ -1,18 +1,9 @@
 'use strict';
 
-let activeRsPrefix = _windowFunctions.hasParam('ruleset')
-  ? 'ScoreBoard.Rulesets.Ruleset(' + _windowFunctions.getParam('ruleset') + ')'
-  : 'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ')';
+WS.Register('ScoreBoard.Rulesets.Ruleset(*).Parent');
 
 function rsCompareChildIndex(a, b) {
   return _sbCompareAttrThenSubId('index', $(a).children('[index]'), $(b).children('[index]'));
-}
-
-function rsUpdateActive(k, v) {
-  if (k.Game) {
-    activeRsPrefix = v ? 'ScoreBoard.Rulesets.Ruleset(' + v + ')' : 'ScoreBoard.Game(' + k.Game + ')';
-  }
-  return v;
 }
 
 function rsTriggerFold(k, v, elem) {
@@ -27,12 +18,16 @@ function rsPart2(k, v) {
   return v ? v.split('.', 2)[1] : '';
 }
 
-function rsDisableToggle() {
-  return isTrue(WS.state[activeRsPrefix + '.Readonly']) || WS.state[activeRsPrefix + '.Ruleset'] == null;
+function rsIsInherited(k, v) {
+  return (k.field === 'Ruleset' && !!v) || (!k.Game && !v);
 }
 
-function rsDisableSetter() {
-  return isTrue(WS.state[activeRsPrefix + '.Readonly']);
+function rsIsNotInherited(k, v) {
+  return !rsIsInherited(k, v);
+}
+
+function rsDisableToggle(k, v) {
+  return k.Game != null || isTrue(v);
 }
 
 function rsDefinitionOverride(k, v, elem) {
@@ -49,8 +44,9 @@ function _rsGetEffectiveValue(rs, rule) {
 }
 
 function rsGetDisplayValue(k, v, elem) {
-  const value =
-    WS.state[activeRsPrefix + '.Rule(' + k.Rule + ')'] || _rsGetEffectiveValue(activeRsPrefix.split('(')[1].slice(0, -1), k.Rule);
+  const value = k.Game
+    ? v
+    : _rsGetEffectiveValue(_windowFunctions.getParam('ruleset'), WS._enrichProp(WS._getContext(elem)[0]).RuleDefinition);
   return (
     elem
       .parent()
