@@ -3,7 +3,7 @@
   <div class="sbGroup sbSubHeader selection" sbClass="sbHide:-:sbNoGame">
     <span
       >Current Ruleset:
-      <select id="select" sbProp="disabled: State: !== 'Prepared'" sbControl="Ruleset: rsUpdateActive">
+      <select id="select" sbProp="disabled: State: !== 'Prepared'" sbControl="Ruleset">
         <option value="">Custom</option>
         <option
           sbForeach="Ruleset:: sbOrderRsAsTree: resort=Parent"
@@ -38,13 +38,13 @@
         sbForeach="RuleDefinition:: index: filter=^"
         class="definition"
         sbAttr="index: Index"
-        sbClass="Inherited: §.Rule([RuleDefinition]): == null"
+        sbClass="Inherited: §.Ruleset, §.Rule([RuleDefinition]): rsIsInherited"
       >
         <td class="name">
           <input
             type="checkbox"
             class="Selector"
-            sbProp="checked: §.Rule([RuleDefinition]): != null | disabled: §.Readonly, §.Ruleset: rsDisableToggle"
+            sbProp="checked: §.Ruleset, §.Rule([RuleDefinition]): rsIsNotInherited | disabled: §.Readonly: rsDisableToggle"
             sbSet="§.Rule([RuleDefinition]): rsDefinitionOverride"
           />
           <span sbDisplay="Name: rsPart2"></span>
@@ -55,19 +55,18 @@
             type="text"
             class="override"
             sbClass="sbHide: Type: === 'Boolean'"
-            sbProp="disabled: §.Readonly, §.Ruleset: rsDisableSetter"
+            sbProp="disabled: §.Readonly"
             sbControl="§.Rule([RuleDefinition])"
           />
-          <select
-            class="override"
-            sbClass="sbHide: Type: !== 'Boolean'"
-            sbProp="disabled: §.Readonly, §.Ruleset: rsDisableSetter"
-            sbControl="§.Rule([RuleDefinition])"
-          >
+          <select class="override" sbClass="sbHide: Type: !== 'Boolean'" sbProp="disabled: §.Readonly" sbControl="§.Rule([RuleDefinition])">
             <option value="true" sbDisplay="TrueValue"></option>
             <option value="false" sbDisplay="FalseValue"></option>
           </select>
-          <span class="inherit" sbDisplay="/ScoreBoard.Rulesets.Ruleset(*).Rule([RuleDefinition]): rsGetDisplayValue"> </span>
+          <span
+            class="inherit"
+            sbDisplay="§.Rule([RuleDefinition]), /ScoreBoard.Rulesets.Ruleset(*).Rule([RuleDefinition]), §.Parent: rsGetDisplayValue"
+          >
+          </span>
         </td>
       </tr>
     </tbody>
