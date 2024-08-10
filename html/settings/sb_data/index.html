@@ -17,7 +17,7 @@
         <div class="sbGroup Content">
           <a download id="downloadAll" sbButton>Download All Data</a>
           <a download id="downloadSelected" sbButton>Download Selected</a>
-          <button sbCall="datCreateRemoveSelectedDialog">Delete Selected</button>
+          <button id="deleteSelected" sbCall="datCreateRemoveSelectedDialog">Delete Selected</button>
           <form method="post" enctype="multipart/form-data" target="UploadIframe">
             <iframe id="UploadIframe" name="UploadIframe" style="display: none"></iframe>
             <input type="file" name="file" sbButton sbCall="datUpdateUploadButtons" />
@@ -121,7 +121,7 @@
               <td class="Name">
                 <button class="Select Left" sbCall="datSelect">Select</button>
                 <button class="Delete Left" sbCall="datDeleteElem">Delete</button>
-                <a download class="Download Left" sbAttr="href: Name: datOperatorDlLink" sbButton>Download</a>
+                <a download class="Download Left" sbAttr="href: : datOperatorDlLink" sbButton>Download</a>
                 <button class="sbInvisible" sbButton disabled>Edit</button>
                 <span class="Name" sbDisplay=": datToOperatorName"></span>
               </td>
