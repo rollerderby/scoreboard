@@ -29,8 +29,10 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 import com.carolinarollergirls.scoreboard.utils.Version;
 
 public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> implements ScoreBoard {
-    public ScoreBoardImpl() {
+    public ScoreBoardImpl(boolean useMetrics) {
         super(null, "", null);
+        this.useMetrics = useMetrics;
+        jsm = new JSONStateManager(useMetrics);
         addProperties(props);
         setupScoreBoard();
     }
@@ -135,10 +137,16 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
     }
 
     @Override
+    public boolean useMetrics() {
+        return useMetrics;
+    }
+
+    @Override
     public boolean isInitialLoadDone() {
         return initialLoadDone;
     }
 
-    private JSONStateManager jsm = new JSONStateManager();
+    private JSONStateManager jsm;
+    private boolean useMetrics;
     private boolean initialLoadDone = false;
 }

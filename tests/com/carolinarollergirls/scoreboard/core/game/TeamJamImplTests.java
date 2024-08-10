@@ -42,7 +42,7 @@ public class TeamJamImplTests {
     public void setUp() throws Exception {
         collectedEvents = new LinkedList<>();
 
-        sb = new ScoreBoardImpl();
+        sb = new ScoreBoardImpl(false);
         sb.postAutosaveUpdate();
         tj = (TeamJamImpl) sb.getCurrentGame()
                  .get(CurrentGame.GAME)

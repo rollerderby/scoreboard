@@ -54,7 +54,7 @@ public class FieldingImplTests {
     public void setUp() throws Exception {
         collectedEvents = new LinkedList<>();
 
-        sb = new ScoreBoardImpl();
+        sb = new ScoreBoardImpl(false);
         sb.postAutosaveUpdate();
         g = sb.getCurrentGame().get(CurrentGame.GAME);
         sb.addScoreBoardListener(batchCounter);

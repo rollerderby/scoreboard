@@ -216,9 +216,9 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
         // i.e. 3600ms will be displayed as 3s on a count up clock and as 4s on a count
         // down clock.
         if (isCountDirectionDown()) {
-            return Math.floor(((double) current - 1) / 1000) != Math.floor(((double) last - 1) / 1000);
+            return Math.floorDiv(current - 1, 1000) != Math.floorDiv(last - 1, 1000);
         } else {
-            return Math.floor((double) current / 1000) != Math.floor((double) last / 1000);
+            return Math.floorDiv(current, 1000) != Math.floorDiv(last, 1000);
         }
     }
 

@@ -35,7 +35,7 @@ public class ClientsImplTests {
 
     @Before
     public void setUp() throws Exception {
-        sb = new ScoreBoardImpl();
+        sb = new ScoreBoardImpl(false);
         clients = (ClientsImpl) sb.getClients();
     }
 

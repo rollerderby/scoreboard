@@ -51,7 +51,7 @@ public class BoxTripImplTests {
     @Before
     public void setUp() throws Exception {
         GameImpl.setQuickClockThreshold(0L);
-        sb = new ScoreBoardImpl();
+        sb = new ScoreBoardImpl(false);
         sb.postAutosaveUpdate();
         sb.getSettings().set(ScoreBoard.SETTING_USE_LT, "true");
         g = sb.getCurrentGame().get(CurrentGame.GAME);

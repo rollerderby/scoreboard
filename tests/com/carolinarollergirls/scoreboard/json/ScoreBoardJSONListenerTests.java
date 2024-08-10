@@ -62,14 +62,14 @@ public class ScoreBoardJSONListenerTests {
 
         ScoreBoardClock.getInstance().stop();
         GameImpl.setQuickClockThreshold(0L);
-        sb = new ScoreBoardImpl();
+        sb = new ScoreBoardImpl(false);
         sb.postAutosaveUpdate();
         g = sb.getCurrentGame().get(CurrentGame.GAME);
         gameId = g.getId();
         sb.getSettings().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, Clock.ID_LINEUP);
         sb.getSettings().set(Clock.SETTING_SYNC, String.valueOf(false));
 
-        jsm = new JSONStateManager();
+        jsm = new JSONStateManager(false);
         jsm.register(jsonListener);
         new ScoreBoardJSONListener(sb, jsm);
         advance(0);
@@ -282,8 +282,9 @@ public class ScoreBoardJSONListenerTests {
         advance(0);
         assertEquals(null, state.get("ScoreBoard.Game(" + gameId +
                                      ").Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Id"));
-        assertEquals(null, state.get("ScoreBoard.Game(" + gameId +
-                                     ").Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).PeriodNumber"));
+        assertEquals(null,
+                     state.get("ScoreBoard.Game(" + gameId +
+                               ").Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).PeriodNumber"));
         assertEquals(null, state.get("ScoreBoard.Game(" + gameId +
                                      ").Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).JamNumber"));
         assertEquals(null, state.get("ScoreBoard.Game(" + gameId +
@@ -302,8 +303,9 @@ public class ScoreBoardJSONListenerTests {
 
         s.remove(Skater.PENALTY, "0");
         advance(0);
-        assertEquals(null, state.get("ScoreBoard.Game(" + gameId +
-                                     ").Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(0).PeriodNumber"));
+        assertEquals(null,
+                     state.get("ScoreBoard.Game(" + gameId +
+                               ").Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(0).PeriodNumber"));
         assertEquals(null, state.get("ScoreBoard.Game(" + gameId +
                                      ").Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(0).JamNumber"));
         assertEquals(null, state.get("ScoreBoard.Game(" + gameId +
@@ -333,7 +335,7 @@ public class ScoreBoardJSONListenerTests {
         assertEquals(false, state.get("ScoreBoard.Game(" + gameId +
                                       ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).PenaltyBox"));
         assertEquals(gameId + "_1_Jammer", state.get("ScoreBoard.Game(" + gameId +
-                                                     ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
+                                                       ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
 
         t.field(s, Role.BENCH);
         advance(0);
@@ -342,7 +344,7 @@ public class ScoreBoardJSONListenerTests {
         assertEquals(false, state.get("ScoreBoard.Game(" + gameId +
                                       ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).PenaltyBox"));
         assertEquals(gameId + "_1_Jammer", state.get("ScoreBoard.Game(" + gameId +
-                                                     ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
+                                                       ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
 
         t.field(s, Role.JAMMER);
         advance(0);
@@ -355,7 +357,7 @@ public class ScoreBoardJSONListenerTests {
         assertEquals(false, state.get("ScoreBoard.Game(" + gameId +
                                       ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).PenaltyBox"));
         assertEquals(gameId + "_1_Jammer", state.get("ScoreBoard.Game(" + gameId +
-                                                     ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
+                                                       ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
 
         g.stopJamTO();
         advance(1000);

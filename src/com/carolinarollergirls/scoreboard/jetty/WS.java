@@ -44,9 +44,31 @@ import io.prometheus.client.Histogram;
 
 public class WS extends WebSocketServlet {
 
-    public WS(ScoreBoard s, JSONStateManager j) {
+    public WS(ScoreBoard s, JSONStateManager j, boolean useMetrics) {
         sb = s;
         jsm = j;
+        this.useMetrics = useMetrics;
+        if (useMetrics) {
+            connectionsActive =
+                Gauge.build().name("crg_websocket_active_connections").help("Current WebSocket connections").register();
+            messagesReceived = Counter.build()
+                                   .name("crg_websocket_messages_received")
+                                   .help("Number of WebSocket messages received")
+                                   .register();
+            messagesSentDuration = Histogram.build()
+                                       .name("crg_websocket_messages_sent_duration_seconds")
+                                       .help("Time spent sending WebSocket messages")
+                                       .register();
+            messagesSentFailures = Counter.build()
+                                       .name("crg_websocket_messages_sent_failed")
+                                       .help("Number of WebSocket messages we failed to send")
+                                       .register();
+        } else {
+            connectionsActive = null;
+            messagesReceived = null;
+            messagesSentDuration = null;
+            messagesSentFailures = null;
+        }
     }
 
     @Override
@@ -66,21 +88,12 @@ public class WS extends WebSocketServlet {
 
     private ScoreBoard sb;
     private JSONStateManager jsm;
+    private boolean useMetrics;
 
-    private static final Gauge connectionsActive =
-        Gauge.build().name("crg_websocket_active_connections").help("Current WebSocket connections").register();
-    private static final Counter messagesReceived = Counter.build()
-                                                        .name("crg_websocket_messages_received")
-                                                        .help("Number of WebSocket messages received")
-                                                        .register();
-    private static final Histogram messagesSentDuration = Histogram.build()
-                                                              .name("crg_websocket_messages_sent_duration_seconds")
-                                                              .help("Time spent sending WebSocket messages")
-                                                              .register();
-    private static final Counter messagesSentFailures = Counter.build()
-                                                            .name("crg_websocket_messages_sent_failed")
-                                                            .help("Number of WebSocket messages we failed to send")
-                                                            .register();
+    private final Gauge connectionsActive;
+    private final Counter messagesReceived;
+    private final Histogram messagesSentDuration;
+    private final Counter messagesSentFailures;
 
     public class ScoreBoardWebSocketCreator implements WebSocketCreator {
         @Override
@@ -106,7 +119,7 @@ public class WS extends WebSocketServlet {
 
         @OnWebSocketMessage
         public synchronized void onMessage(Session session, String message_data) {
-            messagesReceived.inc();
+            if (useMetrics) { messagesReceived.inc(); }
             try {
                 Map<String, Object> json = JSON.std.mapFrom(message_data);
                 String action = (String) json.get("action");
@@ -245,21 +258,23 @@ public class WS extends WebSocketServlet {
         }
 
         public void send(Map<String, Object> json) {
-            Histogram.Timer timer = messagesSentDuration.startTimer();
+            Histogram.Timer timer = useMetrics ? messagesSentDuration.startTimer() : null;
             try {
                 wsSession.getRemote().sendStringByFuture(
                     JSON.std.with(JSON.Feature.WRITE_NULL_PROPERTIES).composeString().addObject(json).finish());
             } catch (Exception e) {
                 Logger.printMessage("Error sending JSON update: " + e);
                 Logger.printStackTrace(e);
-                messagesSentFailures.inc();
-            } finally { timer.observeDuration(); }
+                if (useMetrics) { messagesSentFailures.inc(); }
+            } finally {
+                if (useMetrics) { timer.observeDuration(); }
+            }
         }
 
         @OnWebSocketConnect
         public void onOpen(Session session) {
             wsSession = session;
-            connectionsActive.inc();
+            if (useMetrics) { connectionsActive.inc(); }
             jsm.register(this);
             device.access();
 
@@ -278,7 +293,7 @@ public class WS extends WebSocketServlet {
 
         @OnWebSocketClose
         public void onClose(int closeCode, String message) {
-            connectionsActive.dec();
+            if (useMetrics) { connectionsActive.dec(); }
             jsm.unregister(this);
             sb.getClients().removeClient(sbClient);
 

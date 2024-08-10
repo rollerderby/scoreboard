@@ -55,17 +55,18 @@ public class Main extends Logger {
             if (!Version.load()) { stop(null); }
         } catch (IOException e) { stop(e); }
 
-        scoreBoard = new ScoreBoardImpl();
+        scoreBoard = new ScoreBoardImpl(useMetrics);
 
         // JSON updates.
         final JSONStateManager jsm = scoreBoard.getJsm();
         new ScoreBoardJSONListener(scoreBoard, jsm);
 
         // Controllers.
-        JettyServletScoreBoardController jetty = new JettyServletScoreBoardController(scoreBoard, jsm, host, port);
+        JettyServletScoreBoardController jetty =
+            new JettyServletScoreBoardController(scoreBoard, jsm, host, port, useMetrics);
 
         // Viewers.
-        new ScoreBoardMetricsCollector(scoreBoard).register();
+        if (useMetrics) { new ScoreBoardMetricsCollector(scoreBoard).register(); }
 
         final File autoSaveDir = new File(BasePath.get(), "config/autosave");
         scoreBoard.runInBatch(new Runnable() {
@@ -79,7 +80,7 @@ public class Main extends Logger {
         });
 
         // Only start auto-saves once everything is loaded in.
-        final AutoSaveJSONState autosaver = new AutoSaveJSONState(jsm, autoSaveDir);
+        final AutoSaveJSONState autosaver = new AutoSaveJSONState(jsm, autoSaveDir, useMetrics);
         jetty.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -127,6 +128,8 @@ public class Main extends Logger {
                 host = arg.split("=", 2)[1];
             } else if (arg.startsWith("--import=") || arg.startsWith("-i=")) {
                 importPath = arg.split("=", 2)[1];
+            } else if (arg.equals("--metrics") || arg.equals("-m")) {
+                useMetrics = true;
             }
         }
 
@@ -250,6 +253,8 @@ public class Main extends Logger {
     private String importPath = null;
 
     private File logFile = new File(BasePath.get(), "logs/crg.log");
+
+    private boolean useMetrics = false;
 
     private static ScoreBoard scoreBoard;
 }

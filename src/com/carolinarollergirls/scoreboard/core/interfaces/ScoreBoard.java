@@ -32,6 +32,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public CurrentGame getCurrentGame();
 
     public JSONStateManager getJsm();
+    public boolean useMetrics();
 
     public boolean isInitialLoadDone();
 

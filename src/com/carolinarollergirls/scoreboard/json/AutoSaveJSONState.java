@@ -24,9 +24,15 @@ import io.prometheus.client.Histogram;
 
 public class AutoSaveJSONState implements Runnable {
 
-    public AutoSaveJSONState(JSONStateManager jsm, File dir) {
+    public AutoSaveJSONState(JSONStateManager jsm, File dir, boolean useMetrics) {
         this.dir = dir;
         this.jsm = jsm;
+        this.useMetrics = useMetrics;
+        autosaveDuration = useMetrics ? Histogram.build()
+                                            .name("crg_json_autosave_write_duration_seconds")
+                                            .help("Time spent writing JSON autosaves to disk")
+                                            .register()
+                                      : null;
 
         try {
             FileUtils.forceMkdir(dir);
@@ -40,7 +46,7 @@ public class AutoSaveJSONState implements Runnable {
 
     @Override
     public synchronized void run() {
-        Histogram.Timer timer = autosaveDuration.startTimer();
+        Histogram.Timer timer = useMetrics ? autosaveDuration.startTimer() : null;
         try {
             int n = AUTOSAVE_FILES;
             getFile(n).delete();
@@ -51,7 +57,7 @@ public class AutoSaveJSONState implements Runnable {
             }
             writeAutoSave(getFile(0));
         } catch (Exception e) { Logger.printMessage("WARNING: Unable to auto-save scoreboard : " + e.getMessage()); }
-        timer.observeDuration();
+        if (useMetrics) { timer.observeDuration(); }
     }
 
     private void writeAutoSave(File file) {
@@ -139,13 +145,11 @@ public class AutoSaveJSONState implements Runnable {
 
     private File dir;
     private JSONStateManager jsm;
+    private boolean useMetrics;
     private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     private static final int AUTOSAVE_FILES = 6;
     private static final int INTERVAL_SECONDS = 10;
 
-    private static final Histogram autosaveDuration = Histogram.build()
-                                                          .name("crg_json_autosave_write_duration_seconds")
-                                                          .help("Time spent writing JSON autosaves to disk")
-                                                          .register();
+    private final Histogram autosaveDuration;
 }

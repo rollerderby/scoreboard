@@ -47,7 +47,7 @@ public class ClockImplTests {
         GameImpl.setQuickClockThreshold(0L);
         collectedEvents = new LinkedList<>();
 
-        sb = new ScoreBoardImpl();
+        sb = new ScoreBoardImpl(false);
         sb.postAutosaveUpdate();
         g = sb.getCurrentGame().get(CurrentGame.GAME);
         sb.getSettings().set(Clock.SETTING_SYNC, String.valueOf(false));

@@ -31,16 +31,17 @@ import io.prometheus.client.filter.MetricsFilter;
 import io.prometheus.client.hotspot.DefaultExports;
 
 public class JettyServletScoreBoardController {
-    public JettyServletScoreBoardController(ScoreBoard sb, JSONStateManager jsm, String host, int port) {
+    public JettyServletScoreBoardController(ScoreBoard sb, JSONStateManager jsm, String host, int port,
+                                            boolean useMetrics) {
         scoreBoard = sb;
         this.jsm = jsm;
         this.host = host;
         this.port = port;
 
-        init();
+        init(useMetrics);
     }
 
-    protected void init() {
+    protected void init(boolean useMetrics) {
         server = new Server();
         ServerConnector sC = new ServerConnector(server);
         sC.setHost(host);
@@ -78,12 +79,14 @@ public class JettyServletScoreBoardController {
         urlsServlet = new UrlsServlet(server);
         sch.addServlet(new ServletHolder(urlsServlet), "/urls/*");
 
-        ws = new WS(scoreBoard, jsm);
+        ws = new WS(scoreBoard, jsm, useMetrics);
         sch.addServlet(new ServletHolder(ws), "/WS/*");
 
-        DefaultExports.initialize();
-        metricsServlet = new MetricsServlet();
-        sch.addServlet(new ServletHolder(metricsServlet), "/metrics");
+        if (useMetrics) {
+            DefaultExports.initialize();
+            metricsServlet = new MetricsServlet();
+            sch.addServlet(new ServletHolder(metricsServlet), "/metrics");
+        }
 
         HttpServlet sjs = new SaveJsonScoreBoard(jsm);
         sch.addServlet(new ServletHolder(sjs), "/SaveJSON/*");

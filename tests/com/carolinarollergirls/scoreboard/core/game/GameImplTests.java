@@ -81,7 +81,7 @@ public class GameImplTests {
     public void setUp() throws Exception {
         ScoreBoardClock.getInstance().stop();
         GameImpl.setQuickClockThreshold(0L);
-        sb = new ScoreBoardImpl();
+        sb = new ScoreBoardImpl(false);
         sb.postAutosaveUpdate();
         g = (GameImpl) sb.getCurrentGame().get(CurrentGame.GAME);
         pc = g.getClock(Clock.ID_PERIOD);
