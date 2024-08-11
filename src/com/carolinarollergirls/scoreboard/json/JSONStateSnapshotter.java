@@ -15,9 +15,16 @@ import io.prometheus.client.Histogram;
 
 public class JSONStateSnapshotter implements JSONStateListener {
 
-    public JSONStateSnapshotter(JSONStateManager jsm, Game g) {
+    public JSONStateSnapshotter(JSONStateManager jsm, Game g, boolean useMetrics) {
         this.directory = BasePath.get();
         game = g;
+        this.useMetrics = useMetrics;
+        if (useMetrics && updateStateDuration == null) {
+            updateStateDuration = Histogram.build()
+                                      .name("crg_json_state_disk_snapshot_duration_seconds")
+                                      .help("Time spent writing JSON state snapshots to disk")
+                                      .register();
+        }
         filters.add("ScoreBoard.Version");
         filters.add("ScoreBoard.Game(" + game.getId() + ")");
         jsm.register(this);
@@ -35,7 +42,7 @@ public class JSONStateSnapshotter implements JSONStateListener {
     public void writeOnNextUpdate() { writeOnNextUpdate = true; }
 
     public synchronized void writeFile() {
-        Histogram.Timer timer = updateStateDuration.startTimer();
+        Histogram.Timer timer = useMetrics ? updateStateDuration.startTimer() : null;
 
         File file = new File(new File(directory, "html/game-data/json"), game.getFilename() + ".json");
         File prev = new File(new File(directory, "html/game-data/json"), game.getFilename() + "_prev.json");
@@ -70,7 +77,7 @@ public class JSONStateSnapshotter implements JSONStateListener {
                 } catch (Exception e) {}
             }
         }
-        timer.observeDuration();
+        if (useMetrics) { timer.observeDuration(); }
     }
 
     private File directory;
@@ -79,8 +86,6 @@ public class JSONStateSnapshotter implements JSONStateListener {
     private StateTrie state = new StateTrie();
     private PathTrie filters = new PathTrie();
 
-    private static final Histogram updateStateDuration = Histogram.build()
-                                                             .name("crg_json_state_disk_snapshot_duration_seconds")
-                                                             .help("Time spent writing JSON state snapshots to disk")
-                                                             .register();
+    private boolean useMetrics;
+    private static Histogram updateStateDuration = null;
 }

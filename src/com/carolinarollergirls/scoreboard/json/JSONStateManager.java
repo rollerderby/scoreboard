@@ -13,6 +13,20 @@ import com.carolinarollergirls.scoreboard.json.JSONStateListener.StateTrie;
 import io.prometheus.client.Histogram;
 
 public class JSONStateManager {
+    public JSONStateManager(boolean useMetrics) {
+        this.useMetrics = useMetrics;
+        updateStateDuration = useMetrics ? Histogram.build()
+                                               .name("crg_json_state_disk_snapshot_duration_seconds")
+                                               .help("Time spent writing JSON state snapshots to disk")
+                                               .register()
+                                         : null;
+        updateStateUpdates = useMetrics ? Histogram.build()
+                                              .name("crg_json_update_state_updates")
+                                              .help("Updates sent to JSONStateManager.updateState function")
+                                              .exponentialBuckets(1, 2, 10)
+                                              .register()
+                                        : null;
+    }
 
     public synchronized void register(JSONStateListener source) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -41,7 +55,7 @@ public class JSONStateManager {
     }
 
     public synchronized void updateState(List<WSUpdate> updates) {
-        Histogram.Timer timer = updateStateDuration.startTimer();
+        Histogram.Timer timer = useMetrics ? updateStateDuration.startTimer() : null;
         StateTrie changedState = new StateTrie();
 
         for (WSUpdate update : updates) { changedState.add(update.getKey(), update.getValue()); }
@@ -65,8 +79,8 @@ public class JSONStateManager {
                 });
             }
         }
-        timer.observeDuration();
-        updateStateUpdates.observe(updates.size());
+        if (useMetrics) { timer.observeDuration(); }
+        if (useMetrics) { updateStateUpdates.observe(updates.size()); }
     }
 
     public synchronized Map<String, Object> getState() { return state.getAll(false); }
@@ -84,15 +98,7 @@ public class JSONStateManager {
     private StateTrie state = new StateTrie();
     private final AtomicInteger pending = new AtomicInteger();
 
-    private static final Histogram updateStateDuration =
-        Histogram.build()
-            .name("crg_json_update_state_duration_seconds")
-            .help("Time spent in JSONStateManager.updateState function")
-            .register();
-    private static final Histogram updateStateUpdates =
-        Histogram.build()
-            .name("crg_json_update_state_updates")
-            .help("Updates sent to JSONStateManager.updateState function")
-            .exponentialBuckets(1, 2, 10)
-            .register();
+    private boolean useMetrics;
+    private final Histogram updateStateDuration;
+    private final Histogram updateStateUpdates;
 }

@@ -15,7 +15,7 @@ public class JSONStateManagerTests {
 
     @Before
     public void setup() {
-        jsm = new JSONStateManager();
+        jsm = new JSONStateManager(false);
         listener = new TestListener();
     }
 

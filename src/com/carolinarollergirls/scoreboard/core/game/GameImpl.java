@@ -62,12 +62,12 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         initReferences(rs, null);
         getTeam(Team.ID_1).loadPreparedTeam(team1);
         getTeam(Team.ID_2).loadPreparedTeam(team2);
-        jsonSnapshotter = new JSONStateSnapshotter(sb.getJsm(), this);
+        jsonSnapshotter = new JSONStateSnapshotter(sb.getJsm(), this, sb.useMetrics());
     }
     public GameImpl(ScoreBoard parent, String id) {
         super(parent, id, ScoreBoard.GAME);
         initReferences(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID), null);
-        jsonSnapshotter = new JSONStateSnapshotter(getScoreBoard().getJsm(), this);
+        jsonSnapshotter = new JSONStateSnapshotter(getScoreBoard().getJsm(), this, parent.useMetrics());
     }
     public GameImpl(Game source) {
         super(source.getScoreBoard(), UUID.randomUUID().toString(), ScoreBoard.GAME);

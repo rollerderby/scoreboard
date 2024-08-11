@@ -36,7 +36,7 @@ public class SkaterImplTests {
     public void setup() {
         ScoreBoardClock.getInstance().stop();
         GameImpl.setQuickClockThreshold(0L);
-        sb = new ScoreBoardImpl();
+        sb = new ScoreBoardImpl(false);
         sb.postAutosaveUpdate();
         g = sb.getCurrentGame().get(CurrentGame.GAME);
         team = g.getTeam(Team.ID_1);

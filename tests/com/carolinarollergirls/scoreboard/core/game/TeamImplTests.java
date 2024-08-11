@@ -53,7 +53,7 @@ public class TeamImplTests {
     public void setUp() throws Exception {
         collectedEvents = new LinkedList<>();
 
-        sb = new ScoreBoardImpl();
+        sb = new ScoreBoardImpl(false);
         sb.postAutosaveUpdate();
         g = sb.getCurrentGame().get(CurrentGame.GAME);
         team = (TeamImpl) g.getTeam(ID);

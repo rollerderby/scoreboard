@@ -32,7 +32,7 @@ public class PositionImplTests {
     @Before
     public void setup() {
         GameImpl.setQuickClockThreshold(0L);
-        sb = new ScoreBoardImpl();
+        sb = new ScoreBoardImpl(false);
         sb.postAutosaveUpdate();
 
         team = sb.getCurrentGame().get(CurrentGame.GAME).getTeam(Team.ID_1);
