@@ -18,17 +18,17 @@ function _datUpdateAllUrl() {
 
 function _datUpdateSelectedUrl() {
   const paths = $('#games tr.Content.Selected')
-    .map((elem) => 'ScoreBoard.Game(' + elem.attr('game') + ')')
+    .map((i, elem) => 'ScoreBoard.Game(' + $(elem).attr('Game') + ')')
     .get()
     .concat(
       $('#teams tr.Content.Selected')
-        .map((elem) => 'ScoreBoard.PreparedTeam(' + elem.attr('preparedTeam') + ')')
+        .map((i, elem) => 'ScoreBoard.PreparedTeam(' + $(elem).attr('PreparedTeam') + ')')
         .get(),
       $('#rulesets tr.Content.Selected')
-        .map((elem) => 'ScoreBoard.Rulesets.Ruleset(' + elem.attr('Ruleset') + ')')
+        .map((i, elem) => 'ScoreBoard.Rulesets.Ruleset(' + $(elem).attr('Ruleset') + ')')
         .get(),
       $('#operators tr.Content.Selected')
-        .map((elem) => 'ScoreBoard.Settings.Setting(' + elem.attr('Setting') + ')')
+        .map((i, elem) => 'ScoreBoard.Settings.Setting(' + $(elem).attr('Setting').slice(0, -1))
         .get()
     )
     .join();
@@ -37,7 +37,10 @@ function _datUpdateSelectedUrl() {
   name += _timeConversions.twoDigit(d.getHours());
   name += _timeConversions.twoDigit(d.getMinutes());
   name += _timeConversions.twoDigit(d.getSeconds());
-  $('#downloadSelected').attr('href', '/SaveJSON/crg-dataset-' + name + '.json?path=' + paths);
+  $('#downloadSelected')
+    .attr('href', paths ? '/SaveJSON/crg-dataset-' + name + '.json?path=' + paths : null)
+    .toggleClass('ui-state-disabled', !paths);
+  $('#deleteSelected').toggleClass('ui-state-disabled', !paths);
 }
 
 function datCreateRemoveSelectedDialog() {
@@ -63,6 +66,9 @@ function datUpdateUploadButtons(k, v, elem) {
 function _datCreateRemoveDialog(type) {
   let div = $('.sbTemplates .RemoveDataDialog').clone(true);
   const selector = type === 'selected' ? ' tr.Content.Selected' : type === 'singleElement' ? ' tr.Content.ToDelete' : ' tr.Content.None'; // class None is not used, so this will match nothing
+  if (!$(selector).length) {
+    return;
+  }
   div.find('a.Elements').text($(selector).length);
   div.dialog({
     title: 'Remove Data',
@@ -148,7 +154,12 @@ function datRulesetDlLink(k, v) {
 }
 
 function datOperatorDlLink(k) {
-  return '/SaveJSON/crg-operator-' + k.Setting.split('.')[2].replace(/[\/|\\:*?"<>\ ]/g, '_') + '.json?path=' + k;
+  return (
+    '/SaveJSON/crg-operator-' +
+    k.Setting.split('.')[2].replace(/[\/|\\:*?"<>\ ]/g, '_') +
+    '.json?path=ScoreBoard.Settings.Setting(ScoreBoard.Operator.' +
+    k.Setting.split('.')[2]
+  );
 }
 
 function datToEditButtonLabel(k, v) {

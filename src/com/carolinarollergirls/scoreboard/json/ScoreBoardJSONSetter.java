@@ -111,6 +111,9 @@ public class ScoreBoardJSONSetter {
                     newKey.endsWith("FirstJam") || newKey.endsWith("FirstJamNumber")) {
                     newKey = "";
                 }
+                if(newKey.startsWith("ScoreBoard.Settings.Setting(ScoreBoard.Operator__")) {
+                    newKey = newKey.replace("Operator__", ".");
+                }
                 if (newKey.contains("Jam.SuddenScoringMaxTrainingPoints")) {
                     newKey = newKey.replace("Jam.SuddenScoringMaxTrainingPoints", "Jam.SuddenScoringMaxTrailingPoints");
                 }
