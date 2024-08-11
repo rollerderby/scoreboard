@@ -118,11 +118,12 @@ var _crgKeyControls = {
       $(document).on('keypress', _crgKeyControls._keyControlPress);
       $(document).on('keydown', _crgKeyControls._keyControlDown);
 
-      WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.*)', function (k, v) {
+      WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.Operator.*)', function (k, v) {
         if (!k.startsWith('ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + _crgKeyControls.operator + '.KeyControl.')) {
           return;
         }
-        var button = $('#' + k.substring(k.lastIndexOf('.') + 1, k.length - 1));
+        var button = $('#' + k.Setting.split('.')[4]);
+        console.log(button);
         button
           .toggleClass('HasControlKey', v ? true : false)
           .find('span.Key')
