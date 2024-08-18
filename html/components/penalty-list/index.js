@@ -21,7 +21,7 @@ function penToInstruction(k, v) {
 
 function penDetailButtons(k, v) {
   var content = '<span>';
-  v.split(',').forEach(function (detailsText) {
+  (v || '').split(',').forEach(function (detailsText) {
     if (detailsText) {
       const details = detailsText.split('_');
       content =
