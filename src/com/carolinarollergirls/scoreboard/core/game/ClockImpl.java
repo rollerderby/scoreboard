@@ -216,9 +216,9 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
         // i.e. 3600ms will be displayed as 3s on a count up clock and as 4s on a count
         // down clock.
         if (isCountDirectionDown()) {
-            return Math.floorDiv(current - 1, 1000) != Math.floorDiv(last - 1, 1000);
+            return floorDiv(current - 1, 1000) != floorDiv(last - 1, 1000);
         } else {
-            return Math.floorDiv(current, 1000) != Math.floorDiv(last, 1000);
+            return floorDiv(current, 1000) != floorDiv(last, 1000);
         }
     }
 
@@ -319,6 +319,14 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
 
     protected boolean isSyncTime() {
         return !isPenaltyClock && Boolean.parseBoolean(getScoreBoard().getSettings().get(SETTING_SYNC));
+    }
+
+    /* Taken from OpenJDK 1.8 to work around Oracle Java SE 8 missing this function */
+    private long floorDiv(long x, long y) {
+        long r = x / y;
+        // if the signs are different and modulo not zero, round down
+        if ((x ^ y) < 0 && (r * y != x)) { r--; }
+        return r;
     }
 
     protected long lastTime;
