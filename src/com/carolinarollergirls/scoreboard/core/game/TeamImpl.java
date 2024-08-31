@@ -290,6 +290,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                     .setRole(FloorPosition.PIVOT.getRole(getRunningOrUpcomingTeamJam()));
             }
             if ((Boolean) value && isLead()) { set(LOST, true); }
+            if ((Boolean) value && !getOtherTeam().isLead() && isOnInitial()) { set(LOST, true); }
         } else if ((prop == CALLOFF || prop == INJURY) && game.isInJam() && (Boolean) value) {
             game.stopJamTO();
         } else if (prop == CAPTAIN && last != null) {
@@ -868,6 +869,11 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     @Override
     public boolean isLead() {
         return get(LEAD);
+    }
+
+    @Override
+    public boolean isOnInitial() {
+        return get(NO_INITIAL);
     }
 
     @Override
