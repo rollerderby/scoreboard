@@ -70,6 +70,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
     public boolean isLost();
     public boolean isLead();
+    public boolean isOnInitial();
     public boolean isCalloff();
     public boolean isInjury();
     public boolean isDisplayLead();
