@@ -61,7 +61,7 @@ function sbLineupTooLong(k) {
   const inLineup = isTrue(WS.state[k.upTo('Game') + '.Clock(Lineup).Running']);
   const overtime = isTrue(WS.state[k.upTo('Game') + '.InOvertime']);
   const curTime = WS.state[k.upTo('Game') + '.Clock(Lineup).Time'];
-  const maxTime = sbFromLongTime(
+  const maxTime = sbFromTime(
     overtime ? WS.state[k.upTo('Game') + '.Rule(Lineup.OvertimeDuration)'] : WS.state[k.upTo('Game') + '.Rule(Lineup.Duration)']
   );
 

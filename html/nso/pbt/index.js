@@ -25,10 +25,6 @@ function toggleSwap() {
   $('#Unassigned').toggleClass('SwappedTeams');
 }
 
-function questionMarkIfEmpty(k, v) {
-  return v || '?';
-}
-
 function positionDetails(k, v, elem) {
   const prefix = k.upTo('Team');
   const teamName = WS.state[prefix + '.AlternateName(plt)'] || WS.state[prefix + '.UniformColor'] || WS.state[prefix + '.Name'];
@@ -41,10 +37,6 @@ function positionDetails(k, v, elem) {
       },
     },
   });
-}
-
-function getFielding(k, v, elem) {
-  return WS.state[WS._getContext(elem)[0] + '.CurrentFielding'];
 }
 
 function noUnend(k, v) {

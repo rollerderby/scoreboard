@@ -27,6 +27,7 @@ public class PositionImpl extends ScoreBoardEventProviderImpl<Position> implemen
         setCopy(PENALTY_COUNT, this, SKATER, Skater.PENALTY_COUNT, true);
         setCopy(ANNOTATION, this, CURRENT_FIELDING, Fielding.ANNOTATION, false);
         setCopy(PENALTY_DETAILS, this, SKATER, Skater.PENALTY_DETAILS, true);
+        setCopy(EXTRA_PENALTY_TIME, this, SKATER, Skater.EXTRA_PENALTY_TIME, false);
         addWriteProtectionOverride(CURRENT_FIELDING, Source.NON_WS);
     }
 

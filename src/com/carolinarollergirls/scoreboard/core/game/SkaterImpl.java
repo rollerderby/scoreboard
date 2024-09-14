@@ -69,8 +69,8 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         setCopy(CURRENT_BOX_SYMBOLS, this, CURRENT_FIELDING, Fielding.BOX_TRIP_SYMBOLS, true);
         setRecalculated(CURRENT_PENALTIES).addSource(this, PENALTY).addSource(this, PENALTY_BOX);
         setRecalculated(PENALTY_COUNT).addSource(this, PENALTY);
-        setRecalculated(HAS_UNSERVED).addSource(this, PENALTY);
-        setRecalculated(PENALTY_DETAILS).addSource(this, CURRENT_PENALTIES);
+        setRecalculated(HAS_UNSERVED).addSource(this, PENALTY).addSource(this, EXTRA_PENALTY_TIME);
+        setRecalculated(PENALTY_DETAILS).addSource(this, PENALTY).addSource(this, PENALTY_BOX);
     }
 
     @Override
@@ -108,6 +108,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
             return count;
         }
         if (prop == HAS_UNSERVED) {
+            if (get(EXTRA_PENALTY_TIME) > 0L) { return true; }
             for (Penalty p : getAll(PENALTY)) {
                 if (!FO_EXP_ID.equals(p.getProviderId()) && !p.get(Penalty.SERVED)) { return true; }
             }
@@ -117,6 +118,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
             Boolean.parseBoolean(scoreBoard.getSettings().get(ScoreBoard.SETTING_USE_PBT))) {
             return last;
         }
+        if (prop == EXTRA_PENALTY_TIME) { return ((Long) value / 1000L) * 1000L; }
         return value;
     }
     @Override
@@ -360,7 +362,11 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     }
     @Override
     public boolean hasUnservedPenalties() {
-        return getUnservedPenalties().size() > 0;
+        return !getUnservedPenalties().isEmpty() || getExtraPenaltyTime() > 0L;
+    }
+    @Override
+    public long getExtraPenaltyTime() {
+        return get(EXTRA_PENALTY_TIME);
     }
 
     @Override

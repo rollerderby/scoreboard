@@ -25,7 +25,7 @@
           <button
             sbForeach="Position: Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
             sbClass="sbUnserved: HasUnserved | sbInBox: PenaltyBox"
-            sbDisplay="RosterNumber: questionMarkIfEmpty"
+            sbDisplay="RosterNumber: penQuestionMarkIfEmpty"
             sbCall="positionDetails"
           ></button>
         </span>
@@ -40,8 +40,8 @@
             sbForeach="Position: Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
             sbClass="sbUnserved: HasUnserved | sbInBox: PenaltyBox"
             sbAttr="disabled: PenaltyBox"
-            sbDisplay="RosterNumber: questionMarkIfEmpty"
-            sbSet="b.CurrentFielding: getFielding"
+            sbDisplay="RosterNumber: penQuestionMarkIfEmpty"
+            sbSet="b.CurrentFielding: penGetFielding"
           ></button>
         </span>
       </div>
@@ -76,19 +76,28 @@
           <span><button sbCall="addPenalty">Add</button></span>
           |
           <span>Total: <span sbDisplay="PenaltyCount"></span></span>
-          <span
-            ><button sbClass="sbHide: PenaltyBox, CurrentBoxSymbols: noUnend" sbSet="UnendBoxTrip" sbCall="sbCloseDialog">
-              Unend Box Trip
-            </button></span
-          >
         </div>
-        <div class="sbGroup">
+        <div class="sbGroup" sbClass="sbHide: Skater: sbIsEmpty">
+          <span sbClass="sbHide: PenaltyBox, CurrentBoxSymbols: noUnend">
+            <button sbSet="UnendBoxTrip" sbCall="sbCloseDialog">Unend Box Trip</button>
+          </span>
+          <span sbClass="sbHide: PenaltyBox"
+            >Unserved Time:
+            <button sbSet="ExtraPenaltyTime: -1000: change">-1</button>
+            <input type="number" size="5" sbControl="ExtraPenaltyTime: sbToTime: sbFromTime" />
+            <button sbSet="ExtraPenaltyTime: +1000: change">+1</button>
+          </span>
+        </div>
+        <div class="sbGroup" sbClass="sbHide: Skater: sbIsEmpty">
           <button class="StartButton" sbClass="sbHide: PenaltyBox" sbSet="StartBoxClock" sbCall="closeDialogIfSkater">
             Skater Sat Down
           </button>
-          <button sbClass="sbHide: PenaltyBox: ! | sbClickMe: PenaltyTime: <=0" sbSet="PenaltyBox: false" sbCall="sbCloseDialog">
-            Has Left
-          </button>
+          <button
+            sbClass="sbHide: PenaltyBox: ! | sbClickMe: PenaltyTime: <=0"
+            sbSet="PenaltyBox: false"
+            sbCall="sbCloseDialog"
+            sbDisplay="Clock.Time: penLeftText"
+          ></button>
         </div>
       </div>
 

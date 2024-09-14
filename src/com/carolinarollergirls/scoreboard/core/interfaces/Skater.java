@@ -39,6 +39,7 @@ public interface Skater extends ScoreBoardEventProvider {
     public Penalty getPenalty(String num);
     public List<Penalty> getUnservedPenalties();
     public boolean hasUnservedPenalties();
+    public long getExtraPenaltyTime();
     public void mergeInto(PreparedSkater preparedSkater);
 
     public static Collection<Property<?>> props = new ArrayList<>();
@@ -61,6 +62,7 @@ public interface Skater extends ScoreBoardEventProvider {
     public static final Value<String> PRONOUNS = new Value<>(String.class, "Pronouns", "", preparedProps);
     public static final Value<String> COLOR = new Value<>(String.class, "Color", "", props);
     public static final Value<String> PENALTY_DETAILS = new Value<>(String.class, "PenaltyDetails", "", props);
+    public static final Value<Long> EXTRA_PENALTY_TIME = new Value<>(Long.class, "ExtraPenaltyTime", 0L, props);
 
     public static final Child<Fielding> FIELDING = new Child<>(Fielding.class, "Fielding", props);
 

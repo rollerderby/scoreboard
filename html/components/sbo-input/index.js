@@ -88,7 +88,7 @@ function opStartAdHoc(k, v, elem) {
     OR2: Number($('#newOr2').val()),
     Period: Number($('#newPeriod').val()),
     Jam: Number($('#newJam').val()),
-    PeriodClock: sbFromLongTime($('#newPeriodClock').val()),
+    PeriodClock: sbFromTime($('#newPeriodClock').val()),
   });
   sbCloseDialog(k, v, elem);
 }
@@ -239,7 +239,7 @@ function opClockDialog(k) {
 }
 
 function opSetTime(k, v, elem) {
-  WS.Set(k + '.Time', sbFromLongTime(k, elem.siblings('input').val()));
+  WS.Set(k + '.Time', sbFromTime(k, elem.siblings('input').val()));
   elem.siblings('input').val('');
 }
 
