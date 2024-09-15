@@ -295,7 +295,7 @@ let WS = {
           callback = function (k, v) {
             elem.prop(options.prop, v);
             if (options.prop === 'disabled' && elem.hasClass('ui-button')) {
-              elem.toggleClass('ui-state-disabled', v);
+              elem.toggleClass('ui-state-disabled ui-button-disabled', v);
             }
           };
         } else if (options.toggleClass != null) {
@@ -308,7 +308,8 @@ let WS = {
           };
         } else if (options.html) {
           callback = function (k, v) {
-            elem.html(v);
+            WS.Forget(elem.children());
+            elem.empty().html(v);
             elem.find('button').button();
             elem.children().each(function () {
               WS.AutoRegister($(this));
@@ -806,6 +807,7 @@ let WS = {
       const autoFitPaths = WS._getAutoFitPaths(elem);
       const context = WS._enrichProp(WS._getContext(elem)[0]);
       let autoFitNeeded = elem.hasClass('AutoFit');
+      let stopRecursion = false;
 
       WS._getParameters(elem, 'sbOn', -1, -1, 1).forEach(function ([event, func]) {
         elem.on(event, function (e) {
@@ -815,6 +817,7 @@ let WS = {
 
       WS._getParameters(elem, 'sbDisplay', 0, 1, -1, false, false, true).forEach(function ([paths, func, options]) {
         autoFitNeeded = false;
+        stopRecursion = true; // if we display text there is nothing to recurse to; if we display html it will be parsed by the handler
         WS.Register(paths.concat(autoFitPaths), { preRegistered: true, element: elem, html: options === 'html', modifyFunc: func });
       });
 
@@ -868,6 +871,10 @@ let WS = {
           func(context, elem.val(), elem, event);
         });
       });
+
+      if (stopRecursion) {
+        return;
+      }
 
       elem.children().each(function () {
         autoFitNeeded = false;

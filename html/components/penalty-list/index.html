@@ -5,7 +5,7 @@
     sbContext="Team(*)"
     sbForeach="BoxTrip::time,num:resort=Clock.Time"
     sbAttr="time:Clock.Time | Team:-:k.Team"
-    sbClass="sbHide: IsCurrent: ! | Stand: Clock.Time: <=10000 | Done: EndFielding: sbIsNotEmpty"
+    sbClass="sbHide: EndFielding, /ScoreBoard.CurrentGame.UpcomingJam: penIsNotCurrentFielding | Stand: Clock.Time: <=10000 | Done: EndFielding: sbIsNotEmpty | Old: IsCurrent: !"
   >
     <div class="Info">
       <span
@@ -14,15 +14,19 @@
       >
         <span sbDisplay="^AlternateName(box),^UniformColor,^Name"></span> <span sbDisplay="RosterNumber"></span>
       </span>
-      <span class="sbVeryImportant Instruction" sbDisplay="Clock.Time, EndFielding: penToInstruction"></span>
-      <span class="sbVeryVeryImportant" sbDisplay="Clock.Time: sbToSeconds"></span>
+      <span
+        sbClass="sbInvisible: IsCurrent: !"
+        class="sbVeryImportant Instruction"
+        sbDisplay="Clock.Time, EndFielding: penToInstruction"
+      ></span>
+      <span sbClass="sbInvisible: IsCurrent: !" class="sbVeryVeryImportant" sbDisplay="Clock.Time: sbToSeconds"></span>
       <span class="sbImportant" sbAttr="warn: TotalPenalties, CurrentSkater, ^^Rule(Penalties.NumberToFoulout): sbToWarnLevel">
         <span class="sbShowOnBoxView"><span sbDisplay="PenaltyCodes"></span> | </span>
         <span sbClass="sbHide: CurrentSkater: sbIsEmpty">Total: <span sbDisplay="TotalPenalties"></span></span>
       </span>
     </div>
     <div class="sbShowOnPbt Edit">
-      <span>
+      <span sbClass="sbInvisible: IsCurrent: !">
         <button sbClass="sbClickMe: CurrentSkater, TotalPenalties: penFoOrExp" sbCall="penSubstitute">
           <span sbClass="sbHide: CurrentSkater: sbIsEmpty">Substitute</span>
           <span sbClass="sbHide: CurrentSkater: sbIsNotEmpty">Select Skater</span>
@@ -30,9 +34,14 @@
         <button sbCall="penReassign">Change</button>
       </span>
       <span>
-        <button sbClass="sbClickMe: EndFielding: sbIsNotEmpty | sbHide: Clock.Time: > 0" sbSet="IsCurrent: false">Has Left</button>
+        <button
+          sbClass="sbClickMe: EndFielding: sbIsNotEmpty | sbHide: IsCurrent: !"
+          sbSet="IsCurrent: false"
+          sbDisplay="Clock.Time: penLeftText"
+        ></button>
+        <button sbClass="sbHide: IsCurrent" sbSet="IsCurrent">Unend</button>
       </span>
-      <span>
+      <span sbClass="sbInvisible: IsCurrent: !">
         <button sbSet="Clock.Time:-1000:change">-1</button>
         <button sbToggle="TimingStopped"><span class="ui-icon ui-icon-pause"></span></button>
         <button sbSet="Clock.Time:+1000:change">+1</button>
@@ -68,9 +77,10 @@
         <span sbDisplay="AlternateName(box), UniformColor, Name"></span><span>: &nbsp;</span>
         <button
           sbForeach="Position: Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
-          sbClass="sbUnserved: HasUnserved"
-          sbDisplay="RosterNumber: questionMarkIfEmpty"
-          sbSet="b.CurrentFielding: getFielding"
+          sbClass="sbUnserved: HasUnserved | sbInBox: PenaltyBox"
+          sbProp="disabled: RosterNumber: sbIsEmpty"
+          sbDisplay="RosterNumber: penQuestionMarkIfEmpty"
+          sbSet="b.CurrentFielding: penGetFielding"
           sbCall="sbCloseDialog"
         ></button>
       </span>

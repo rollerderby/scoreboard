@@ -33,7 +33,7 @@ function sbToSeconds(k, v) {
   return _timeConversions.msToSeconds(v, isCountDown);
 }
 
-function sbFromLongTime(k, v) {
+function sbFromTime(k, v) {
   return _timeConversions.minSecToMs(v);
 }
 function sbToClockInitialNumber(k) {

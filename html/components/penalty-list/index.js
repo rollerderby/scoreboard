@@ -2,12 +2,23 @@
 
 WS.Register([
   'ScoreBoard.CurrentGame.Rule(Penalties.NumberToFoulout)',
+  'ScoreBoard.CurrentGame.CurrentPeriodNumber',
+  'ScoreBoard.CurrentGame.Period(*).CurrentJam',
   'ScoreBoard.CurrentGame.Team(*).BoxTrip(*).CurrentFielding',
   'ScoreBoard.CurrentGame.Team(*).BoxTrip(*).CurrentSkater',
   'ScoreBoard.CurrentGame.Team(*).Skater(*).PenaltyCount',
   'ScoreBoard.CurrentGame.Team(*).Skater(*).Penalty(0).Code',
   'ScoreBoard.CurrentGame.Team(*).Position(*).RosterNumber',
+  'ScoreBoard.CurrentGame.Team(*).Position(*).CurrentFielding',
 ]);
+
+function penIsNotCurrentFielding(k, v) {
+  return (
+    k.field === 'EndFielding' &&
+    !!v &&
+    !v.startsWith(WS.state['ScoreBoard.CurrentGame.Period(' + WS.state['ScoreBoard.CurrentGame.CurrentPeriodNumber'] + ').CurrentJam'])
+  );
+}
 
 function penFoOrExp(k, v) {
   const limit = WS.state[k.upTo('Game') + '.Rule(Penalties.NumberToFoulout)'];
@@ -21,7 +32,7 @@ function penToInstruction(k, v) {
 
 function penDetailButtons(k, v) {
   var content = '<span>';
-  v.split(',').forEach(function (detailsText) {
+  (v || '').split(',').forEach(function (detailsText) {
     if (detailsText) {
       const details = detailsText.split('_');
       content =
@@ -77,9 +88,21 @@ function penReassign(k) {
   });
 }
 
+function penLeftText(k, v) {
+  return v > 0 ? 'Left Early' : 'Has Left';
+}
+
 function penAdd(k) {
   const skaterPrefix = k.upTo('Team') + '.Skater(' + WS.state[k + '.CurrentSkater'] + ')';
   penSelectCode(skaterPrefix + '.Penalty(' + (WS.state[skaterPrefix + '.PenaltyCount'] + 1) + ')');
+}
+
+function penQuestionMarkIfEmpty(k, v) {
+  return v || '?';
+}
+
+function penGetFielding(k, v, elem) {
+  return WS.state[WS._getContext(elem)[0] + '.CurrentFielding'];
 }
 
 function penSelectCode(k) {
