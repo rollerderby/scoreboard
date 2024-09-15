@@ -9,10 +9,10 @@ WS.Register([
   'ScoreBoard.CurrentGame.Team(*).Skater(*).PenaltyCount',
   'ScoreBoard.CurrentGame.Team(*).Skater(*).Penalty(0).Code',
   'ScoreBoard.CurrentGame.Team(*).Position(*).RosterNumber',
+  'ScoreBoard.CurrentGame.Team(*).Position(*).CurrentFielding',
 ]);
 
 function penIsNotCurrentFielding(k, v) {
-  console.log(k, v, WS.state['ScoreBoard.CurrentGame.Period(' + WS.state['ScoreBoard.CurrentGame.CurrentPeriodNumber'] + ').CurrentJam']);
   return (
     k.field === 'EndFielding' &&
     !!v &&

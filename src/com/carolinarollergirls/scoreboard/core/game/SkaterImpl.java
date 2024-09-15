@@ -89,13 +89,17 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
             return last;
         }
         if (prop == CURRENT_PENALTIES) {
-            if (isPenaltyBox()) { return getCurrentFielding().getCurrentBoxTrip().get(BoxTrip.PENALTY_CODES); }
+            if (isPenaltyBox() && getCurrentFielding() != null && getCurrentFielding().getCurrentBoxTrip() != null) {
+                return getCurrentFielding().getCurrentBoxTrip().get(BoxTrip.PENALTY_CODES);
+            }
             List<Penalty> penalties = getUnservedPenalties();
             Collections.sort(penalties);
             value = penalties.stream().map(Penalty::getCode).collect(Collectors.joining(" "));
         }
         if (prop == PENALTY_DETAILS) {
-            if (isPenaltyBox()) { return getCurrentFielding().getCurrentBoxTrip().get(BoxTrip.PENALTY_DETAILS); }
+            if (isPenaltyBox() && getCurrentFielding() != null && getCurrentFielding().getCurrentBoxTrip() != null) {
+                return getCurrentFielding().getCurrentBoxTrip().get(BoxTrip.PENALTY_DETAILS);
+            }
             List<Penalty> penalties = getUnservedPenalties();
             Collections.sort(penalties);
             value = penalties.stream().map(Penalty::getDetails).collect(Collectors.joining(","));

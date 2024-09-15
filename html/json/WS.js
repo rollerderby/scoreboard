@@ -295,7 +295,7 @@ let WS = {
           callback = function (k, v) {
             elem.prop(options.prop, v);
             if (options.prop === 'disabled' && elem.hasClass('ui-button')) {
-              elem.toggleClass('ui-state-disabled', v);
+              elem.toggleClass('ui-state-disabled ui-button-disabled', v);
             }
           };
         } else if (options.toggleClass != null) {

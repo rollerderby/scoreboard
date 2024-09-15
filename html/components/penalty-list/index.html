@@ -77,7 +77,8 @@
         <span sbDisplay="AlternateName(box), UniformColor, Name"></span><span>: &nbsp;</span>
         <button
           sbForeach="Position: Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
-          sbClass="sbUnserved: HasUnserved"
+          sbClass="sbUnserved: HasUnserved | sbInBox: PenaltyBox"
+          sbProp="disabled: RosterNumber: sbIsEmpty"
           sbDisplay="RosterNumber: penQuestionMarkIfEmpty"
           sbSet="b.CurrentFielding: penGetFielding"
           sbCall="sbCloseDialog"
