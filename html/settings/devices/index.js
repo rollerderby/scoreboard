@@ -1,5 +1,3 @@
-'use strict';
-
 WS.Register('WS.Device.Id');
 
 WS.AfterLoad(function () {

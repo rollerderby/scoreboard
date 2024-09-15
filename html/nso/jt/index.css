@@ -1,4 +1,4 @@
-:root { --button-margin: min(2 * var(--segment-corner-radius), 1dvh); }
+:root { --button-margin: 1dvh; --button-margin: min(2 * var(--segment-corner-radius), 1dvh); }
 body { margin: 0; padding: 0; width: 100dvw; height: 100dvh; }
 div { position: absolute; margin: 0; top: 0; left: 0; height: inherit; width: inherit; text-align: center; border-radius: var(--segment-corner-radius); }
 button.AutoFit { position: absolute; margin: var(--button-margin); top: 0; left: 0; height: calc(100% - 2 * var(--button-margin)); width: calc(100% - 2 *  var(--button-margin)); }

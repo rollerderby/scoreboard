@@ -1,5 +1,3 @@
-'use strict';
-
 WS.Register('ScoreBoard.Rulesets.Ruleset(*).Parent');
 
 function rsCompareChildIndex(a, b) {
@@ -35,7 +33,7 @@ function rsDefinitionOverride(k, v, elem) {
 }
 
 function _rsGetEffectiveValue(rs, rule) {
-  let value = null;
+  var value = null;
   while (value == null && rs != null) {
     value = WS.state['ScoreBoard.Rulesets.Ruleset(' + rs + ').Rule(' + rule + ')'];
     rs = WS.state['ScoreBoard.Rulesets.Ruleset(' + rs + ').Parent'];

@@ -1,4 +1,3 @@
-'use strict';
 if (typeof $ === 'undefined') {
   alert('You MUST include jQuery before this file!');
   throw 'You MUST include jQuery before this file!';

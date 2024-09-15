@@ -1,5 +1,3 @@
-'use strict';
-
 function jtToggleSetting(k, v, elem) {
   elem.toggleClass('sbActive');
 }

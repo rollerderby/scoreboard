@@ -1,5 +1,3 @@
-'use strict';
-
 WS.AfterLoad(function () {
   $('#tabsDiv').tabs();
 });

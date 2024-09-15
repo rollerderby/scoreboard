@@ -1,5 +1,3 @@
-'use strict';
-
 WS.Register(
   [
     'ScoreBoard.CurrentGame.Clock(Timeout).Running',
@@ -100,7 +98,7 @@ function ovlIsJamming(k, v, elem) {
 }
 
 function ovlToPpjColumnWidth(k, v, elem) {
-  let ne1 = $('.PPJBox [Team="1"] .GraphBlock').length;
+  var ne1 = $('.PPJBox [Team="1"] .GraphBlock').length;
   const ne2 = $('.PPJBox [Team="2"] .GraphBlock').length;
   if (ne2 > ne1) {
     ne1 = ne2;
@@ -139,7 +137,7 @@ function _ovlToLowerThirdColor(type) {
 }
 
 function ovlToClockType() {
-  let ret;
+  var ret;
   const to = WS.state['ScoreBoard.CurrentGame.TimeoutOwner'];
   const or = WS.state['ScoreBoard.CurrentGame.OfficialReview'];
   const tc = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Running'];

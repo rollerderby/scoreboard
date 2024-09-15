@@ -1,7 +1,5 @@
-'use strict';
-
-let nextPanel = '';
-let currrentPanel = '';
+var nextPanel = '';
+var currrentPanel = '';
 
 (function () {
   $('#PanelSelect').val('');

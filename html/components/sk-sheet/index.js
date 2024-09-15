@@ -1,5 +1,3 @@
-'use strict';
-
 (function () {
   const prefix = 'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Period(*).Jam(*).TeamJam(*).ScoringTrip(*).';
   WS.Register([prefix + 'AfterSP', prefix + 'Score', prefix + 'Current'], function (k) {
@@ -87,8 +85,8 @@ function sksToTripPoints(k) {
     if (isTrue(WS.state[prefix + 'AfterSP']) || WS.state[prefix + 'Score'] == null) {
       return '';
     } else {
-      let trip = 11;
-      let val = WS.state[prefix + 'Score'];
+      var trip = 11;
+      var val = WS.state[prefix + 'Score'];
       const prefixNoNumber = k.upTo('TeamJam') + '.ScoringTrip(';
       while (WS.state[prefixNoNumber + trip + ').Score'] != null && !isTrue(WS.state[prefixNoNumber + trip + ').AfterSP'])) {
         val = val + ' + ' + WS.state[prefixNoNumber + trip + ').Score'];
@@ -128,12 +126,12 @@ function sksToTripSpPoints(k) {
     if (WS.state[prefix + 'Score'] == null) {
       return '';
     } else {
-      let trip = 10;
+      var trip = 10;
       const prefixNoNumber = k.upTo('TeamJam') + '.ScoringTrip(';
       while (WS.state[prefixNoNumber + trip + ').Score'] != null && !isTrue(WS.state[prefixNoNumber + trip + ').AfterSP'])) {
         trip++;
       }
-      let val = WS.state[prefixNoNumber + trip + ').Score'] || '';
+      var val = WS.state[prefixNoNumber + trip + ').Score'] || '';
       trip++;
       while (WS.state[prefixNoNumber + trip + ').Score'] != null) {
         val = val + ' + ' + WS.state[prefixNoNumber + trip + ').Score'];

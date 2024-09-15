@@ -1,5 +1,3 @@
-'use strict';
-
 const _windowFunctions = {
   /* Display area dimensions */
   getAspectDimensions: function (aspect, overflow) {
@@ -186,43 +184,5 @@ const _windowFunctions = {
   },
   numCompareByText: function (a, b) {
     return _windowFunctions.numCompare($(a).text(), $(b).text());
-  },
-  fullscreenRequest: function (a) {
-    var isFullscreen = false;
-    if (document.fullscreen) {
-      isFullscreen = true;
-    }
-    if (document.mozFullScreen) {
-      isFullscreen = true;
-    }
-    if (document.webkitIsFullScreen) {
-      isFullscreen = true;
-    }
-    if (document.msFullscreenElement) {
-      isFullscreen = true;
-    }
-
-    var docElem = document.documentElement;
-    if (!isFullscreen && (a === true || a == null)) {
-      if (docElem.requestFullscreen) {
-        docElem.requestFullscreen();
-      } else if (docElem.mozRequestFullScreen) {
-        docElem.mozRequestFullScreen();
-      } else if (docElem.webkitRequestFullScreen) {
-        docElem.webkitRequestFullScreen();
-      } else if (docElem.msRequestFullscreen) {
-        docElem.msRequestFullscreen();
-      }
-    } else if (isFullscreen && (a === false || a == null)) {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-      } else if (document.webkitCancelFullScreen) {
-        document.webkitCancelFullScreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
-    }
   },
 };

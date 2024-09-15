@@ -1,5 +1,3 @@
-'use strict';
-
 WS.Register('ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Period(*).Jam(*).StarPass', {
   triggerBatchFunc: function () {
     const selector = 'tr.Jam, tr.SP:not(.sbHide)';

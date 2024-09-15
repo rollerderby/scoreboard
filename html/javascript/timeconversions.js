@@ -5,7 +5,6 @@ var _timeConversions = {
 
   /* Convert ms to seconds */
   msToSeconds: function (ms, roundUp) {
-    'use strict';
     if (ms < 0) {
       return '0';
     }
@@ -17,12 +16,10 @@ var _timeConversions = {
   },
   /* Convert seconds to milliseconds */
   secondsToMs: function (sec) {
-    'use strict';
     return String(sec * 1000);
   },
   /* Convert milliseconds to min:sec */
   msToMinSec: function (ms, roundUp) {
-    'use strict';
     if (ms < 0) {
       return '0:00';
     }
@@ -30,14 +27,12 @@ var _timeConversions = {
   },
   /* Convert min:sec to milliseconds */
   minSecToMs: function (time) {
-    'use strict';
     var min = Number(_timeConversions._timeOnlyMin(time) || 0);
     var sec = Number(_timeConversions._timeOnlySec(time) || 0);
     return _timeConversions.secondsToMs(min * 60 + sec);
   },
   /* Convert milliseconds to min:sec, if min is 0 return only seconds portion */
   msToMinSecNoZero: function (ms, roundUp) {
-    'use strict';
     if (ms < 0) {
       return '0';
     }
@@ -50,7 +45,6 @@ var _timeConversions = {
   },
   /* Same as minSecToMs() */
   minSecNoZeroToMs: function (time) {
-    'use strict';
     return _timeConversions.minSecToMs(time);
   },
 
@@ -60,7 +54,6 @@ var _timeConversions = {
 
   /* Format number into minimum 2 digits, prepending 0 if needed */
   twoDigit: function (n) {
-    'use strict';
     return (10 > n ? '0' : '') + n;
   },
 
@@ -70,17 +63,14 @@ var _timeConversions = {
 
   /* If needed, this preprends ':' */
   _formatMinSec: function (time) {
-    'use strict';
     return String(time).indexOf(':') > -1 ? time : ':' + time;
   },
   /* Convert ms to seconds portion of min:sec */
   _msOnlySec: function (ms, roundUp) {
-    'use strict';
     return _timeConversions.twoDigit(_timeConversions.msToSeconds(ms, roundUp) % 60);
   },
   /* Convert ms to minutes portion of min:sec */
   _msOnlyMin: function (ms, roundUp) {
-    'use strict';
     var min = Math.floor(ms / 60000);
     // if rounding up and seconds are 59001-59999, we need to add a minute
     min = min + Number(_timeConversions.msToSeconds(Math.max(0, (ms % 60000) - 59000), roundUp));
@@ -88,12 +78,10 @@ var _timeConversions = {
   },
   /* Accepts min:sec time, returns only seconds portion */
   _timeOnlySec: function (time) {
-    'use strict';
     return _timeConversions._formatMinSec(time).split(':')[1];
   },
   /* Accepts min:sec time, returns only minutes portion */
   _timeOnlyMin: function (time) {
-    'use strict';
     return _timeConversions._formatMinSec(time).split(':')[0];
   },
 };

@@ -1,5 +1,3 @@
-'use strict';
-
 function shtSelectSheet(k, v, elem) {
   elem.toggleClass('sbActive');
   $('#SheetsTab')

@@ -1,11 +1,8 @@
-'use strict';
-
 WS.AfterLoad(function () {
   $('[Team="1"] .SkInput .OfficialTimeout>div').remove();
 });
 
 function skiToggleEdit(k, v, elem) {
-  console.log('toggle', elem);
   elem.siblings().addBack().toggleClass('sbHide').filter('input:visible, select:visible').trigger('focus');
 }
 

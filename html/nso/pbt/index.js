@@ -1,7 +1,4 @@
-'use strict';
-
 WS.AfterLoad(function () {
-  'use strict';
   $('#UsePBTDialog').dialog({
     modal: true,
     closeOnEscape: false,

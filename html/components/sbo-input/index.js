@@ -1,5 +1,3 @@
-'use strict';
-
 WS.Register(['ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').CurrentJam', 'ScoreBoard.Rulesets.Ruleset(*).Parent']);
 
 function opToggleKeyEdit(k, v, elem) {
@@ -63,8 +61,8 @@ function opStartMidGame() {
 }
 
 function opStartAdHoc(k, v, elem) {
-  let startTime = $('#newStartTime').val();
-  let intermissionClock = null;
+  var startTime = $('#newStartTime').val();
+  var intermissionClock = null;
   if (startTime !== '') {
     var now = new Date();
     var parts = startTime.split(':');

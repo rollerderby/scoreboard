@@ -1,5 +1,3 @@
-'use strict';
-
 function sbNewUuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     var r = (Math.random() * 16) | 0,
@@ -63,7 +61,7 @@ function sbReverseOnNonSheet(k, v, elem) {
 }
 
 function _sbUpdateUrl(key, val) {
-  let url = new URL(window.location);
+  var url = new URL(window.location);
   url.searchParams.set(key, val);
   window.history.replaceState(null, '', url);
 }

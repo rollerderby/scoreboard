@@ -1,5 +1,3 @@
-'use strict';
-
 /*
  * Generally the functions in this file are intended to be used with _windowfunctions.appendSorted
  * In this context they will be given two DOM elements a,b as input and should return true,

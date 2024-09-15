@@ -1,5 +1,3 @@
-'use strict';
-
 WS.Register(
   [
     'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Period(*).Timeout(*).Review',
@@ -9,7 +7,7 @@ WS.Register(
     triggerBatchFunc: function () {
       $('.OrSheet>[Period]').each(function () {
         const elem = $(this);
-        let sum = 0;
+        var sum = 0;
         elem.find('tbody:not(.sbHide) td[Duration]').each(function () {
           sum += Number($(this).attr('Duration'));
         });

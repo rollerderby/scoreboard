@@ -1,5 +1,3 @@
-'use strict';
-
 WS.Register([
   'ScoreBoard.CurrentGame.Rule(Penalties.NumberToFoulout)',
   'ScoreBoard.CurrentGame.CurrentPeriodNumber',
@@ -50,7 +48,7 @@ function penDetailButtons(k, v) {
 }
 
 function penToPenaltyCodeDisplay(k, v) {
-  let output = '<div class="Code">' + k.PenaltyCode + '</div><div class="Description">';
+  var output = '<div class="Code">' + k.PenaltyCode + '</div><div class="Description">';
   v.split(',').forEach(function (d) {
     output = output + '<div>' + d + '</div>';
   });
