@@ -343,7 +343,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 !getTeam(Team.ID_2).getAll(Team.SCORE_ADJUSTMENT).isEmpty()) {
                 return "unapplied score adjustments";
             } else {
-                return "";
+                return exportFailureText;
             }
         }
         return value;
@@ -1112,13 +1112,20 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     }
 
     @Override
-    public void exportDone(boolean success) {
+    public void exportDone(boolean success, String failureText) {
+        exportFailureText = failureText;
+        set(EXPORT_BLOCKED_BY, failureText);
         if (success) {
             set(LAST_FILE_UPDATE,
                 LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
         }
         set(UPDATE_IN_PROGRESS, false);
         statsbookExporter = null;
+    }
+    @Override
+    public void clearStatsbookError() {
+        exportFailureText = "";
+        set(EXPORT_BLOCKED_BY, "");
     }
 
     public static void setQuickClockThreshold(long threshold) { quickClockThreshold = threshold; } // for unit tests
@@ -1138,6 +1145,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
 
     protected StatsbookExporter statsbookExporter;
     protected JSONStateSnapshotter jsonSnapshotter;
+    protected String exportFailureText = "";
 
     public static class GameSnapshot {
         private GameSnapshot(GameImpl g, String type) {

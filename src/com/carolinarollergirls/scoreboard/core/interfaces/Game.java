@@ -78,7 +78,8 @@ public interface Game extends ScoreBoardEventProvider {
 
     public String getFilename();
 
-    public void exportDone(boolean success);
+    public void exportDone(boolean success, String failureText);
+    public void clearStatsbookError();
 
     public enum State {
         PREPARED("Prepared"),

@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -108,6 +109,8 @@ public class StatsbookExporter extends Thread {
                 wb = WorkbookFactory.create(in);
                 in.close();
 
+                countJamRows();
+
                 synchronized (coreLock) { fillIgrfAndPenalties(); }
                 synchronized (coreLock) {
                     fillScoreLineupsAndClock();
@@ -124,7 +127,18 @@ public class StatsbookExporter extends Thread {
             }
             success = true;
         } catch (Exception e) { Logger.printStackTrace(e); } finally {
-            game.exportDone(success);
+            game.exportDone(success, failureText);
+        }
+    }
+
+    private void countJamRows() {
+        Sheet score = wb.getSheet("Score");
+        int row = 3;
+        for (int period = 0; period < 2; period++) {
+            int startRow = row;
+            while (score.getRow(row).getCell(0).getCellType() != CellType.FORMULA) { row++; }
+            jamRows[period] = row - startRow;
+            row += 4;
         }
     }
 
@@ -390,11 +404,11 @@ public class StatsbookExporter extends Thread {
         Sheet clock = wb.getSheet("Game Clock");
         Sheet reviews = wb.getSheet("Official Reviews");
         int[] toCols = {3, 3};
+        int[] startRowIndex = {0, jamRows[0] + 4};
 
-        for (int pn = 0; pn < game.getCurrentPeriodNumber(); pn++) {
-            int rowIndex = pn * 42;
-            fillScoreHead(score.getRow(rowIndex), pn);
-            fillLineupsHead(lineups.getRow(rowIndex), pn);
+        for (int pn = 0; pn < game.getCurrentPeriodNumber() && pn < 2; pn++) {
+            fillScoreHead(score.getRow(startRowIndex[pn]), pn);
+            fillLineupsHead(lineups.getRow(startRowIndex[pn]), pn);
 
             Period p = game.get(Game.PERIOD, pn + 1);
             toCols = fillTimeouts(clock, reviews, toCols, p);
@@ -404,13 +418,21 @@ public class StatsbookExporter extends Thread {
                 continue;
             }
 
-            rowIndex += 3;
+            int rowIndex = startRowIndex[pn] + 3;
             for (int jn = 1; jn <= p.getCurrentJamNumber(); jn++) {
+                int numRows = p.getJam(jn).get(Jam.STAR_PASS) ? 2 : 1;
+                if (rowIndex + numRows - startRowIndex[pn] - 3 >= jamRows[pn]) {
+                    // sheet too short
+                    int rowsNeeded = 0;
+                    for (Jam j : p.getAll(Period.JAM)) { rowsNeeded += j.get(Jam.STAR_PASS) ? 2 : 1; }
+                    failureText =
+                        "Statsbook needs " + (rowsNeeded - jamRows[pn]) + " more row(s) in Period " + (pn + 1);
+                    throw new RuntimeException(failureText);
+                }
                 fillJam(score.getRow(rowIndex), score.getRow(rowIndex + 1), osOffset.getRow(rowIndex),
                         lineups.getRow(rowIndex), lineups.getRow(rowIndex + 1), clock.getRow(pn * 51 + jn + 9),
                         p.getJam(jn));
-                rowIndex += p.getJam(jn).get(Jam.STAR_PASS) ? 2 : 1;
-                if (rowIndex > 82 || (rowIndex > 40 && rowIndex < 45)) { break; } // end of sheet
+                rowIndex += numRows;
             }
         }
     }
@@ -660,6 +682,10 @@ public class StatsbookExporter extends Thread {
         boolean bAddTimeToDetails = false;
         String endTime = ClockConversion.toHumanReadable(j.get(Jam.PERIOD_CLOCK_DISPLAY_END));
 
+        if (jamRows[j.get(Jam.PERIOD_NUMBER) - 1] != 38) {
+            // extending has broken jam numbers - fix them
+            setCell(row, 0, j.getNumber());
+        }
         setCell(row, 1, j.getDuration() / 1000);
         for (Penalty pen : j.getAll(Jam.PENALTY)) {
             if (Skater.FO_EXP_ID.equals(pen.getProviderId()) && !"FO".equals(pen.getCode())) { // expulsion
@@ -766,6 +792,7 @@ public class StatsbookExporter extends Thread {
     private CellStyle strikedNum;
     private CellStyle strikedName;
     private Object coreLock;
+    private String failureText = "";
 
     // Officials names for filling sheet headers
     private String pt = "";
@@ -778,4 +805,6 @@ public class StatsbookExporter extends Thread {
 
     private Boolean hadOsOffset = false;
     private List<String> osOffsetReasons = new ArrayList<>();
+
+    private int[] jamRows = {38, 38};
 }
