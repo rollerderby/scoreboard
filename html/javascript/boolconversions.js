@@ -1,5 +1,3 @@
-'use strict';
-
 /*
  * To bool
  */

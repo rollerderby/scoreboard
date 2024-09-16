@@ -1,5 +1,3 @@
-'use strict';
-
 $('table.Officials')
   .clone(true)
   .attr('officialType', 'Ref')
@@ -50,7 +48,7 @@ function igrfToAbortTime(k) {
   const curPeriod = WS.state[prefix + '.CurrentPeriodNumber'];
   const lastPeriod = WS.state[prefix + '.Rule(Period.Number)'];
   const pc = WS.state[prefix + '.Clock(Period).Time'];
-  let text = 'Game ended ';
+  var text = 'Game ended ';
 
   if (pc > 0) {
     text = text + 'with ' + _timeConversions.msToMinSec(pc) + ' left in period ' + curPeriod;
@@ -114,7 +112,7 @@ function igrfPasteOfficials(k, v, elem, event) {
   }
 
   // Treat as a tab-seperated roster.
-  let knownNames = {};
+  var knownNames = {};
   elem
     .closest('table')
     .find('.Official')
@@ -123,7 +121,7 @@ function igrfPasteOfficials(k, v, elem, event) {
       knownNames[n.attr('role') + '_' + n.attr('name')] = n.attr('Nso') || n.attr('Ref');
     });
 
-  for (let i = 0; i < lines.length; i++) {
+  for (var i = 0; i < lines.length; i++) {
     const cols = lines[i].split('\t');
     if (cols.length < 2) {
       continue;
@@ -133,11 +131,11 @@ function igrfPasteOfficials(k, v, elem, event) {
     if (name === '') {
       continue;
     }
-    let league = '';
+    var league = '';
     if (cols.length > 2) {
       league = cols[2].trim();
     }
-    let cert = '';
+    var cert = '';
     if (cols.length > 3) {
       cert = cols[3].trim().charAt(0);
     }

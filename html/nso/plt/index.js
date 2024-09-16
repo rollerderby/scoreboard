@@ -1,5 +1,4 @@
 WS.AfterLoad(function () {
-  'use strict';
   _windowFunctions.configureZoom();
   $('body')
     .attr('showTeam', _windowFunctions.getParam('team'))
@@ -57,7 +56,6 @@ function updateTitle() {
 }
 
 function openOptionsDialog() {
-  'use strict';
   $('#OptionsDialog').dialog('open');
 }
 
@@ -70,7 +68,6 @@ function setTeam(k, v, elem) {
 }
 
 function setPos(k, v, elem) {
-  console.log('called');
   $('#OptionsDialog [pos]').removeClass('sbActive');
   elem.addClass('sbActive');
   $('body').attr('sbSheetStyle', elem.attr('pos'));
@@ -79,14 +76,12 @@ function setPos(k, v, elem) {
 }
 
 function setZoom(k, v, elem) {
-  'use strict';
   elem.toggleClass('sbActive');
   _sbUpdateUrl('zoomable', elem.filter('.sbActive').length);
   _windowFunctions.configureZoom();
 }
 
 function advanceFieldings(k) {
-  'use strict';
   const team = _windowFunctions.getParam('team');
   if (team === 'both') {
     WS.Set(k + '.Team(1).AdvanceFieldings', true);

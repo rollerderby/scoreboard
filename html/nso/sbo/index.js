@@ -1,5 +1,3 @@
-'use strict';
-
 (function () {
   WS.Register(['ScoreBoard.Settings.Setting(ScoreBoard.Operator.*)', 'ScoreBoard.Settings.Setting(ScoreBoard.Operator_Default.*)']);
 

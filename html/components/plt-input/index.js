@@ -1,5 +1,3 @@
-'use strict';
-
 (function () {
   const gameId = _windowFunctions.getParam('game');
   const prefix = gameId ? 'ScoreBoard.Game(' + gameId + ').' : 'ScoreBoard.CurrentGame.';
@@ -114,7 +112,7 @@ function _pltOpenPenaltyEditor(g, t, s, p) {
   if (!g) {
     return; // Whiteboard
   }
-  let prefix = 'ScoreBoard.Game(' + g + ').Team(' + t + ')';
+  var prefix = 'ScoreBoard.Game(' + g + ').Team(' + t + ')';
   const teamName = WS.state[prefix + '.AlternateName(plt)'] || WS.state[prefix + '.UniformColor'] || WS.state[prefix + '.Name'];
   prefix = 'ScoreBoard.Game(' + g + ').Team(' + t + ').Skater(' + s + ')';
   const skaterName = WS.state[prefix + '.Name'];
@@ -164,7 +162,7 @@ function pltUpdateJam(k, v) {
 
 function pltToPenaltyCodeDisplay(k, v, elem, suffix) {
   suffix = suffix || '';
-  let output = '<div class="Code">' + k.PenaltyCode + suffix + '</div><div class="Description">';
+  var output = '<div class="Code">' + k.PenaltyCode + suffix + '</div><div class="Description">';
   v.split(',').forEach(function (d) {
     output = output + '<div>' + d + '</div>';
   });
@@ -183,9 +181,9 @@ function pltToExpCodeDisplay(k, v, elem) {
 //###################################################################
 
 function _pltOpenAnnotationEditor(gameId, teamId, skaterId) {
-  let position = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Skater(' + skaterId + ').Position'];
+  var position = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Skater(' + skaterId + ').Position'];
   position = position.slice(position.lastIndexOf('_') + 1);
-  let fieldingPrefix = ').TeamJam(' + teamId + ').Fielding(' + position + ')';
+  var fieldingPrefix = ').TeamJam(' + teamId + ').Fielding(' + position + ')';
   if (isTrue(WS.state['ScoreBoard.Game(' + gameId + ').InJam'])) {
     fieldingPrefix =
       'ScoreBoard.Game(' +

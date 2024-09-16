@@ -1,5 +1,3 @@
-'use strict';
-
 (function () {
   const view = _windowFunctions.checkParam('preview', 'true') ? 'Preview' : 'View';
   $('body').attr('sbPrefix', '&: ScoreBoard.Settings.Setting(ScoreBoard.' + view + ' : )');

@@ -1,5 +1,3 @@
-'use strict';
-
 function sbToNullIfEmpty(k, v) {
   return v === '' ? null : v;
 }
@@ -37,7 +35,7 @@ function sbFromTime(k, v) {
   return _timeConversions.minSecToMs(v);
 }
 function sbToClockInitialNumber(k) {
-  let ret = '';
+  var ret = '';
   const name = WS.state[k.upTo('Clock') + '.Name'];
   const number = WS.state[k.upTo('Clock') + '.Number'];
 
@@ -89,7 +87,7 @@ function sbToIntermissionDisplay(k) {
   const max = WS.state[k.upTo('Game') + '.Rule(Period.Number)'];
   const isOfficial = WS.state[k.upTo('Game') + '.OfficialScore'];
   const showDuringOfficial = WS.state[k.upTo('Game') + '.ClockDuringFinalScore'];
-  let ret = '';
+  var ret = '';
 
   if (isOfficial) {
     if (showDuringOfficial) {

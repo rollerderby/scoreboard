@@ -1,5 +1,3 @@
-'use strict';
-
 (function () {
   _windowFunctions.configureZoom();
   $('body').attr('showTeam', _windowFunctions.getParam('team'));

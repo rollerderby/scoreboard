@@ -1,5 +1,4 @@
-'use strict';
-let WS = {
+var WS = {
   _connectCallback: null,
   _connectTimeout: null,
   _registerOnConnect: [],
@@ -23,11 +22,11 @@ let WS = {
 
   _connect: function () {
     WS._connectTimeout = null;
-    let url = (document.location.protocol === 'http:' ? 'ws' : 'wss') + '://';
+    var url = (document.location.protocol === 'http:' ? 'ws' : 'wss') + '://';
     url += document.location.host + '/WS/';
     // This is not required, but helps figure out which device is which.
     url += '?source=' + encodeURIComponent(document.location.pathname + document.location.search);
-    let platform = '';
+    var platform = '';
     if (navigator.userAgent || false) {
       const match = navigator.userAgent.match(/\((.*)\).*\(.*\)/);
       if (match) {
@@ -59,7 +58,7 @@ let WS = {
         });
         WS.state = {};
         if (WS._preRegisterDone) {
-          let req = {
+          var req = {
             action: 'Register',
             paths: WS._registerOnConnect,
           };
@@ -103,7 +102,7 @@ let WS = {
         clearInterval(WS._heartbeat);
       };
       WS.socket.onerror = function (e) {
-        console.log('WS', 'Websocket: Error', e);
+        console.error('WS', 'Websocket: Error', e);
         WS._connectionStatus.attr('status', 'error').text('Not connected');
         if (WS._connectTimeout == null) {
           WS._connectTimeout = setTimeout(WS._connect, 1000);
@@ -164,12 +163,12 @@ let WS = {
   _processUpdate: function (state) {
     // update all incoming properties before triggers
     // dependency issues causing problems
-    let plainNull = [];
-    let plain = [];
+    var plainNull = [];
+    var plain = [];
     // Batch functions are only called once per update.
     // This is useful to avoid n^2 operations when
     // every callback redraws everything.
-    let batched = new Set();
+    var batched = new Set();
     $.each(state, function (k, v) {
       k = WS._enrichProp(k);
       const callbacks = WS._getMatchesFromTrie(WS._callbackTrie, k, 'partialKey');
@@ -226,17 +225,16 @@ let WS = {
 
   // Parse property name, and make it easily accessible.
   _enrichProp: function (prop) {
-    'use strict';
     if (WS._enrichPropCache[prop] != null) {
       return WS._enrichPropCache[prop];
     }
     prop = new String(prop);
-    let i = prop.length - 1;
-    let parts = [];
+    var i = prop.length - 1;
+    var parts = [];
     while (i >= 0) {
-      let dot;
-      let key;
-      let val = '';
+      var dot;
+      var key;
+      var val = '';
       if (prop[i] === ')') {
         const open = prop.lastIndexOf('(', i);
         dot = prop.lastIndexOf('.', open);
@@ -271,9 +269,9 @@ let WS = {
       options = { triggerFunc: options };
     }
 
-    let callback = null;
-    let batchCallback = null;
-    let elem = null;
+    var callback = null;
+    var batchCallback = null;
+    var elem = null;
     if (options == null) {
       callback = null;
     } else {
@@ -399,7 +397,7 @@ let WS = {
   _stateTrie: {},
   _addToTrie: function (t, key, value) {
     const p = key.split(/(?=[.(])/);
-    for (let i = 0; i < p.length; i++) {
+    for (var i = 0; i < p.length; i++) {
       const c = p[i];
       t[c] = t[c] || {};
       t = t[c];
@@ -429,7 +427,7 @@ let WS = {
     remove(t, key.split(/(?=[.(])/), 0);
   },
   _getMatchesFromTrie: function (trie, key, mode) {
-    let result = [];
+    var result = [];
     function findAllMatches(t) {
       if (t._values) {
         result.push(...t._values);
@@ -447,7 +445,7 @@ let WS = {
       for (; i < p.length; i++) {
         if (t['.*)'] || t['(*)']) {
           // Allow Blah(*) as a wildcard.
-          let j = i;
+          var j = i;
           // id captured by * might contain . and thus be split - find the end
           while (j < p.length && !p[j].endsWith(')')) {
             j++;
@@ -530,11 +528,15 @@ let WS = {
     const val = WS._replacePathComponents(elem, attr, isPreRegister)[0];
     return val
       ? val.split('|').map(function (part) {
-          let list = part.split(':').map((s) => s.trim());
+          var list = part.split(':').map(function (s) {
+            return s.trim();
+          });
           if (pathIndex > -1) {
             const prefixes = WS._getPrefixes(elem, isPreRegister);
             const basePath = WS._getContext(elem, attr === 'sbForeach', isPreRegister);
-            list[pathIndex] = list[pathIndex].split(',').map((item) => WS._combinePaths(basePath, [item.trim(), false], prefixes)[0]);
+            list[pathIndex] = list[pathIndex].split(',').map(function (item) {
+              return WS._combinePaths(basePath, [item.trim(), false], prefixes)[0];
+            });
           }
           if (readFuncIndex > -1 && (isBool || list[readFuncIndex] != null || list[pathIndex].length > 1 || alwaysReadState)) {
             list[readFuncIndex] = WS._getModifyFunc(list[pathIndex], list[readFuncIndex] || '', isBool, alwaysReadState);
@@ -548,7 +550,7 @@ let WS = {
   },
 
   _getAutoFitPaths: function (elem) {
-    let value = WS._getParameters(elem, 'sbAutoFitOn', 0);
+    var value = WS._getParameters(elem, 'sbAutoFitOn', 0);
     return value.length ? value[0][0] : value;
   },
 
@@ -561,7 +563,7 @@ let WS = {
     } else {
       return function (path, v, elem) {
         v = null;
-        for (let i = 0; i < paths.length; i++) {
+        for (var i = 0; i < paths.length; i++) {
           path = paths[i];
           if (WS.state[path] != null) {
             v = WS.state[path];
@@ -653,13 +655,19 @@ let WS = {
       }
       elem.next('[sbForeach]').attr('sbSubId', subId + 1);
       const preForeachItem = subId === 0 ? elem.prev() : elem.prevUntil(':not([sbSubId])').prev();
-      let [paths, fixedKeys, sortFunction, optionsString] = forEachEntries[0];
-      fixedKeys = fixedKeys ? fixedKeys.split(',').map((s) => s.trim()) : [];
-      let blockedKeys = {};
-      let options = {};
+      var [paths, fixedKeys, sortFunction, optionsString] = forEachEntries[0];
+      fixedKeys = fixedKeys
+        ? fixedKeys.split(',').map(function (s) {
+            return s.trim();
+          })
+        : [];
+      var blockedKeys = {};
+      var options = {};
       if (optionsString) {
         optionsString.split(',').map(function (option) {
-          option = option.split('=', 2).map((s) => s.trim());
+          option = option.split('=', 2).map(function (s) {
+            return s.trim();
+          });
           options[option[0]] = option[1] || true;
         });
         if (options.onInsert) {
@@ -669,7 +677,7 @@ let WS = {
           options.onRemove = WS._buildNonBoolFunc(options.onRemove);
         }
       }
-      let context = elem.attr('sbContext');
+      var context = elem.attr('sbContext');
       context = context ? (context + ':').split(':', 2) : ['', ''];
       if (context[0] != '' && !context[0].endsWith('^')) {
         context[0] = context[0] + '.';
@@ -694,7 +702,7 @@ let WS = {
             if (!options.noContext) {
               newElem.attr('sbContext', context[0] + field + '(' + key + '):' + context[1]);
             }
-            let prev = paren.children('[' + field + '="' + key + '"][sbSubId="' + (subId - 1) + '"]');
+            var prev = paren.children('[' + field + '="' + key + '"][sbSubId="' + (subId - 1) + '"]');
             if (!prev.length) {
               prev = preForeachItem.nextUntil(':not(.sbFixed)').addBack().last();
             }
@@ -806,8 +814,8 @@ let WS = {
     } else {
       const autoFitPaths = WS._getAutoFitPaths(elem);
       const context = WS._enrichProp(WS._getContext(elem)[0]);
-      let autoFitNeeded = elem.hasClass('AutoFit');
-      let stopRecursion = false;
+      var autoFitNeeded = elem.hasClass('AutoFit');
+      var stopRecursion = false;
 
       WS._getParameters(elem, 'sbOn', -1, -1, 1).forEach(function ([event, func]) {
         elem.on(event, function (e) {
@@ -895,7 +903,7 @@ let WS = {
   },
 
   _preRegister: function () {
-    let paths = [];
+    var paths = [];
     const preRegisterAttribute = function (attr, pathIndex) {
       $('[' + attr + ']').each(function (idx, elem) {
         WS._getParameters($(elem), attr, pathIndex, -1, -1, false, true).forEach(function (params) {
@@ -906,7 +914,11 @@ let WS = {
 
     $('[sbForeach]').each(function (idx, elem) {
       WS._getParameters($(elem), 'sbForeach', 0, -1, -1, false, true).forEach(function (params) {
-        paths = paths.concat(params[0].map((s) => s + '(*)' + ((params[3] || '').includes('noId') ? '' : '.Id')));
+        paths = paths.concat(
+          params[0].map(function (s) {
+            return s + '(*)' + ((params[3] || '').includes('noId') ? '' : '.Id');
+          })
+        );
       });
     });
 
@@ -922,10 +934,10 @@ let WS = {
 
   _replacePathRe: /\[([^\]]*)\]/g,
   _replacePathComponents: function (elem, attr, isPreRegister, skipCopyContext) {
-    let reevaluate = false;
-    let value = elem.attr(attr);
+    var reevaluate = false;
+    var value = elem.attr(attr);
     if (value) {
-      let changed = false;
+      var changed = false;
       value = value.replaceAll(WS._replacePathRe, function (match, field) {
         changed = true;
         if (field === '*') {
@@ -933,7 +945,7 @@ let WS = {
             // we're called as part of determining the proper replacement - break infinite loop
             return match;
           }
-          let context = WS._getContext(elem, false, isPreRegister, attr === 'sbPrefix');
+          var context = WS._getContext(elem, false, isPreRegister, attr === 'sbPrefix');
           return context[1] ? match : context[0];
         } else {
           const src = elem.closest(match + ', [sbForeach^="' + match + '"]:not([sbForeach*="noContext"])');
@@ -964,14 +976,14 @@ let WS = {
         return match;
       }
     }
-    let path = ['', false];
+    var path = ['', false];
     const parent = elem.parent();
     if (parent.length > 0) {
       path = WS._getContext(parent, false, isPreRegister);
     }
     const prefixes = WS._getPrefixes(elem, isPreRegister, skipCopyContext);
-    let [value, reeval] = WS._replacePathComponents(elem, 'sbContext', isPreRegister);
-    let suffix = [undefined, reeval];
+    var [value, reeval] = WS._replacePathComponents(elem, 'sbContext', isPreRegister);
+    var suffix = [undefined, reeval];
     if (value) {
       const parts = value.split(':', 2);
       path = WS._combinePaths(path, [parts[0], reeval], prefixes);
@@ -1022,14 +1034,16 @@ let WS = {
       return cached.prefixes;
     }
 
-    let prefixes = {};
+    var prefixes = {};
     Object.entries(WS._getPrefixes(elem.parent(), isPreRegister)).forEach(function ([prefix, value]) {
       prefixes[prefix] = { prefix: value.prefix, suffix: value.suffix, reevaluate: value.reevaluate };
     });
     const [value, reevaluate] = WS._replacePathComponents(elem, 'sbPrefix', isPreRegister, skipCopyContext);
     if (value) {
       value.split('|').map(function (entry) {
-        entry = entry.split(':').map((s) => s.trim());
+        entry = entry.split(':').map(function (s) {
+          return s.trim();
+        });
         prefixes[entry[0]] = { prefix: entry[1], suffix: entry[2], reevaluate: reevaluate };
       });
     }

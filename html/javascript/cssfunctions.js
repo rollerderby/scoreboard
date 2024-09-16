@@ -1,5 +1,3 @@
-'use strict';
-
 function sbCssToUrl(k, v) {
   if (v) {
     return 'url("' + v + '")';

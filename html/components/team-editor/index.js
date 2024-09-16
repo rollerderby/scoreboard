@@ -1,5 +1,3 @@
-'use strict';
-
 $('#teamLogoUpload').fileupload({
   url: '/Media/upload',
   formData: [
@@ -7,7 +5,7 @@ $('#teamLogoUpload').fileupload({
     { name: 'type', value: 'teamlogo' },
   ],
   add: function (e, data) {
-    let fd = new FormData();
+    var fd = new FormData();
     fd.append('f', data.files[0], data.files[0].name);
     data.files[0] = fd.get('f');
     data.submit();
@@ -16,7 +14,7 @@ $('#teamLogoUpload').fileupload({
     WS.Set(WS._getContext($('#teamLogoUpload')) + '.Logo', '/images/teamlogo/' + data.files[0].name);
   },
   fail: function (e, data) {
-    console.log('Failed upload', data.errorThrown);
+    console.error('Failed upload', data.errorThrown);
   },
 });
 
@@ -153,7 +151,7 @@ function tmePasteSkaters(k, v, elem, event) {
   }
 
   // Treat as a tab-seperated roster.
-  let knownNumbers = {};
+  var knownNumbers = {};
   elem
     .closest('.Skaters')
     .find('.Skater')
@@ -162,7 +160,7 @@ function tmePasteSkaters(k, v, elem, event) {
       knownNumbers[n.attr('skaternum')] = n.attr('skaterid');
     });
 
-  for (let i = 0; i < lines.length; i++) {
+  for (var i = 0; i < lines.length; i++) {
     const cols = lines[i].split('\t');
     if (cols.length < 2) {
       continue;

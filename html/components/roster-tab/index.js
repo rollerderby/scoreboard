@@ -1,9 +1,7 @@
-'use strict';
-
 function rstUpdateSkaterCount(k, v) {
-  let count = 0;
+  var count = 0;
   $('#RosterTab [Team="' + k.Team + '"] tr.Skater').each(function (_, f) {
-    let flag = $(f).attr('flag');
+    var flag = $(f).attr('flag');
     if ($(f).attr('Skater') === k.Skater) {
       flag = v;
     }
@@ -17,7 +15,7 @@ function rstUpdateSkaterCount(k, v) {
 }
 
 function rstToPositionDisplay(k, v) {
-  let position = '';
+  var position = '';
   const flag = WS.state[k.upTo('Skater') + '.Flags'];
   const role = WS.state[k.upTo('Skater') + '.Role'];
   switch (role) {

@@ -1,5 +1,3 @@
-'use strict';
-
 WS.Register('ScoreBoard.Rulesets.Ruleset(*).Parent');
 
 WS.AfterLoad(function () {
@@ -9,7 +7,7 @@ WS.AfterLoad(function () {
 
 function _datUpdateAllUrl() {
   const d = new Date();
-  let name = $.datepicker.formatDate('yy-mm-dd_', d);
+  var name = $.datepicker.formatDate('yy-mm-dd_', d);
   name += _timeConversions.twoDigit(d.getHours());
   name += _timeConversions.twoDigit(d.getMinutes());
   name += _timeConversions.twoDigit(d.getSeconds());
@@ -18,22 +16,30 @@ function _datUpdateAllUrl() {
 
 function _datUpdateSelectedUrl() {
   const paths = $('#games tr.Content.Selected')
-    .map((i, elem) => 'ScoreBoard.Game(' + $(elem).attr('Game') + ')')
+    .map(function (i, elem) {
+      return 'ScoreBoard.Game(' + $(elem).attr('Game') + ')';
+    })
     .get()
     .concat(
       $('#teams tr.Content.Selected')
-        .map((i, elem) => 'ScoreBoard.PreparedTeam(' + $(elem).attr('PreparedTeam') + ')')
+        .map(function (i, elem) {
+          return 'ScoreBoard.PreparedTeam(' + $(elem).attr('PreparedTeam') + ')';
+        })
         .get(),
       $('#rulesets tr.Content.Selected')
-        .map((i, elem) => 'ScoreBoard.Rulesets.Ruleset(' + $(elem).attr('Ruleset') + ')')
+        .map(function (i, elem) {
+          return 'ScoreBoard.Rulesets.Ruleset(' + $(elem).attr('Ruleset') + ')';
+        })
         .get(),
       $('#operators tr.Content.Selected')
-        .map((i, elem) => 'ScoreBoard.Settings.Setting(' + $(elem).attr('Setting').slice(0, -1))
+        .map(function (i, elem) {
+          return 'ScoreBoard.Settings.Setting(' + $(elem).attr('Setting').slice(0, -1);
+        })
         .get()
     )
     .join();
   const d = new Date();
-  let name = $.datepicker.formatDate('yy-mm-dd_', d);
+  var name = $.datepicker.formatDate('yy-mm-dd_', d);
   name += _timeConversions.twoDigit(d.getHours());
   name += _timeConversions.twoDigit(d.getMinutes());
   name += _timeConversions.twoDigit(d.getSeconds());
@@ -64,7 +70,7 @@ function datUpdateUploadButtons(k, v, elem) {
 }
 
 function _datCreateRemoveDialog(type) {
-  let div = $('.sbTemplates .RemoveDataDialog').clone(true);
+  var div = $('.sbTemplates .RemoveDataDialog').clone(true);
   const selector = type === 'selected' ? ' tr.Content.Selected' : type === 'singleElement' ? ' tr.Content.ToDelete' : ' tr.Content.None'; // class None is not used, so this will match nothing
   if (!$(selector).length) {
     return;
