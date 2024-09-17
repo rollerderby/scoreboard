@@ -706,7 +706,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
           <div class="nav-container">
             <div class="nav-inner" id="scroll-spy" style="width: min-content; overflow: auto; top: 60px; bottom: 0; padding 10px 0 10px 0;">
               <span class="toc">Table of contents</span>
-              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the v2025-beta3 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
+              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the v2025-beta4 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
 <h3 id="howtos">Howtos</h3>
 <ul class="nav"><li><strong><a href="#Installing-the-Scoreboard-Software">Installing the Scoreboard Software</a></strong><ul class="nav"><li><span>Instructions for getting the software installed and running on a standalone computer to provide a functioning scoreboard.</span></li></ul></li><li><strong><a href="#Quick-Start-Guide">Quick Start Guide</a></strong><ul class="nav"><li><span>Basic information to run a game with only what is mandatory for a regulation game. See the pages below for the full feature set.</span></li></ul></li><li><strong><a href="#Preparing-a-Game">Preparing a Game</a></strong></li><li><strong><a href="#Scoreboard-Operation">Scoreboard Operation</a></strong></li><li><strong><a href="#Configuring-Hotkeys">Configuring Hotkeys</a></strong></li><li><strong><a href="#Using-the-Scoreboard-on-a-Network">Using the Scoreboard on a Network</a></strong></li><li><strong><a href="#Penalty-Tracking">Penalty Tracking</a></strong></li><li><strong><a href="#Lineup-Tracking">Lineup Tracking</a></strong></li><li><span>The </span><strong>Penalty Lineup Tracking</strong> interface combines the PT and LT inputs for one team on a single screen. See those pages for info how to operate it.</li><li><strong><a href="#Penalty-Box-Timing">Penalty Box Timing</a></strong></li></ul><h3 id="tips-tricks">Tips &amp; Tricks</h3>
 <ul class="nav"><li><strong><a href="#Scoreboard-Best-Practices">Scoreboard Best Practices</a></strong></li><li><strong><a href="#Graphics">Graphics</a></strong><ul class="nav"><li><span>Information on graphics for use with CRG, such as team logos and sponsor banners.</span></li></ul></li><li><strong><a href="#External-Links">External Links</a></strong><ul class="nav"><li><span>Links to other sites with information about CRG Scoreboard.</span></li></ul></li></ul><h3 id="details-about-screens-tabs">Details about Screens / Tabs</h3>
@@ -922,7 +922,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 <ul>
 <li>If you forgot to mark the end of a timeout at the rolling whistle, the timeout will continue to run in the background. Whenever there is no jam running, the timeout will be displayed.</li>
 <li>Press <strong>End Timout</strong> any time outside of a jam in order to end the timeout.</li>
-<li>If CRG is configured to keep displaying the timeout clock after the timeout ended (the current default due to WFTDA procedure), you also have to manually stop the timeout clock in order for the lineup clock to be displayed:<ul>
+<li>If CRG is configured to keep displaying the timeout clock after the timeout ended, you also have to manually stop the timeout clock in order for the lineup clock to be displayed:<ul>
 <li>Click on the header of the &quot;Timeout&quot; clock control (or the running clock value).</li>
 <li>In the popup click on the <strong>Stop</strong> button.</li>
 <li>Close the popup.</li>
@@ -1353,13 +1353,16 @@ user before changing hotkeys. It is impolite and confusing to redefine the hotke
 <p>This variant is preferrable when multiple skaters are approaching at once or you don&#39;t know which skater is approaching.</p>
 <ul>
 <li>Hover your fingers above the <strong>Blocker Sat Down</strong> and/or <strong>Jammer Sat Down</strong> button depending on what skater(s) are approaching.</li>
-<li>As a skater sits down, press the corresponding button.</li>
-<li>In the row that appeared above the buttons select the skater that is being timed.<ul>
+<li>As a skater sits down, press the corresponding button.<ul>
+<li>Repeat for further skaters sitting down.</li>
+</ul>
+</li>
+<li>When you have time, in the row(s) that appeared above the buttons select the skater(s) that is/are being timed.<ul>
 <li>Skaters that have an unserved penalty marked will be highlighted in light blue. Skaters that are already in the box are highlighted in red.</li>
+<li>When you started multiple penalties they will be in order with the first one started at the top.</li>
 <li>Once a skater is selected, the penalty row will be moved into the top group, sorted by time remaining in the penalty.</li>
 </ul>
 </li>
-<li>If multiple skaters are sitting down in quick succession it is recommended to start all the clocks first before then assigning them.</li>
 </ul>
 <h4 id="variant-b">Variant B</h4>
 <p>This variant is preferrable when a single skater approaches and you know who it is.</p>
@@ -1394,6 +1397,20 @@ user before changing hotkeys. It is impolite and confusing to redefine the hotke
 <ul>
 <li>Below the clock press the <strong>-1</strong> and <strong>+1</strong> buttons to adjust the clock in 1s increments.</li>
 </ul>
+<h3 id="skaters-having-left-or-having-been-released-early">Skaters having left or having been released early</h3>
+<ul>
+<li>Press the &quot;Left Early&quot; button below the skater&#39;s clock.<ul>
+<li>The system will automatically store the time that was still remaining on the clock and mark the skater as having unserved penalty time (looks the same as having an unserved penalty).</li>
+</ul>
+</li>
+<li>If the stored time is off, e.g. due to reaction time, press the button corresponding to the skater in the Edit/Pre-Select row.</li>
+<li>In the popup adjust the time left to serve as needed.<ul>
+<li>If you issued a penalty for leaving early, you can also enter it here.</li>
+</ul>
+</li>
+<li>Close the popup.</li>
+</ul>
+<p>Note: You can undo an erroneous &quot;Left Early&quot; press by pressing &quot;Unend&quot; in the respective row. (If there are other penalty clocks running, the row will have been moved below them.)</p>
 <h3 id="penalties-issued-in-the-box">Penalties issued in the box</h3>
 <p>Note: You can also use this procedure to add penalties issued outside of the box if the PT did not enter them. It is however recommended to leave these to the PT in order to avoid entering the same penalty twice.</p>
 <h4 id="if-the-skater-is-already-serving-a-penalty">If the skater is already serving a penalty</h4>
@@ -1439,7 +1456,7 @@ user before changing hotkeys. It is impolite and confusing to redefine the hotke
 </li>
 <li><p><strong>Enable Replace on Undo</strong>. Without Replace pressing the wrong one of the clock controls is a huge pressure situation as every second you don&#39;t fix it the clocks run further away and you will have to fix them manually, if that is possible at all. Plus you may have messed up other data, e.g created another jam, which will take more effort to clean up. With Replace you have the time to first think for a moment what just happened and what you can do to fix it and then fix it completely with two clicks/button presses.</p>
 </li>
-<li><p><strong>Disable Auto-End Jam</strong>. Simply reacting to the jam ending whistles when they happen takes less effort than checking the jam duration first. And if Jams are not called off on time (Jam Timers are human), your lineups will still last 30s from the end of the jam instead of being shortened (or requiring the jam timer to ignore the publicly visible lineup clock).
+<li><p><strong>Disable Auto-End Jam</strong>. Simply reacting to the jam ending whistles when they happen takes less effort than checking the jam duration first. And if Jams are not called off on time (Jam Timers are human), your lineups will still last 30s from the end of the jam instead of being shortened (or requiring the jam timer to ignore the publicly visible lineup clock). When using CRG to time penalties, in case of a late call-off Auto-End Jam would also cause penalty clocks to stop early and thus skaters being released too late.
 (The setting is enabled by default in CRG 4.x and 5.x/2023.x because it has been this way for a very long time and there are a substantial number of people out there that have trained themselves to explicitly rely on it. The default changed in CRG 2025.)</p>
 </li>
 <li><p><strong>Delete old games</strong> from time to time. Each game will increase the size of the internal data notably which will eventually lead to performance impacts if the data grows too large. Note that deleting a game from the internal list does not delete any exported statsbooks or data files from the game (and there is no need to clean up those).</p>
@@ -1516,7 +1533,7 @@ user before changing hotkeys. It is impolite and confusing to redefine the hotke
 <ul>
 <li><strong>Start Jam</strong> - Starts a jam.</li>
 <li><strong>Continuation Upcoming</strong> (only visible if the Jam.InjuryContinuation rule is enabled and the prior jam is marked as having been called for injury) - marks the next jam as an injury continuation jam as defined in the JRDA rules.</li>
-<li><strong>Stop Jam</strong>/<strong>End Timeout</strong>/<strong>Lineup</strong> - Ends the current jam or timeout (if any) and starts the lineup clock. If the scorebaord is configured to continue showing the timeout clock after the end of the timeout, the timout clock will keep running and being displayed with the lineup clcok only visible on the operator screen.</li>
+<li><strong>Stop Jam</strong>/<strong>End Timeout</strong>/<strong>Lineup</strong> - Ends the current jam or timeout (if any) and starts the lineup clock. If the scoreboard is configured to continue showing the timeout clock after the end of the timeout, the timout clock will keep running and being displayed with the lineup clock only visible on the operator screen.</li>
 <li><strong>Timeout</strong>/<strong>New Timeout</strong> - Starts a (new) timeout.</li>
 <li><strong>Un-...</strong> - Pressing this will undo the last press of a clock control button. (See &quot;Enable Replace on Undo&quot; above for modifying the bahaviour of this button.)</li>
 </ul>
@@ -1850,7 +1867,7 @@ The editor for stored teams will always be a screen with a single team while the
 <ul>
 <li><strong>Start Jam</strong> - Starts a jam.</li>
 <li><strong>Continuation Upcoming</strong> (only visible if the Jam.InjuryContinuation rule is enabled and the prior jam is marked as having been called for injury) - marks the next jam as an injury continuation jam as defined in the JRDA rules.</li>
-<li><strong>Stop Jam</strong>/<strong>End Timeout</strong>/<strong>Lineup</strong> - Ends the current jam or timeout (if any) and starts the lineup clock. If the scorebaord is configured to continue showing the timeout clock after the end of the timeout, the timout clock will keep running and being displayed with the lineup clcok only visible on the operator screen.</li>
+<li><strong>Stop Jam</strong>/<strong>End Timeout</strong>/<strong>Lineup</strong> - Ends the current jam or timeout (if any) and starts the lineup clock. If the scoreboard is configured to continue showing the timeout clock after the end of the timeout, the timout clock will keep running and being displayed with the lineup clock only visible on the operator screen.</li>
 <li><strong>Timeout</strong>/<strong>New Timeout</strong> - Starts a (new) timeout.</li>
 <li><strong>Un-...</strong> - Pressing this will undo the last press of a clock control button. (See &quot;Enable Replace on Undo&quot; above for modifying the bahaviour of this button.)</li>
 </ul>
@@ -2072,7 +2089,7 @@ The editor for stored teams will always be a screen with a single team while the
 </ul>
 </li>
 <li><em>Sync Clocks</em> - When active (default) all running clocks will tick over at the same moment.</li>
-<li><em>Clock shown after Timeout</em> - Which clock should be displayed in the lineup time between the end of a timeout and the start of the next jam. Some people have very strong feelings about this. Default: Timeout as per current WFTDA officiating procedures</li>
+<li><em>Clock shown after Timeout</em> - Which clock should be displayed in the lineup time between the end of a timeout and the start of the next jam. Some people have very strong feelings about this. Default: Lineup</li>
 <li><em>Auto Start</em> - Should CRG automatically start a Jam or Timeout after the lineup has run for the duration set in the ruleset? This is intended for scrimmages with low staffing where you have to run the scoreboard (mostly) unattended. Default: Off</li>
 <li><em>Time between end of Lineup and auto start being applied</em> - When Auto Start is active CRG will wait for this time before actually activating autostart. This is intended to give you time to override the auto start behaviour (e.g. start a timeout when auto start would have started a jam). When auto start activates the clocks will be adjusted to the values they would have had without this delay.</li>
 <li><em>Auto End Jams</em> - When active (default in CRG 5 - default will change in CRG 6) the jam will automatically be ended after the jam clock has reached 0. It is recommended to deactivate this unless you have to run the scoreboard (mostly) unattended.</li>
