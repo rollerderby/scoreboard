@@ -27,6 +27,7 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
                 boolean found = Paths.get(item.getValue()).toFile().canRead();
                 if (found && scoreBoard.isInitialLoadDone()) {
                     StatsbookExporter.preload(item.getValue(), getScoreBoard());
+                    for (Game g : scoreBoard.getAll(ScoreBoard.GAME)) { g.clearStatsbookError(); }
                 } else if (!found) {
                     getScoreBoard().set(ScoreBoard.BLANK_STATSBOOK_FOUND, "none");
                 }
