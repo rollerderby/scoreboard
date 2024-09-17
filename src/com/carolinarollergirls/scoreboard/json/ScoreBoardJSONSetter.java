@@ -111,7 +111,7 @@ public class ScoreBoardJSONSetter {
                     newKey.endsWith("FirstJam") || newKey.endsWith("FirstJamNumber")) {
                     newKey = "";
                 }
-                if(newKey.startsWith("ScoreBoard.Settings.Setting(ScoreBoard.Operator__")) {
+                if (newKey.startsWith("ScoreBoard.Settings.Setting(ScoreBoard.Operator__")) {
                     newKey = newKey.replace("Operator__", ".");
                 }
                 if (newKey.contains("Jam.SuddenScoringMaxTrainingPoints")) {
@@ -183,7 +183,8 @@ public class ScoreBoardJSONSetter {
             (key.contains("Skater(") && key.endsWith("HasUnserved")) ||
             (key.contains("Timeout(") && key.endsWith("OrRequest")) ||
             (key.contains("Timeout(") && key.endsWith("OrResult")) ||
-            (key.contains("Team(") && key.endsWith("AllBlockersSet")) || key.contains("(Timeout.JamDuring)")) {
+            (key.contains("Team(") && key.endsWith("AllBlockersSet")) || key.contains("(Timeout.JamDuring)") ||
+            key.endsWith("ExtraPenaltyTime")) {
             return "v2025";
         }
         if (priorLimit.equals("v2023") || key.endsWith("ExportBlockedBy") || key.contains("ScoreAdjustment") ||
