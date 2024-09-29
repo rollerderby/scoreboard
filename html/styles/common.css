@@ -88,8 +88,8 @@ div.sbSheets { height: calc(100% - 10px); align-items: flex-start; flex-wrap: wr
 .sbSheets>table { width: calc(100% - 12px); border-spacing: 0; border-collapse: collapse; table-layout:fixed; }
 .sbSheets>table, .sbSheets>table>tbody, .sbSheets>table td { border: 1px solid #777; }
 .sbSheets>table td { text-align: center; vertical-align: middle; padding: 0; border-style: dotted solid; }
-.sbSheets .hasAnnotation { position: relative; background-clip: padding-box; } 
-.sbSheets .hasAnnotation::after { position: absolute; right: 2px; top: 2px; height: 5px; width: 5px; background-color: red; content: ""; } 
+.sbSheets .sbHasAnnotation { position: relative; background-clip: padding-box; } 
+.sbSheets .sbHasAnnotation::after { position: absolute; right: 2px; top: 2px; height: 5px; width: 5px; background-color: red; content: ""; } 
 
 .sbActive, .ui-button.sbActive { background: var(--element-active-bg); color: var(--element-active-fg); box-shadow: var(--button-active-shadow); transform: var(--button-active-transform); }
 .sbClickMe, .ui-button.sbClickMe { background: var(--element-clickme-bg); color: var(--element-clickme-fg); }
@@ -127,7 +127,7 @@ div.sbSheets { height: calc(100% - 10px); align-items: flex-start; flex-wrap: wr
 [sbSheetStyle="whiteboard"] .sbShowBySheetStyle:not(.sbShowOnWhiteboard):not(.sbShowOnPt) { display: none; }
 
 .sbKeyControl span.Indicator { font-size: 0.75em; } 
-.sbKeyControl:not(.HasControlKey) span.Indicator { display: none; } 
+.sbKeyControl:not(.sbHasControlKey) span.Indicator { display: none; } 
 .sbKeyControl.sbKeyControl.Editing { border: 1px solid #f00; pointer-events: auto; } 
 .sbKeyControl.sbKeyControl.Editing.hover { background: #faa; } 
 

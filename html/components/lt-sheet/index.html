@@ -32,7 +32,7 @@
           <td
             sbForeach="Position:Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
             class="Skater"
-            sbClass="hasAnnotation: Annotation: sbIsNotEmpty"
+            sbClass="sbHasAnnotation: Annotation: sbIsNotEmpty"
             sbDisplay="RosterNumber"
             sbCall="ltsEditUpcomingFielding"
           ></td>
@@ -51,7 +51,7 @@
           <td
             sbForeach="Fielding:Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
             class="Skater"
-            sbClass="hasAnnotation: Annotation: sbIsNotEmpty"
+            sbClass="sbHasAnnotation: Annotation: sbIsNotEmpty"
             sbDisplay="SkaterNumber, ^^InjuryContinuation, ^Lead: ltsEmptyIfInjAst"
             sbCall="ltsEditFielding"
           ></td>
@@ -74,7 +74,7 @@
           <td
             sbForeach="Fielding:Pivot, Jammer, Blocker1, Blocker2, Blocker3: only"
             class="Box"
-            sbDisplay="BoxTripSymbolsAfterSP"
+            sbDisplay="BoxTripSymbolsAfterSP: sbToEmptyIfNoSp"
             sbCall="ltsEditFielding"
           ></td>
         </tr>
