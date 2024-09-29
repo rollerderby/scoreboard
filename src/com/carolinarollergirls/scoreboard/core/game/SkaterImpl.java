@@ -48,8 +48,8 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         set(PREPARED_SKATER, ps);
         if (ps == null || !team.get(Team.PREPARED_TEAM_CONNECTED)) {
             set(NAME, source.get(NAME));
-            set(ROSTER_NUMBER, source.get(NAME));
-            set(PRONOUNS, source.get(NAME));
+            set(ROSTER_NUMBER, source.get(ROSTER_NUMBER));
+            set(PRONOUNS, source.get(PRONOUNS));
         }
         set(FLAGS, source.get(FLAGS));
     }
