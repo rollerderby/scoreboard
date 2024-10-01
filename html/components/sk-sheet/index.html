@@ -1,25 +1,25 @@
 <div class="sbSegment" sbPrefix="t:[*]">
   <div class="sbGroup sbSheets SkSheet">
     <table sbContext="^" sbForeach="Period: -0: sbComparePeriod" class="Period">
-      <col class="EditButton"></col>
-      <col class="JamNumber"></col>
-      <col class="Jammer"></col>
-      <col class="SmallHead"></col>
-      <col class="SmallHead"></col>
-      <col class="SmallHead"></col>
-      <col class="SmallHead"></col>
-      <col class="SmallHead"></col>
-      <col class="Trip"></col>
-      <col class="Trip"></col>
-      <col class="Trip"></col>
-      <col class="Trip"></col>
-      <col class="Trip"></col>
-      <col class="Trip"></col>
-      <col class="Trip"></col>
-      <col class="Trip"></col>
-      <col class="Trip"></col>
-      <col class="JamTotal"></col>
-      <col class="Gametotal"></col>
+      <col class="EditButton" />
+      <col class="JamNumber" />
+      <col class="Jammer" />
+      <col class="SmallHead" />
+      <col class="SmallHead" />
+      <col class="SmallHead" />
+      <col class="SmallHead" />
+      <col class="SmallHead" />
+      <col class="Trip" />
+      <col class="Trip" />
+      <col class="Trip" />
+      <col class="Trip" />
+      <col class="Trip" />
+      <col class="Trip" />
+      <col class="Trip" />
+      <col class="Trip" />
+      <col class="Trip" />
+      <col class="JamTotal" />
+      <col class="Gametotal" />
       <thead class="sbShowOnSheet">
         <tr>
           <th class="AutoFit EditButton">EDT</th>
@@ -83,14 +83,14 @@
           <td
             class="NoInitial Narrow Darker"
             sbContext="ScoringTrip(1)"
-            sbClass="hasAnnotation: Annotation: sbIsNotEmpty | Used: AfterSP: sbIsSetAndFalse | OtherUsed: AfterSP"
+            sbClass="sbHasAnnotation: Annotation: sbIsNotEmpty | Used: AfterSP: sbIsSetAndFalse | OtherUsed: AfterSP"
             sbDisplay="^NoInitial, AfterSP: sksToNiPreSp"
             sbCall="sksOpenTripEditor"
           ></td>
           <td
             class="Trip"
             sbForeach="ScoringTrip: 2,3,4,5,6,7,8,9,10: only"
-            sbClass="hasAnnotation: Annotation: sbIsNotEmpty | Used: AfterSP: sbIsSetAndFalse | OtherUsed: AfterSP"
+            sbClass="sbHasAnnotation: Annotation: sbIsNotEmpty | Used: AfterSP: sbIsSetAndFalse | OtherUsed: AfterSP"
             sbCall="sksOpenTripEditor"
           >
             <button class="EditOnly UsedOnly" sbSet="Score: 1: change">+</button><br class="EditOnly UsedOnly" />
@@ -102,7 +102,7 @@
           </td>
           <td
             class="JamTotal"
-            sbClass="hasAnnotation: OsOffset, OsOffsetReason: sksHasOffset | sbClickMe: OsOffset, OsOffsetReason: sksHasUnexplainedOffset"
+            sbClass="sbHasAnnotation: OsOffset, OsOffsetReason: sksHasOffset | sbClickMe: OsOffset, OsOffsetReason: sksHasUnexplainedOffset"
             sbCall="sksShowOffsetEditor"
             sbDisplay="JamScore, AfterSPScore: sksToPreSpScore"
           ></td>
@@ -124,8 +124,8 @@
               ></option>
             </select>
           </td>
-          <td class="Lost Narrow Darker" sbControl="Lost: sbToX: sbFromX"></td>
-          <td class="Lead Narrow Darker" sbControl="Lead: sbToX: sbFromX"></td>
+          <td class="Lost Narrow Darker" sbToggle="ActiveInJam: Lost"></td>
+          <td class="Lead Narrow Darker" sbToggle="ActiveInJam: Lead"></td>
           <td class="Calloff Narrow Darker" sbControl="Calloff, StarPass: sksToXifSP: sbFromX"></td>
           <td class="Injury Narrow Darker" sbControl="Injury, StarPass: sksToXifSP: sbFromX"></td>
           <td
@@ -155,7 +155,11 @@
           </td>
         </tr>
       </tbody>
-      <tbody class="Timeout sbShowOnOperator" sbForeach="Timeout:: sbCompareJam: onInsert=sbReverseOnNonSheet" sbAttr="Jam: PrecedingJamNumber,WalltimeStart: sksToToJamNumber" >
+      <tbody
+        class="Timeout sbShowOnOperator"
+        sbForeach="Timeout:: sbCompareJam: onInsert=sbReverseOnNonSheet"
+        sbAttr="Jam: PrecedingJamNumber,WalltimeStart: sksToToJamNumber"
+      >
         <tr class="Timeout" sbClass="IsOR: Review, Owner: sksIsOrThisTeam">
           <td class="EditButton"><button sbCall="sksToggleEdit">✎</button></td>
           <td colspan="9" class="Type">

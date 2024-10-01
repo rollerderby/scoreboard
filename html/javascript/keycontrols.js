@@ -32,7 +32,7 @@ var _crgKeyControls = {
    * there are new span elements added, which are button>span>span
    * the new span elements (under the child span) have the class Indicator
    * the span.Indicator element that stores the control key has class Key
-   * when there is a control key the button has class HasControlKey
+   * when there is a control key the button has class sbHasControlKey
    */
   setupKeyControl: function (button, operator) {
     _crgKeyControls._start(operator);
@@ -52,7 +52,7 @@ var _crgKeyControls = {
         var btn = $(this);
         var prop = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + operator + '.KeyControl.' + btn.attr('id') + ')';
         var key = WS.state[prop];
-        btn.attr('_crgKeyControls_prop', prop).toggleClass('HasControlKey', key ? true : false);
+        btn.attr('_crgKeyControls_prop', prop).toggleClass('sbHasControlKey', key ? true : false);
         btn
           .find('span.Key')
           .attr('data-keycontrol', String(key ? key.charCodeAt(0) : ''))
@@ -115,7 +115,7 @@ var _crgKeyControls = {
         }
         var button = $('#' + k.Setting.split('.')[4]);
         button
-          .toggleClass('HasControlKey', v ? true : false)
+          .toggleClass('sbHasControlKey', v ? true : false)
           .find('span.Key')
           .text(v ? v : '')
           .attr('data-keycontrol', String(v ? v.charCodeAt(0) : ''));

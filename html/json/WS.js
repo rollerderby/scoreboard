@@ -607,6 +607,12 @@ var WS = {
   _isInputElement: function (elem) {
     return elem.prop('tagName') === 'INPUT' || elem.prop('tagName') === 'SELECT';
   },
+  _eventType: function (elem) {
+    return WS._isInputElement(elem) ? 'change' : 'click';
+  },
+  _elementValue: function (elem) {
+    return WS._isInputElement(elem) ? elem.val() : true;
+  },
 
   _runningIncludes: 1, // core.js includes
   _loadIncludes: function (root) {
@@ -716,7 +722,7 @@ var WS = {
             }
             WS.AutoRegister(newElem);
             if (options.onInsert) {
-              options.onInsert(WS._enrichProp(WS._getContext(newElem)[0]), null, newElem);
+              options.onInsert(WS._enrichContext(newElem), WS._elementValue(newElem), newElem);
             }
           }
         });
@@ -742,7 +748,7 @@ var WS = {
                     if (options.onRemove) {
                       removed.each(function () {
                         const removedElem = $(this);
-                        options.onRemove(WS._enrichProp(WS._getContext(removedElem)[0]), null, removedElem);
+                        options.onRemove(WS._enrichContext(removedElem), WS._elementValue(removedElem), removedElem);
                       });
                     }
                     WS.Forget(removed);
@@ -754,7 +760,7 @@ var WS = {
                     if (options.onRemove) {
                       removed.each(function () {
                         const removedElem = $(this);
-                        options.onRemove(WS._enrichProp(WS._getContext(removedElem)[0]), null, removedElem);
+                        options.onRemove(WS._enrichContext(removedElem), WS._elementValue(removedElem), removedElem);
                       });
                     }
                     WS.Forget(removed);
@@ -788,7 +794,7 @@ var WS = {
                         elem.detach();
                         _windowFunctions.appendSorted(paren, elem, func, preForeachItem.index() + 1);
                         if (options.onInsert) {
-                          options.onInsert(WS._enrichProp(WS._getContext(newElem)[0]), null, newElem);
+                          options.onInsert(WS._enrichContext(newElem), WS._elementValue(newElem), newElem);
                         }
                       }
                     },
@@ -797,7 +803,7 @@ var WS = {
                   newElem.detach();
                   _windowFunctions.appendSorted(paren, newElem, func, preForeachItem.index() + 1);
                   if (options.onInsert) {
-                    options.onInsert(WS._enrichProp(WS._getContext(newElem)[0]), null, newElem);
+                    options.onInsert(WS._enrichContext(newElem), WS._elementValue(newElem), newElem);
                   }
                 }
               } else if (
@@ -813,13 +819,13 @@ var WS = {
       });
     } else {
       const autoFitPaths = WS._getAutoFitPaths(elem);
-      const context = WS._enrichProp(WS._getContext(elem)[0]);
+      const context = WS._enrichContext(elem);
       var autoFitNeeded = elem.hasClass('AutoFit');
       var stopRecursion = false;
 
       WS._getParameters(elem, 'sbOn', -1, -1, 1).forEach(function ([event, func]) {
         elem.on(event, function (e) {
-          return func(context, elem.val(), elem, e);
+          return func(context, WS._elementValue(elem), elem, e);
         });
       });
 
@@ -831,14 +837,14 @@ var WS = {
 
       const sbSetEntries = WS._getParameters(elem, 'sbSet', 0, -1, 1);
       if (sbSetEntries.length) {
-        elem.on(WS._isInputElement(elem) ? 'change' : 'click', function (event) {
+        elem.on(WS._eventType(elem), function (event) {
           const prefixes = WS._getPrefixes(elem);
           sbSetEntries.map(function ([paths, func, flag]) {
             paths.map(function (path) {
               if (prefixes[path[0]]) {
                 path = (prefixes[path[0]].prefix || '') + path.substring(1) + (prefixes[path[0]].suffix || '');
               }
-              WS.Set(path, func(WS._enrichProp(path), WS._isInputElement(elem) ? elem.val() : true, elem, event), flag);
+              WS.Set(path, func(WS._enrichProp(path), WS._elementValue(elem), elem, event), flag);
             });
           });
         });
@@ -846,8 +852,8 @@ var WS = {
 
       WS._getParameters(elem, 'sbControl', 0, 1, 2).forEach(function ([paths, readFunc, writeFunc]) {
         WS.Register(paths, { preRegistered: true, element: elem, set: WS._isInputElement(elem), modifyFunc: readFunc });
-        elem.on(WS._isInputElement(elem) ? 'change' : 'click', function (event) {
-          WS.Set(paths[0], writeFunc(WS._enrichProp(paths[0]), elem.val(), elem, event));
+        elem.on(WS._eventType(elem), function (event) {
+          WS.Set(paths[0], writeFunc(WS._enrichProp(paths[0]), WS._elementValue(elem), elem, event));
         });
       });
 
@@ -875,8 +881,8 @@ var WS = {
       });
 
       WS._getParameters(elem, 'sbCall', -1, -1, 0).forEach(function ([func]) {
-        elem.on(WS._isInputElement(elem) ? 'change' : 'click', function (event) {
-          func(context, elem.val(), elem, event);
+        elem.on(WS._eventType(elem), function (event) {
+          func(context, WS._elementValue(elem), elem, event);
         });
       });
 
@@ -1002,6 +1008,9 @@ var WS = {
     }
     WS._pathCache.set(elem[0], { path: path, noSuffixPath: noSuffixPath });
     return skipSuffix ? noSuffixPath : path;
+  },
+  _enrichContext: function (elem) {
+    return WS._enrichProp(WS._getContext(elem)[0]);
   },
 
   _combinePaths: function ([basePath, basePathReeval], [subPath, subPathReeval], prefixes) {
