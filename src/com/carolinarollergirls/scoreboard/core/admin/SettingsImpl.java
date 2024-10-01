@@ -72,6 +72,7 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         setBothViews("CustomHtml", "/customhtml/fullscreen/example.html");
         setBothViews("Image", "/images/fullscreen/test-image.png");
         setBothViews("ImageScaling", "contain");
+        setBothViews("HideBanners", "false");
         setBothViews("HideLogos", "false");
         setBothViews("HidePenaltyClocks", "false");
         setBothViews("SidePadding", "");

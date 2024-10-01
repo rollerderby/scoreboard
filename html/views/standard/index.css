@@ -130,10 +130,11 @@ body.box_flat .Clock.Jam.Large>.Name { left: 0%; width: 100%; height: 40% }
 .Clock.Intermission .Time.Hidden { opacity: 0; } 
 
 
-#SponsorBox { position: absolute; left: 0%; top: 100%; width: 100%; height: 26%; }
-#SponsorBox.Show { top: 74%; }
+#SponsorBox { position: absolute; left: 0%; top: 100%; width: 100%; height: 25%; transition: top 500ms; }
+#SponsorBox.Show { top: 75%; }
 #SponsorBox>div { position: absolute; top: 0%; right: 0%; width: 100%; height: 100%; font-size: 0px; transition: right 1s; } 
 #SponsorBox>div.NextImg { right: 100%; } 
+#SponsorBox>div.NextImg>img { display: none; }
 #SponsorBox>div.CurrentImg { right: 0%; transition-delay: 20ms; }
-#SponsorBox>div.FinishedImg { right: -100%; animation: FinishedImg 0.99s; } 
+#SponsorBox>div.FinishedImg { right: -100%; } 
 #SponsorBox>div>img { width: 100%; height: 100%; } 

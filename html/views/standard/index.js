@@ -40,30 +40,31 @@
 WS.AfterLoad(function () {
   const switchTimeMs = 5000;
   const div = $('#SponsorBox');
+  var lastSwitch;
   function setNextSrc() {
     const banners = $('#Banners [File]');
     if (banners.length === 0) {
-      div.find('.NextImg>img').attr('src', '').toggle(false);
+      div.find('img').attr('src', '');
     } else {
       // Use time so different scoreboards will be using the same images.
       const index = Math.round((new Date().getTime() / switchTimeMs) % banners.length);
-      div.find('.NextImg>img').attr('src', $(banners[index]).attr('src')).toggle(true);
-
-      // Also set the current image. This gets a banner up when the page is loaded,
-      // and is otherwise a noop.
-      div.find('.CurrentImg>img').attr('src', $(banners[index]).attr('src')).toggle(true);
+      div.find('.NextImg>img').attr('src', $(banners[index]).attr('src'));
     }
   }
   function nextImgFunction() {
-    var cur = $(div.find('.CurrentImg')[0]);
-    var nex = $(div.find('.NextImg')[0]);
-    var fin = $(div.find('.FinishedImg')[0]);
-    cur.removeClass('CurrentImg').addClass('FinishedImg');
-    nex.removeClass('NextImg').addClass('CurrentImg');
-    fin.removeClass('FinishedImg').addClass('NextImg');
-    setNextSrc();
+    if (new Date().getTime() - lastSwitch > 1020) {
+      // last switch completed, can do new one
+      const cur = $(div.find('.CurrentImg')[0]);
+      const nex = $(div.find('.NextImg')[0]);
+      const fin = $(div.find('.FinishedImg')[0]);
+      cur.removeClass('CurrentImg').addClass('FinishedImg');
+      nex.removeClass('NextImg').addClass('CurrentImg');
+      fin.removeClass('FinishedImg').addClass('NextImg');
+      setNextSrc();
+    }
     // Align to clock, so different scoreboards will be synced.
-    setTimeout(nextImgFunction, switchTimeMs - (new Date().getTime() % switchTimeMs));
+    lastSwitch = new Date().getTime();
+    setTimeout(nextImgFunction, switchTimeMs - (lastSwitch % switchTimeMs));
   }
 
   setNextSrc();
