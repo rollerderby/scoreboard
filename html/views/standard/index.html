@@ -132,16 +132,20 @@
       <div class="ShowInNoClock Clock None Small Box AutoFit">Coming Up</div>
 
       <!-- Sponsor Banners -->
-      <div class="ShowInTimeout ShowInLineup ShowInNoClock Clock" id="SponsorBox">
+      <div class="ShowInTimeout ShowInLineup ShowInNoClock Clock" sbClass="sbHide: &_HideBanners" id="SponsorBox">
         <div class="NextImg">
-          <img src="" style="display: none" />
+          <img src="" />
         </div>
         <div class="CurrentImg">
-          <img src="" style="display: none" />
+          <img src="" />
         </div>
         <div class="FinishedImg">
-          <img src="" style="display: none" />
+          <img src="" />
         </div>
+      </div>
+
+      <div id="Banners" class="sbHide" sbContext="/ScoreBoard.Media.Format(images).Type(sponsor_banner)">
+        <div sbForeach="File:: name: resort=Name" sbAttr="src: Src"></div>
       </div>
 
       <!-- Intermission -->
@@ -155,11 +159,5 @@
       </div>
     </div>
     <div class="DisplayPane Show" id="cover"></div>
-
-    <div class="sbTemplates">
-      <div id="Banners" sbContext="ScoreBoard.Media.Format(images).Type(sponsor_banner)">
-        <div sbForeach="File" sbAttr="src: Src"></div>
-      </div>
-    </div>
   </body>
 </html>
