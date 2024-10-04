@@ -19,9 +19,9 @@
       <div class="sbGroup">
         <ul>
           <li><a href="views/standard" class="sbImportant">Main Scoreboard</a></li>
-          <li><a href="views/wb">Penalty Whiteboard Display</a></li>
-          <li><a href="views/box">Penalty Clocks Display</a></li>
-          <li><a href="views/roster">Roster Display</a></li>
+          <li><a href="views/wb?">Penalty Whiteboard Display</a></li>
+          <li><a href="views/box?">Penalty Clocks Display</a></li>
+          <li><a href="views/roster?">Roster Display</a></li>
           <li><a href="custom/view">Custom Screens</a></li>
         </ul>
       </div>
@@ -31,25 +31,39 @@
       <div class="sbGroup sbSubHeader sbImportant"><span>INPUTS</span><span class="fa fa-2x fa-gamepad"></span></div>
       <div class="sbGroup">
         <ul>
-          <li><a href="nso/sbo?game=" class="curGame sbImportant">Scoreboard Operator Panel</a></li>
-          <li><a href="nso/sk?game=" class="curGame">Scorekeeping</a></li>
-          <li><a href="nso/jt">Jam Timer (Mobile Control)</a></li>
-          <li><a href="nso/plt?pos=pt&team=both&game=" class="curGame">Penalty Tracking</a></li>
-          <li><a href="nso/plt?pos=lt&game=" class="curGame">Lineup Tracking</a></li>
-          <li><a href="nso/plt?pos=plt&game=" class="curGame">Penalty + Lineup Tracking</a></li>
-          <li><a href="nso/pbt">Penalty Box Timing</a></li>
-          <li><a href="nso/pbm">Penalty Box Manager</a></li>
-          <li><a href="nso/alt?game=" class="curGame">Official Reviews</a></li>
+          <li><a href="nso/sbo?&game=" class="curGame sbImportant">Scoreboard Operator Panel</a></li>
+          <li><a href="nso/sk?&game=" class="curGame">Scorekeeping</a></li>
+          <li><a href="nso/jt?">Jam Timer (Mobile Control)</a></li>
+          <li><a href="nso/plt?&pos=pt&team=both&game=" class="curGame">Penalty Tracking</a></li>
+          <li><a href="nso/plt?&pos=lt&game=" class="curGame">Lineup Tracking</a></li>
+          <li><a href="nso/plt?&pos=plt&game=" class="curGame">Penalty + Lineup Tracking</a></li>
+          <li><a href="nso/pbt?">Penalty Box Timing</a></li>
+          <li><a href="nso/pbm?">Penalty Box Manager</a></li>
+          <li><a href="nso/alt?&game=" class="curGame">Official Reviews</a></li>
+          <li><a href="custom/nso">Custom Input Screens</a></li>
         </ul>
       </div>
     </div>
 
-    <div class="sbSegment data">
-      <div class="sbGroup sbSubHeader sbImportant"><span>MANAGE DATA</span><span class="fa fa-2x fa-list-alt"></span></div>
+    <div class="sbSegment">
+      <div class="sbGroup sbSubHeader sbImportant"><span>UTILITIES &amp; SETTINGS</span><span class="fa fa-2x fa-cogs"></span></div>
       <div class="sbGroup">
         <ul>
-          <li><a href="settings/sb_data">Games / Teams / Rulesets</a></li>
-          <li><a href="settings/file_management">Files</a></li>
+          <li>
+            Theme:
+            <select id="themeSelector" sbCall="setTheme">
+              <option value="">Default</option>
+              <option
+                sbContext="ScoreBoard.Media.Format(themes).Type(custom)"
+                sbForeach="File:: name: resort=Name"
+                sbAttr="value:-:sbToMediaPath | name: Name"
+                sbDisplay="Name"
+              ></option>
+            </select>
+          </li>
+          <li><a href="settings/scoreboard?">ScoreBoard Settings</a></li>
+          <li><a href="settings/devices?">Devices</a></li>
+          <li><a href="custom/settings">Custom Settings Screens</a></li>
         </ul>
       </div>
     </div>
@@ -60,16 +74,17 @@
         <ul>
           <li><a href="views/overlay">Broadcast Overlay</a></li>
           <li><a href="views/overlay/admin">Overlay Admin Page</a></li>
+          <li><a href="custom/overlay">Custom Overlays</a></li>
         </ul>
       </div>
     </div>
 
-    <div class="sbSegment">
-      <div class="sbGroup sbSubHeader sbImportant"><span>UTILITIES &amp; SETTINGS</span><span class="fa fa-2x fa-cogs"></span></div>
+    <div class="sbSegment data">
+      <div class="sbGroup sbSubHeader sbImportant"><span>MANAGE DATA</span><span class="fa fa-2x fa-list-alt"></span></div>
       <div class="sbGroup">
         <ul>
-          <li><a href="settings/scoreboard">ScoreBoard Settings</a></li>
-          <li><a href="settings/devices">Devices</a></li>
+          <li><a href="settings/sb_data?">Games / Teams / Rulesets</a></li>
+          <li><a href="settings/file_management?">Files</a></li>
         </ul>
       </div>
     </div>

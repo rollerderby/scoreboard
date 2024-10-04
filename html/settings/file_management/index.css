@@ -21,5 +21,6 @@ table.Type.Hide tr:not(.Type) > td { display: none; }
 
 /* Preview elements */
 #images table.Type tr.Item td.Preview { background: #000; } 
-table.Type tr.Item > td.Preview > * { max-width: 400px; max-height: 100px; } 
+table.Type tr.Item > td.Preview > * { max-height: 100px; } 
+table.Type tr.Item > td.Preview > iframe { width: 100%; height: 300px; max-height: 300px; } 
 /* End Type groups */
