@@ -168,10 +168,21 @@ function datOperatorDlLink(k) {
   );
 }
 
+function datOfficialDlLink(k, v) {
+  return v
+    ? '/SaveJSON/crg-official-' + v.replace(/[\/|\\:*?"<>\ ]/g, '_') + '.json?path=ScoreBoard.PreparedOfficial(' + k.PreparedOfficial + ')'
+    : null;
+}
+
 function datToEditButtonLabel(k, v) {
   return isTrue(v) ? 'View' : 'Edit';
 }
 
 function datToOperatorName(k) {
   return k.Setting.split('.')[2];
+}
+
+function datEditOfficial(k, v, elem) {
+  elem.toggleClass('sbActive');
+  elem.parent().children('span, input').toggleClass('sbHide');
 }

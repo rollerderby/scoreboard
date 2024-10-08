@@ -70,15 +70,22 @@ function igrfToggleInput(k, v, elem) {
 }
 
 function igrfAddOfficial(k, v, elem) {
-  const row = elem.closest('tr');
-  _igrfAddOfficial(
-    k,
-    elem.closest('[officialType]').attr('officialType'),
-    row.find('input.Role').val(),
-    row.find('input.Name').val(),
-    row.find('input.League').val(),
-    row.find('select.Cert').val()
-  );
+  const row = elem.closest('thead');
+  const prepared = elem.closest('thead').find('select.Prepared').val();
+  if (prepared) {
+    const prefix = k + '.' + elem.closest('[officialType]').attr('officialType') + '(' + sbNewUuid() + ').';
+    WS.Set(prefix + 'Role', elem.closest('thead').find('input.Role').val());
+    WS.Set(prefix + 'PreparedOfficial', prepared);
+  } else {
+    _igrfAddOfficial(
+      k,
+      elem.closest('[officialType]').attr('officialType'),
+      row.find('input.Role').val(),
+      row.find('input.Name').val(),
+      row.find('input.League').val(),
+      row.find('input.Cert').val()
+    );
+  }
   row.find('select').val('');
   row.find('input').val('');
   elem.prop('disabled', true).toggleClass('ui-button-disabled ui-state-disabled', true);
@@ -88,14 +95,15 @@ function _igrfAddOfficial(prefix, type, role, name, league, cert, id) {
   id = id || sbNewUuid();
   prefix = prefix + '.' + type + '(' + id + ').';
   WS.Set(prefix + 'Role', role);
-  WS.Set(prefix + 'Name', name);
   WS.Set(prefix + 'League', league);
   WS.Set(prefix + 'Cert', cert);
+  // set name last as it triggers lookup for stored officials with extra info
+  WS.Set(prefix + 'Name', name);
 }
 
 function igrfUpdateAddButton(k, v, elem, event) {
-  const button = elem.closest('tr').find('button.AddOfficial');
-  const disable = !elem.closest('tr').find('input.Name').val();
+  const button = elem.closest('thead').find('button.AddOfficial');
+  const disable = !elem.closest('thead').find('input.Name').val() && !elem.closest('thead').find('select.Prepared').val();
   button.prop('disabled', disable).toggleClass('ui-button-disabled ui-state-disabled', disable);
   if (!disable && 13 === event.which) {
     // Enter

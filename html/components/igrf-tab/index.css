@@ -19,7 +19,8 @@
 #Igrf table.Officials col.Name { width: 30%; } 
 #Igrf table.Officials col.League { width: 30%; } 
 #Igrf table.Officials col.Cert { width: 10%; } 
-#Igrf table.Officials col.Button { width: 10%; } 
+#Igrf table.Officials col.Store { width: 5%; } 
+#Igrf table.Officials col.Button { width: 5%; } 
 #Igrf table.Officials tr.AddOfficial>td { border-bottom: 1px dashed #777; }
 #Igrf table.Officials button.Swap { font-size: 80%; padding: 0.4em; } 
 

@@ -186,7 +186,7 @@ public class ScoreBoardJSONSetter {
             (key.contains("Timeout(") && key.endsWith("OrRequest")) ||
             (key.contains("Timeout(") && key.endsWith("OrResult")) ||
             (key.contains("Team(") && key.endsWith("AllBlockersSet")) || key.contains("(Timeout.JamDuring)") ||
-            key.endsWith("ExtraPenaltyTime")) {
+            key.contains("PreparedOfficial") || key.endsWith("ExtraPenaltyTime")) {
             return "v2025";
         }
         if (priorLimit.equals("v2023") || key.endsWith("ExportBlockedBy") || key.contains("ScoreAdjustment") ||

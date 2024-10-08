@@ -49,6 +49,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public static final Child<Rulesets> RULESETS = new Child<>(Rulesets.class, "Rulesets", props);
     public static final Child<Game> GAME = new Child<>(Game.class, "Game", props);
     public static final Child<PreparedTeam> PREPARED_TEAM = new Child<>(PreparedTeam.class, "PreparedTeam", props);
+    public static final Child<PreparedOfficial> PREPARED_OFFICIAL =
+        new Child<>(PreparedOfficial.class, "PreparedOfficial", props);
     public static final Child<CurrentGame> CURRENT_GAME = new Child<>(CurrentGame.class, "CurrentGame", props);
 
     public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";

@@ -137,6 +137,7 @@
     <col class="Name" />
     <col class="League" />
     <col class="Cert" />
+    <col class="Store" />
     <col class="Button" />
     <thead>
       <tr class="sbHeader">
@@ -150,6 +151,7 @@
         </th>
         <th></th>
         <th></th>
+        <th></th>
       </tr>
       <tr class="sbSubHeader">
         <th>Role</th>
@@ -157,9 +159,10 @@
         <th>League</th>
         <th>Cert Level</th>
         <th></th>
+        <th></th>
       </tr>
       <tr class="AddOfficial sbSubHeader">
-        <th>
+        <th rowspan="2">
           <span class="Role">
             <select class="Role" sbCall="igrfToggleInput">
               <option value="">None Selected</option>
@@ -181,18 +184,23 @@
         </th>
         <th><input type="text" size="30" class="Name" sbOn="keyup: igrfUpdateAddButton | paste: igrfPasteOfficials" /></th>
         <th><input type="text" size="30" class="League" sbOn="keyup: igrfUpdateAddButton | paste: igrfPasteOfficials" /></th>
-        <th>
-          <select class="Cert">
-            <option value="">None</option>
-            <option value="R">Recognized</option>
-            <option value="1">Level 1</option>
-            <option value="2">Level 2</option>
-            <option value="3">Level 3</option>
+        <th><input type="text" size="10" class="Cert" sbOn="keyup: igrfUpdateAddButton | paste: igrfPasteOfficials" /></th>
+        <th></th>
+        <th rowspan="2"><button class="AddOfficial" sbCall="igrfAddOfficial">Add</button></th>
+      </tr>
+      <tr class="AddPreparedOfficial sbSubHeader">
+        <th colspan="2">
+          <select class="Prepared">
+            <option value="">Select Stored Official</option>
+            <option
+              sbContext="/ScoreBoard"
+              sbForeach="PreparedOfficial::info"
+              sbAttr="value: Id | info: FullInfo"
+              sbDisplay="FullInfo"
+            ></option>
           </select>
         </th>
-        <th>
-          <button class="AddOfficial" sbCall="igrfAddOfficial">Add</button>
-        </th>
+        <th colspan="3"></th>
       </tr>
     </thead>
     <tbody>
@@ -225,17 +233,14 @@
             <button class="Swap" sbToggle="Swap">Swap</button>
           </span>
         </td>
-        <td class="Name"><input type="text" size="30" sbControl="Name" /></td>
-        <td class="League"><input type="text" size="30" sbControl="League" /></td>
-        <td class="Cert">
-          <select class="Cert" sbControl="Cert">
-            <option value="">None</option>
-            <option value="R">Recognized</option>
-            <option value="1">Level 1</option>
-            <option value="2">Level 2</option>
-            <option value="3">Level 3</option>
-          </select>
+        <td colspan="2" class="Prepared" sbClass="sbHide: PreparedOfficial: sbIsEmpty">
+          <span sbDisplay="Name"></span> (<span sbDisplay="League"></span> - <span sbDisplay="Cert"></span>)
         </td>
+        <td colspan="2" sbClass="sbHide: PreparedOfficial: sbIsEmpty"></td>
+        <td class="Name" sbClass="sbHide: PreparedOfficial: sbIsNotEmpty"><input type="text" size="30" sbControl="Name" /></td>
+        <td class="League" sbClass="sbHide: PreparedOfficial: sbIsNotEmpty"><input type="text" size="30" sbControl="League" /></td>
+        <td class="Cert" sbClass="sbHide: PreparedOfficial: sbIsNotEmpty"><input type="text" size="30" sbControl="Cert" /></td>
+        <td class="Store" sbClass="sbHide: PreparedOfficial: sbIsNotEmpty"><button sbSet="Store">Store</button></td>
         <td class="Remove"><button class="RemoveOfficial" sbCall="igrfOpenRemoveDialog">Remove</button></td>
       </tr>
     </tbody>

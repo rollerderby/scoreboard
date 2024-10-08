@@ -17,6 +17,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Settings;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 import com.carolinarollergirls.scoreboard.core.interfaces.TimeoutOwner;
+import com.carolinarollergirls.scoreboard.core.prepared.PreparedOfficialImpl;
 import com.carolinarollergirls.scoreboard.core.prepared.PreparedTeamImpl;
 import com.carolinarollergirls.scoreboard.core.prepared.RulesetsImpl;
 import com.carolinarollergirls.scoreboard.event.Child;
@@ -66,6 +67,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
     public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == PREPARED_TEAM) { return new PreparedTeamImpl(this, id); }
+            if (prop == PREPARED_OFFICIAL) { return new PreparedOfficialImpl(this, id); }
             if (prop == GAME) { return new GameImpl(this, id); }
             return null;
         }
