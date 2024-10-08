@@ -17,6 +17,7 @@ html/videos/fullscreen
 html/game-data
 html/custom
 !html/custom/view/example.html
+html/themes/custom
 GameData
 android/.gradle/
 android/assets/

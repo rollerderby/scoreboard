@@ -64,3 +64,7 @@ _include('/json', ['WS.js'], function () {
   WS.Connect();
   WS.Process(window.location.pathname);
 });
+const theme = new URL(window.location).searchParams.get('theme');
+if (theme) {
+  _include(theme);
+}

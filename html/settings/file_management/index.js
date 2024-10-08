@@ -27,6 +27,7 @@ function filToPreviewElem(k, v) {
     ? ''
     : (k.Format === 'images' ? '<img' : k.Format === 'videos' ? '<video' : '<iframe') +
         ' src="/' +
+        (k.Format === 'themes' ? '?theme=' : '') +
         k.Format +
         '/' +
         k.Type +

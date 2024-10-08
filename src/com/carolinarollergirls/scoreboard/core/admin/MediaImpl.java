@@ -34,6 +34,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl<Media> implements Med
         addFormat("images", "fullscreen", "sponsor_banner", "teamlogo");
         addFormat("videos", "fullscreen");
         addFormat("custom", "nso", "settings", "view", "overlay");
+        addFormat("themes", "custom");
         addFormat("game-data", "json", "xlsx");
 
         // Create directories and register with inotify.

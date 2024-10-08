@@ -39,3 +39,17 @@ $(function () {
     });
   });
 });
+
+WS.AfterLoad(function () {
+  const theme = _windowFunctions.getParam('theme');
+  $('#themeSelector').val(theme);
+  $('[href*="?"]').attr('href', function (_, value) {
+    return value.replace(/\?(theme=[^&]*)?/, '?theme=' + theme);
+  });
+});
+
+function setTheme(k, v) {
+  var url = new URL(window.location);
+  url.searchParams.set('theme', v);
+  window.location.replace(url);
+}

@@ -14,9 +14,10 @@
         <li><a href="#images">Image</a></li>
         <li><a href="#videos">Video</a></li>
         <li><a href="#custom">Custom Screens</a></li>
+        <li><a href="#themes">Themes</a></li>
         <li><a href="#game-data">Game Files</a></li>
       </ul>
-      <div sbForeach="Format: images, videos, custom, game-data: only" sbAttr="id: Id | aria-hidden: Id: v !== 'images'">
+      <div sbForeach="Format: images, videos, custom, themes, game-data: only" sbAttr="id: Id | aria-hidden: Id: v !== 'images'">
         <div sbForeach="Type" class="sbSegment">
           <table class="sbGroup Type">
             <col class="Download" />
@@ -61,8 +62,8 @@
       <div class="RemoveMediaDialog sbSegment" sbContext="ScoreBoard.Media.Format(*).Type(*).File(*)">
         <div class="sbGroup">
           <div>
-            <p>Media File : <span class="File" sbDisplay=":sbToMediaPath"></span></p>
-            <p class="Warning">This will delete the media file from your system. You cannot undo this operation.</p>
+            <p>File : <span class="File" sbDisplay=":sbToMediaPath"></span></p>
+            <p class="Warning">This will delete the file from your system. You cannot undo this operation.</p>
             <p class="Confirm">Are you sure?</p>
             <p class="Status"></p>
           </div>
