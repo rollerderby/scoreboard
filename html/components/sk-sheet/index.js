@@ -2,7 +2,7 @@
   const prefix = 'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Period(*).Jam(*).TeamJam(*).ScoringTrip(*).';
   WS.Register([prefix + 'AfterSP', prefix + 'Score', prefix + 'Current'], function (k) {
     const selectorPrefix = '[Team="' + k.TeamJam + '"] [Period="' + k.Period + '"] [Jam="' + k.Jam + '"]';
-    if (k.ScoringTrip === 1) {
+    if (k.ScoringTrip == 1) {
       $(selectorPrefix + '>.Jam [ScoringTrip="2"]').text(sksToTripPoints(k));
       $(selectorPrefix + '>.SP [ScoringTrip="2"]').text(sksToTripSpPoints(k));
     } else if (k.ScoringTrip > 10) {
@@ -69,24 +69,26 @@ function sksToTripPoints(k) {
   const prefix = k.upTo('ScoringTrip') + '.';
   if (k.ScoringTrip === '2' || k.ScoringTrip === '1') {
     const prefix1 = k.upTo('TeamJam') + '.ScoringTrip(1).';
+    const prefix2 = k.upTo('TeamJam') + '.ScoringTrip(2).';
     const t1Score = WS.state[prefix1 + 'Score'];
     const t1Text = t1Score && !isTrue(WS.state[prefix1 + 'AfterSP']) ? t1Score + ' + ' : '';
-    const score = WS.state[prefix + 'Score'];
+    const score = WS.state[prefix2 + 'Score'];
     if (score == null) {
       return t1Text ? t1Text + 'NI' : '';
-    } else if (isTrue(WS.state[prefix + 'AfterSP'])) {
+    } else if (isTrue(WS.state[prefix2 + 'AfterSP'])) {
       return t1Text ? t1Text + 'SP' : '';
     } else if (score > 0) {
       return t1Text + score;
     } else {
-      return t1Text + (isTrue(WS.state[prefix + 'Current']) ? '.' : '0');
+      return t1Text + (isTrue(WS.state[prefix2 + 'Current']) ? '.' : '0');
     }
   } else if (Number(k.ScoringTrip) >= 10) {
-    if (isTrue(WS.state[prefix + 'AfterSP']) || WS.state[prefix + 'Score'] == null) {
+    const prefix10 = k.upTo('TeamJam') + '.ScoringTrip(10).';
+    if (isTrue(WS.state[prefix10 + 'AfterSP']) || WS.state[prefix10 + 'Score'] == null) {
       return '';
     } else {
       var trip = 11;
-      var val = WS.state[prefix + 'Score'];
+      var val = WS.state[prefix10 + 'Score'];
       const prefixNoNumber = k.upTo('TeamJam') + '.ScoringTrip(';
       while (WS.state[prefixNoNumber + trip + ').Score'] != null && !isTrue(WS.state[prefixNoNumber + trip + ').AfterSP'])) {
         val = val + ' + ' + WS.state[prefixNoNumber + trip + ').Score'];
