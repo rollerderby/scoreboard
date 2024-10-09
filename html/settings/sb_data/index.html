@@ -129,6 +129,32 @@
           </tbody>
         </table>
       </div>
+      <div class="sbSegment">
+        <table class="sbGroup Type" id="Officials">
+          <thead class="sbHeader">
+            <tr>
+              <th>
+                <button class="SelectAll Left" sbCall="datSelectAll">All</button>
+                <span>Officials</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr sbForeach="PreparedOfficial:: info" sbAttr="info: FullInfo" class="Content">
+              <td class="Name">
+                <button class="Select Left" sbCall="datSelect">Select</button>
+                <button class="Delete Left" sbCall="datDeleteElem">Delete</button>
+                <a download class="Download Left" sbAttr="href: Name: datOfficialDlLink" sbButton>Download</a>
+                <button sbCall="datEditOfficial">Edit</button>
+                <span class="Name" sbDisplay="FullInfo"></span>
+                <input class="Edit sbHide" type="text" size="30" class="Name" sbControl="Name" />
+                <input class="Edit sbHide" type="text" size="30" class="League" sbControl="League" />
+                <input class="Edit sbHide" type="text" size="10" class="Cert" sbControl="Cert" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div class="sbTemplates">

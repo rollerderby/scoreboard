@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
@@ -14,13 +15,18 @@ public interface Official extends ScoreBoardEventProvider {
     public Child<Official> getType();
 
     public static Collection<Property<?>> props = new ArrayList<>();
+    public static Collection<Property<?>> preparedProps = new ArrayList<>(); // also present on PreparedOfficial
 
     public static final Value<String> ROLE = new Value<>(String.class, "Role", "", props);
-    public static final Value<String> NAME = new Value<>(String.class, "Name", "", props);
-    public static final Value<String> LEAGUE = new Value<>(String.class, "League", "", props);
-    public static final Value<String> CERT = new Value<>(String.class, "Cert", "", props);
+    public static final Value<String> NAME = new Value<>(String.class, "Name", "", preparedProps);
+    public static final Value<String> LEAGUE = new Value<>(String.class, "League", "", preparedProps);
+    public static final Value<String> CERT = new Value<>(String.class, "Cert", "", preparedProps);
     public static final Value<Team> P1_TEAM = new Value<>(Team.class, "P1Team", null, props);
     public static final Value<Boolean> SWAP = new Value<>(Boolean.class, "Swap", false, props);
+    public static final Value<PreparedOfficial> PREPARED_OFFICIAL =
+        new Value<>(PreparedOfficial.class, "PreparedOfficial", null, props);
+
+    public static final Command STORE = new Command("Store", props);
 
     public static final String ROLE_HNSO = "Head Non-Skating Official";
     public static final String ROLE_PLT = "Penalty Lineup Tracker";

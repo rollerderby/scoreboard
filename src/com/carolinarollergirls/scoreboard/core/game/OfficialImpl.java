@@ -1,11 +1,20 @@
 package com.carolinarollergirls.scoreboard.core.game;
 
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Official;
+import com.carolinarollergirls.scoreboard.core.interfaces.PreparedOfficial;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
+import com.carolinarollergirls.scoreboard.core.prepared.PreparedOfficialImpl;
 import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;
 
@@ -14,6 +23,7 @@ public class OfficialImpl extends ScoreBoardEventProviderImpl<Official> implemen
         super(g, id, type);
         game = g;
         addProperties(props);
+        addProperties(preparedProps);
     }
     public OfficialImpl(Game g, Official source) {
         this(g, UUID.randomUUID().toString(), source.getType());
@@ -28,6 +38,15 @@ public class OfficialImpl extends ScoreBoardEventProviderImpl<Official> implemen
     @Override
     public int compareTo(Official other) {
         return roleIndex() - ((OfficialImpl) other).roleIndex();
+    }
+
+    @Override
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == ROLE && value != null) {
+            String mapped = roleMap.get((String) value);
+            return mapped != null ? mapped : value;
+        }
+        return value;
     }
 
     @Override
@@ -68,6 +87,33 @@ public class OfficialImpl extends ScoreBoardEventProviderImpl<Official> implemen
             }
             if (partner != null) { partner.set(P1_TEAM, t.getOtherTeam()); }
         }
+        if (prop == NAME && get(PREPARED_OFFICIAL) == null && !"".equals(value) &&
+            ("".equals(get(CERT)) || "".equals(get(LEAGUE)))) {
+            for (PreparedOfficial p : scoreBoard.getAll(ScoreBoard.PREPARED_OFFICIAL)) {
+                if (p.matches((String) value, get(LEAGUE))) {
+                    set(PREPARED_OFFICIAL, p);
+                    return;
+                }
+            }
+        }
+        if (prop == PREPARED_OFFICIAL && value != null) {
+            PreparedOfficial po = (PreparedOfficial) value;
+            setCopy(NAME, po, NAME, false);
+            setCopy(LEAGUE, po, LEAGUE, false);
+            setCopy(CERT, po, CERT, false);
+        }
+    }
+
+    @Override
+    public void execute(Command prop, Source source) {
+        if (prop == STORE) {
+            PreparedOfficial po = new PreparedOfficialImpl(scoreBoard, UUID.randomUUID().toString());
+            po.set(NAME, get(NAME));
+            po.set(LEAGUE, get(LEAGUE));
+            po.set(CERT, get(CERT));
+            scoreBoard.add(ScoreBoard.PREPARED_OFFICIAL, po);
+            set(PREPARED_OFFICIAL, po);
+        }
     }
 
     private int roleIndex() {
@@ -99,5 +145,46 @@ public class OfficialImpl extends ScoreBoardEventProviderImpl<Official> implemen
         return ownType;
     }
 
+    private static String normalize(String input) { return input.replaceAll("\\W", "").toLowerCase(Locale.ROOT); }
+
     private Game game;
+
+    public static Map<String, String> roleMap =
+        Stream
+            .of(new String[][] {{normalize(ROLE_HNSO), ROLE_HNSO},
+                                {normalize(ROLE_PLT), ROLE_PLT},
+                                {normalize(ROLE_PT), ROLE_PT},
+                                {normalize(ROLE_PW), ROLE_PW},
+                                {normalize(ROLE_WB), ROLE_WB},
+                                {normalize(ROLE_JT), ROLE_JT},
+                                {normalize(ROLE_SK), ROLE_SK},
+                                {normalize(ROLE_SBO), ROLE_SBO},
+                                {normalize(ROLE_PBM), ROLE_PBM},
+                                {normalize(ROLE_PBT), ROLE_PBT},
+                                {normalize(ROLE_LT), ROLE_LT},
+                                {normalize(ROLE_ALTN), ROLE_ALTN},
+                                {normalize(ROLE_HR), ROLE_HR},
+                                {normalize(ROLE_IPR), ROLE_IPR},
+                                {normalize(ROLE_JR), ROLE_JR},
+                                {normalize(ROLE_OPR), ROLE_OPR},
+                                {normalize(ROLE_ALTR), ROLE_ALTR},
+                                {"hnso", ROLE_HNSO},
+                                {"plt", ROLE_PLT},
+                                {"pt", ROLE_PT},
+                                {"pw", ROLE_PW},
+                                {"iwb", ROLE_WB},
+                                {"jt", ROLE_JT},
+                                {"sk", ROLE_SK},
+                                {"sbo", ROLE_SBO},
+                                {"pbm", ROLE_PBM},
+                                {"pbt", ROLE_PBT},
+                                {"lt", ROLE_LT},
+                                {"altn", ROLE_ALTN},
+                                {"hr", ROLE_HR},
+                                {"ipr", ROLE_IPR},
+                                {"jr", ROLE_JR},
+                                {"opr", ROLE_OPR},
+                                {"altr", ROLE_ALTR}})
+            .collect(Collectors.collectingAndThen(Collectors.toMap(data -> data[0], data -> data[1]),
+                                                  Collections::<String, String>unmodifiableMap));
 }
