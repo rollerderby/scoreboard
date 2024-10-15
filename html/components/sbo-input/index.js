@@ -61,7 +61,8 @@ function opStartMidGame() {
 }
 
 function opStartAdHoc(k, v, elem) {
-  var startTime = $('#newStartTime').val();
+  const adhocDiv = elem.parent();
+  var startTime = adhocDiv.find('#newStartTime').val();
   var intermissionClock = null;
   if (startTime !== '') {
     var now = new Date();
@@ -73,20 +74,20 @@ function opStartAdHoc(k, v, elem) {
     intermissionClock = '' + (startTime - now);
   }
   WS.Command('StartNewGame', {
-    Team1: $('#newTeam1').val(),
-    Team2: $('#newTeam2').val(),
-    Ruleset: $('#newRuleset').val(),
+    Team1: adhocDiv.find('#newTeam1').val(),
+    Team2: adhocDiv.find('#newTeam2').val(),
+    Ruleset: adhocDiv.find('#newRuleset').val(),
     IntermissionClock: intermissionClock,
-    Advance: $('#startMidGame').hasClass('sbHide'),
-    Points1: Number($('#newPoints1').val()),
-    Points2: Number($('#newPoints2').val()),
-    TO1: Number($('#newTo1').val()),
-    TO2: Number($('#newTo2').val()),
-    OR1: Number($('#newOr1').val()),
-    OR2: Number($('#newOr2').val()),
-    Period: Number($('#newPeriod').val()),
-    Jam: Number($('#newJam').val()),
-    PeriodClock: sbFromTime($('#newPeriodClock').val()),
+    Advance: adhocDiv.find('#startMidGame').hasClass('sbHide'),
+    Points1: Number(adhocDiv.find('#newPoints1').val()),
+    Points2: Number(adhocDiv.find('#newPoints2').val()),
+    TO1: Number(adhocDiv.find('#newTo1').val()),
+    TO2: Number(adhocDiv.find('#newTo2').val()),
+    OR1: Number(adhocDiv.find('#newOr1').val()),
+    OR2: Number(adhocDiv.find('#newOr2').val()),
+    Period: Number(adhocDiv.find('#newPeriod').val()),
+    Jam: Number(adhocDiv.find('#newJam').val()),
+    PeriodClock: sbFromTime('', adhocDiv.find('#newPeriodClock').val()),
   });
   sbCloseDialog(k, v, elem);
 }
@@ -128,7 +129,7 @@ function opOpenPeriodEndTimeoutDialog(k) {
     buttons: {
       'Start Timeout': function () {
         WS.Set(k + '.Timeout', true);
-        WS.Set(k + '.Clock(Period).Time', sbFromTime($(this).find('input').val()));
+        WS.Set(k + '.Clock(Period).Time', sbFromTime('', $(this).find('input').val()));
         $(this).dialog('close');
       },
       Close: function () {
