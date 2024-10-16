@@ -165,7 +165,7 @@
         </span>
       </div>
       <div class="sbGroup Codes">
-        <div PenaltyCode="FO" class="FO_EXP" sbClass="Selected: Code: === elem.attr('PenaltyCode') | sbHide: Number: != 0">
+        <div PenaltyCode="FO" class="FO_EXP" sbClass="Selected: Code: === elem.attr('PenaltyCode') | sbHide: p.-: pltIsNotFoExp">
           <div class="Code">FO</div>
           <div class="Description"><div>Foul-Out</div></div>
         </div>
@@ -173,7 +173,7 @@
           sbContext="^^^"
           sbForeach="PenaltyCode::: noId"
           class="Penalty"
-          sbClass="Selected: p.Code: === elem.attr('PenaltyCode') | sbHide: Number: == 0"
+          sbClass="Selected: p.Code: === elem.attr('PenaltyCode') | sbHide: p.-: pltIsFoExp"
           sbDisplay=": pltToPenaltyCodeDisplay: html"
           sbSet="p.Code: elem.attr('PenaltyCode')"
           sbCall="sbCloseDialog"
@@ -182,7 +182,7 @@
           sbContext="^^^"
           sbForeach="PenaltyCode::: noId"
           class="FO_EXP"
-          sbClass="Selected: p.Code: === elem.attr('PenaltyCode') | sbHide: Number: != 0"
+          sbClass="Selected: p.Code: === elem.attr('PenaltyCode') | sbHide: p.-: pltIsNotFoExp"
           sbDisplay=": pltToExpCodeDisplay: html"
           sbSet="p.Code: elem.attr('PenaltyCode')"
           sbCall="sbCloseDialog"

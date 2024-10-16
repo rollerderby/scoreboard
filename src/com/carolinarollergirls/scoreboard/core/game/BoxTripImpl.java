@@ -243,7 +243,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
         }
         if (prop == PENALTY) {
             Clock clock = storedClock != null ? storedClock : getClock();
-            if (clock != null && ((Penalty) item).getProviderId() != Skater.FO_EXP_ID) {
+            if (clock != null && !((Penalty) item).getProviderId().equals(Skater.FO_EXP_ID)) {
                 if (initialTimeAdjusted && !source.isFile()) {
                     clock.changeMaximumTime(game.getLong(Rule.PENALTY_DURATION));
                 } else {
@@ -303,7 +303,9 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
         }
         if (prop == PENALTY) {
             Clock clock = storedClock != null ? storedClock : getClock();
-            if (clock != null) { clock.changeMaximumTime(-game.getLong(Rule.PENALTY_DURATION)); }
+            if (clock != null && !((Penalty) item).getProviderId().equals(Skater.FO_EXP_ID)) {
+                clock.changeMaximumTime(-game.getLong(Rule.PENALTY_DURATION));
+            }
         }
     }
 

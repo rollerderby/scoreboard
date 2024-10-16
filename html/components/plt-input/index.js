@@ -160,6 +160,14 @@ function pltUpdateJam(k, v) {
   return v;
 }
 
+function pltIsFoExp(k) {
+  return k.Penalty == 0;
+}
+
+function pltIsNotFoExp(k) {
+  return k.Penalty != 0;
+}
+
 function pltToPenaltyCodeDisplay(k, v, elem, suffix) {
   suffix = suffix || '';
   var output = '<div class="Code">' + k.PenaltyCode + suffix + '</div><div class="Description">';
