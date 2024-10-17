@@ -6,6 +6,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Settings;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;
@@ -68,6 +69,13 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> 
         synchronized (coreLock) {
             if (prop == PreparedTeam.SKATER) { return new PreparedTeamSkaterImpl(this, id); }
             return null;
+        }
+    }
+
+    @Override
+    public void execute(Command prop, Source source) {
+        if (prop == Team.CLEAR_SKATERS) {
+            for (PreparedSkater s : getAll(PreparedTeam.SKATER)) { remove(PreparedTeam.SKATER, s); }
         }
     }
 
