@@ -164,3 +164,30 @@ body:not(.sbNoConnectionStatus) #sbConnectionStatus:not([status="ready"]) { disp
     transform: translate3d(-50%, -50%, 0);
     will-change: transform;
 }
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.2s, opacity 0.5s;
+    width: 160px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1000;
+}
+
+.tooltip:hover .tooltiptext.modifierPressed {
+    visibility: visible;
+    opacity: 1;
+}

@@ -68,3 +68,15 @@ const theme = new URL(window.location).searchParams.get('theme');
 if (theme) {
   _include(theme);
 }
+
+$(document).keydown(function (event) {
+  if (event.key === 'Control') {
+    $(".tooltiptext").addClass('modifierPressed');
+  }
+})
+
+$(document).keyup(function (event) {
+  if (event.key === 'Control') {
+    $(".tooltiptext").removeClass('modifierPressed')
+  }
+})

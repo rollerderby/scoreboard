@@ -29,14 +29,17 @@
   <div class="sbGroup sbStack">
     <div class="ScoreRow">
       <div class="sbStack">
-        <button
-          class="sbKeyControl sbImportant"
-          sbAttr="id:-: 'Team[Team]ScoreDown'"
-          sbProp="disabled: TripScore: == 0"
-          sbSet="TripScore: -1: change"
-        >
-          Trip Pts -1
-        </button>
+        <span class="tooltip">
+          <button
+            class="sbKeyControl sbImportant"
+            sbAttr="id:-: 'Team[Team]ScoreDown'"
+            sbProp="disabled: TripScore: == 0"
+            sbSet="TripScore: -1: change"
+          >
+            Trip Pts -1
+          </button>
+          <span class="tooltiptext">Remove 1 point from current trip. Use numbered buttons below to override current points for this trip.</span>
+        </span>
         <button class="sbKeyControl" sbAttr="id:-: 'Team[Team]RemoveTrip'" sbProp="disabled: NoInitial" sbSet="RemoveTrip">
           Remove Trip
         </button>
@@ -47,17 +50,48 @@
       </div>
       <span class="sbVeryVeryImportant" sbDisplay="Score"></span>
       <div class="sbStack">
-        <button class="sbKeyControl sbImportant" sbAttr="id:-: 'Team[Team]ScoreUp'" sbSet="TripScore: +1: change">Trip Pts +1</button>
-        <button class="sbKeyControl" sbAttr="id:-: 'Team[Team]AddTrip'" sbSet="AddTrip">Add Trip</button>
+        <span class="tooltip">
+          <button class="sbKeyControl sbImportant" sbAttr="id:-: 'Team[Team]ScoreUp'" sbSet="TripScore: +1: change">Trip Pts +1</button>
+          <span class="tooltiptext">Add 1 to current trip points. Use numbered buttons below to override existing points instead of appending.</span>
+        </span>
+        <span class="tooltip">
+          <button class="sbKeyControl" sbAttr="id:-: 'Team[Team]AddTrip'" sbSet="AddTrip">Add Trip</button>
+          <span class="tooltiptext">Log current jammer having passed the pack.</span>
+        </span>
       </div>
     </div>
     <div class="ScoreRow">
       <span>Set Trip Pts</span>
-      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore0'" sbSet="TripScore: 0">0</button>
-      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore1'" sbSet="TripScore: 1">1</button>
-      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore2'" sbSet="TripScore: 2">2</button>
-      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore3'" sbSet="TripScore: 3">3</button>
-      <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore4'" sbSet="TripScore: 4">4</button>
+      <span class="tooltip">
+        <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore0'" sbSet="TripScore: 0">0</button>
+        <span class="tooltiptext">
+          Set Trip Pts to 0 (overrides any existing value).
+        </span>
+      </span>
+      <span class="tooltip">
+        <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore1'" sbSet="TripScore: 1">1</button>
+        <span class="tooltiptext">
+          Set Trip Pts to 1 (overrides any existing value).
+        </span>
+      </span>
+      <span class="tooltip">
+        <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore2'" sbSet="TripScore: 2">2</button>
+        <span class="tooltiptext">
+          Set Trip Pts to 2 (overrides any existing value).
+        </span>
+      </span>
+      <span class="tooltip">
+        <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore3'" sbSet="TripScore: 3">3</button>
+        <span class="tooltiptext">
+          Set Trip Pts to 3 (overrides any existing value).
+        </span>
+      </span>
+      <span class="tooltip">
+        <button class="sbKeyControl" sbAttr="id:-:'Team[Team]TripScore4'" sbSet="TripScore: 4">4</button>
+        <span class="tooltiptext">
+          Set Trip Pts to 4 (overrides any existing value).
+        </span>
+      </span>
     </div>
   </div>
   <div class="sbGroup sbShowOnOperator Timeouts">
