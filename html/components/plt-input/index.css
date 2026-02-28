@@ -15,6 +15,7 @@
 /* header row */
 .PltInput>.Team thead td { height: 1em; font-weight: bold; background-color: #cccccc; color: #333333; border-right: none; border-top: none; } 
 .PltInput>.Team #StarPass { background-color: #cee7ff; font-weight: normal; } 
+.PltInput>.Team #StarPass.sbActive { background-color: var(--element-active-bg); } 
 [sbSheetStyle="whiteboard"] .PltInput>.Team thead td { background-color: #000; color: #FFF; } 
 
 .PltInput>.Team .Skater[role="NotInGame"] { display: none; }

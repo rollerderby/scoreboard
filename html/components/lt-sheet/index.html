@@ -1,11 +1,6 @@
 <div class="sbSegment sbFillArea" sbPrefix="t:[*]">
   <div class="sbGroup sbSheets LtSheet">
-    <table
-      sbContext="^"
-      sbForeach="Period: -0: sbComparePeriod"
-      class="Period"
-      sbClass="Current: Number,^CurrentPeriodNumber: sbIsCurrentPeriod"
-    >
+    <table sbContext="^" sbForeach="Period: -0: sbComparePeriod" class="Period" sbClass="Current: Number,^CurrentPeriodNumber: sbIsCurrentPeriod">
       <thead class="sbShowOnSheet">
         <tr>
           <th colspan="12"><span sbDisplay="t.Name"></span></th>
@@ -74,7 +69,7 @@
           <td
             sbForeach="Fielding:Pivot, Jammer, Blocker1, Blocker2, Blocker3: only"
             class="Box"
-            sbDisplay="BoxTripSymbolsAfterSP: sbToEmptyIfNoSp"
+            sbDisplay="BoxTripSymbolsAfterSP, ^StarPass: sbToEmptyIfNoSp"
             sbCall="ltsEditFielding"
           ></td>
         </tr>
