@@ -38,6 +38,7 @@ public final class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl
         setInverseReference(SKATER, Skater.FIELDING);
         setRecalculated(NOT_FIELDED).addSource(this, SKATER);
         setCopy(PENALTY_TIME, this, CURRENT_BOX_TRIP, BoxTrip.TIME, true);
+        setCopy(HAS_UNSERVED, this, SKATER, Skater.HAS_UNSERVED, true);
     }
 
     @Override
@@ -98,6 +99,18 @@ public final class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl
         if (prop == NOT_FIELDED && getPosition().getFloorPosition() == FloorPosition.PIVOT) {
             teamJam.setNoPivot((Boolean) value);
         }
+        if (prop == SKATER && value != null && last != null && flag == Flag.CHANGE) {
+            // Substitute
+            Skater subbed = (Skater) last;
+            if (get(ANNOTATION) == null || "".equals(get(ANNOTATION))) { // filter out switching sub
+                set(ANNOTATION, "Substitute for #" + subbed.getRosterNumber());
+                if (subbed.get(Skater.PENALTY, Skater.FO_EXP_ID) == null) {
+                    // not subbed for FO/Exp -> sit out 3
+                    getPrevious().set(SIT_FOR_3, true);
+                }
+            }
+            for (Penalty p : subbed.getUnservedPenalties()) { ((Skater) value).add(Skater.SUB_PENALTIES, p); }
+        }
         if (prop == SKATER && value != null && isInBox() && !source.isFile()) {
             Skater s = (Skater) value;
             if (getCurrentBoxTrip().getClock() != null && last == null &&
@@ -153,8 +166,7 @@ public final class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl
 
     @Override
     public boolean isCurrent() {
-        return (teamJam.isRunningOrUpcoming() && !teamJam.getTeam().hasFieldingAdvancePending()) ||
-            teamJam.isRunningOrEnded() && teamJam.getTeam().hasFieldingAdvancePending();
+        return teamJam.isPlt();
     }
 
     @Override

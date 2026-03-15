@@ -542,9 +542,10 @@ public final class StatsbookExporter extends Thread {
 
     private void fillScoreTeamJam(Row baseRow, Row spRow, int baseCol, TeamJam tj) {
         if (tj.getJam().isInjuryContinuation()) {
-            setCell(baseRow, baseCol, "INJ" + (tj.isLead() ? "*" : ""));
+            setCell(baseRow, baseCol, "INJ" + (tj.isLead() ? "*" : ""), tj.get(TeamJam.SK_ANNOTATION));
         } else {
-            setCell(baseRow, baseCol, tj.getJam().getNumber(), tj.getJam().isOvertimeJam() ? "Overtime Jam" : "");
+            setCell(baseRow, baseCol, tj.getJam().getNumber(),
+                    tj.get(TeamJam.SK_ANNOTATION) + (tj.getJam().isOvertimeJam() ? " Overtime Jam" : ""));
         }
         if (tj.getJam().get(Jam.STAR_PASS)) { setCell(spRow, baseCol, tj.isStarPass() ? "SP" : "SP*"); }
         setCell(baseRow, baseCol + 1, tj.getFielding(FloorPosition.JAMMER).get(Fielding.SKATER_NUMBER));
@@ -632,6 +633,7 @@ public final class StatsbookExporter extends Thread {
     }
 
     private void fillLineupsTeamJam(Row baseRow, Row spRow, int c, TeamJam tj) {
+        setComment(baseRow.getCell(c), tj.get(TeamJam.LT_ANNOTATION));
         if (!tj.getJam().isInjuryContinuation() || !tj.isLead()) {
             setCell(baseRow, c + 1, tj.hasNoPivot() ? "X" : "");
             fillFielding(baseRow, c + 2, tj.getFielding(FloorPosition.JAMMER), false, true);

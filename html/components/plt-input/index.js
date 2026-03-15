@@ -28,6 +28,33 @@
   ]);
 })();
 
+function _pltGetFieldingPrefix(gameId, teamId, skaterId) {
+  var position = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Skater(' + skaterId + ').Position'];
+  position = position.slice(position.lastIndexOf('_') + 1);
+  var fieldingPrefix = ').TeamJam(' + teamId + ').Fielding(' + position + ')';
+  if (isTrue(WS.state['ScoreBoard.Game(' + gameId + ').InJam']) ||
+    isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').FieldingAdvancePending'])) {
+    fieldingPrefix =
+      'ScoreBoard.Game(' +
+      gameId +
+      ').Period(' +
+      WS.state['ScoreBoard.Game(' + gameId + ').CurrentPeriodNumber'] +
+      ').Jam(' +
+      WS.state[
+      'ScoreBoard.Game(' + gameId + ').Period(' + WS.state['ScoreBoard.Game(' + gameId + ').CurrentPeriodNumber'] + ').CurrentJamNumber'
+      ] +
+      fieldingPrefix;
+  } else {
+    fieldingPrefix =
+      'ScoreBoard.Game(' + gameId + ').Jam(' + WS.state['ScoreBoard.Game(' + gameId + ').UpcomingJamNumber'] + fieldingPrefix;
+  }
+  return fieldingPrefix;
+}
+
+function pltMaySub(k) {
+  return isTrue(WS.state[k.upTo('Skater') + '.PenaltyBox']) || isTrue(WS.state[k.upTo('Skater') + '.HasUnserved'])
+}
+
 function _pltSetRole(k, role, ignoreIneligible) {
   const oldRole = WS.state[k + '.Role'];
   if (oldRole === 'Ineligible' && !ignoreIneligible) {
@@ -52,10 +79,25 @@ function pltSetBlocker(k) {
   _pltSetRole(k, 'Blocker', false);
 }
 
-function pltAdvanceOrAnnotation(k, v, elem) {
-  if (elem.hasClass('Advance')) {
+function pltToggleBox(k, v, elem) {
+  const fieldingPath = _pltGetFieldingPrefix(k.Game, k.Team, k.Skater);
+  if (elem.hasClass('Serving')) {
+    WS.Set(k + '.PenaltyBox', false);
+  } else if (WS.state[fieldingPath + '.CurrentBoxTrip'] == null || isTrue(WS.state[k + '.HasUnserved'])) {
+    WS.Set(k + '.PenaltyBox', true);
+  } else {
+    pltOpenUnendDialog(fieldingPath);
+  }
+}
+
+function pltAdvance(k, v, elem) {
+  if (elem.hasClass('Show')) {
     WS.Set(k.upTo('Team') + '.AdvanceFieldings', true);
-  } else if (elem.hasClass('Show')) {
+  }
+}
+
+function pltAnnotation(k, v, elem) {
+  if (elem.hasClass('Show')) {
     _pltOpenAnnotationEditor(k.Game, k.Team, k.Skater);
   }
 }
@@ -160,6 +202,25 @@ function pltIgnoreIneligible(k, v, elem, event) {
 
 //###################################################################
 //
+//  Unend Dialog
+//
+//###################################################################
+
+function pltOpenUnendDialog(k) {
+  WS.SetupDialog($('#UnendDialog'), k, {
+    modal: true,
+    title: 'Continue Box Trip?',
+    width: '400px',
+    buttons: {
+      Cancel: function () {
+        $(this).dialog('close');
+      },
+    },
+  });
+}
+
+//###################################################################
+//
 //  Penalty Editor
 //
 //###################################################################
@@ -256,25 +317,7 @@ function pltFilterOfficial(k, v, elem) {
 //###################################################################
 
 function _pltOpenAnnotationEditor(gameId, teamId, skaterId) {
-  var position = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Skater(' + skaterId + ').Position'];
-  position = position.slice(position.lastIndexOf('_') + 1);
-  var fieldingPrefix = ').TeamJam(' + teamId + ').Fielding(' + position + ')';
-  if (isTrue(WS.state['ScoreBoard.Game(' + gameId + ').InJam'])) {
-    fieldingPrefix =
-      'ScoreBoard.Game(' +
-      gameId +
-      ').Period(' +
-      WS.state['ScoreBoard.Game(' + gameId + ').CurrentPeriodNumber'] +
-      ').Jam(' +
-      WS.state[
-      'ScoreBoard.Game(' + gameId + ').Period(' + WS.state['ScoreBoard.Game(' + gameId + ').CurrentPeriodNumber'] + ').CurrentJamNumber'
-      ] +
-      fieldingPrefix;
-  } else {
-    fieldingPrefix =
-      'ScoreBoard.Game(' + gameId + ').Jam(' + WS.state['ScoreBoard.Game(' + gameId + ').UpcomingJamNumber'] + fieldingPrefix;
-  }
-  WS.SetupDialog($('#AnnotationEditor'), fieldingPrefix, {
+  WS.SetupDialog($('#AnnotationEditor'), _pltGetFieldingPrefix(gameId, teamId, skaterId), {
     modal: true,
     title: 'Annotation & Box Trip Editor',
     width: '700px',
@@ -284,6 +327,10 @@ function _pltOpenAnnotationEditor(gameId, teamId, skaterId) {
       },
     },
   });
+}
+
+function pltSubable(k) {
+  return !isTrue(WS.state[k.upTo('Fielding') + '.PenaltyBox']) && !isTrue(WS.state[k.upTo('Fielding') + '.HasUnserved']);
 }
 
 function pltNoUnend(k, v) {

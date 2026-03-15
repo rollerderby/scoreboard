@@ -35,6 +35,17 @@ public final class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<
         setRecalculated(DISPLAY_LEAD).addSource(this, LEAD).addSource(this, LOST);
         setRecalculated(STAR_PASS).addSource(this, STAR_PASS_TRIP);
         for (Position p : team.getAll(Team.POSITION)) { add(FIELDING, new FieldingImpl(this, p)); }
+        setRecalculated(ALL_BLOCKERS_SET)
+            .addSource(getFielding(FloorPosition.PIVOT), Fielding.SKATER)
+            .addSource(getFielding(FloorPosition.BLOCKER1), Fielding.SKATER)
+            .addSource(getFielding(FloorPosition.BLOCKER2), Fielding.SKATER)
+            .addSource(getFielding(FloorPosition.BLOCKER3), Fielding.SKATER);
+        setRecalculated(ON_TRACK_COUNT)
+            .addSource(getFielding(FloorPosition.JAMMER), Fielding.SKATER)
+            .addSource(getFielding(FloorPosition.PIVOT), Fielding.SKATER)
+            .addSource(getFielding(FloorPosition.BLOCKER1), Fielding.SKATER)
+            .addSource(getFielding(FloorPosition.BLOCKER2), Fielding.SKATER)
+            .addSource(getFielding(FloorPosition.BLOCKER3), Fielding.SKATER);
         addWriteProtection(FIELDING);
         getOrCreate(SCORING_TRIP, 1);
     }
@@ -71,6 +82,20 @@ public final class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<
                 set(STAR_PASS_TRIP, (Boolean) value ? getCurrentScoringTrip() : null);
                 return last;
             }
+        }
+        if (prop == ALL_BLOCKERS_SET) {
+            for (Fielding f : getAll(FIELDING)) {
+                if (f.getPosition().getFloorPosition() == FloorPosition.JAMMER) { continue; }
+                if (f.getSkater() == null) { return false; }
+            }
+            return true;
+        }
+        if (prop == ON_TRACK_COUNT) {
+            int count = 0;
+            for (Fielding f : getAll(FIELDING)) {
+                if (f.getSkater() != null) { count++; }
+            }
+            return count;
         }
         if (value instanceof Integer && prop != OS_OFFSET && (Integer) value < 0) { return 0; }
         return value;
@@ -130,7 +155,7 @@ public final class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<
     private void copyLineupToCurrentJam() {
         if (isRunningOrUpcoming()) { return; }
 
-        TeamJam current = team.getRunningOrUpcomingTeamJam();
+        TeamJam current = team.getPltTeamJam();
 
         for (FloorPosition fp : FloorPosition.values()) { copySkaterToIfAvailable(fp, current); }
     }
@@ -181,6 +206,10 @@ public final class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<
     @Override
     public boolean isRunningOrUpcoming() {
         return this == team.getRunningOrUpcomingTeamJam();
+    }
+    @Override
+    public boolean isPlt() {
+        return this == team.getPltTeamJam();
     }
 
     @Override

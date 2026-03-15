@@ -14,13 +14,17 @@
 
 /* header row */
 .PltInput>.Team thead td { height: 1em; font-weight: bold; background-color: #cccccc; color: #333333; border-right: none; border-top: none; } 
-.PltInput>.Team #StarPass { background-color: #cee7ff; font-weight: normal; } 
-.PltInput>.Team #StarPass.sbActive { background-color: var(--element-active-bg); } 
+.PltInput>.Team .Count { background-color: #ffff00; }
+.PltInput>.Team .Count.Full { background-color: #cee7ff; }
+.PltInput>.Team .StarPass { background-color: #cee7ff; font-weight: normal; } 
+.PltInput>.Team .StarPass.sbActive { background-color: var(--element-active-bg); } 
 [sbSheetStyle="whiteboard"] .PltInput>.Team thead td { background-color: #000; color: #FFF; } 
 
 .PltInput>.Team .Skater[role="NotInGame"] { display: none; }
 
+/* show/hide options */
 body:not([showNonSkaters]) .PltInput>.Team .NonSkater { display: none; }
+body[nextButton="row"] .PltInput>.Team .Advance { display: none; }
 
 /* LT part text & colors */
 .PltInput>.Team .Role { background-color: #FFF; } 
@@ -31,12 +35,14 @@ body:not([showNonSkaters]) .PltInput>.Team .NonSkater { display: none; }
 .PltInput>.Team .Darker .Darker { background-color: #cee7ff; } 
 .PltInput>.Team .Box.Unserved { background-color: var(--element-unserved-bg); color: var(--element-unserved-fg); } 
 .PltInput>.Team .Box.Serving { background-color: var(--element-inbox-bg); color: var(--element-inbox-fg); } 
-.PltInput>.Team .Menu:not(.Show):not(.Advance) { visibility: hidden; }
-.PltInput>.Team .Menu:not(.Advance)::after { content: "☰"; } 
-.PltInput>.Team [warn="3"] .Menu.Darker { background-color: var(--element-clickme-bg); color: var(--element-clickme-fg); }
-.PltInput>.Team .Menu.Advance { background-color: var(--element-clickme-bg); color: var(--element-clickme-fg); vertical-align: bottom; }
+.PltInput>.Team .Menu:not(.Show), .PltInput>.Team .Advance:not(.Show) { visibility: hidden; }
+.PltInput>.Team .Menu::after { content: "☰"; }
+.PltInput>.Team .Menu.AdvancePending::after { content: "3"; }
+.PltInput>.Team tr.MaySub .Menu:not(.AdvancePending)::after { content: "Sub"; }
+.PltInput>.Team tr[warn="3"] .Menu:not(.AdvancePending) { background-color: var(--element-clickme-bg); color: var(--element-clickme-fg); }
+.PltInput>.Team tr .Advance.Advance { background-color: var(--element-clickme-bg); color: var(--element-clickme-fg); vertical-align: bottom; }
 .PltInput>.Team tr:nth-child(6n+1) .Advance::after { content: "Go To"; } 
-.PltInput>.Team tr:nth-child(6n+3) .Advance::after { content: "Next Jam"; } 
+.PltInput>.Team tr:nth-child(6n+3) .Advance::after { content: "Next Jam"; }
 
 /* PT part text & colors */
 .PltInput>.Team .Number { font-weight: bold; background-color: #f4f4f4; } 

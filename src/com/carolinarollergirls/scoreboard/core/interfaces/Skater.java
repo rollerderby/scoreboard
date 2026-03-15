@@ -70,6 +70,7 @@ public interface Skater extends ScoreBoardEventProvider {
     public static final Value<Long> EXTRA_PENALTY_TIME = new Value<>(Long.class, "ExtraPenaltyTime", 0L, props);
 
     public static final Child<Fielding> FIELDING = new Child<>(Fielding.class, "Fielding", props);
+    public static final Child<Penalty> SUB_PENALTIES = new Child<>(Penalty.class, "SubPenalties", props);
 
     public static final NumberedChild<Penalty> PENALTY = new NumberedChild<>(Penalty.class, "Penalty", props);
 

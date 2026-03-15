@@ -53,14 +53,14 @@
 <div class="sbTemplates">
   <div id="SubstituteSelector" class="sbSegment" sbContext="Team(*).Position(*)">
     <div class="sbGroup" sbPrefix="p:[*]">
-      <span sbAttr="oldNumber: RosterNumber" sbButtonGroup>
+      <span sbButtonGroup>
         <button
           sbContext="^"
           sbForeach="Skater:: rosterNumber: resort=RosterNumber"
           sbAttr="rosterNumber: RosterNumber"
           sbDisplay="RosterNumber"
           sbClass="sbActive: p.Skater: === elem.attr('Skater') | sbHide: Role: === 'NotInGame' | sbIneligible: Role: === 'Ineligible'"
-          sbSet="p.Annotation: sbSubAnn | p.Skater: elem.attr('Skater')"
+          sbSet="p.Skater: elem.attr('Skater'): change"
           sbCall="sbCloseDialog"
         ></button>
       </span>

@@ -1,12 +1,17 @@
 /* Sizes */
-.LtSheet tr { height: 35px; } 
-.LtSheet thead>tr { height: 20px; } 
-.LtSheet>.Period .JamNumber { width: 30px; } 
-.LtSheet>.Period .NP { width: 25px; } 
+.LtSheet tr { height: 2em; } 
+.LtSheet thead>tr { height: 1.5em; } 
+.LtSheet>.Period .Copy { width: 2em; } 
+.LtSheet>.Period .JamNumber { width: 2em; } 
+.LtSheet>.Period .NP { width: 1.5em; } 
 .LtSheet>.Period .Skater { width: 12%; } 
 .LtSheet>.Period .Box { width: 8%; } 
+
+/* show/hide */
 .LtSheet>.Period:Not(.Current) .Upcoming { display: none; }
+.LtSheet>.Period .Copy.Dummy { visibility: hidden; }
 [sbSheetStyle="sheet"] .LtSheet>.Period .Upcoming { display: none; }
+body[hideCopy] .LtSheet>.Period .Copy { display: none; }
 
 /* header row */
 .LtSheet>.Period th { font-size: 95%; background-color: #cccccc; color: #333333; } 
