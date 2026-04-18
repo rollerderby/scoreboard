@@ -23,7 +23,7 @@ public class SaveJsonScoreBoard extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
-        Map<String, Object> state = jsm.getState();
+        Map<String, Object> state = jsm.getState(true);
 
         String path = request.getParameter("path");
         if (path != null) {
@@ -37,11 +37,6 @@ public class SaveJsonScoreBoard extends HttpServlet {
                 }
                 if (!keep) { it.remove(); }
             }
-        }
-        // Users may use saves to share with the world, so remove secrets.
-        Iterator<String> it = state.keySet().iterator();
-        while (it.hasNext()) {
-            if (it.next().endsWith("Secret")) { it.remove(); }
         }
 
         if (state.isEmpty()) {

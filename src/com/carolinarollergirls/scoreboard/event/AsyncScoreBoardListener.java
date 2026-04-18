@@ -3,6 +3,8 @@ package com.carolinarollergirls.scoreboard.event;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import com.carolinarollergirls.scoreboard.utils.Logger;
+
 public final class AsyncScoreBoardListener extends Thread implements ScoreBoardListener {
     public AsyncScoreBoardListener(ScoreBoardListener l) {
         this.listener = l;
@@ -20,13 +22,15 @@ public final class AsyncScoreBoardListener extends Thread implements ScoreBoardL
     @Override
     public void run() {
         while (true) {
-            ScoreBoardEvent<?> event = null;
-            synchronized (queue) {
-                try {
-                    while ((event = queue.poll()) == null) { queue.wait(); }
-                } catch (InterruptedException e) {}
-            }
-            if (event != null) { listener.scoreBoardChange(event); }
+            try {
+                ScoreBoardEvent<?> event = null;
+                synchronized (queue) {
+                    try {
+                        while ((event = queue.poll()) == null) { queue.wait(); }
+                    } catch (InterruptedException e) {}
+                }
+                if (event != null) { listener.scoreBoardChange(event); }
+            } catch (Throwable t) { Logger.printStackTrace("async event listener", t); }
         }
     }
 

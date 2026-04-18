@@ -90,7 +90,7 @@ public final class StatsbookExporter extends Thread {
                     sb.set(ScoreBoard.BLANK_STATSBOOK_FOUND, "true");
                 } catch (Exception e) {
                     sb.set(ScoreBoard.BLANK_STATSBOOK_FOUND, "broken");
-                    Logger.printStackTrace(e);
+                    Logger.printStackTrace("tesing blank statsbook", e);
                 }
             }
         }).start();
@@ -126,7 +126,7 @@ public final class StatsbookExporter extends Thread {
                 Files.move(tmpPath, fullPath, REPLACE_EXISTING);
             }
             success = true;
-        } catch (Exception e) { Logger.printStackTrace(e); } finally {
+        } catch (Exception e) { Logger.printStackTrace("exporting statsbook", e); } finally {
             game.exportDone(success, failureText);
         }
     }

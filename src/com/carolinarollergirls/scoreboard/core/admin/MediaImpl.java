@@ -21,6 +21,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Media;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.utils.BasePath;
+import com.carolinarollergirls.scoreboard.utils.Logger;
 
 /**
  * Maintain list of media files and provide notifications when list changes.
@@ -93,7 +94,9 @@ public final class MediaImpl extends ScoreBoardEventProviderImpl<Media> implemen
                                 }
                             }
                             key.reset();
-                        } finally { requestBatchEnd(); }
+                        } catch (Throwable t) { Logger.printStackTrace("filesystem watcher", t); } finally {
+                            requestBatchEnd();
+                        }
                     }
                 }
             }

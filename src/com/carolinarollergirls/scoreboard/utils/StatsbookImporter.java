@@ -1,6 +1,5 @@
 package com.carolinarollergirls.scoreboard.utils;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -38,7 +37,7 @@ public class StatsbookImporter {
                     synchronized (coreLock) { scoreboard.add(ScoreBoard.GAME, game); }
                 }
             });
-        } catch (IOException e) { Logger.printStackTrace(e); }
+        } catch (Throwable e) { Logger.printStackTrace("importing statsbook", e); }
     }
 
     private void readIgrf() {

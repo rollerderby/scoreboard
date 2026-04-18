@@ -11,6 +11,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;
+import com.carolinarollergirls.scoreboard.utils.Logger;
 
 public final class ScoreAdjustmentImpl extends ScoreBoardEventProviderImpl<ScoreAdjustment> implements ScoreAdjustment {
     public ScoreAdjustmentImpl(Team t, String id) {
@@ -48,12 +49,14 @@ public final class ScoreAdjustmentImpl extends ScoreBoardEventProviderImpl<Score
                 closeTimerTask = new TimerTask() {
                     @Override
                     public void run() {
-                        scoreBoard.runInBatch(new Runnable() {
-                            @Override
-                            public void run() {
-                                set(OPEN, false);
-                            }
-                        });
+                        try {
+                            scoreBoard.runInBatch(new Runnable() {
+                                @Override
+                                public void run() {
+                                    set(OPEN, false);
+                                }
+                            });
+                        } catch (Throwable t) { Logger.printStackTrace("closing score adjustment", t); }
                     }
                 };
                 closeTimer.schedule(closeTimerTask, 4000);

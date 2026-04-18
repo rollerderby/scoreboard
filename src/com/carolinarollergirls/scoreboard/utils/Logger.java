@@ -15,8 +15,8 @@ public abstract class Logger {
         }
     }
 
-    public static void printStackTrace(Throwable e) {
-        instance.log("At " + LocalDateTime.now().toString() + ": " + e.toString());
+    public static void printStackTrace(String context, Throwable e) {
+        instance.log("At " + LocalDateTime.now().toString() + ": Exception in " + context + ": " + e.toString());
         for (StackTraceElement element : e.getStackTrace()) { instance.log("        at " + element.toString()); }
     }
 

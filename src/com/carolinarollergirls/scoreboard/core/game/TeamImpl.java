@@ -37,6 +37,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.utils.Logger;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
@@ -205,14 +206,16 @@ public final class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements
                 tripScoreTimerTask = new TimerTask() {
                     @Override
                     public void run() {
-                        scoreBoard.runInBatch(new Runnable() {
-                            @Override
-                            public void run() {
-                                execute(ADD_TRIP);
-                                lastTripAutoAdvance = ScoreBoardClock.getInstance().getCurrentTime();
-                                getCurrentTrip().getPrevious().set(ScoringTrip.JAM_CLOCK_END, tripScoreJamTime);
-                            }
-                        });
+                        try {
+                            scoreBoard.runInBatch(new Runnable() {
+                                @Override
+                                public void run() {
+                                    execute(ADD_TRIP);
+                                    lastTripAutoAdvance = ScoreBoardClock.getInstance().getCurrentTime();
+                                    getCurrentTrip().getPrevious().set(ScoringTrip.JAM_CLOCK_END, tripScoreJamTime);
+                                }
+                            });
+                        } catch (Throwable t) { Logger.printStackTrace("advancing scoring trip", t); }
                     }
                 };
                 tripScoreTimer.schedule(tripScoreTimerTask, 4000);

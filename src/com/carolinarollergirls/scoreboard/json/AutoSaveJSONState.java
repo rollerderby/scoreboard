@@ -76,10 +76,7 @@ public final class AutoSaveJSONState implements Runnable {
                 if (from.exists()) { from.renameTo(to); }
             }
             tmp.renameTo(file); // This is atomic.
-        } catch (Exception e) {
-            Logger.printMessage("Error writing JSON autosave: " + e.getMessage());
-            Logger.printStackTrace(e);
-        } finally {
+        } catch (Exception e) { Logger.printStackTrace("writing JSON autosave", e); } finally {
             if (out != null) {
                 try {
                     out.close();
@@ -107,9 +104,7 @@ public final class AutoSaveJSONState implements Runnable {
                     try {
                         FileUtils.copyFileToDirectory(from, backupDir, true);
                     } catch (Exception e) {
-                        Logger.printMessage("Could not back up auto-save file '" + from.getName() +
-                                            "' : " + e.getMessage());
-                        Logger.printStackTrace(e);
+                        Logger.printStackTrace("backing up auto-save file '" + from.getName() + "'", e);
                     }
                 }
             } while (n++ < AUTOSAVE_FILES);
@@ -130,9 +125,7 @@ public final class AutoSaveJSONState implements Runnable {
                 Logger.printMessage("Loaded auto-saved scoreboard from " + f.getPath());
                 return true;
             } catch (Exception e) {
-                Logger.printMessage("Could not load auto-saved scoreboard JSON file " + f.getPath() + " : " +
-                                    e.getMessage());
-                Logger.printStackTrace(e);
+                Logger.printStackTrace("loading auto-saved scoreboard JSON file" + f.getPath(), e);
             }
         }
 

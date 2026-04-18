@@ -320,10 +320,7 @@ public class ScoreBoardJSONSetter {
                 } else {
                     postponedSets.add(new ChildSet(p, (Child) prop, elementId, value, source));
                 }
-            } catch (Exception e) {
-                Logger.printMessage("Exception handling update for " + readable + " - " + value + ": " + e.toString());
-                Logger.printStackTrace(e);
-            }
+            } catch (Exception e) { Logger.printStackTrace("handling update for " + readable + " - " + value, e); }
         } else {
             Logger.printMessage("Illegal path element: " + path);
         }

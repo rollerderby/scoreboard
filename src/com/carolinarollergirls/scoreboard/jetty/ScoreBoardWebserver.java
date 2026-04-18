@@ -117,10 +117,10 @@ public class ScoreBoardWebserver {
             while (urls.hasNext()) { Logger.printMessage("	" + urls.next().toString()); }
         } catch (MalformedURLException muE) {
             Logger.printMessage("Internal error: malformed URL from Server Connector: " + muE.getMessage());
-            Logger.printStackTrace(muE);
+            Logger.printStackTrace("", muE);
         } catch (SocketException sE) {
             Logger.printMessage("Internal error: socket exception from Server Connector: " + sE.getMessage());
-            Logger.printStackTrace(sE);
+            Logger.printStackTrace("", sE);
         }
         Logger.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
         Logger.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");

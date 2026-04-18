@@ -63,10 +63,7 @@ public final class JSONStateSnapshotter implements JSONStateListener {
             prev.delete();
             file.renameTo(prev);
             if (tmp.renameTo(file)) { prev.delete(); }
-        } catch (Exception e) {
-            Logger.printMessage("Error writing JSON snapshot: " + e.getMessage());
-            Logger.printStackTrace(e);
-        } finally {
+        } catch (Exception e) { Logger.printStackTrace("writing JSON snapshot", e); } finally {
             if (out != null) {
                 try {
                     out.close();

@@ -84,6 +84,7 @@ public class JSONStateManager {
         if (useMetrics) { updateStateUpdates.observe(updates.size()); }
     }
 
+    public Map<String, Object> getState(boolean filterSecrets) { return state.getAll(filterSecrets); }
     public Map<String, Object> getState() { return state.getAll(false); }
 
     /** Wait for all pending updates to be sent out. This is intended for unit tests. */

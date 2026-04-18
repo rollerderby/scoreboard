@@ -100,7 +100,7 @@ public final class Main extends Logger {
     }
 
     private void stop(Throwable ex) {
-        if (ex != null) { Logger.printStackTrace(ex); }
+        if (ex != null) { Logger.printStackTrace("main thread", ex); }
         Logger.printMessage(LocalDateTime.now().toString() + ": Fatal error.   Exiting in 15 seconds.");
         try {
             Thread.sleep(15000);
@@ -212,8 +212,7 @@ public final class Main extends Logger {
                     }
                 }
             } catch (IOException e) {
-                Logger.printMessage("Error looking for instance to import from:");
-                Logger.printStackTrace(e);
+                Logger.printStackTrace("looking for instance to import from", e);
                 Logger.printMessage("Skipping import");
                 return;
             }
@@ -240,10 +239,7 @@ public final class Main extends Logger {
             copyDir(sourcePath, targetPath, Paths.get("html", "custom"));
             copyDir(sourcePath, targetPath, Paths.get("html", "images"));
             copyDir(sourcePath, targetPath, Paths.get("html", "videos"));
-        } catch (IOException e) {
-            Logger.printMessage("Exception during importing: ");
-            Logger.printStackTrace(e);
-        }
+        } catch (IOException e) { Logger.printStackTrace("importing", e); }
     }
 
     private void createGui() {

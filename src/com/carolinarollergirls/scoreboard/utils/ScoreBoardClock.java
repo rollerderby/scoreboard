@@ -86,7 +86,9 @@ public class ScoreBoardClock extends TimerTask {
 
     @Override
     public void run() {
-        synchronized (coreLock) { updateTime(); }
+        try {
+            synchronized (coreLock) { updateTime(); }
+        } catch (Throwable t) { Logger.printStackTrace("clock thread", t); }
     }
 
     private long offset;
