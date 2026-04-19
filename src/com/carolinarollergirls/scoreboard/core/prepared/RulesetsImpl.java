@@ -22,7 +22,7 @@ public final class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> im
 
     @Override
     public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
-        if (prop == RULESET) { return new RulesetImpl(this, "", null, id); }
+        if (prop == RULESET) { return new RulesetImpl(this, "", get(DEFAULT), id); }
         return null;
     }
     @Override
@@ -48,6 +48,7 @@ public final class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> im
         }
         root.set(READONLY, true);
         add(RULESET, root);
+        set(DEFAULT, root);
         addWriteProtection(RULE_DEFINITION);
         addDefaultRulesets(root);
     }

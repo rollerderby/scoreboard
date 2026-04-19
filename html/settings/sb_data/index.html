@@ -85,6 +85,15 @@
                 <button class="SelectAll Left" sbCall="datSelectAll">All</button>
                 <span>Rulesets</span>
                 <button class="New Left" sbCall="datNewRuleset">New</button>
+                <span class="Default Left">
+                  Default:
+                  <select sbControl="Default">
+                    <option
+                      sbForeach="Ruleset:: sbOrderRsAsTree: resort=Parent"
+                      sbAttr="value: Id"
+                      sbDisplay="Name: sbIndentByParents: html"
+                    ></option></select
+                ></span>
               </th>
             </tr>
           </thead>

@@ -1,4 +1,4 @@
-WS.Register(['ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').CurrentJam', 'ScoreBoard.Rulesets.Ruleset(*).Parent']);
+WS.Register(['ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').CurrentJam', 'ScoreBoard.Rulesets.Ruleset(*).Parent', 'ScoreBoard.Rulesets.Default']);
 
 function opToggleKeyEdit(k, v, elem) {
   elem.toggleClass('sbActive');
@@ -59,6 +59,10 @@ function opIsStartableGame(k, v) {
 
 function opFetchGame(k, v, elem) {
   return elem.siblings('select').val();
+}
+
+function opIsDefaultRuleset(k, v) {
+  return v === WS.state['ScoreBoard.Rulesets.Default'];
 }
 
 function opStartMidGame() {

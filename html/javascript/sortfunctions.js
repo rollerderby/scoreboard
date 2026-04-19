@@ -39,6 +39,7 @@ function sbOrderRsAsTree(a, b) {
   const rsB = $(b).attr('value');
   const setA = _sbRsGetParents(rsA);
   const setB = _sbRsGetParents(rsB);
+  console.log(rsA, setA, rsB, setB);
 
   for (let i = 0; i < Math.min(setA.length, setB.length); i++) {
     if (setA[i] !== setB[i]) {

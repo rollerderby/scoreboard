@@ -803,12 +803,10 @@ var WS = {
                     preRegistered: true,
                     element: newElem,
                     triggerFunc: function (k, v, elem) {
-                      if (v != null) {
-                        elem.detach();
-                        _windowFunctions.appendSorted(paren, elem, func, preForeachItem.index() + 1);
-                        if (options.onInsert) {
-                          options.onInsert(WS._enrichContext(newElem), WS._elementValue(newElem), newElem);
-                        }
+                      elem.detach();
+                      _windowFunctions.appendSorted(paren, elem, func, preForeachItem.index() + 1);
+                      if (options.onInsert) {
+                        options.onInsert(WS._enrichContext(newElem), WS._elementValue(newElem), newElem);
                       }
                     },
                   });

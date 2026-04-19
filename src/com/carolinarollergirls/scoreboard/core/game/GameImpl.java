@@ -67,7 +67,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
     }
     public GameImpl(ScoreBoard parent, String id) {
         super(parent, id, ScoreBoard.GAME);
-        initReferences(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID), null);
+        initReferences(scoreBoard.getRulesets().get(Rulesets.DEFAULT), null);
         jsonSnapshotter = new JSONStateSnapshotter(getScoreBoard().getJsm(), this, parent.useMetrics());
     }
     public GameImpl(Game source) {
