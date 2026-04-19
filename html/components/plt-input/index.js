@@ -23,7 +23,7 @@
     prefix + 'CurrentPeriodNumber',
     prefix + 'Period(*).CurrentJamNumber',
     prefix + 'Team(*).Skater(*).Position',
-    prefix + 'Team(*).Position(*).',
+    prefix + 'Team(*).Position(*)',
     prefix + 'Team(*).AllBlockersSet',
   ]);
 })();
@@ -55,10 +55,15 @@ function pltMaySub(k) {
   return isTrue(WS.state[k.upTo('Skater') + '.PenaltyBox']) || isTrue(WS.state[k.upTo('Skater') + '.HasUnserved'])
 }
 
-function _pltSetRole(k, role, ignoreIneligible) {
+function _pltSetRole(k, role, ignoreIneligible, ignoreRoleChange) {
   const oldRole = WS.state[k + '.Role'];
   if (oldRole === 'Ineligible' && !ignoreIneligible) {
     _pltOpenIneligibleDialog(k, role);
+  } else if (pltMaySub(k) && !ignoreRoleChange) {
+    _pltOpenNoRoleChangeDialog(k, role);
+  } else if ((role === 'Jammer' || role === 'Pivot') &&
+    (isTrue(WS.state[k.upTo('Team') + '.Position(' + role + ').PenaltyBox']) || isTrue(WS.state[k.upTo('Team') + '.Position(' + role + ').HasUnserved']))) {
+    _pltOpenSubstituteDialog(k, role);
   } else if (((role === 'Blocker' && oldRole !== 'Pivot') || (role === 'Pivot' && isTrue(WS.state[k.upTo('Team') + '.NoPivot']))) &&
     isTrue(WS.state[k.upTo('Team') + '.AllBlockersSet']) && oldRole !== 'Blocker') {
     _pltOpenReplaceDialog(k, role);
@@ -68,15 +73,15 @@ function _pltSetRole(k, role, ignoreIneligible) {
 }
 
 function pltSetJammer(k) {
-  _pltSetRole(k, 'Jammer', false);
+  _pltSetRole(k, 'Jammer', false, false);
 }
 
 function pltSetPivot(k) {
-  _pltSetRole(k, 'Pivot', false);
+  _pltSetRole(k, 'Pivot', false, false);
 }
 
 function pltSetBlocker(k) {
-  _pltSetRole(k, 'Blocker', false);
+  _pltSetRole(k, 'Blocker', false, false);
 }
 
 function pltToggleBox(k, v, elem) {
@@ -175,8 +180,8 @@ function pltFinishReplace(k, v, elem, event) {
 //
 //###################################################################
 
-let pltIneligiblePath = '';
-let pltIneligibleTarget = '';
+var pltIneligiblePath = '';
+var pltIneligibleTarget = '';
 
 function _pltOpenIneligibleDialog(k, role) {
   pltIneligiblePath = k; pltIneligibleTarget = role;
@@ -197,7 +202,65 @@ function pltToIneligibleReason(k, v) {
 
 function pltIgnoreIneligible(k, v, elem, event) {
   sbCloseDialog(k, v, elem, event);
-  _pltSetRole(pltIneligiblePath, pltIneligibleTarget, true);
+  _pltSetRole(pltIneligiblePath, pltIneligibleTarget, true, false);
+}
+
+//###################################################################
+//
+//  No Role Change Dialog
+//
+//###################################################################
+
+var pltRoleChangePath = '';
+var pltRoleChangeTarget = '';
+
+function _pltOpenNoRoleChangeDialog(k, role) {
+  pltRoleChangePath = k; pltRoleChangeTarget = role;
+  WS.SetupDialog($('#NoRoleChangeDialog'), k, { modal: true, title: 'Role Change not Allowed', width: '400px' })
+}
+
+function pltIgnoreRoleChange(k, v, elem, event) {
+  sbCloseDialog(k, v, elem, event);
+  _pltSetRole(pltRoleChangePath, pltRoleChangeTarget, true, true);
+}
+
+//###################################################################
+//
+//  Substitute Dialog
+//
+//###################################################################
+
+var pltSubstituteSkater = '';
+var pltSubstituteTarget = '';
+
+function _pltOpenSubstituteDialog(k, role) {
+  pltSubstituteSkater = k.Skater;
+  pltSubstituteTarget = ').TeamJam(' + k.Team + ').Fielding(' + role + ')';
+  if (isTrue(WS.state['ScoreBoard.Game(' + k.Game + ').InJam']) ||
+    isTrue(WS.state[k.upTo('Team') + '.FieldingAdvancePending'])) {
+    pltSubstituteTarget =
+      k.upTo('Game') +
+      '.Period(' +
+      WS.state[k.upTo('Game') + '.CurrentPeriodNumber'] +
+      ').Jam(' +
+      WS.state[
+      k.upTo('Game') + '.Period(' + WS.state[k.upTo('Game') + '.CurrentPeriodNumber'] + ').CurrentJamNumber'
+      ] +
+      pltSubstituteTarget;
+  } else {
+    pltSubstituteTarget = k.upTo('Game') + '.Jam(' + WS.state[k.upTo('Game') + '.UpcomingJamNumber'] + pltSubstituteTarget;
+  }
+  WS.SetupDialog($('#SubstituteDialog'), pltSubstituteTarget, { modal: true, title: 'Substitute Skater?', width: '400px' })
+}
+
+function pltToPosition(k) {
+  return k.Fielding;
+}
+
+function pltDoSubstitute(k, v, elem, event) {
+  sbCloseDialog(k, v, elem, event);
+  console.log(pltSubstituteTarget, pltSubstituteSkater);
+  WS.Set(pltSubstituteTarget + '.Skater', pltSubstituteSkater, 'change');
 }
 
 //###################################################################

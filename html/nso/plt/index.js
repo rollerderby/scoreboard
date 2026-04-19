@@ -75,7 +75,6 @@ function updateColspan() {
   const pos = $('body').attr('sbSheetStyle');
   const nextAdj = $('body[nextButton="row"').length;
   const cols = pos === 'pt' ? 10 : ((pos === 'lt' ? 4 : 14) - nextAdj)
-  console.log(nextAdj, cols);
   $('.Teamname').attr('colspan', cols);
 }
 

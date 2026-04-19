@@ -185,6 +185,34 @@
       </div>
     </div>
   </div>
+  <div id="NoRoleChangeDialog" sbContext="Skater(*)">
+    <div class="sbSegment">
+      <div class="sbGroup sbStack">
+        <span>
+          #<span sbDisplay="RosterNumber"></span> is currently in the <span sbClass="sbHide:PenaltyBox: !">box</span>
+          <span sbClass="sbHide:HasUnserved: !">queue</span> and unable to change role.
+        </span>
+        <span>
+          <button sbCall="pltIgnoreRoleChange">Override</button>
+          <button sbCall="sbCloseDialog">Cancel</button>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div id="SubstituteDialog" sbContext="^Jam(*).TeamJam(*).Fielding(*)">
+    <div class="sbSegment">
+      <div class="sbGroup sbStack">
+        <span>
+          #<span sbDisplay="SkaterNumber"></span> is in the <span sbClass="sbHide:PenaltyBox: !">box</span>
+          <span sbClass="sbHide:HasUnserved: !">queue</span> as <span sbDisplay="Id: pltToPosition"></span>.
+        </span>
+        <span>
+          <button sbCall="pltDoSubstitute">Substitute</button>
+          <button sbCall="sbCloseDialog">Cancel</button>
+        </span>
+      </div>
+    </div>
+  </div>
   <div id="UnendDialog" sbContext="^Jam(*).TeamJam(*).Fielding(*)">
     <div class="sbSegment">
       <div class="sbGroup sbStack">
