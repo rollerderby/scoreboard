@@ -439,6 +439,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
             }
             if (!"Never".equals(get(LAST_FILE_UPDATE))) { set(LAST_FILE_UPDATE, "Pre Game"); }
         }
+        if (prop == FILENAME && jsonSnapshotter != null) { jsonSnapshotter.setFilename((String) value); }
         if (prop == OFFICIAL_SCORE && (boolean) value && source == Source.WS) {
             Clock pc = getClock(Clock.ID_PERIOD);
             Clock ic = getClock(Clock.ID_INTERMISSION);

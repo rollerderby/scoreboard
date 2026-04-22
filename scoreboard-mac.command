@@ -1,6 +1,8 @@
 #!/bin/bash
 
-cd "$(dirname $0)"
+loc="$(dirname "${0}")"
+cd "${loc}" || exit 1
+
 
 GUI="--gui"
 
@@ -13,4 +15,4 @@ if [ -x /usr/libexec/java_home ]; then
   JAVA="/usr/libexec/java_home -exec java"
 fi
 
-exec $JAVA -Done-jar.silent=true -Dorg.eclipse.jetty.server.LEVEL=WARN -jar lib/crg-scoreboard.jar "$GUI" "$@"
+exec $JAVA -Done-jar.silent=true -Dorg.eclipse.jetty.server.LEVEL=WARN -jar lib/crg-scoreboard.jar ${GUI} "$@"

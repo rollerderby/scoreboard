@@ -18,7 +18,7 @@ public final class JSONStateSnapshotter implements JSONStateListener {
 
     public JSONStateSnapshotter(JSONStateManager jsm, Game g, boolean useMetrics) {
         this.directory = BasePath.get();
-        game = g;
+        filename = g.getFilename();
         this.useMetrics = useMetrics;
         if (useMetrics && updateStateDuration == null) {
             updateStateDuration = Histogram.build()
@@ -27,7 +27,7 @@ public final class JSONStateSnapshotter implements JSONStateListener {
                                       .register();
         }
         filters.add("ScoreBoard.Version");
-        filters.add("ScoreBoard.Game(" + game.getId() + ")");
+        filters.add("ScoreBoard.Game(" + g.getId() + ")");
         jsm.register(this);
     }
 
@@ -39,11 +39,13 @@ public final class JSONStateSnapshotter implements JSONStateListener {
 
     public void writeOnNextUpdate() { writeOnNextUpdate.set(true); }
 
+    public synchronized void setFilename(String newName) { filename = newName; }
+
     public synchronized void writeFile() {
         Histogram.Timer timer = useMetrics ? updateStateDuration.startTimer() : null;
 
-        File file = new File(new File(directory, "html/game-data/json"), game.getFilename() + ".json");
-        File prev = new File(new File(directory, "html/game-data/json"), game.getFilename() + "_prev.json");
+        File file = new File(new File(directory, "html/game-data/json"), filename + ".json");
+        File prev = new File(new File(directory, "html/game-data/json"), filename + "_prev.json");
         file.getParentFile().mkdirs();
 
         File tmp = null;
@@ -79,7 +81,7 @@ public final class JSONStateSnapshotter implements JSONStateListener {
     }
 
     private File directory;
-    private Game game;
+    private String filename;
     private AtomicBoolean writeOnNextUpdate = new AtomicBoolean(false);
     private StateTrie state = new StateTrie();
     private PathTrie filters = new PathTrie();

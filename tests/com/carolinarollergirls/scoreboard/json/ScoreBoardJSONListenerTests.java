@@ -65,7 +65,6 @@ public class ScoreBoardJSONListenerTests {
         sb.postAutosaveUpdate();
         g = sb.getCurrentGame().get(CurrentGame.GAME);
         gameId = g.getId();
-        sb.getSettings().set(Clock.SETTING_SYNC, String.valueOf(false));
 
         jsm = new JSONStateManager(false);
         jsm.register(jsonListener);

@@ -98,7 +98,7 @@ public interface Clock extends ScoreBoardEventProvider {
     public static final Command STOP = new Command("Stop", props);
     public static final Command RESET_TIME = new Command("ResetTime", props);
 
-    public static final String SETTING_SYNC = "ScoreBoard.Clock.Sync";
+    public static final String SETTING_SYNC = "ScoreBoard.Clock.Synch";
 
     public static final String ID_PERIOD = "Period";
     public static final String ID_JAM = "Jam";

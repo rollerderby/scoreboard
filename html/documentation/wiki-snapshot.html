@@ -706,7 +706,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
           <div class="nav-container">
             <div class="nav-inner" id="scroll-spy" style="width: min-content; overflow: auto; top: 60px; bottom: 0; padding 10px 0 10px 0;">
               <span class="toc">Table of contents</span>
-              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the v2025.9 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
+              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the v2025.10 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
 <h3 id="howtos">Howtos</h3>
 <ul class="nav"><li><strong><a href="#Installing-the-Scoreboard-Software">Installing the Scoreboard Software</a></strong><ul class="nav"><li><span>Instructions for getting the software installed and running on a standalone computer to provide a functioning scoreboard.</span></li></ul></li><li><strong><a href="#Quick-Start-Guide">Quick Start Guide</a></strong><ul class="nav"><li><span>Basic information to run a game with only what is mandatory for a regulation game. See the pages below for the full feature set.</span></li></ul></li><li><strong><a href="#Preparing-a-Game">Preparing a Game</a></strong></li><li><strong><a href="#Scoreboard-Operation">Scoreboard Operation</a></strong></li><li><strong><a href="#Configuring-Hotkeys">Configuring Hotkeys</a></strong></li><li><strong><a href="#Using-the-Scoreboard-on-a-Network">Using the Scoreboard on a Network</a></strong></li><li><strong><a href="#Penalty-Tracking">Penalty Tracking</a></strong></li><li><strong><a href="#Lineup-Tracking">Lineup Tracking</a></strong></li><li><span>The </span><strong>Penalty Lineup Tracking</strong> interface combines the PT and LT inputs for one team on a single screen. See those pages for info how to operate it.</li><li><strong><a href="#Penalty-Box-Timing">Penalty Box Timing</a></strong></li></ul><h3 id="tips-tricks">Tips &amp; Tricks</h3>
 <ul class="nav"><li><strong><a href="#Scoreboard-Best-Practices">Scoreboard Best Practices</a></strong></li><li><strong><a href="#Graphics">Graphics</a></strong><ul class="nav"><li><span>Information on graphics for use with CRG, such as team logos and sponsor banners.</span></li></ul></li><li><strong><a href="#External-Links">External Links</a></strong><ul class="nav"><li><span>Links to other sites with information about CRG Scoreboard.</span></li></ul></li></ul><h3 id="details-about-screens-tabs">Details about Screens / Tabs</h3>
@@ -2079,7 +2079,16 @@ The editor for stored teams will always be a screen with a single team while the
 <p class="page" id="ScoreBoard-Settings"></p><h1>ScoreBoard Settings</h1>
 <h2 id="general-settings">General Settings</h2>
 <ul>
-<li><em>Sync Clocks</em> - When active (default) all running clocks (except penalty clocks) will tick over at the same moment.</li>
+<li><em>Sync Clocks</em> - When active all running clocks (except penalty clocks) will tick over at the same moment.<ul>
+<li><strong>Note</strong>: This setting is technically incompatible with WFTDA regulation or sanctioned play due to the wording of WFTDA Officiating Procedure 2.7:
+When a jam ends with more than 30.0s but less than 30.5s remaining on the period clock it causes rounding so that the sum of period and lineup clock is 30.<ul>
+<li>As per Officiating Procedure 2.7 the sum of 30 means no additional jam should be run.</li>
+<li>But as per the rules another jam should be run because the previous one ended with more than 30s on the period clock.</li>
+</ul>
+</li>
+<li>As a consequence this defaults to inactive in CRG 2025.10 and later. If you enable it, it is recommended to follow the &quot;No more Jam&quot; indication (red clocks) and ignore the clocks summing to 30 in order to remain compliant with the rules.</li>
+</ul>
+</li>
 <li><em>CRG Tracks Lineups</em> - Indicates when CRG is used to track the lineups for the current game.<ul>
 <li>When active the &quot;Box&quot; buttons for Jammers and Pivots will be hidden from the &quot;Controls&quot; tab as box trips are now entered by the LT.</li>
 <li>When not active (default) penalties will automatically marked as served.</li>
@@ -3336,7 +3345,7 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <p>State is sent by the backend and will contain a set of channel-value pairs informing the frontend about changed values. For example:</p>
 <pre class="hljs">{
   <span class="hljs-attr">&quot;state&quot;</span>: {
-    <span class="hljs-attr">&quot;ScoreBoard.Settings.Setting(ScoreBoard.Clock.Sync)&quot;</span>: <span class="hljs-string">&quot;true&quot;</span>,
+    <span class="hljs-attr">&quot;ScoreBoard.Settings.Setting(ScoreBoard.Clock.Sync)&quot;</span>: <span class="hljs-string">&quot;false&quot;</span>,
     <span class="hljs-attr">&quot;ScoreBoard.Settings.Setting(ScoreBoard.View_BoxStyle)&quot;</span>: <span class="hljs-string">&quot;box_flat_bright&quot;</span>,
   }
 }</pre><h2 id="pong">Pong</h2>
@@ -6828,8 +6837,14 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <tr>
 <td><code>ScoreBoard.Clock.Sync</code></td>
 <td><code>true</code>, <code>false</code></td>
-<td></td>
+<td>before 2025.10</td>
 <td>default: <code>true</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Clock.Synch</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td>from 2025.10</td>
+<td>default: <code>false</code></td>
 </tr>
 <tr>
 <td><code>ScoreBoard.Game.DefaultNameFormat</code></td>

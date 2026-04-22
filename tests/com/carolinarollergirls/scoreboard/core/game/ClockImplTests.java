@@ -50,7 +50,6 @@ public class ClockImplTests {
         sb = new ScoreBoardImpl(false);
         sb.postAutosaveUpdate();
         g = sb.getCurrentGame().get(CurrentGame.GAME);
-        sb.getSettings().set(Clock.SETTING_SYNC, String.valueOf(false));
 
         clock = (ClockImpl) g.getClock(ID);
     }
@@ -112,7 +111,8 @@ public class ClockImplTests {
     @Test
     public void testSetting_ClockSync() {
         ClockImpl clock2 = new ClockImpl(g, Clock.ID_TIMEOUT);
-        sb.getSettings().set(Clock.SETTING_SYNC, String.valueOf(true));
+        sb.getSettings().set(Clock.SETTING_SYNC, "true");
+        ClockImpl.updateClockTimerTask.clocks.clear();
         clock.setMaximumTime(10000);
         clock2.setMaximumTime(10000);
         clock2.setTime(3400);
@@ -122,37 +122,36 @@ public class ClockImplTests {
         clock.setTime(4200);
         assertEquals(4200, clock.getTime());
 
-        // the first clock started has its time rounded
+        // the first clock started has its time not rounded
         clock2.start();
-        assertEquals(3000, clock2.getTime());
+        assertEquals(3400, clock2.getTime());
         advance(400);
 
-        // when the clocks are started the just started clock is synced to the already
-        // running
+        // the second clock is synced to the already running
         clock.start();
-        assertEquals(4400, clock.getTime());
+        assertEquals(3800, clock.getTime());
 
         // changes under 1s are ignored. Even if multiple changes accumulate to more
         // than 1s
         clock.changeTime(500);
         clock.changeTime(800);
-        assertEquals(4400, clock.getTime());
+        assertEquals(3800, clock.getTime());
 
         // changes over 1s are rounded down
         clock.changeTime(1100);
-        assertEquals(5400, clock.getTime());
+        assertEquals(4800, clock.getTime());
 
         // the previous statements also apply to the master clock
         clock2.changeTime(500);
         clock2.changeTime(800);
-        assertEquals(3400, clock2.getTime());
+        assertEquals(3800, clock2.getTime());
         clock2.changeTime(1000);
-        assertEquals(4400, clock2.getTime());
+        assertEquals(4800, clock2.getTime());
 
         // advancing the time affects both clocks even if less than 1s
         advance(400);
-        assertEquals(4800, clock2.getTime());
-        assertEquals(5800, clock.getTime());
+        assertEquals(5200, clock2.getTime());
+        assertEquals(5200, clock.getTime());
     }
 
     @Test

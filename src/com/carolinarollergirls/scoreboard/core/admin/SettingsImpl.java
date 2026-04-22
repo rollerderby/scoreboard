@@ -59,7 +59,7 @@ public final class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> im
         set(ScoreBoard.SETTING_AUTO_START_BUFFER, "0:02");
         set(ScoreBoard.SETTING_AUTO_END_JAM, "false");
         set(ScoreBoard.SETTING_AUTO_END_TTO, "true");
-        set(Clock.SETTING_SYNC, "true");
+        set(Clock.SETTING_SYNC, "false");
         set(Team.SETTING_DISPLAY_NAME, Team.OPTION_LEAGUE_NAME);
         set(Game.SETTING_DEFAULT_NAME_FORMAT, "%d %G %1 vs. %2 (%s: %S)");
         set("ScoreBoard.Intermission.PreGame", "Time To Derby");

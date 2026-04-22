@@ -96,8 +96,6 @@ public class GameImplTests {
         assertTrue(ic.isTimeAtStart());
         collectedEvents = new LinkedList<>();
         sb.addScoreBoardListener(batchCounter);
-        // Clock Sync can cause clocks to be changed when started, breaking tests.
-        sb.getSettings().set(Clock.SETTING_SYNC, "False");
         checkPeriodJamInvariants();
     }
 
@@ -1092,7 +1090,7 @@ public class GameImplTests {
 
     @Test
     public void testClockUndoWithClockSync() {
-        sb.getSettings().set(Clock.SETTING_SYNC, "True");
+        sb.getSettings().set(Clock.SETTING_SYNC, "true");
         assertEquals(0, jc.getInvertedTime());
         assertEquals(0, pc.getInvertedTime());
         assertEquals(120000, jc.getTime());
