@@ -287,10 +287,6 @@ function opPerHasPoints(k) {
   return WS.state[k.upTo('Period') + '.Team1Points'] != 0 || WS.state[k.upTo('Period') + '.Team2Points'] != 0;
 }
 
-function opInsertBeforeUpcoming(k) {
-  WS.Set(k.upTo('Game') + '.Jam)' + WS.state[k.upTo('Game') + '.UpcomingJamNumber'] + ').InsertBefore', true);
-}
-
 function opOpenTimeoutDialog(k) {
   WS.SetupDialog($('#TimeoutDialog'), k.upTo('Game'), {
     title: 'Timeouts',
