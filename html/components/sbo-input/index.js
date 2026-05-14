@@ -1,4 +1,4 @@
-WS.Register(['ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').CurrentJam', 'ScoreBoard.Rulesets.Ruleset(*).Parent', 'ScoreBoard.Rulesets.Default']);
+WS.Register(['ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').CurrentJam', 'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').UpcomingJamNumber', 'ScoreBoard.Rulesets.Ruleset(*).Parent', 'ScoreBoard.Rulesets.Default']);
 
 function opToggleKeyEdit(k, v, elem) {
   elem.toggleClass('sbActive');
@@ -347,7 +347,7 @@ function opPerHasPoints(k) {
 }
 
 function opInsertBeforeUpcoming(k) {
-  WS.Set(k.upTo('Game') + '.Jam)' + WS.state[k.upTo('Game') + '.UpcomingJamNumber'] + ').InsertBefore', true);
+  WS.Set(k.upTo('Game') + '.Jam(' + WS.state[k.upTo('Game') + '.UpcomingJamNumber'] + ').InsertBefore', true);
 }
 
 function opOpenTimeoutDialog(k) {

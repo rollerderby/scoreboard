@@ -107,6 +107,9 @@ public final class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> impl
                     Jam newJam = new JamImpl(currentPeriod, getNumber());
                     currentPeriod.add(ownType, newJam);
                     set(NUMBER, 1, Source.RENUMBER, Flag.CHANGE);
+                    if (game.getCurrentTimeout().isRunning()) {
+                        game.getCurrentTimeout().set(Timeout.PRECEDING_JAM, newJam);
+                    }
                 }
             } else if (prop == INSERT_TIMEOUT_AFTER) {
                 Timeout newTo = new TimeoutImpl(this);
