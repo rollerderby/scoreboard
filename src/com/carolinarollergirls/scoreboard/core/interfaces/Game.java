@@ -143,6 +143,8 @@ public interface Game extends ScoreBoardEventProvider {
     public static final Value<Boolean> CLOCK_DURING_FINAL_SCORE =
         new Value<>(Boolean.class, "ClockDuringFinalScore", false, props);
     public static final Value<String> EXPORT_BLOCKED_BY = new Value<>(String.class, "ExportBlockedBy", "", props);
+    public static final Value<Boolean> FIIIVE_SECONDS = new Value<>(Boolean.class, "FiveSeconds", false, props);
+    public static final Value<Boolean> AUTO_FIVE = new Value<>(Boolean.class, "AutoFive", false, props);
 
     public static final Child<Clock> CLOCK = new Child<>(Clock.class, "Clock", props);
     public static final Child<Team> TEAM = new Child<>(Team.class, "Team", props);
@@ -169,6 +171,7 @@ public interface Game extends ScoreBoardEventProvider {
     public static final Command START_BOX_TRIP = new Command("StartBoxTrip", props);
     public static final Command START_JAMMER_BOX_TRIP = new Command("StartJammerBoxTrip", props);
     public static final Command COPY = new Command("Copy", props);
+    public static final Command EARLY_5 = new Command("Early5", props);
 
     public static final String SETTING_DEFAULT_NAME_FORMAT = "ScoreBoard.Game.DefaultNameFormat";
 

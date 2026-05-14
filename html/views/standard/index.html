@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <title>Display | CRG ScoreBoard</title>
@@ -13,7 +13,7 @@
       <img class="object" sbAttr="src: &_Image" sbCss="object-fit: &_ImageScaling" />
     </div>
     <div class="DisplayPane" id="video">
-      <video class="object" onended="this.play();" sbAttr="src: &_Video" sbCss="object-fit: &_VideoScaling"></video>
+      <video class="object" onended="this.play()" sbAttr="src: &_Video" sbCss="object-fit: &_VideoScaling"></video>
     </div>
     <div class="DisplayPane" id="html"><iframe class="object" sbAttr="src: &_CustomHtml"></iframe></div>
     <div class="DisplayPane" id="whiteboard"><iframe class="object" src="../wb/"></iframe></div>
@@ -117,9 +117,15 @@
         sbContext="Clock(Jam)"
         sbDisplay="Name,Number: sbToClockInitialNumber"
       ></div>
+      <div
+        class="ShowInBetweenJams Clock Jam Small NameNumber Box AutoFit"
+        sbContext="Clock(Jam)"
+        sbDisplay="Name,Number: sbToClockInitialNumber"
+      ></div>
       <div class="ShowInLineup ShowInPostTimeoutLineup Clock Description Small Box AutoFit">Lineup</div>
       <div
         class="ShowInTimeout ShowInPostTimeoutTimeout ShowInPostTimeoutBoth Clock Description Small Box AutoFit Red"
+        sbClass="sbInvisible: FiveSeconds"
         sbDisplay="TimeoutOwner, OfficialReview: sbToTimeoutType"
       ></div>
       <div
@@ -132,8 +138,13 @@
         sbDisplay="Clock(Timeout).Time, Clock(Timeout).Direction: sbToTime"
         sbClass="Red: NoMoreJam"
       ></div>
+      <div class="ShowInBetweenJams Clock Description Small Show AutoFit" sbClass="sbInvisible: FiveSeconds: !">5</div>
       <div class="ShowInNoClock Clock None Small Box AutoFit">Coming Up</div>
-      <div class="ShowInPostTimeoutBoth Clock Description Small Below Box AutoFit" sbDisplay="Clock(Lineup).Name"></div>
+      <div
+        class="ShowInPostTimeoutBoth Clock Description Small Below Box AutoFit"
+        sbClass="sbInvisible: FiveSeconds"
+        sbDisplay="Clock(Lineup).Name"
+      ></div>
       <div
         class="ShowInPostTimeoutBoth Clock Lineup Small Below Box AutoFit sbClock"
         sbDisplay="Clock(Lineup).Time, Clock(Lineup).Direction: sbToTime"

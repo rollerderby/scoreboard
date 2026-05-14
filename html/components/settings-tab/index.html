@@ -1,54 +1,139 @@
-<div class="UsePreview" id="ScoreBoardSettings">
+<div id="ScoreBoardSettings">
   <div class="sbSegment" sbContext="/ScoreBoard" sbPrefix="$:ScoreBoard.Settings.Setting(ScoreBoard:)">
     <div class="sbGroup sbHeader"><span>General Settings</span></div>
     <div class="sbGroup ScoreBoardOptions">
-      <button sbToggle="$.Clock.Synch">Sync Clocks</button>
-      <button sbToggle="$.Penalties.UseLT">CRG Tracks Lineups</button>
-      <button sbToggle="$.Penalties.UsePBT">CRG Times Penalties</button>
+      <button sbToggle="$.Clock.Synch" id="ClockSync">
+        Sync Clocks<span class="sbTooltip Below"
+          >Slighty change the clocks so they tick over at the same time.<br />
+          This can cause an inconsistency between Rules and Officiating Procedures if a jam ends with slightly more than 30s left on the period clock
+          and is thus discouraged for WFTDA Regulation and Sanctioned play.</span
+        >
+      </button>
+      <button sbToggle="$.Penalties.UseLT">
+        CRG Tracks Lineups<span class="sbTooltip"
+          >Enable when using ePLT or eLT.<br />
+          Disable otherwise, including when using ePT only.</span
+        >
+      </button>
+      <button sbToggle="$.Penalties.UsePBT">
+        CRG Times Penalties<span class="sbTooltip"
+          >Enable when using ePBT.<br />
+          Disable otherwise.</span
+        >
+      </button>
       <button sbToggle="$.HideLineups">Hide Lineups Before Jam Start</button>
     </div>
     <div class="sbGroup ScoreBoardOptions">
       <button class="ui-button-small" sbCall="stgOpenIntermissionDialog">Intermission Labels</button>
-      <span>
+      <span class="sbHasTooltip">
         <label>Team Name for Display: </label>
         <select sbControl="$.Teams.DisplayName">
           <option value="League">League Name</option>
           <option value="Team">Team Name</option>
           <option value="Full">Full Name</option>
         </select>
+        <span class="sbTooltip"
+          >When only one name is set, that one will be used.<br />NSO screens will use Uniform Color when set and fall back to this otherwise.</span
+        >
       </span>
-      <span>
+      <span class="sbHasTooltip">
         <label>Team Name for Files: </label>
         <select sbControl="$.Teams.FileName">
           <option value="League">League Name</option>
           <option value="Team">Team Name</option>
           <option value="Full">Full Name</option>
         </select>
+        <span class="sbTooltip">When only one name is set, that one will be used.<br />Sanctioned games require "Full Name".</span>
       </span>
-      <span><label>Name format for new games: </label> <input type="text" size="25" sbControl="$.Game.DefaultNameFormat" /></span>
+      <span class="sbHasTooltip">
+        <label>Name format for new games: </label> <input type="text" size="25" sbControl="$.Game.DefaultNameFormat" />
+        <span class="sbTooltip Below">
+          <table class="Variables">
+            <tr>
+              <th colspan="2">Supported Variables:</th>
+            </tr>
+            <tr>
+              <td>%g:</td>
+              <td>Game Number</td>
+            </tr>
+            <tr>
+              <td>%G:</td>
+              <td>&quot;Game &lt;Game Number&gt;: &quot; if game number is set, empty otherwise</td>
+            </tr>
+            <tr>
+              <td>%d:</td>
+              <td>Date of Game</td>
+            </tr>
+            <tr>
+              <td>%t:</td>
+              <td>Start Time</td>
+            </tr>
+            <tr>
+              <td>%1:</td>
+              <td>Team 1 Name</td>
+            </tr>
+            <tr>
+              <td>%2:</td>
+              <td>Team 2 Name</td>
+            </tr>
+            <tr>
+              <td>%s:</td>
+              <td>Game State</td>
+            </tr>
+            <tr>
+              <td>%S:</td>
+              <td>&quot;&lt;Team 1 Score&gt; - &lt;Team 2 Score&gt;&quot;</td>
+            </tr>
+          </table>
+        </span>
+      </span>
     </div>
     <div class="sbGroup ScoreBoardOptions">
-      <span class="StatsFile" sbClass="Readable: BlankStatsbookFound: | Progress: BlankStatsbookFound: === 'checking'">
+      <span class="StatsFile sbHasTooltip" sbClass="Readable: BlankStatsbookFound: | Progress: BlankStatsbookFound: === 'checking'">
         <label>Blank Statsbook File: </label>
         <input type="text" size="40" sbControl="$.Stats.InputFile" />
         <div class="sbSpinner" sbClass="sbHide: BlankStatsbookFound: !== 'checking'"></div>
+        <span class="sbTooltip">This expects a path relative to the base folder of CRG.</span>
       </span>
     </div>
     <div class="sbGroup ScoreBoardOptions">
-      <span>
-        <label>Auto Start: </label>
+      <span class="sbHasTooltip">
+        <label>Auto Start <em>without</em> 5s: </label>
         <select sbControl="$.AutoStart">
           <option value="">Off</option>
           <option value="Jam">Jam</option>
           <option value="Timeout">Timeout</option>
         </select>
+        <span class="sbTooltip">Triggers when the lineup clock reaches the configured duration and "Five Seconds" <em>has not</em> been marked.</span>
       </span>
-      <span>
-        <label>Time between end of Lineup and auto start being applied: </label>
-        <input type="text" size="5" sbControl="$.AutoStartBuffer" />
+      <span class="sbHasTooltip">
+        <label>Auto Start <em>with</em> 5s: </label>
+        <select sbControl="$.AutoStart5">
+          <option value="">Off</option>
+          <option value="Jam">Jam</option>
+          <option value="Timeout">Timeout</option>
+        </select>
+        <span class="sbTooltip">Triggers when the lineup clock reaches the configured duration and "Five Seconds" <em>has</em> been marked.</span>
       </span>
-      <button sbToggle="$.AutoEndJam">Auto End Jams</button>
-      <button sbToggle="$.AutoEndTTO">Auto End Team Timeouts</button>
+      <button sbToggle="$.Auto5">
+        Auto 5s<span class="sbTooltip"
+          >Switches 5s to on when 5s of lineup are left.<br />Recommended to be enabled for eJT, which has a per-jam override.<br />Strongly
+          recommended to be disabled for SBO.</span
+        >
+      </button>
+      <button sbToggle="$.AutoEndJam">
+        Auto End Jams<span class="sbTooltip"
+          >Triggers "Stop Jam" after the jam has reached the configured length.<br />
+          Use with caution - if the jam is not whistled dead at the right time, clocks will be off.<br />
+          <em>This is especially problematic when using ePBT.</em></span
+        >
+      </button>
+      <button sbToggle="$.AutoEndTTO">
+        Auto End Team Timeouts<span class="sbTooltip"
+          >Triggers "End Timeout" after a team timout has run for the configured length.<br />This should be enabled in WFTDA rules play because a
+          team timeout ends after exactly 1 minute, even if no whistle is blown at that time.</span
+        >
+      </button>
     </div>
   </div>
   <div class="sbSegment">
@@ -57,21 +142,22 @@
       <span
         >Edit:
         <select id="usePreviewDropdown" sbCall="stgSetUsePreview">
-          <option value="preview">Preview</option>
           <option value="live">Live ScoreBoard</option>
+          <option value="preview">Preview</option>
         </select>
       </span>
       <button sbCall="stgAplyPreview">Apply Preview</button>
     </div>
     <div class="sbGroup View DisplayOptions" sbPrefix="$:ScoreBoard.Settings.Setting(ScoreBoard.View:)">
       <span></span>
-      <span>
+      <span class="sbHasTooltip">
         <label>Clock After Timeout: </label>
         <select sbControl="$_ClockAfterTimeout" ApplyPreview="ClockAfterTimeout">
           <option value="Both">Both</option>
           <option value="Timeout">Timeout</option>
           <option value="Lineup">Lineup</option>
         </select>
+        <span class="sbTooltip">WFTDA Officiating Procedures require "Both" or "Timeout".</span>
       </span>
       <span>
         <label>Current View: </label>
@@ -109,7 +195,7 @@
         </select>
       </span>
       <span><button sbToggle="$_SwapTeams" ApplyPreview="SwapTeams">Swap Team sides</button></span>
-      <span>
+      <span class="sbHasTooltip">
         <label>Side Padding: </label>
         <select sbControl="$_SidePadding" ApplyPreview="SidePadding">
           <option value="">None</option>
@@ -119,6 +205,7 @@
           <option value="8">8%</option>
           <option value="10">10%</option>
         </select>
+        <span class="sbTooltip">Add a black margin to the sides of the display.<br />Useful for projectors/screens that cut off the margins.</span>
       </span>
       <span sbContext="/ScoreBoard.Media.Format(videos).Type(fullscreen)">
         <label>Video View: </label>

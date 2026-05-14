@@ -96,7 +96,7 @@ public class ScoreBoardClock extends TimerTask {
     private int stopCounter = 0;
     private long lastRewind = 0;
 
-    private Timer timer = new Timer();
+    private Timer timer = new Timer("ScoreBoardClock timer");
 
     private SimpleDateFormat dateFormat;
 

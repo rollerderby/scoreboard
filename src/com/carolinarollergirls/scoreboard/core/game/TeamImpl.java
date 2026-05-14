@@ -955,7 +955,7 @@ public final class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements
 
     FloorPosition nextReplacedBlocker = FloorPosition.PIVOT;
 
-    private Timer tripScoreTimer = new Timer();
+    private Timer tripScoreTimer = new Timer("trip score timer");
     private TimerTask tripScoreTimerTask = new TimerTask() {
         @Override
         public void run() {} // dummy, so the variable is not

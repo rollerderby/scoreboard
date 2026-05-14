@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <title>Jam Timer | CRG ScoreBoard</title>
@@ -29,7 +29,7 @@
       </div>
       <div class="Group Jam">
         <div sbForeach="Clock: Jam, Lineup, Timeout: only" class="Clock" sbClass="Running: Running | InJam: ^InJam | NoMoreJam: ^NoMoreJam">
-          <div class="ClockName AutoFit"><span sbDisplay="Name"></span> <span sbDisplay="Number"></span></div>
+          <div class="ClockName AutoFit" sbAutoFitOn="Clock(*).Running"><span sbDisplay="Name"></span> <span sbDisplay="Number"></span></div>
           <div class="Time AutoFit sbClock">
             <button sbSet="Time: -1000: change">-</button>
             <span sbDisplay="Time: sbToLongTime"></span>
@@ -59,7 +59,17 @@
             <div class="Count AutoFit" sbDisplay="OfficialReviews"></div>
           </div>
           <div class="ToButtonRow Retained">
-            <div class="Button"><button class="AutoFit" sbToggle="RetainedOfficialReview">Retained</button></div>
+            <div class="Buttons">
+              <button class="AutoFit" sbToggle="RetainedOfficialReview">Ret.</button>
+              <button
+                class="AutoFit"
+                sbAutoFitOn="Id,^TimeoutOwner, ^OfficialReview"
+                sbClass="sbHide: Id,^TimeoutOwner, ^OfficialReview: sbIsNotOrThisTeam"
+                sbToggle="^ReviewIsTo"
+              >
+                As TO
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -67,44 +77,115 @@
         <button class="AutoFit" sbClass="sbActive: TimeoutOwner: ==='O'" sbSet="OfficialTimeout">Official TO</button>
       </div>
     </div>
-    <div class="Group MainButtons">
+    <div class="Group ClockButtons">
       <div class="Settings" sbClass="sbHide: Label(Undo): === 'No Action'">
         <div class="Continuation">
           <button
             class="AutoFit"
+            sbAutoFitOn="Rule(Jam.InjuryContinuation), Team(1).Injury"
             sbClass="sbHide: Rule(Jam.InjuryContinuation), Team(1).Injury: jtPossiblInjCont"
             sbToggle="InjuryContinuationUpcoming"
           >
             Continuation Upcoming
           </button>
         </div>
-        <div class="ToggleUndo"><button class="AutoFit" sbCall="jtToggleUndoEnabled">Show Undo</button></div>
-        <div class="showOnUndoEnabled sbHide Replace">
-          <button class="AutoFit" id="ReplaceButton_Setting" sbCall="jtToggleSetting">Use Replace on Undo</button>
+        <div class="ToggleSettings">
+          <button
+            class="AutoFit"
+            sbPrefix="$:ScoreBoard.Settings.Setting(ScoreBoard:)"
+            sbClass="sbClickMe: $.AutoStart,$.AutoStart5: jtSettingsUnfit"
+            sbCall="jtOpenSettings"
+          >
+            Settings
+          </button>
+        </div>
+        <div class="FiveSeconds" sbClass="sbHide: Clock(Lineup).Running: !">
+          <button class="AutoFit" sbAutoFitOn="Clock(Lineup).Running" sbToggle="FiveSeconds">5 Seconds</button>
         </div>
       </div>
-      <div class="ReplaceInfo AutoFit sbHide" sbClass="sbHide: Label(Undo): !== 'No Action'">
-        <span>Replace &quot;<span sbDisplay="Label(Replaced)"></span>&quot; with</span>
+      <div class="Settings" sbClass="sbHide: Label(Undo): !== 'No Action'">
+        <div class="FullWidth">
+          <span class="AutoFit" sbDisplay="Label(Replaced): 'Replace &quot;' + v + '&quot; with'"></span>
+        </div>
       </div>
-      <div class="Undo showOnUndoEnabled sbHide"><button class="AutoFit Big" sbCall="jtUndo" sbDisplay="Label(Undo)"></button></div>
-      <div class="Start">
+      <div class="Start Buttons" sbClass="sbHide: Label(Undo): === 'No Action'">
+        <div class="AutoFive">
+          <button class="AutoFit" sbAutoFitOn="Clock(Lineup).Running" sbClass="sbHide: Clock(Lineup).Running: !" sbToggle="AutoFive">Auto 5</button>
+        </div>
+        <div class="EarlyFive">
+          <button
+            class="AutoFit"
+            sbAutoFitOn="Clock(Lineup).Running"
+            sbClass="sbHide: Clock(Lineup).Running: !"
+            sbSet="Early5"
+            sbDisplay="^Settings.Setting(ScoreBoard.Early5Delay): 'Jam in ' + (Number(v) + 5)"
+          ></button>
+        </div>
+      </div>
+      <div class="Start" sbClass="sbHide: Label(Undo): !== 'No Action'">
+        <button class="AutoFit sbHide" sbSet="StartJam" sbDisplay="Label(Start)"></button>
+      </div>
+      <div class="Undo"><button class="AutoFit Big" sbSet="ClockReplace" sbDisplay="Label(Undo)"></button></div>
+      <div class="Stop MainButton" sbClass="MainButton: Clock(Lineup).Running: !">
         <button
-          class="AutoFit Big"
-          sbClass="sbClickMe: Rule(Lineup.Duration), Rule(Lineup.OvertimeDuration), Clock(Lineup).Running, Clock(Lineup).Time, InOvertime: sbLineupTooLong"
-          sbSet="StartJam"
-          sbDisplay="Label(Start)"
+          class="AutoFit"
+          sbAutoFitOn="Clock(Lineup).Running"
+          sbClass="sbClickMe: InJam, Clock(Jam).Running: sbJamTooLong"
+          sbSet="StopJam"
+          sbDisplay="Label(Stop)"
         ></button>
       </div>
-      <div class="Stop">
-        <button class="AutoFit Big" sbClass="sbClickMe: InJam, Clock(Jam).Running: sbJamTooLong" sbSet="StopJam" sbDisplay="Label(Stop)"></button>
+      <div class="Timeout" sbClass="MainButton: Clock(Lineup).Running">
+        <button class="AutoFit" sbAutoFitOn="Clock(Lineup).Running" sbSet="Timeout" sbDisplay="Label(Timeout)"></button>
       </div>
-      <div class="Timeout">
-        <button
-          class="AutoFit Big"
-          sbClass="sbClickMe: Rule(Lineup.Duration), Rule(Lineup.OvertimeDuration), Clock(Lineup).Running, Clock(Lineup).Time, InOvertime: sbLineupTooLong"
-          sbSet="Timeout"
-          sbDisplay="Label(Timeout)"
-        ></button>
+    </div>
+
+    <div class="sbTemplates">
+      <div id="SettingsDialog" class="sbSegment" sbContext="^Settings" sbPrefix="$:ScoreBoard.Settings.Setting(ScoreBoard:)">
+        <div class="sbGroup">
+          <button sbClass="sbClickMe: $.AutoStart,$.AutoStart5: jtSettingsUnfit" sbCall="jtSetEjtDefaults">Set to eJT defaults</button>
+        </div>
+        <div class="sbGroup">
+          <span class="sbHasTooltip">
+            <label>Auto Start <em>without</em> 5s: </label>
+            <select sbClass="sbClickMe: $.AutoStart: !== 'Timeout'" sbControl="$.AutoStart">
+              <option value="">Off</option>
+              <option value="Jam">Jam</option>
+              <option value="Timeout">Timeout</option>
+            </select>
+            <span class="sbTooltip"
+              >Triggers when the lineup clock reaches the configured duration and "Five Seconds" <em>has not</em> been marked.</span
+            >
+          </span>
+          <span class="sbHasTooltip">
+            <label>Auto Start <em>with</em> 5s: </label>
+            <select sbClass="sbClickMe: $.AutoStart5: !== 'Jam'" sbControl="$.AutoStart5">
+              <option value="">Off</option>
+              <option value="Jam">Jam</option>
+              <option value="Timeout">Timeout</option>
+            </select>
+            <span class="sbTooltip">Triggers when the lineup clock reaches the configured duration and "Five Seconds" <em>has</em> been marked.</span>
+          </span>
+          <button sbToggle="$.Auto5">
+            Auto 5s<span class="sbTooltip"
+              >Switches 5s to on when 5s of lineup are left.<br />Recommended to be enabled for eJT, which has a per-jam override.<br />Strongly
+              recommended to be disabled for SBO.</span
+            >
+          </button>
+          <button sbToggle="$.AutoEndJam">
+            Auto End Jams<span class="sbTooltip"
+              >Triggers "Stop Jam" after the jam has reached the configured length.<br />
+              Use with caution - if the jam is not whistled dead at the right time, clocks will be off.<br />
+              <em>This is especially problematic when using ePBT.</em></span
+            >
+          </button>
+          <button sbToggle="$.AutoEndTTO">
+            Auto End Team Timeouts<span class="sbTooltip"
+              >Triggers "End Timeout" after a team timout has run for the configured length.<br />This should be enabled in WFTDA rules play because a
+              team timeout ends after exactly 1 minute, even if no whistle is blown at that time.</span
+            >
+          </button>
+        </div>
       </div>
     </div>
   </body>

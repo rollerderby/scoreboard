@@ -1646,12 +1646,10 @@ public class GameImplTests {
         assertFalse(ic.isRunning());
 
         advance(31000);
-        assertFalse(jc.isRunning());
-        advance(1000);
 
         assertTrue(pc.isRunning());
         assertTrue(jc.isRunning());
-        assertEquals(2000, jc.getTimeElapsed());
+        assertEquals(1000, jc.getTimeElapsed());
         assertFalse(lc.isRunning());
         assertFalse(tc.isRunning());
         assertFalse(ic.isRunning());
@@ -1673,7 +1671,6 @@ public class GameImplTests {
     @Test
     public void testAutoStartAndEndTimeout() {
         sb.getSettings().set(ScoreBoard.SETTING_AUTO_START, Clock.ID_TIMEOUT);
-        sb.getSettings().set(ScoreBoard.SETTING_AUTO_START_BUFFER, "0");
         sb.getSettings().set(ScoreBoard.SETTING_AUTO_END_TTO, "true");
         g.set(Rule.TTO_DURATION, "25000");
 

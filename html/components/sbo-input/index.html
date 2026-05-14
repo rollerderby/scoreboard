@@ -2,7 +2,7 @@
   <div class="sbSegment MetaControl sbNoDistract">
     <div class="sbGroup LastGroup">
       <button sbCall="opToggleKeyEdit">Edit Key Control</button>
-      <button sbToggle="^Settings.Setting(ScoreBoard.AutoEndJam)">Auto End Jams</button>
+      <button sbCall="opOpenAutomationSettings" sbClass="sbClickMe: ^Settings.Setting(*): opAutomationSettingMismatch">Automation</button>
       <button sbClass="sbHide: Rule(Jam.SuddenScoring), CurrentPeriodNumber: opSuddenScoringDisabled" sbToggle="InSuddenScoring">
         Sudden Scoring
       </button>
@@ -47,8 +47,9 @@
       <span>Replace &quot;<span sbDisplay="Label(Replaced)"></span>&quot; with</span>
     </div>
     <div class="sbGroup sbSubHeader">
-      <span
-        ><button
+      <span>
+        <button id="FiveSeconds" class="sbKeyControl sbNoDistract" sbClass="sbHide: InJam" sbToggle="FiveSeconds">5 Seconds</button>
+        <button
           id="StartJam"
           class="sbKeyControl"
           sbClass="sbClickMe: Rule(Lineup.Duration), Rule(Lineup.OvertimeDuration), Clock(Lineup).Running, Clock(Lineup).Time, InOvertime: sbLineupTooLong"
@@ -154,6 +155,56 @@
 </div>
 
 <div class="sbTemplates">
+  <div id="AutomationSettingsDialog" class="sbSegment" sbContext="^Settings" sbPrefix="$:ScoreBoard.Settings.Setting(ScoreBoard:)">
+    <div class="sbGroup">
+      <button sbCall="opSetAutomationSboDefaults">Set to SBO defaults</button>
+      <button sbCall="opSetAutomationEjtDefaults">Set to eJT defaults</button>
+      <button sbCall="opSetAutomationOperatorDefaults" sbClass="sbClickMe: Setting(*): opAutomationSettingMismatch">
+        Set to <span class="operatorId"></span> defaults
+      </button>
+      <button sbCall="opStoreAutomationOperatorDefaults">Store as <span class="operatorId"></span> defaults</button>
+    </div>
+    <div class="sbGroup sbStack">
+      <span class="sbHasTooltip">
+        <label>Auto Start <em>without</em> 5s: </label>
+        <select sbControl="$.AutoStart">
+          <option value="">Off</option>
+          <option value="Jam">Jam</option>
+          <option value="Timeout">Timeout</option>
+        </select>
+        <span class="sbTooltip">Triggers when the lineup clock reaches the configured duration and "Five Seconds" <em>has not</em> been marked.</span>
+      </span>
+      <span class="sbHasTooltip">
+        <label>Auto Start <em>with</em> 5s: </label>
+        <select sbControl="$.AutoStart5">
+          <option value="">Off</option>
+          <option value="Jam">Jam</option>
+          <option value="Timeout">Timeout</option>
+        </select>
+        <span class="sbTooltip">Triggers when the lineup clock reaches the configured duration and "Five Seconds" <em>has</em> been marked.</span>
+      </span>
+      <button sbToggle="$.Auto5">
+        Auto 5s<span class="sbTooltip"
+          >Switches 5s to on when 5s of lineup are left.<br />Recommended to be enabled for eJT, which has a per-jam override.<br />Strongly
+          recommended to be disabled for SBO.</span
+        >
+      </button>
+      <button sbToggle="$.AutoEndJam">
+        Auto End Jams<span class="sbTooltip"
+          >Triggers "Stop Jam" after the jam has reached the configured length.<br />
+          Use with caution - if the jam is not whistled dead at the right time, clocks will be off.<br />
+          <em>This is especially problematic when using ePBT.</em></span
+        >
+      </button>
+      <button sbToggle="$.AutoEndTTO">
+        Auto End Team Timeouts<span class="sbTooltip"
+          >Triggers "End Timeout" after a team timout has run for the configured length.<br />This should be enabled in WFTDA rules play because a
+          team timeout ends after exactly 1 minute, even if no whistle is blown at that time.</span
+        >
+      </button>
+    </div>
+  </div>
+
   <div id="NewGameDialog" sbContext="^">
     <div class="sbSegment">
       <div class="sbGroup sbHeader"><span>Start a Prepared Game</span></div>

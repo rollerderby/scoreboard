@@ -146,8 +146,12 @@ function ovlToClockType() {
   const lc = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Running'];
   const ic = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Running'];
   const jc = WS.state['ScoreBoard.CurrentGame.InJam'];
+  const five = WS.state['ScoreBoard.CurrentGame.FiveSeconds'];
 
-  if (jc) {
+  if (five) {
+    ret = '5';
+    $('.ClockDescription').css('backgroundColor', 'yellow');
+  } else if (jc) {
     ret = 'Jam';
     $('.ClockDescription').css('backgroundColor', '#888');
   } else if (lc) {

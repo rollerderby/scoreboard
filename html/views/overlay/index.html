@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html sbPrefix="$: ScoreBoard.Settings.Setting(Overlay.Interactive : )" sbCss="font-size: $.Scaling: 'calc(' + v + ' * .12pt)'">
   <head>
     <title>Stream Overlay | CRG ScoreBoard</title>
@@ -61,7 +61,8 @@
 
           <div
             class="ClockBarMiddle Wrapper SlideDown ShowInIntermission ShowInFinal ShowInBetweenJams ShowInNoClock Box BigName ClockDescription"
-            sbDisplay="Clock(Intermission).Number, Clock(*).Running, TimeoutOwner, OfficialReviews, ^Settings.Setting(ScoreBoard.Intermission.*), OfficialScore, ClockDuringFinalScore, Rule(Period.Number): ovlToClockType"
+            sbClass="Five: FiveSeconds"
+            sbDisplay="Clock(Intermission).Number, Clock(*).Running, TimeoutOwner, OfficialReviews, ^Settings.Setting(ScoreBoard.Intermission.*), OfficialScore, ClockDuringFinalScore, Rule(Period.Number), InJam, FiveSeconds: ovlToClockType"
           ></div>
           <div class="ClockBarBottom Wrapper SlideDown ShowInIntermission ShowInJam ShowInBetweenJams Row BottomRow barBackgroundBottom">
             <div
