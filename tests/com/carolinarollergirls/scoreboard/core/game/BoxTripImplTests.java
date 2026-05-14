@@ -2,6 +2,7 @@ package com.carolinarollergirls.scoreboard.core.game;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -15,6 +16,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
+import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
@@ -688,6 +690,58 @@ public class BoxTripImplTests {
 
         assertNotNull(bt2.getClock());
         assertTrue(s2.getCurrentFielding().isInBox());
+        assertEquals(0L, bt1.getClock().getTimeRemaining());
+        assertEquals(7000L, bt2.getClock().getTimeRemaining());
+    }
+
+    @Test
+    public void testJammerSwapSecondId() {
+        Team t2 = g.getTeam(Team.ID_2);
+        t2.execute(Team.ADVANCE_FIELDINGS);
+        Skater s2 = t2.getOrCreate(Team.SKATER, "Skater2");
+        t2.field(s2, Role.JAMMER);
+        t.field(s, Role.JAMMER);
+        g.startJam();
+        s.add(Skater.PENALTY, new PenaltyImpl(s, 2));
+        s2.add(Skater.PENALTY, new PenaltyImpl(s2, 1));
+
+        g.execute(Game.START_JAMMER_BOX_TRIP);
+        BoxTrip bt1 = g.getAll(Team.BOX_TRIP).iterator().next();
+        advance(7000L);
+
+        assertEquals(23000L, bt1.getClock().getTimeRemaining());
+
+        s2.getCurrentFielding().getPosition().execute(Position.START_BOX_CLOCK);
+        BoxTrip bt2 = s2.getCurrentBoxTrip();
+
+        assertNotNull(bt2.getClock());
+        assertTrue(s2.getCurrentFielding().isInBox());
+        assertEquals(0L, bt1.getClock().getTimeRemaining());
+        assertEquals(7000L, bt2.getClock().getTimeRemaining());
+        assertEquals(s, bt1.getCurrentFielding().getSkater());
+    }
+
+    @Test
+    public void testJammerSwapNoId() {
+        g.startJam();
+
+        g.execute(Game.START_JAMMER_BOX_TRIP);
+        BoxTrip bt1 = g.getAll(Team.BOX_TRIP).iterator().next();
+        advance(7000L);
+
+        assertEquals(23000L, bt1.getClock().getTimeRemaining());
+
+        g.execute(Game.START_JAMMER_BOX_TRIP);
+        BoxTrip bt2 = null;
+        for (BoxTrip b : g.getAll(Team.BOX_TRIP)) {
+            if (b != bt1) {
+                bt2 = b;
+                break;
+            }
+        }
+
+        assertNotNull(bt2);
+        assertNotNull(bt2.getClock());
         assertEquals(0L, bt1.getClock().getTimeRemaining());
         assertEquals(7000L, bt2.getClock().getTimeRemaining());
     }

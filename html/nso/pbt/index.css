@@ -23,6 +23,11 @@ body { display: flex; flex-direction: column; height: calc(100dvh - 16px); }
 #Unassigned>:not(.sbHeader)>* { padding: calc(0.5 * var(--element-gap)); }
 #Unassigned>:not(.sbHeader) + .sbGroup>* { border-top: var(--group-border-top); }
 
+#Unassigned .Trip.Jammer > :not(.SP) > [Position="Jammer"].Unserved,
+#Unassigned .Trip.Jammer > .SP > [Position="Pivot"].Unserved,
+#Unassigned .Trip:not(.Jammer) > :not(.SP) > :not([Position="Jammer"]).Unserved,
+#Unassigned .Trip:not(.Jammer) > .SP > :not([Position="Pivot"]).Unserved { background: var(--element-unserved-bg); color: var(--element-unserved-fg); }
+
 #Buttons { height: 33%; }
 #Buttons>div { height: 100%; }
 #Buttons>div>button {  flex: 1; height: 100%; font-size: 5dvh; padding: 1rem; }

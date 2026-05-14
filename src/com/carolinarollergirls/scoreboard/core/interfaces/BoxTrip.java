@@ -59,6 +59,7 @@ public interface BoxTrip extends ScoreBoardEventProvider {
     public static final Value<Long> TIME = new Value<>(Long.class, "Time", null, props);
     public static final Value<Integer> SHORTENED = new Value<>(Integer.class, "Shortened", 0, props);
     public static final Value<String> PENALTY_DETAILS = new Value<>(String.class, "PenaltyDetails", "", props);
+    public static final Value<Boolean> JAMMER = new Value<>(Boolean.class, "Jammer", false, props);
 
     public static final Child<Fielding> FIELDING = new Child<>(Fielding.class, "Fielding", props);
     public static final Child<Penalty> PENALTY = new Child<>(Penalty.class, "Penalty", props);

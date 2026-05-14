@@ -316,9 +316,9 @@ public final class StatsbookExporter extends Thread {
                 return o1.compareTo(o2);
             }
         });
-        int rowId = game.get(Game.HEAD_REF) == null ? 80 : 79;
+        int rowId = 79;
         for (Official o : refs) {
-            fillOfficialRow(igrf.getRow(rowId), o);
+            fillOfficialRow(igrf.getRow(o == game.get(Game.HEAD_REF) ? 79 : ++rowId), o);
 
             if (Official.ROLE_JR.equals(o.get(Official.ROLE))) {
                 Team t = o.get(Official.P1_TEAM);
@@ -329,7 +329,7 @@ public final class StatsbookExporter extends Thread {
                 }
             }
 
-            if (++rowId > 87) { break; }
+            if (rowId > 86) { break; }
         }
     }
 

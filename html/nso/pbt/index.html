@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <title>Penalty Box Timer | CRG ScoreBoard</title>
@@ -30,15 +30,15 @@
           ></button>
         </span>
       </div>
-      <div class="sbGroup" sbForeach="BoxTrip:: time" sbAttr="time: Clock.Time" sbPrefix="b: [*]">
+      <div class="sbGroup Trip" sbForeach="BoxTrip:: time" sbAttr="time: Clock.Time" sbClass="Jammer: Jammer" sbPrefix="b: [*]">
         <span class="col1 sbStack">
           <button sbSet="Delete">Cancel</button>
           <span>Remaining: <span class="sbImportant sbClock" sbDisplay="Clock.Time: sbToSeconds"></span></span>
         </span>
-        <span class="perTeam" sbContext="^" sbForeach="Team: 1,2: only">
+        <span class="perTeam" sbContext="^" sbForeach="Team: 1,2: only" sbClass="SP: StarPass">
           <button
             sbForeach="Position: Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
-            sbClass="sbUnserved: HasUnserved | sbInBox: PenaltyBox"
+            sbClass="Unserved: HasUnserved | sbInBox: PenaltyBox"
             sbProp="disabled: PenaltyBox"
             sbDisplay="RosterNumber: penQuestionMarkIfEmpty"
             sbSet="b.CurrentFielding: penGetFielding"

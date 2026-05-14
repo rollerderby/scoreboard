@@ -1054,6 +1054,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
     private void jammerBoxEntry() {
         // start a clock
         BoxTrip newBt = new BoxTripImpl(this);
+        newBt.set(BoxTrip.JAMMER, true);
         add(Team.BOX_TRIP, newBt);
         for (Team team : getAll(TEAM)) {
             if (team.getPosition(team.isStarPass() ? FloorPosition.PIVOT : FloorPosition.JAMMER).isPenaltyBox()) {
@@ -1066,6 +1067,18 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
                 }
                 newBt.add(BoxTrip.FIELDING,
                           newPosition.getCurrentFielding()); // this will trigger jammer swap logic
+                return;
+            }
+        }
+        for (BoxTrip bt : getAll(Team.BOX_TRIP)) {
+            if (bt != newBt && bt.get(BoxTrip.JAMMER)) {
+                // this is a swap, but we don't know who is who - assume basic swap
+                long shorteningAmount = bt.getClock().getTimeRemaining();
+                bt.set(BoxTrip.SHORTENED, 1);
+                newBt.set(BoxTrip.SHORTENED, 1);
+                bt.getClock().changeMaximumTime(-shorteningAmount);
+                newBt.getClock().changeMaximumTime(-shorteningAmount);
+                return;
             }
         }
     }
