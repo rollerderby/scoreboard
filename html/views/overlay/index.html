@@ -37,7 +37,7 @@
               <div class="JammerBox ShowInJam Clock" sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)">
                 <div
                   sbForeach="Position: Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
-                  sbClass="Jamming: ^StarPass: ovlIsJamming | InBox: PenaltyBox | Penalized: CurrentPenalties: !== '' | HasClock: PenaltyTime: sbIsNotEmpty"
+                  sbClass="Jamming: ^StarPass, InJam: ovlIsJamming | InBox: PenaltyBox | Penalized: CurrentPenalties: !== '' | HasClock: PenaltyTime: sbIsNotEmpty"
                 >
                   <div class="Number" sbDisplay="RosterNumber"></div>
                   <div class="Name" sbDisplay="Name"></div>

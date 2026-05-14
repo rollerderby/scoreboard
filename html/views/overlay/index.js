@@ -96,7 +96,8 @@ function ovlToIndicator(k, v) {
 }
 
 function ovlIsJamming(k, v, elem) {
-  return (isTrue(v) && elem.attr('Position') === 'Pivot') || (!isTrue(v) && elem.attr('Position') === 'Jammer');
+  var inJam = isTrue(WS.state[k.upTo('Game') + '.InJam']);
+  return (isTrue(v) && inJam && elem.attr('Position') === 'Pivot') || ((!isTrue(v) || !inJam) && elem.attr('Position') === 'Jammer');
 }
 
 function ovlToPpjColumnWidth(k, v, elem) {
