@@ -452,6 +452,7 @@ public class BoxTripImplTests {
         assertTrue(s2.getCurrentFielding().isInBox());
         assertEquals(0L, bt1.getClock().getTimeRemaining());
         assertEquals(7000L, bt2.getClock().getTimeRemaining());
+        assertTrue(bt2.startedAfterSP());
     }
 
     @Test
