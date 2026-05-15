@@ -116,23 +116,24 @@
         </table>
       </div>
       <div class="sbSegment">
-        <table class="sbGroup Type" id="operators" sbContext="Settings">
+        <table class="sbGroup Type" id="crews">
           <thead class="sbHeader">
             <tr>
               <th>
                 <button class="SelectAll Left" sbCall="datSelectAll">All</button>
-                <span>Operators</span>
+                <span>Officials Crews</span>
+                <button class="New Left" sbCall="datNewCrew">New</button>
               </th>
             </tr>
           </thead>
           <tbody>
-            <tr sbForeach="Setting:: name: part=3, filter=ScoreBoard.Operator, noId" sbAttr="name:: datToOperatorName" class="Content">
+            <tr sbForeach="OfficialsCrew:: name: resort=Name" sbAttr="name: Name" class="Content">
               <td class="Name">
                 <button class="Select Left" sbCall="datSelect">Select</button>
                 <button class="Delete Left" sbCall="datDeleteElem">Delete</button>
-                <a download class="Download Left" sbAttr="href: : datOperatorDlLink" sbButton>Download</a>
-                <button class="sbInvisible" sbButton disabled>Edit</button>
-                <span class="Name" sbDisplay=": datToOperatorName"></span>
+                <a download class="Download Left" sbAttr="href: Name: datCrewDlLink" sbButton>Download</a>
+                <a class="Edit Left" sbAttr="href: -: '/settings/crews?crew=' + k.OfficialsCrew" sbButton>Edit</a>
+                <span class="Name" sbDisplay="Name"></span>
               </td>
             </tr>
           </tbody>
@@ -159,6 +160,29 @@
                 <input class="Edit sbHide" type="text" size="30" class="Name" sbControl="Name" />
                 <input class="Edit sbHide" type="text" size="30" class="League" sbControl="League" />
                 <input class="Edit sbHide" type="text" size="10" class="Cert" sbControl="Cert" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="sbSegment">
+        <table class="sbGroup Type" id="operators" sbContext="Settings">
+          <thead class="sbHeader">
+            <tr>
+              <th>
+                <button class="SelectAll Left" sbCall="datSelectAll">All</button>
+                <span>Operators</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr sbForeach="Setting:: name: part=3, filter=ScoreBoard.Operator, noId" sbAttr="name:: datToOperatorName" class="Content">
+              <td class="Name">
+                <button class="Select Left" sbCall="datSelect">Select</button>
+                <button class="Delete Left" sbCall="datDeleteElem">Delete</button>
+                <a download class="Download Left" sbAttr="href: : datOperatorDlLink" sbButton>Download</a>
+                <button class="sbInvisible" sbButton disabled>Edit</button>
+                <span class="Name" sbDisplay=": datToOperatorName"></span>
               </td>
             </tr>
           </tbody>

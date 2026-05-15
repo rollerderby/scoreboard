@@ -26,6 +26,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Media.MediaFile;
 import com.carolinarollergirls.scoreboard.core.interfaces.Media.MediaType;
 import com.carolinarollergirls.scoreboard.core.interfaces.Official;
 import com.carolinarollergirls.scoreboard.core.interfaces.OfficialPosition;
+import com.carolinarollergirls.scoreboard.core.interfaces.OfficialsCrew;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period.PeriodSnapshot;
@@ -37,6 +38,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 import com.carolinarollergirls.scoreboard.core.interfaces.TimeoutOwner;
+import com.carolinarollergirls.scoreboard.core.prepared.OfficialsCrewImpl;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
@@ -523,6 +525,8 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
             set(CURRENT_PERIOD, getLast(PERIOD));
             if (!getClock(Clock.ID_INTERMISSION).isRunning()) { _preparePeriod(); }
         }
+        if (prop == NSO && item == get(HEAD_NSO)) { set(HEAD_NSO, null); }
+        if (prop == REF && item == get(HEAD_REF)) { set(HEAD_REF, null); }
     }
 
     @Override
@@ -561,6 +565,16 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
                 lineupTimeFor5s = Math.min(lc.getTimeElapsed() + delay, lineupTimeFor5s);
                 lineupTimeForStart = lineupTimeFor5s + 5000L;
             }
+        } else if (prop == LOAD_OFFICIALS_CREW) {
+            OfficialsCrew crew = get(OFFICIALS_CREW);
+            if (crew.numberOf(OfficialsCrew.NSO) > 0) { removeAll(NSO); }
+            if (crew.numberOf(OfficialsCrew.REF) > 0) { removeAll(REF); }
+            for (OfficialsCrew.Member nso : crew.getAll(OfficialsCrew.NSO)) { add(NSO, new OfficialImpl(this, nso)); }
+            for (OfficialsCrew.Member ref : crew.getAll(OfficialsCrew.REF)) { add(REF, new OfficialImpl(this, ref)); }
+        } else if (prop == STORE_OFFICIALS_CREW) {
+            OfficialsCrew crew = new OfficialsCrewImpl(this);
+            scoreBoard.add(ScoreBoard.OFFICIALS_CREW, crew);
+            set(OFFICIALS_CREW, crew);
         }
     }
 

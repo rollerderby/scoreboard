@@ -31,16 +31,21 @@ function _datUpdateSelectedUrl() {
           return 'ScoreBoard.Rulesets.Ruleset(' + $(elem).attr('Ruleset') + ')';
         })
         .get(),
-      $('#operators tr.Content.Selected')
+      $('#crews tr.Content.Selected')
         .map(function (i, elem) {
-          return 'ScoreBoard.Settings.Setting(' + $(elem).attr('Setting').slice(0, -1);
+          return 'ScoreBoard.OfficialsCrew(' + $(elem).attr('OfficialsCrew') + ')';
         })
         .get(),
       $('#officials tr.Content.Selected')
         .map(function (i, elem) {
           return 'ScoreBoard.PreparedOfficial(' + $(elem).attr('PreparedOfficial').slice(0, -1);
         })
-        .get()
+        .get(),
+      $('#operators tr.Content.Selected')
+        .map(function (i, elem) {
+          return 'ScoreBoard.Settings.Setting(' + $(elem).attr('Setting').slice(0, -1);
+        })
+        .get(),
     )
     .join();
   const d = new Date();
@@ -99,13 +104,16 @@ function _datCreateRemoveDialog(type) {
         $('#rulesets' + selector).each(function () {
           WS.Set('ScoreBoard.Rulesets.Ruleset(' + $(this).attr('Ruleset') + ')', null);
         });
+        $('#crews' + selector).each(function () {
+          WS.Set('ScoreBoard.OfficialsCrew(' + $(this).attr('OfficialsCrew') + ')', null);
+        });
+        $('#officials' + selector).each(function () {
+          WS.Set('ScoreBoard.PreparedOfficial(' + $(this).attr('PreparedOfficial') + ')', null);
+        });
         $('#operators' + selector).each(function () {
           $.each($(this).data(), function (k, v) {
             WS.Set('ScoreBoard.Settings.Setting(' + v + ')', null);
           });
-        });
-        $('#officials' + selector).each(function () {
-          WS.Set('ScoreBoard.PreparedOfficial(' + $(this).attr('PreparedOfficial') + ')', null);
         });
         $('.ToDelete').removeClass('ToDelete');
         div.dialog('close');
@@ -135,6 +143,12 @@ function datNewTeam() {
   window.open('/settings/teams?team=' + teamid, '_blank');
 }
 
+function datNewCrew() {
+  const teamid = sbNewUuid();
+  WS.Set('ScoreBoard.OfficialsCrew(' + teamid + ').Id', teamid);
+  window.open('/settings/crews?crew=' + teamid, '_blank');
+}
+
 function datNewRuleset() {
   const rulesetid = sbNewUuid();
   WS.Set('ScoreBoard.Rulesets.Ruleset(' + rulesetid + ').Id', rulesetid);
@@ -156,15 +170,15 @@ function datGameDlLink(k, v) {
 }
 
 function datTeamDlLink(k, v) {
-  return v
-    ? '/SaveJSON/crg-team-' + v.replace(/[\/|\\:*?"<>\ ]/g, '_') + '.json?path=ScoreBoard.PreparedTeam(' + k.PreparedTeam + ')'
-    : null;
+  return v ? '/SaveJSON/crg-team-' + v.replace(/[\/|\\:*?"<>\ ]/g, '_') + '.json?path=ScoreBoard.PreparedTeam(' + k.PreparedTeam + ')' : null;
+}
+
+function datCrewDlLink(k, v) {
+  return v ? '/SaveJSON/crg-crew-' + v.replace(/[\/|\\:*?"<>\ ]/g, '_') + '.json?path=ScoreBoard.OfficialsCrew(' + k.OfficialsCrew + ')' : null;
 }
 
 function datRulesetDlLink(k, v) {
-  return v
-    ? '/SaveJSON/crg-ruleset-' + v.replace(/[\/|\\:*?"<>\ ]/g, '_') + '.json?path=ScoreBoard.Rulesets.Ruleset(' + k.Ruleset + ')'
-    : null;
+  return v ? '/SaveJSON/crg-ruleset-' + v.replace(/[\/|\\:*?"<>\ ]/g, '_') + '.json?path=ScoreBoard.Rulesets.Ruleset(' + k.Ruleset + ')' : null;
 }
 
 function datOperatorDlLink(k) {

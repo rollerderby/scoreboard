@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Official;
 import com.carolinarollergirls.scoreboard.core.interfaces.OfficialPosition;
+import com.carolinarollergirls.scoreboard.core.interfaces.OfficialsCrew;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedOfficial;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
@@ -36,6 +37,13 @@ public final class OfficialImpl extends ScoreBoardEventProviderImpl<Official> im
         if (source.get(P1_TEAM) != null) { set(P1_TEAM, g.getTeam(source.get(P1_TEAM).getProviderId())); }
         set(SWAP, source.get(SWAP));
         setInverseReference(CURRENT_POSITION, OfficialPosition.CURRENT_OFFICIAL);
+    }
+    public OfficialImpl(Game g, OfficialsCrew.Member source) {
+        this(g, UUID.randomUUID().toString(), source.getType() == OfficialsCrew.NSO ? Game.NSO : Game.REF);
+        set(ROLE, source.get(OfficialsCrew.Member.ROLE));
+        set(PREPARED_OFFICIAL, source.get(OfficialsCrew.Member.PREPARED_OFFICIAL));
+        if (source == source.getParent().get(OfficialsCrew.HEAD_NSO)) { g.set(Game.HEAD_NSO, this); }
+        if (source == source.getParent().get(OfficialsCrew.HEAD_REF)) { g.set(Game.HEAD_REF, this); }
     }
 
     @Override

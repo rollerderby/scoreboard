@@ -51,6 +51,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public static final Child<PreparedTeam> PREPARED_TEAM = new Child<>(PreparedTeam.class, "PreparedTeam", props);
     public static final Child<PreparedOfficial> PREPARED_OFFICIAL =
         new Child<>(PreparedOfficial.class, "PreparedOfficial", props);
+    public static final Child<OfficialsCrew> OFFICIALS_CREW = new Child<>(OfficialsCrew.class, "OfficialsCrew", props);
     public static final Child<CurrentGame> CURRENT_GAME = new Child<>(CurrentGame.class, "CurrentGame", props);
 
     public static final String SETTING_AUTO_START = "ScoreBoard.AutoStart";

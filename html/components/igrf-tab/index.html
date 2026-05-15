@@ -149,9 +149,14 @@
             <option sbForeach="Nso:: name: resort=Name" sbAttr="name: Name | value: Id" sbDisplay="Name"></option>
           </select>
         </th>
-        <th></th>
-        <th></th>
-        <th></th>
+        <th colspan="3" class="Crew">
+          <select sbControl="OfficialsCrew">
+            <option value=""></option>
+            <option sbContext="^" sbForeach="OfficialsCrew:: name: resort=Name" sbAttr="name: Name | value: Id" sbDisplay="Name"></option>
+          </select>
+          <button sbSet="LoadOfficialsCrew">Load</button>
+          <button sbSet="StoreOfficialsCrew">Store</button>
+        </th>
       </tr>
       <tr class="sbSubHeader">
         <th>Role</th>

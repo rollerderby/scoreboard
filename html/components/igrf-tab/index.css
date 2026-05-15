@@ -15,7 +15,7 @@
 #Igrf table.Summary .Small { font-weight: normal; }
 #Igrf table.Summary .Value { font-size: 125%; }
 
-#Igrf table.Officials th.Head { font-size: 1rem; } 
+#Igrf table.Officials th.Head, #Igrf table.Officials th.Crew { font-size: 1rem; } 
 #Igrf table.Officials col.Name { width: 30%; } 
 #Igrf table.Officials col.League { width: 30%; } 
 #Igrf table.Officials col.Cert { width: 10%; } 
