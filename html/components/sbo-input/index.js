@@ -1,4 +1,9 @@
-WS.Register(['ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').CurrentJam', 'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').UpcomingJamNumber', 'ScoreBoard.Rulesets.Ruleset(*).Parent', 'ScoreBoard.Rulesets.Default']);
+WS.Register([
+  'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').CurrentJam',
+  'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').UpcomingJamNumber',
+  'ScoreBoard.Rulesets.Ruleset(*).Parent',
+  'ScoreBoard.Rulesets.Default',
+]);
 
 function opToggleKeyEdit(k, v, elem) {
   elem.toggleClass('sbActive');
@@ -25,7 +30,9 @@ function opAutomationSettingMismatch() {
   var settingsPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.';
   var mismatch = false;
   ['AutoStart', 'AutoStart5', 'Auto5', 'AutoEndJam', 'AutoEndTTO'].forEach(function (setting) {
-    if (WS.state[opPrefix + setting + ')'] !== WS.state[settingsPrefix + setting + ')']) { mismatch = true; }
+    if (WS.state[opPrefix + setting + ')'] !== WS.state[settingsPrefix + setting + ')']) {
+      mismatch = true;
+    }
   });
   return mismatch;
 }
@@ -86,6 +93,11 @@ function opToggleOperatorSetting(k, v, elem) {
 function opToggleSwapTeams(k, v, elem) {
   elem.toggleClass('sbActive');
   $('body').attr('swapTeams', elem.hasClass('sbActive') || null);
+  $('[id^=Team]').each(function (i, e) {
+    const id = $(e).attr('id');
+    $(e).attr('id', 'Team' + (3 - Number(id[4])) + id.substring(5));
+  });
+  _crgKeyControls.setupKeyControls(_windowFunctions.getParam('operator'));
 }
 
 function opOpenNewGameDialog() {
