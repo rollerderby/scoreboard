@@ -129,6 +129,7 @@ function _datCreateRemoveDialog(type) {
 function datSelectAll(k, v, elem) {
   const turnOn = elem.closest('table').find('tr.Content:not(.Selected)').length > 0;
   elem.closest('table').find('tr.Content').toggleClass('Selected', turnOn);
+  _datUpdateSelectedUrl();
 }
 
 function datNewGame() {
