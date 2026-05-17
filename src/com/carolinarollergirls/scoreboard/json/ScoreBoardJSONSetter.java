@@ -32,7 +32,7 @@ public class ScoreBoardJSONSetter {
         String version = (String) state.get("ScoreBoard.Version(release)");
         if (version == null) { version = getVersionFromKeys(state.keySet()); }
 
-        if (version.startsWith("v2025")) { return; } // no update needed
+        if (version.startsWith("v2027")) { return; } // no update needed
 
         Logger.printMessage("Updating import from version " + version);
 
@@ -139,6 +139,8 @@ public class ScoreBoardJSONSetter {
                 keyVersion = "v2025";
             }
 
+            if (keyVersion.startsWith("v2025")) { keyVersion = "v2027"; } // no migration needed
+
             if (!newKey.equals(oldKey)) {
                 if (!newKey.equals("")) { state.put(newKey, state.get(oldKey)); }
                 state.remove(oldKey);
@@ -148,7 +150,7 @@ public class ScoreBoardJSONSetter {
 
     private static String getVersionFromKeys(Set<String> keys) {
         String minVersion = "v4.0";  // lowest version possible from the keys seen so far
-        String maxVersion = "v2025"; // highest version possible from the keys seen so far
+        String maxVersion = "v2027"; // highest version possible from the keys seen so far
 
         for (String key : keys) {
             minVersion = minVersionWith(key, minVersion);
@@ -160,6 +162,22 @@ public class ScoreBoardJSONSetter {
     }
 
     private static String minVersionWith(String key, String priorLimit) {
+        if (priorLimit.equals("v2027") || key.equals("ScoreBoard.Settings.Setting(ScoreBoard.AutoStart5)") ||
+            key.equals("ScoreBoard.Settings.Setting(ScoreBoard.Auto5)") ||
+            key.equals("ScoreBoard.Settings.Setting(ScoreBoard.Early5Delay5)") ||
+            (key.contains("BoxTrip(") && key.endsWith("Jammer")) ||
+            (key.contains("Fielding(") && key.endsWith("HasUnserved")) ||
+            (key.contains("Game(") && key.endsWith("FiveSeconds")) ||
+            (key.contains("Game(") && key.endsWith("AutoFive")) ||
+            (key.contains("Game(") && key.endsWith("OfficialsCrew")) || key.contains("OfficialPosition(") ||
+            (key.contains("Official(") && key.endsWith("CurrentPosition")) ||
+            (key.contains("Penalty(") && key.endsWith("Annotation")) ||
+            (key.contains("Penalty(") && key.endsWith("CallingOfficial")) ||
+            (key.contains("Penalty(") && key.endsWith("CallingPosition")) || key.endsWith("Rulesets.Default") ||
+            key.contains("OfficialsCrew(") || (key.contains("Skater(") && key.endsWith("SubPenalties"))) {
+            return "v2027";
+        }
+
         if (priorLimit.equals("v2025") || key.equals("ScoreBoard.Settings.Setting(Overlay.Interactive.ShowNames)") ||
             key.equals("ScoreBoard.Settings.Setting(Overlay.Interactive.ShowPenaltyClocks)") ||
             key.equals("ScoreBoard.Settings.Setting(ScoreBoard.Preview_HidePenaltyClocks)") ||
@@ -232,6 +250,9 @@ public class ScoreBoardJSONSetter {
             key.startsWith("ScoreBoard.Clients.Client(") || key.endsWith("FirstJam") ||
             key.endsWith("FirstJamNumber")) {
             return "v2023";
+        }
+        if (priorLimit.equals("v2025") || key.equals("ScoreBoard.Settings.Setting(ScoreBoard.AutoStartDelay)")) {
+            return "v2025";
         }
 
         return priorLimit;

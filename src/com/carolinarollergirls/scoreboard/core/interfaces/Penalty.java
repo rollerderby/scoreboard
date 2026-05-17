@@ -31,6 +31,10 @@ public interface Penalty extends NumberedScoreBoardEventProvider<Penalty> {
     public static final Value<Boolean> SERVED = new Value<>(Boolean.class, "Served", false, props);
     public static final Value<Boolean> FORCE_SERVED = new Value<>(Boolean.class, "ForceServed", false, props);
     public static final Value<BoxTrip> BOX_TRIP = new Value<>(BoxTrip.class, "BoxTrip", null, props);
+    public static final Value<String> ANNOTATION = new Value<>(String.class, "Annotation", "", props);
+    public static final Value<Official> CALLING_OFFICIAL = new Value<>(Official.class, "CallingOfficial", null, props);
+    public static final Value<OfficialPosition> CALLING_POSITION =
+        new Value<>(OfficialPosition.class, "CallingPosition", null, props);
 
     public static final Command REMOVE = new Command("Remove", props);
 }

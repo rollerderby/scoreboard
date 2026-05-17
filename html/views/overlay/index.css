@@ -104,6 +104,7 @@ div.AnimatedPanel.AnimationDelay { transition: transform 1s ease-in-out .3s; }
 .ClockBarMiddle.SlideDown { background: #888; padding: 0; } 
 .ClockBarMiddle.SlideDown.Show { max-height: 1.2em; } 
 .ClockBox .ClockDescription { width: 100%; color: #f9f9f9; font-size: 1em; text-align: center; text-transform: uppercase; width: 100%; } 
+.ClockBox .ClockDescription.Five { color: black; } 
 .ClockBox .ClockDescription.Show { padding: 2px 0; } 
 
 .ClockBarBottom { font-size: 1.7em; } 

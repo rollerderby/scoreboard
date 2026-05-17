@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <title sbContext="ScoreBoard.Game([game]).Team(*)" sbDisplay="AlternateName(plt), UnifomrColor, Name: toTitle">
@@ -42,7 +42,23 @@
         </div>
       </div>
       <div class="sbSegment">
-        <div class="sbGroup sbHeader">Options</div>
+        <div class="sbGroup sbHeader">"Go To Next Jam" Button</div>
+        <div class="sbGroup NextJamPos">
+          <button next="col" sbCall="setNextJamBtn">Column</button>
+          <button next="row" sbCall="setNextJamBtn">Row</button>
+          <button next="both" sbCall="setNextJamBtn">Both</button>
+        </div>
+      </div>
+      <div class="sbSegment">
+        <div class="sbGroup sbHeader">Screen Settings</div>
+        <div class="sbGroup"><button id="OptionNoCallers" sbCall="setNoCallers">Don't Track "Called By"</button></div>
+        <div class="sbGroup"><button id="OptionNonSkaters" sbCall="setNonSkaters">Show Non-Skaters</button></div>
+        <div class="sbGroup"><button id="OptionHideCopy" sbCall="setHideCopy">Hide Copy Buttons</button></div>
+        <div class="sbGroup"><button id="OptionSwapTeams" sbCall="setSwapTeams">SwapTeams</button></div>
+        <div class="sbGroup"><button id="OptionZoomable" sbCall="setZoom">Allow Pinch Zoom</button></div>
+      </div>
+      <div class="sbSegment">
+        <div class="sbGroup sbHeader">CRG Settings</div>
         <div class="sbGroup"><button sbToggle="$">Enable Lineup Tracking</button></div>
         <div class="sbGroup">
           <button sbToggle="/ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UsePBT)">Enable Penalty Box Timing</button>
@@ -50,9 +66,6 @@
         <div class="sbGroup">
           <button sbToggle="/ScoreBoard.Settings.Setting(ScoreBoard.HideLineups)">Hide Lineups Before Jam Start</button>
         </div>
-        <div class="sbGroup"><button id="OptionNonSkaters" sbCall="setNonSkaters">Show Non-Skaters</button></div>
-        <div class="sbGroup"><button id="OptionSwapTeams" sbCall="setSwapTeams">SwapTeams</button></div>
-        <div class="sbGroup"><button id="OptionZoomable" sbCall="setZoom">Allow Pinch Zoom</button></div>
       </div>
     </div>
 

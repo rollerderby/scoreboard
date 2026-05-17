@@ -36,14 +36,14 @@ function _setOperatorSettings(op) {
   // This ensures users logging in for the first time always get the former and not whatever
   // the latter currently happens to be.
   var defPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator_Default.';
-  ['ScoreAdjustments', 'ReplaceButton', 'TabBar'].forEach(function (setting) {
+  ['ScoreAdjustments', 'ReplaceButton', 'TabBar', 'Auto5', 'AutoEndJam', 'AutoEndTTO'].forEach(function (setting) {
     _opSetOperatorSetting(setting, isTrue(WS.state[opPrefix + setting + ')'] || WS.state[defPrefix + setting + ')']));
   });
 }
 
 function _login(name) {
   name = (name || '').replaceAll(/[.() ]/g, "_");
-  $('#operatorId').text(name);
+  $('.operatorId').text(name);
   _sbUpdateUrl('operator', name);
   _crgKeyControls.setupKeyControls(name);
   _setOperatorSettings(name);

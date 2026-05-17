@@ -2,7 +2,9 @@
 body { margin: 0; padding: 0; width: 100dvw; height: 100dvh; }
 div { position: absolute; margin: 0; top: 0; left: 0; height: inherit; width: inherit; text-align: center; border-radius: var(--segment-corner-radius); }
 button.AutoFit { position: absolute; margin: var(--button-margin); top: 0; left: 0; height: calc(100% - 2 * var(--button-margin)); width: calc(100% - 2 *  var(--button-margin)); }
-button.AutoFit.Big { margin: var(--segment-corner-radius); height: calc(100% - 2 * var(--segment-corner-radius)); width: calc(100% - 2 *  var(--segment-corner-radius)); }
+.Buttons.Buttons>* { width: calc(50% - 2 *  var(--button-margin)); }
+.Buttons.Buttons>*+* { left: 50%; }
+.MainButton>button { margin: 0; height: 100%; width: 100%; }
 .Group { background: var(--group-bg); color: var(--group-fg); }
 
 .Clocks [Clock]:not(.Running) { display: none; }
@@ -17,71 +19,36 @@ button.AutoFit.Big { margin: var(--segment-corner-radius); height: calc(100% - 2
 
 .Settings { background-color: var(--nodistract-bg); color: var(--nodistract-fg); }
 
+.ui-dialog div { margin: unset; top: unset; left: unset; height: unset; position: unset; font-size: 3dvh;}
+#SettingsDialog .sbGroup { flex-wrap: wrap; row-gap: .5dvh; }
+
 /* 
  * Positioning 
  */
- @media (min-aspect-ratio: 1/1) {
-    .Clocks { height: 24.5dvh; }
-    .Clocks>.Period { width: 49.5dvw; }
-    .Clocks>.Jam { left: 50.5dvw; width: 49.5dvw; }
-    .ClockName { height: 50%; }
-    .Time { top: 50%; height: 50%; }
-
-    .TimeoutType { top: 25dvh; height: 24.5dvh; }
-    [Team] { width: 43.5dvw; }
-    [Team="2"] { left: 56.5dvw; }
-    .TeamName { height: 8.5dvh; }
-    .ToButtonRow { height: 8dvh; width: 21.5dvw; }
-    .TTO, .OR { top: 8.5dvh; }
-    .Retained { top: 16.5dvh; }
-    [Team="1"] .TTO, [Team="2"] .OR, [Team="2"] .Retained { left: 22dvw; }
-    .OTO { left: 44dvw; width: 12dvw; }
-    .ToButtonRow>.Button { width: 80%; }
-    .ToButtonRow>.Count { left: 80%; width: 20%; }
-    [Team="2"] .Button { left: 20%; }
-    [Team="2"] .Count { left: 0; }
-
-    .MainButtons { top: 50dvh; height: 50dvh; }
-    .ReplaceInfo, .Settings { height: 15dvh; }
-    .Settings>div { width: calc(100% / 3); }
-    .Settings>.ToggleUndo { left: calc(100% / 3); }
-    .Settings>.Replace { left: calc(2 * 100% / 3); }
-    .Undo, .Start, .Stop, .Timeout { top: 15dvh; height: 35dvh; }
-    .Undo { left: 30dvw; width: 20dvw; }
-    .Start { left: 50dvw; width: 20dvw; }
-    .sbHide + .Start { left: 30dvw; width: 40dvw; }
-    .Stop, .Timeout { width: 30dvw; }
-    .Timeout { left: 70dvw; }
- }
-
-@media (max-aspect-ratio: 1/1) {
-    .Clocks { height: 12.5dvh; }
-    .Clocks>.Period { height: 6dvh; }
-    .Clocks>.Jam { top: 6.5dvh; height: 6dvh; }
-    .ClockName { width: 50dvw; }
-    .Time { left: 50dvw; width: 50dvw; }
-
-    .TimeoutType { top: 13dvh; height: 30.5dvh; }
-    [Team] { width: 49.5dvw; height: 24dvh; }
-    [Team="2"] { left: 50.5dvw; }
-    .ToButtonRow, .TeamName { height: 6dvh; }
-    .TTO { top: 6dvh; }
-    .OR { top: 12dvh; }
-    .Retained { top: 18dvh; }
-    .OTO { top: 24.5dvh; height: 6dvh; }
-    .ToButtonRow>.Button { width: 80%; }
-    .ToButtonRow>.Count { left: 80%; width: 20%; }
-    [Team="2"] .Button { left: 20%; }
-    [Team="2"] .Count { left: 0; }
-
-    .MainButtons { top: 44dvh; height: 56dvh; }
-    .ReplaceInfo, .Settings { height: 6dvh; }
-    .Settings>div { width: calc(100% / 3); }
-    .Settings>.ToggleUndo { left: calc(100% / 3); }
-    .Settings>.Replace { left: calc(2 * 100% / 3); }
-    .Undo { top: 6dvh; height: 12.5dvh; }
-    .Start { top: 18.5dvh; height: 12.5dvh; }
-    .sbHide + .Start { top: 6dvh; height: 25dvh; }
-    .Stop, .Timeout { top: 31dvh; height: 25dvh; width: 50dvw; }
-    .Timeout { left: 50dvw; }
-}
+.Clocks { height: 12.5dvh; }
+.Clocks>.Period { height: 6dvh; }
+.Clocks>.Jam { top: 6.5dvh; height: 6dvh; }
+.ClockName { width: 50dvw; }
+.Time { left: 50dvw; width: 50dvw; }
+.TimeoutType { top: 13dvh; height: 30.5dvh; }
+[Team] { width: 49.5dvw; height: 24dvh; }
+[Team="2"] { left: 50.5dvw; }
+.ToButtonRow, .TeamName { height: 6dvh; }
+.TTO { top: 6dvh; }
+.OR { top: 12dvh; }
+.Retained { top: 18dvh; }
+.OTO { top: 24.5dvh; height: 6dvh; }
+.ToButtonRow>.Button { width: 80%; }
+.ToButtonRow>.Count { left: 80%; width: 20%; }
+[Team="2"] .Button { left: 20%; }
+[Team="2"] .Count { left: 0; }
+.ClockButtons { top: 44dvh; height: 26dvh; }
+.ClockButtons > div { height: 6dvh; }
+.Settings>div { width: calc(100% / 3 - .5dvw); left: .25dvw; }
+.Settings>div.FullWidth { width: 99.5dvw; height: 6dvh; }
+.Settings>.ToggleSettings { left: calc(100% / 3 + .25dvw); }
+.Settings>.FiveSeconds { left: calc(2 * 100% / 3 + .25dvw); }
+.Start { top: 6.5dvh; }
+.Undo { top: 13dvh; }
+.Stop, .Timeout { top: 19.5dvh; }
+.ClockButtons > .MainButton { position: fixed; top: 70dvh; height: 30dvh; }

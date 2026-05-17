@@ -101,7 +101,7 @@ public final class ScoreAdjustmentImpl extends ScoreBoardEventProviderImpl<Score
 
     private Game game;
 
-    private Timer closeTimer = new Timer();
+    private Timer closeTimer = new Timer("score adjustment timer");
     private TimerTask closeTimerTask = new TimerTask() {
         @Override
         public void run() {} // dummy, so the variable is not

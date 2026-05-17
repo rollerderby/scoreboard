@@ -6,6 +6,7 @@
           <th colspan="12"><span sbDisplay="t.Name"></span></th>
         </tr>
         <tr>
+          <th class="Copy sbShowOnLt">Copy</th>
           <th class="JamNumber">Jam</th>
           <th class="NP">NP</th>
           <th class="Skater">Jammer</th>
@@ -22,6 +23,7 @@
       </thead>
       <tbody class="Upcoming">
         <tr class="Jam" sbContext="t" sbClass="sbHide: ^InJam">
+          <td class="Copy Dummy sbShowOnLt"></td>
           <td class="JamNumber Darker" sbDisplay="^UpcomingJamNumber"></td>
           <td class="NP Darker" sbDisplay="NoPivot: sbToX"></td>
           <td
@@ -41,7 +43,15 @@
       </tbody>
       <tbody sbContext=":TeamJam([Team])" sbForeach="Jam:: sbCompareJam: onInsert=sbReverseOnNonSheet">
         <tr class="Jam" sbClass="INJ: ^InjuryContinuation">
-          <td class="JamNumber Darker" sbDisplay="Lead, ^Number, ^InjuryContinuation: sbToJamNoDisplay" sbSet="CopyLineupToCurrent"></td>
+          <td class="Copy sbShowOnLt" sbSet="CopyLineupToCurrent">
+            <button class="sbClickable"><span class="ui-icon ui-icon-copy"></span></button>
+          </td>
+          <td
+            class="JamNumber Darker"
+            sbClass="sbHasAnnotation: LtAnnotation: sbIsNotEmpty"
+            sbDisplay="Lead, ^Number, ^InjuryContinuation: sbToJamNoDisplay"
+            sbCall="ltsOpenAnnotationEditor"
+          ></td>
           <td class="NP Darker" sbControl="NoPivot: sbToX: sbFromX"></td>
           <td
             sbForeach="Fielding:Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
@@ -58,6 +68,7 @@
           ></td>
         </tr>
         <tr class="SP" sbClass="sbHide: ^StarPass: !">
+          <td class="Copy sbShowOnLt Dummy"></td>
           <td class="JamNumber Darker" sbDisplay="StarPass: sbToSpJamNo"></td>
           <td class="NP Darker" sbDisplay="StarPass: sbToX"></td>
           <td
@@ -113,6 +124,7 @@
           <tr>
             <th colspan="3">Start</th>
             <th colspan="3">End</th>
+            <th>Penalties</th>
             <td><button id="addTrip" sbSet="AddBoxTrip">Add</button></td>
           </tr>
         </thead>
@@ -132,12 +144,21 @@
             <td class="Later">
               <button class="tripModify" sbSet="EndLater">+</button>
             </td>
+            <td class="Penalties" sbDisplay="PenaltyCodes"></td>
             <td class="Remove">
               <button class="tripRemove" sbSet="Delete">Remove</button>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <div id="LtJamAnnotationEditor" sbContext="^Jam(*).TeamJam(*)">
+    <div class="sbSegment">
+      <div class="sbGroup" sbPrefix="f:[*]">
+        <input type="text" size="60" id="annotation" sbControl="LtAnnotation:: sbToNullIfEmpty" />
+      </div>
     </div>
   </div>
 </div>

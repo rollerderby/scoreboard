@@ -19,6 +19,8 @@
 
 #Operator .Adjustments .AdjAmount { font-weight: bold; }
 
+#AutomationSettingsDialog .sbGroup { flex-wrap: wrap; gap: var(--element-gap); }
+
 #NewGameDialog button.MidGame { font-size: var(--nodistract-font-size); }
 
 #ClockDialog .Label { font-style: normal; }

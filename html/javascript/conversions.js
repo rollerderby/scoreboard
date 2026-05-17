@@ -12,10 +12,6 @@ function sbAppendText(k, v, elem) {
   return (old ? old + '; ' : '') + elem.text();
 }
 
-function sbSubAnn(k, v, elem) {
-  return 'Substitute for #' + elem.parent().attr('oldNumber');
-}
-
 function sbToTime(k, v) {
   const isCountDown = isTrue(WS.state[k.upTo('Clock') + '.Direction']);
   return _timeConversions.msToMinSecNoZero(v, isCountDown);

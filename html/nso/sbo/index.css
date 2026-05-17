@@ -1,7 +1,7 @@
 body { margin: 0px; } 
 
 #operatorIdDiv { width: 100%; text-align: center; } 
-#operatorId { font-weight: bold; } 
+a.operatorId { font-weight: bold; } 
 #sbIndexLink { position: absolute; top: 2px; right: 2px; } 
 #helpLink { float: left; }
 

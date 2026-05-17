@@ -51,10 +51,13 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public static final Child<PreparedTeam> PREPARED_TEAM = new Child<>(PreparedTeam.class, "PreparedTeam", props);
     public static final Child<PreparedOfficial> PREPARED_OFFICIAL =
         new Child<>(PreparedOfficial.class, "PreparedOfficial", props);
+    public static final Child<OfficialsCrew> OFFICIALS_CREW = new Child<>(OfficialsCrew.class, "OfficialsCrew", props);
     public static final Child<CurrentGame> CURRENT_GAME = new Child<>(CurrentGame.class, "CurrentGame", props);
 
     public static final String SETTING_AUTO_START = "ScoreBoard.AutoStart";
-    public static final String SETTING_AUTO_START_BUFFER = "ScoreBoard.AutoStartBuffer";
+    public static final String SETTING_AUTO_START_5 = "ScoreBoard.AutoStart5";
+    public static final String SETTING_AUTO_5 = "ScoreBoard.Auto5";
+    public static final String SETTING_EARLY_5_DELAY = "ScoreBoard.Early5Delay";
     public static final String SETTING_AUTO_END_JAM = "ScoreBoard.AutoEndJam";
     public static final String SETTING_AUTO_END_TTO = "ScoreBoard.AutoEndTTO";
     public static final String SETTING_USE_LT = "ScoreBoard.Penalties.UseLT";

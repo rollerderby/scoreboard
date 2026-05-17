@@ -32,6 +32,7 @@ public interface Fielding extends ParentOrderedScoreBoardEventProvider<Fielding>
     public static final Value<Position> POSITION = new Value<>(Position.class, "Position", null, props);
     public static final Value<Boolean> SIT_FOR_3 = new Value<>(Boolean.class, "SitFor3", false, props);
     public static final Value<Boolean> PENALTY_BOX = new Value<>(Boolean.class, "PenaltyBox", false, props);
+    public static final Value<Boolean> HAS_UNSERVED = new Value<>(Boolean.class, "HasUnserved", false, props);
     public static final Value<BoxTrip> CURRENT_BOX_TRIP = new Value<>(BoxTrip.class, "CurrentBoxTrip", null, props);
     public static final Value<String> BOX_TRIP_SYMBOLS = new Value<>(String.class, "BoxTripSymbols", "", props);
     public static final Value<String> BOX_TRIP_SYMBOLS_BEFORE_S_P =

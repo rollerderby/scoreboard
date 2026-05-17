@@ -286,8 +286,14 @@ var WS = {
             elem.css(options.css, v == null ? '' : v);
           };
         } else if (options.attr != null) {
-          callback = function (k, v) {
+          callback = function (k, v, elem) {
             elem.attr(options.attr, v);
+            if (elem.prop('tagName') === 'OPTION' && options.attr === 'value') {
+              const cached = WS._selectCache.get(elem.parent()[0]);
+              if (cached) {
+                cached.callback(WS._enrichProp(cached.path), WS.state[cached.path], elem.parent());
+              }
+            }
           };
         } else if (options.prop != null) {
           callback = function (k, v) {
@@ -492,7 +498,7 @@ var WS = {
     function filter(trie, elem) {
       if (trie._values) {
         trie._values = trie._values.filter(function (v) {
-          return !elements.is(v.elem);
+          return !elem.is(v.elem);
         });
       }
       Object.entries(trie).forEach(function (entry) {
@@ -511,7 +517,7 @@ var WS = {
           WS._pathCache.delete(this);
           WS._prefixCache.delete(this);
           WS._selectCache.delete(this);
-        })
+        }),
     );
   },
 
@@ -523,29 +529,29 @@ var WS = {
     writeFuncIndex = -1,
     isBool = false,
     isPreRegister = false,
-    alwaysReadState = false
+    alwaysReadState = false,
   ) {
     const val = WS._replacePathComponents(elem, attr, isPreRegister)[0];
     return val
       ? val.split('|').map(function (part) {
-        var list = part.split(':').map(function (s) {
-          return s.trim();
-        });
-        if (pathIndex > -1) {
-          const prefixes = WS._getPrefixes(elem, isPreRegister);
-          const basePath = WS._getContext(elem, attr === 'sbForeach', isPreRegister);
-          list[pathIndex] = list[pathIndex].split(',').map(function (item) {
-            return WS._combinePaths(basePath, [item.trim(), false], prefixes)[0];
+          var list = part.split(':').map(function (s) {
+            return s.trim();
           });
-        }
-        if (readFuncIndex > -1 && (isBool || list[readFuncIndex] != null || list[pathIndex].length > 1 || alwaysReadState)) {
-          list[readFuncIndex] = WS._getModifyFunc(list[pathIndex], list[readFuncIndex] || '', isBool, alwaysReadState);
-        }
-        if (writeFuncIndex > -1) {
-          list[writeFuncIndex] = WS._getModifyFunc([], list[writeFuncIndex] || '', isBool);
-        }
-        return list;
-      })
+          if (pathIndex > -1) {
+            const prefixes = WS._getPrefixes(elem, isPreRegister);
+            const basePath = WS._getContext(elem, attr === 'sbForeach', isPreRegister);
+            list[pathIndex] = list[pathIndex].split(',').map(function (item) {
+              return WS._combinePaths(basePath, [item.trim(), false], prefixes)[0];
+            });
+          }
+          if (readFuncIndex > -1 && (isBool || list[readFuncIndex] != null || list[pathIndex].length > 1 || alwaysReadState)) {
+            list[readFuncIndex] = WS._getModifyFunc(list[pathIndex], list[readFuncIndex] || '', isBool, alwaysReadState);
+          }
+          if (writeFuncIndex > -1) {
+            list[writeFuncIndex] = WS._getModifyFunc([], list[writeFuncIndex] || '', isBool);
+          }
+          return list;
+        })
       : [];
   },
 
@@ -635,11 +641,11 @@ var WS = {
         WS._preRegister();
         // run the button conversion before items are cloned as the operation is expensive
         $(
-          '[sbButton], button[sbCall]:not(.ToggleSwitch), button[sbControl]:not(.ToggleSwitch), button[sbSet]:not(.ToggleSwitch), button[sbToggle]:not(.ToggleSwitch)'
+          '[sbButton], button[sbCall]:not(.ToggleSwitch), button[sbControl]:not(.ToggleSwitch), button[sbSet]:not(.ToggleSwitch), button[sbToggle]:not(.ToggleSwitch)',
         ).button();
         $('[sbButtonGroup]').controlgroup();
         $(
-          '.sbShowOnPbt, .sbShowOnBoxView, .sbShowOnSk, .sbShowOnPt, .sbShowOnPurePt, .sbShowOnLt, .sbShowOnPureLt, .sbShowOnPlt, .sbShowOnSheet, .sbShowOnWhiteboard, .sbShowOnOperator'
+          '.sbShowOnPbt, .sbShowOnBoxView, .sbShowOnSk, .sbShowOnPt, .sbShowOnPurePt, .sbShowOnLt, .sbShowOnPureLt, .sbShowOnPlt, .sbShowOnSheet, .sbShowOnWhiteboard, .sbShowOnOperator',
         ).addClass('sbShowBySheetStyle');
         $('[sbSet], [sbControl], [sbToggle], [sbCall]').not('input, select').addClass('sbClickable');
         WS.AutoRegister($('html'));
@@ -664,8 +670,8 @@ var WS = {
       var [paths, fixedKeys, sortFunction, optionsString] = forEachEntries[0];
       fixedKeys = fixedKeys
         ? fixedKeys.split(',').map(function (s) {
-          return s.trim();
-        })
+            return s.trim();
+          })
         : [];
       var blockedKeys = {};
       var options = {};
@@ -777,10 +783,7 @@ var WS = {
               } else if (!paren.children('[' + field + '="' + safeKey + '"][sbSubId="' + subId + '"]').length) {
                 const newElem = elem.clone(true).attr(field, key).appendTo(paren);
                 if (!options.noContext) {
-                  newElem.attr(
-                    'sbContext',
-                    (key === k[field] ? '/' + k.upTo(field) + ':' : context[0] + field + '(' + key + '):') + context[1]
-                  );
+                  newElem.attr('sbContext', (key === k[field] ? '/' + k.upTo(field) + ':' : context[0] + field + '(' + key + '):') + context[1]);
                 }
                 if (key !== k[field]) {
                   newElem.attr('sbCount', 1).attr(subfieldId, k[field]);
@@ -797,12 +800,13 @@ var WS = {
                     preRegistered: true,
                     element: newElem,
                     triggerFunc: function (k, v, elem) {
-                      if (v != null) {
-                        elem.detach();
-                        _windowFunctions.appendSorted(paren, elem, func, preForeachItem.index() + 1);
-                        if (options.onInsert) {
-                          options.onInsert(WS._enrichContext(newElem), WS._elementValue(newElem), newElem);
-                        }
+                      if (!newElem.parents('html').length) {
+                        return; // has been removed - don't re-add
+                      }
+                      elem.detach();
+                      _windowFunctions.appendSorted(paren, elem, func, preForeachItem.index() + 1);
+                      if (options.onInsert) {
+                        options.onInsert(WS._enrichContext(newElem), WS._elementValue(newElem), newElem);
                       }
                     },
                   });
@@ -930,7 +934,7 @@ var WS = {
         paths = paths.concat(
           params[0].map(function (s) {
             return s + '(*)' + ((params[3] || '').includes('noId') ? '' : '.Id');
-          })
+          }),
         );
       });
     });

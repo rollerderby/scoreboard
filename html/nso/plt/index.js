@@ -3,24 +3,32 @@ WS.AfterLoad(function () {
   $('body')
     .attr('showTeam', _windowFunctions.getParam('team') || 'both')
     .attr('sbSheetStyle', _windowFunctions.getParam('pos') || 'plt')
+    .attr('nextButton', _windowFunctions.getParam('next') || 'both')
     .attr('showNonSkaters', _windowFunctions.checkParam('nonskaters', '1') || null)
+    .attr('noCalledBy', _windowFunctions.checkParam('nocallers', '1') || null)
+    .attr('hideCopy', _windowFunctions.checkParam('hideCopy', '1') || null)
     .attr('swapTeams', _windowFunctions.checkParam('swapTeams', '1') || null);
+  updateColspan();
 
   $('#OptionsDialog #OptionZoomable').toggleClass('sbActive', _windowFunctions.checkParam('zoomable', '1')).button();
   $('#OptionsDialog #OptionNonSkaters').toggleClass('sbActive', _windowFunctions.checkParam('nonskaters', '1')).button();
+  $('#OptionsDialog #OptionNoCallers').toggleClass('sbActive', _windowFunctions.checkParam('nocallers', '1')).button();
+  $('#OptionsDialog #OptionHideCopy').toggleClass('sbActive', _windowFunctions.checkParam('hideCopy', '1')).button();
   $('#OptionsDialog #OptionSwapTeams').toggleClass('sbActive', _windowFunctions.checkParam('swapTeams', '1')).button();
   $('#OptionsDialog [team="' + _windowFunctions.getParam('team') + '"]').addClass('sbActive');
   $('#OptionsDialog [pos="' + $('body').attr('sbSheetStyle') + '"]').addClass('sbActive');
+  $('#OptionsDialog [next="' + $('body').attr('nextButton') + '"]').addClass('sbActive');
   $('#OptionsDialog').dialog({
     modal: true,
     closeOnEscape: true,
-    title: 'Option Editor',
+    title: 'Settings Editor',
     buttons: {
       Close: function () {
         $(this).dialog('close');
       },
     },
     width: '500px',
+    maxHeight: 0.9 * window.innerHeight,
     autoOpen: !_windowFunctions.hasParam('team'),
   });
 
@@ -63,6 +71,13 @@ function openOptionsDialog() {
   $('#OptionsDialog').dialog('open');
 }
 
+function updateColspan() {
+  const pos = $('body').attr('sbSheetStyle');
+  const nextAdj = $('body[nextButton="row"').length;
+  const cols = pos === 'pt' ? 10 : ((pos === 'lt' ? 4 : 14) - nextAdj)
+  $('.Teamname').attr('colspan', cols);
+}
+
 function setTeam(k, v, elem) {
   $('#OptionsDialog [team]').removeClass('sbActive');
   elem.addClass('sbActive');
@@ -76,13 +91,34 @@ function setPos(k, v, elem) {
   elem.addClass('sbActive');
   $('body').attr('sbSheetStyle', elem.attr('pos'));
   _sbUpdateUrl('pos', elem.attr('pos'));
+  updateColspan();
   updateTitle();
+}
+
+function setNextJamBtn(k, v, elem) {
+  $('#OptionsDialog [next]').removeClass('sbActive');
+  elem.addClass('sbActive');
+  $('body').attr('nextButton', elem.attr('next'));
+  _sbUpdateUrl('next', elem.attr('next'));
+  updateColspan();
 }
 
 function setNonSkaters(k, v, elem) {
   elem.toggleClass('sbActive');
   _sbUpdateUrl('nonskaters', elem.filter('.sbActive').length);
   $('body').attr('showNonSkaters', elem.hasClass('sbActive') || null);
+}
+
+function setNoCallers(k, v, elem) {
+  elem.toggleClass('sbActive');
+  _sbUpdateUrl('nocallers', elem.filter('.sbActive').length);
+  $('body').attr('noCalledBy', elem.hasClass('sbActive') || null);
+}
+
+function setHideCopy(k, v, elem) {
+  elem.toggleClass('sbActive');
+  _sbUpdateUrl('hideCopy', elem.filter('.sbActive').length);
+  $('body').attr('hideCopy', elem.hasClass('sbActive') || null);
 }
 
 function setSwapTeams(k, v, elem) {

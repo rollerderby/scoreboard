@@ -80,3 +80,17 @@ function ltsToBtEndText(k) {
   const jam = WS.state[prefix + 'EndJamNumber'];
   return (between ? ' After ' : ' ') + (jam === 0 ? 'ongoing' : 'Jam ' + jam) + (afterSP && !between ? ' after SP ' : ' ');
 }
+
+
+function ltsOpenAnnotationEditor(k) {
+  WS.SetupDialog($('#LtJamAnnotationEditor'), k, {
+    modal: true,
+    title: 'Annotation for P' + k.Period + 'J' + k.Jam,
+    width: '700px',
+    buttons: {
+      Close: function () {
+        $(this).dialog('close');
+      },
+    },
+  });
+}

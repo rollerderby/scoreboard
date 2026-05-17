@@ -88,12 +88,10 @@ public class TeamImplTests {
         g.stopJamTO();
 
         assertTrue(team.isStarPass());
-        assertTrue(team.isFieldingStarPass());
 
         team.execute(Team.ADVANCE_FIELDINGS);
 
         assertTrue(team.isStarPass());
-        assertFalse(team.isFieldingStarPass());
     }
 
     @Test

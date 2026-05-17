@@ -3,33 +3,18 @@
     <table class="Team">
       <thead>
         <tr>
+          <td class="sbShowOnLt AutoFit Count" sbClass="Full: OnTrackCount: == 5" sbDisplay="OnTrackCount"></td>
+          <td colspan="2" class="sbShowOnLt StarPass" sbToggle="StarPass">SP</td>
           <td
-            colspan="5"
-            id="head"
-            class="sbShowOnPureLt"
-            sbDisplay="AlternateName(plt),UniformColor,Name"
-            sbCss="color: Color(plt.fg) | background-color: Color(plt.bg) | text-shadow: Color(plt.glow): sbCssToShadow"
-            sbCall="openOptionsDialog"
-          ></td>
-          <td class="sbShowOnPlt AutoFit">Bench</td>
-          <td class="sbShowOnPlt AutoFit">Jammer</td>
-          <td class="sbShowOnPlt AutoFit">Pivot</td>
-          <td class="sbShowOnPlt AutoFit">Blocker</td>
-          <td class="sbShowOnPlt AutoFit">Box</td>
-          <td class="sbShowOnLt" id="StarPass" sbToggle="StarPass">SP</td>
-          <td class="sbShowOnPt">#</td>
-          <td
-            colspan="9"
-            id="head"
-            class="sbShowOnPurePt sbShowOnPlt sbShowOnSheet"
+            colspan="14"
+            class="Teamname sbShowOnLt sbShowOnPurePt sbShowOnSheet"
             sbDisplay="AlternateName(plt),UniformColor,Name"
             sbCss="color: Color(plt.fg) | background-color: Color(plt.bg) | text-shadow: Color(plt.glow): sbCssToShadow"
             sbCall="openOptionsDialog"
           ></td>
           <td
-            colspan="9"
-            id="head"
-            class="sbShowOnWhiteboard"
+            colspan="10"
+            class="Teamname sbShowOnWhiteboard"
             sbDisplay="AlternateName(whiteboard),Name"
             sbCss="color: Color(whiteboard.fg) | background-color: Color(whiteboard.bg) | text-shadow: Color(whiteboard.glow): sbCssToShadow"
           ></td>
@@ -42,7 +27,7 @@
           class="Skater Code"
           sbForeach="Skater:: rosterNumber: resort=RosterNumber"
           sbAttr="role: Role | rosterNumber: RosterNumber: v + ' ' + k.Skater | warn: PenaltyCount, Penalty(0).Code: sbToWarnLevel"
-          sbClass="Captain: Flags: ==='C'"
+          sbClass="Captain: Flags: ==='C' | MaySub: HasUnserved, PenaltyBox: pltMaySub"
         >
           <td class="Role Bench sbShowOnLt" rowspan="2" sbClass="OnTrack: Role: ==='Bench'" sbSet="Role: 'Bench'">
             <span class="Num" sbDisplay="RosterNumber"></span><span class="Pos" sbDisplay="RosterNumber"></span>
@@ -56,20 +41,21 @@
           <td class="Role Blocker sbShowOnLt" rowspan="2" sbClass="OnTrack: Role: ==='Blocker'" sbCall="pltSetBlocker">
             <span class="Num" sbDisplay="RosterNumber"></span><span class="Pos">B</span>
           </td>
-          <td class="Box Darker sbShowOnLt" rowspan="2" sbClass="Unserved: HasUnserved" sbToggle="PenaltyBox: Serving">Box</td>
+          <td class="Box Darker sbShowOnLt" rowspan="2" sbClass="Unserved: HasUnserved | Serving: PenaltyBox" sbCall="pltToggleBox">Box</td>
           <td
             class="Menu Darker sbShowOnLt"
             rowspan="2"
-            sbClass="Show: Role: sbIsOnTrackRole | Advance: ^FieldingAdvancePending"
-            sbCall="pltAdvanceOrAnnotation"
+            sbClass="Show: Role: sbIsOnTrackRole | AdvancePending: ^FieldingAdvancePending"
+            sbCall="pltAnnotation"
           ></td>
+          <td class="Advance Darker sbShowOnLt" rowspan="2" sbClass="Show: ^FieldingAdvancePending" sbCall="pltAdvance"></td>
           <td class="Number sbShowOnPt" rowspan="2" sbClass="OnTrack: Role: sbIsOnTrackRole" sbDisplay="RosterNumber" sbCall="pltAddPenalty"></td>
           <td
             sbForeach="Penalty: 1,2,3,4,5,6,7,8,9,0: only"
             class="Penalty sbShowOnPt ShowWarn"
             sbDisplay="Code: sbToNbspIfEmpty"
             sbAttr="period: PeriodNumber | jam: JamNumber"
-            sbClass="Serving: Serving | Unserved: Served: sbIsSetAndFalse"
+            sbClass="Serving: Serving | Unserved: Served: sbIsSetAndFalse | sbHasAnnotation: Annotation: sbIsNotEmpty"
             sbCall="pltEditPenalty"
           >
             &nbsp;
@@ -86,7 +72,7 @@
             class="Penalty sbShowOnPt ShowWarn"
             sbDisplay="PeriodNumber,JamNumber: pltToPeriodJam"
             sbAttr="period: PeriodNumber | jam: JamNumber"
-            sbClass="Serving: Serving | Unserved: Served: sbIsSetAndFalse"
+            sbClass="Serving: Serving | Unserved: Served: sbIsSetAndFalse | Set: Code: sbIsNotEmpty | NoOfficial: CallingPosition: sbIsEmpty"
             sbCall="pltEditPenalty"
           >
             &nbsp;
@@ -199,8 +185,47 @@
       </div>
     </div>
   </div>
+  <div id="NoRoleChangeDialog" sbContext="Skater(*)">
+    <div class="sbSegment">
+      <div class="sbGroup sbStack">
+        <span>
+          #<span sbDisplay="RosterNumber"></span> is currently in the <span sbClass="sbHide:PenaltyBox: !">box</span>
+          <span sbClass="sbHide:HasUnserved: !">queue</span> and unable to change role.
+        </span>
+        <span>
+          <button sbCall="pltIgnoreRoleChange">Override</button>
+          <button sbCall="sbCloseDialog">Cancel</button>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div id="SubstituteDialog" sbContext="^Jam(*).TeamJam(*).Fielding(*)">
+    <div class="sbSegment">
+      <div class="sbGroup sbStack">
+        <span>
+          #<span sbDisplay="SkaterNumber"></span> is in the <span sbClass="sbHide:PenaltyBox: !">box</span>
+          <span sbClass="sbHide:HasUnserved: !">queue</span> as <span sbDisplay="Id: pltToPosition"></span>.
+        </span>
+        <span>
+          <button sbCall="pltDoSubstitute">Substitute</button>
+          <button sbCall="sbCloseDialog">Cancel</button>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div id="UnendDialog" sbContext="^Jam(*).TeamJam(*).Fielding(*)">
+    <div class="sbSegment">
+      <div class="sbGroup sbStack">
+        <span>#<span sbDisplay="SkaterNumber"></span> was in the box earlier this jam and has no new penalties marked.</span>
+        <span>
+          <button sbSet="UnendBoxTrip" sbCall="sbCloseDialog">Continue previous box trip</button>
+          <button sbSet="PenaltyBox" sbCall="sbCloseDialog">Start new box trip</button>
+        </span>
+      </div>
+    </div>
+  </div>
   <div id="PenaltyEditor" sbContext="Skater(*).Penalty(*)">
-    <div class="sbSegment" sbPrefix="p:[*]">
+    <div class="sbSegment" class="Main" sbPrefix="p:[*]">
       <div class="sbGroup" sbContext="^^^">
         <span>
           <span>
@@ -259,9 +284,29 @@
           sbCall="sbCloseDialog"
         ></div>
       </div>
+      <div class="sbGroup">Comment: <input type="text" size="40" sbControl="Annotation" /></div>
       <div class="sbGroup">
         <button sbClass="sbActive: Served" sbSet="ForceServed: !elem.hasClass('sbActive')">Served</button>
         <button sbSet="Remove" sbCall="sbCloseDialog">Delete</button>
+      </div>
+    </div>
+    <div class="sbSegment CalledBy" sbPrefix="p:[*]">
+      <div class="sbGroup sbSubHeader">Called By <button class="sbNoDistract" sbCall="pltToggleReassign">Edit Pos</button></div>
+      <div
+        class="sbGroup sbStack OfficialPosition"
+        sbContext="^^^"
+        sbForeach="OfficialPosition:IPRR,IPRF,JR1,JR2,OPRF,OPRM,OPRR,PBM,JT"
+        sbClass="HasOfficial: CurrentOfficial: sbIsNotEmpty | sbActive: p.CallingPosition: == k.Game + '_' + elem.attr('OfficialPosition')"
+        sbSet="p.CallingPosition: k.Game + '_' + elem.attr('OfficialPosition')"
+      >
+        <span sbDisplay="Name"></span>
+        <span class="OnNoEdit" sbDisplay="CurrentOfficialName"></span>
+        <select class="OnEdit" sbControl="CurrentOfficial">
+          <option value=""></option>
+          <option sbContext="^" sbForeach="Ref" sbAttr="value: Id" sbDisplay="Name" sbClass="Filter: CurrentPosition: sbIsNotEmpty"></option>
+          <option sbContext="^" sbForeach="Nso" sbAttr="value: Id" sbDisplay="Name" sbClass="Filter: CurrentPosition: sbIsNotEmpty"></option>
+        </select>
+        <button class="OnEdit" sbClass="sbHide: Removable: !" sbSet="Remove">Remove Position</button>
       </div>
     </div>
   </div>
@@ -269,17 +314,20 @@
   <div id="AnnotationEditor" sbContext="^Jam(*).TeamJam(*).Fielding(*)">
     <div class="sbSegment">
       <div class="sbGroup" sbPrefix="f:[*]">
-        <span sbClass="sbHide: PenaltyBox: !">Substitute: </span>
-        <span sbClass="sbHide: f.PenaltyBox: !" sbContext="/ScoreBoard.Game([game]).Team([TeamJam])" sbAttr="oldNumber: f.SkaterNumber" sbButtonGroup>
+        <span sbClass="sbHide: PenaltyBox,HasUnserved: pltSubable">Substitute: </span>
+        <span sbClass="sbHide: f.PenaltyBox,HasUnserved: pltSubable" sbContext="/ScoreBoard.Game([game]).Team([TeamJam])" sbButtonGroup>
           <button
             sbForeach="Skater:: rosterNumber: resort=RosterNumber"
             sbAttr="rosterNumber: RosterNumber"
             sbDisplay="RosterNumber"
             sbClass="sbActive: f.Skater: === elem.attr('Skater') | sbHide: Role: === 'NotInGame' | sbIneligible: Role: === 'Ineligible'"
-            sbSet="f.Annotation: sbSubAnn | f.Skater: elem.attr('Skater')"
+            sbSet="f.Skater: elem.attr('Skater'): change"
             sbCall="sbCloseDialog"
           ></button>
         </span>
+        <button sbClass="sbHide: /ScoreBoard.Game([game]).Team([TeamJam]).FieldingAdvancePending: !" sbToggle="SitFor3" sbCall="sbCloseDialog">
+          Sit out next 3
+        </button>
         <input type="text" size="60" id="annotation" sbControl="Annotation:: sbToNullIfEmpty" />
         <button sbClass="sbHide: PenaltyBox, CurrentBoxTrip: pltNoUnend" sbSet="UnendBoxTrip" sbCall="sbCloseDialog">Unend Box Trip</button>
         <span sbClass="sbHide: CurrentBoxTrip: sbIsEmpty">Quick Annotation: </span>

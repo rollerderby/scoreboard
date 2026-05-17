@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html sbPrefix="$: ScoreBoard.Settings.Setting(Overlay.Interactive : )" sbCss="font-size: $.Scaling: 'calc(' + v + ' * .12pt)'">
   <head>
     <title>Stream Overlay | CRG ScoreBoard</title>
@@ -37,7 +37,7 @@
               <div class="JammerBox ShowInJam Clock" sbCss="color: Color(overlay.fg) | background: Color(overlay.bg)">
                 <div
                   sbForeach="Position: Jammer, Pivot, Blocker1, Blocker2, Blocker3: only"
-                  sbClass="Jamming: ^StarPass: ovlIsJamming | InBox: PenaltyBox | Penalized: CurrentPenalties: !== '' | HasClock: PenaltyTime: sbIsNotEmpty"
+                  sbClass="Jamming: ^StarPass, InJam: ovlIsJamming | InBox: PenaltyBox | Penalized: CurrentPenalties: !== '' | HasClock: PenaltyTime: sbIsNotEmpty"
                 >
                   <div class="Number" sbDisplay="RosterNumber"></div>
                   <div class="Name" sbDisplay="Name"></div>
@@ -61,7 +61,8 @@
 
           <div
             class="ClockBarMiddle Wrapper SlideDown ShowInIntermission ShowInFinal ShowInBetweenJams ShowInNoClock Box BigName ClockDescription"
-            sbDisplay="Clock(Intermission).Number, Clock(*).Running, TimeoutOwner, OfficialReviews, ^Settings.Setting(ScoreBoard.Intermission.*), OfficialScore, ClockDuringFinalScore, Rule(Period.Number): ovlToClockType"
+            sbClass="Five: FiveSeconds"
+            sbDisplay="Clock(Intermission).Number, Clock(*).Running, TimeoutOwner, OfficialReviews, ^Settings.Setting(ScoreBoard.Intermission.*), OfficialScore, ClockDuringFinalScore, Rule(Period.Number), InJam, FiveSeconds, FiveIndicator: ovlToClockType"
           ></div>
           <div class="ClockBarBottom Wrapper SlideDown ShowInIntermission ShowInJam ShowInBetweenJams Row BottomRow barBackgroundBottom">
             <div

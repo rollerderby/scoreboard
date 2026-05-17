@@ -1,10 +1,72 @@
-WS.Register(['ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').CurrentJam', 'ScoreBoard.Rulesets.Ruleset(*).Parent']);
+WS.Register([
+  'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').CurrentJam',
+  'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').UpcomingJamNumber',
+  'ScoreBoard.Rulesets.Ruleset(*).Parent',
+  'ScoreBoard.Rulesets.Default',
+]);
 
 function opToggleKeyEdit(k, v, elem) {
   elem.toggleClass('sbActive');
   _crgKeyControls.editKeys(elem.hasClass('sbActive'));
   $('#KeyEditHelp').toggleClass('sbHide', !elem.hasClass('sbActive'));
   elem.parent().siblings().addBack().removeClass('LastGroup').filter(':visible').last().addClass('LastGroup');
+}
+
+function opOpenAutomationSettings() {
+  WS.SetupDialog($('#AutomationSettingsDialog'), 'ScoreBoard.Settings', {
+    title: 'Automation Settings',
+    width: '350px',
+    modal: true,
+    buttons: {
+      Close: function () {
+        $(this).dialog('close');
+      },
+    },
+  });
+}
+
+function opAutomationSettingMismatch() {
+  var opPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + _windowFunctions.getParam('operator') + '.';
+  var settingsPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.';
+  var mismatch = false;
+  ['AutoStart', 'AutoStart5', 'Auto5', 'AutoEndJam', 'AutoEndTTO'].forEach(function (setting) {
+    if (WS.state[opPrefix + setting + ')'] !== WS.state[settingsPrefix + setting + ')']) {
+      mismatch = true;
+    }
+  });
+  return mismatch;
+}
+
+function opSetAutomationSboDefaults() {
+  WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.AutoStart)', '');
+  WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.AutoStart5)', '');
+  WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Auto5)', 'false');
+  WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.AutoEndJam)', 'false');
+  WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.AutoEndTTO)', 'true');
+}
+
+function opSetAutomationEjtDefaults() {
+  WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.AutoStart)', 'Timeout');
+  WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.AutoStart5)', 'Jam');
+  WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Auto5)', 'true');
+  WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.AutoEndJam)', 'false');
+  WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.AutoEndTTO)', 'true');
+}
+
+function opSetAutomationOperatorDefaults() {
+  var opPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + _windowFunctions.getParam('operator') + '.';
+  var settingsPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.';
+  ['AutoStart', 'AutoStart5', 'Auto5', 'AutoEndJam', 'AutoEndTTO'].forEach(function (setting) {
+    WS.Set(settingsPrefix + setting + ')', WS.state[opPrefix + setting + ')']);
+  });
+}
+
+function opStoreAutomationOperatorDefaults() {
+  var opPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator.' + _windowFunctions.getParam('operator') + '.';
+  var settingsPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.';
+  ['AutoStart', 'AutoStart5', 'Auto5', 'AutoEndJam', 'AutoEndTTO'].forEach(function (setting) {
+    WS.Set(opPrefix + setting + ')', WS.state[settingsPrefix + setting + ')']);
+  });
 }
 
 function opSuddenScoringDisabled(k) {
@@ -31,6 +93,11 @@ function opToggleOperatorSetting(k, v, elem) {
 function opToggleSwapTeams(k, v, elem) {
   elem.toggleClass('sbActive');
   $('body').attr('swapTeams', elem.hasClass('sbActive') || null);
+  $('[id^=Team]').each(function (i, e) {
+    const id = $(e).attr('id');
+    $(e).attr('id', 'Team' + (3 - Number(id[4])) + id.substring(5));
+  });
+  _crgKeyControls.setupKeyControls(_windowFunctions.getParam('operator'));
 }
 
 function opOpenNewGameDialog() {
@@ -59,6 +126,10 @@ function opIsStartableGame(k, v) {
 
 function opFetchGame(k, v, elem) {
   return elem.siblings('select').val();
+}
+
+function opIsDefaultRuleset(k, v) {
+  return v === WS.state['ScoreBoard.Rulesets.Default'];
 }
 
 function opStartMidGame() {
@@ -288,7 +359,7 @@ function opPerHasPoints(k) {
 }
 
 function opInsertBeforeUpcoming(k) {
-  WS.Set(k.upTo('Game') + '.Jam)' + WS.state[k.upTo('Game') + '.UpcomingJamNumber'] + ').InsertBefore', true);
+  WS.Set(k.upTo('Game') + '.Jam(' + WS.state[k.upTo('Game') + '.UpcomingJamNumber'] + ').InsertBefore', true);
 }
 
 function opOpenTimeoutDialog(k) {

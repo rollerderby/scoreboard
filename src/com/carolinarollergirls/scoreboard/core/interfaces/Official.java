@@ -23,6 +23,8 @@ public interface Official extends ScoreBoardEventProvider {
     public static final Value<String> CERT = new Value<>(String.class, "Cert", "", preparedProps);
     public static final Value<Team> P1_TEAM = new Value<>(Team.class, "P1Team", null, props);
     public static final Value<Boolean> SWAP = new Value<>(Boolean.class, "Swap", false, props);
+    public static final Value<OfficialPosition> CURRENT_POSITION =
+        new Value<>(OfficialPosition.class, "CurrentPosition", null, props);
     public static final Value<PreparedOfficial> PREPARED_OFFICIAL =
         new Value<>(PreparedOfficial.class, "PreparedOfficial", null, props);
 

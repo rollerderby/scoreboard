@@ -149,9 +149,14 @@
             <option sbForeach="Nso:: name: resort=Name" sbAttr="name: Name | value: Id" sbDisplay="Name"></option>
           </select>
         </th>
-        <th></th>
-        <th></th>
-        <th></th>
+        <th colspan="3" class="Crew">
+          <select sbControl="OfficialsCrew">
+            <option value=""></option>
+            <option sbContext="^" sbForeach="OfficialsCrew:: name: resort=Name" sbAttr="name: Name | value: Id" sbDisplay="Name"></option>
+          </select>
+          <button sbSet="LoadOfficialsCrew">Load</button>
+          <button sbSet="StoreOfficialsCrew">Store</button>
+        </th>
       </tr>
       <tr class="sbSubHeader">
         <th>Role</th>
@@ -234,6 +239,16 @@
               <option sbForeach="Team: 1,2: only" sbContext="^" sbAttr="value: Id" sbDisplay="UniformColor, Name"></option>
             </select>
             <button class="Swap" sbToggle="Swap">Swap</button>
+          </span>
+          <span sbClass="sbHide: Role: igrfIsNotPackRef">
+            <br /><select sbControl="CurrentPosition">
+              <option value=""></option>
+              <option sbClass="sbHide: Role: === 'Outside Pack Referee'" sbAttr="value: -: k.Game + '_IPRR'">IPR Rear</option>
+              <option sbClass="sbHide: Role: === 'Outside Pack Referee'" sbAttr="value: -: k.Game + '_IPRF'">IPR Front</option>
+              <option sbClass="sbHide: Role: === 'Inside Pack Referee'" sbAttr="value: -: k.Game + '_OPRR'">OPR Rear</option>
+              <option sbClass="sbHide: Role: === 'Inside Pack Referee'" sbAttr="value: -: k.Game + '_OPRM'">OPR Middle</option>
+              <option sbClass="sbHide: Role: === 'Inside Pack Referee'" sbAttr="value: -: k.Game + '_OPRF'">OPR Front</option>
+            </select>
           </span>
         </td>
         <td colspan="2" class="Prepared" sbClass="sbHide: PreparedOfficial: sbIsEmpty">

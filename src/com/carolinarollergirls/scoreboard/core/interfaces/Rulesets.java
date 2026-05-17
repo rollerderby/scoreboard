@@ -21,6 +21,8 @@ public interface Rulesets extends ScoreBoardEventProvider {
 
     public static Collection<Property<?>> props = new ArrayList<>();
 
+    public static final Value<Ruleset> DEFAULT = new Value<>(Ruleset.class, "Default", null, props);
+
     public static final Child<RuleDefinition> RULE_DEFINITION =
         new Child<>(RuleDefinition.class, "RuleDefinition", props);
     public static final Child<Ruleset> RULESET = new Child<>(Ruleset.class, "Ruleset", props);

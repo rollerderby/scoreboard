@@ -14,6 +14,8 @@ body[showTeam="2"]>.Content { grid-template-columns: 0 1fr; }
 .Content>.Input { grid-row: 2 / 3; }
 .Content>.Sheet { grid-row: 4 / 5; }
 
+body[nextButton="col"] .Content>.JamAdvance { display: none; }
 .Content>.JamAdvance>button { width: 100%; }
 
-#OptionsDialog .Teams { flex-direction: column; } 
+#OptionsDialog .Teams { flex-direction: column; }
+#OptionsDialog { overflow-y: scroll; }

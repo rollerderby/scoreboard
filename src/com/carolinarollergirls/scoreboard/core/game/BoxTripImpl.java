@@ -184,12 +184,25 @@ public final class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> impl
         }
         if (prop == CURRENT_FIELDING && value != null) {
             Fielding f = (Fielding) value;
-            if (last == null || ((Fielding) last).getTeamJam().getProviderId() != f.getTeamJam().getProviderId() &&
-                                    !f.getTeamJam().isStarPass()) {
-                set(START_AFTER_S_P, false);
-            }
             f.set(Fielding.CURRENT_BOX_TRIP, this);
             f.set(Fielding.PENALTY_BOX, get(IS_CURRENT));
+        }
+        if (prop == START_FIELDING && value != null) {
+            Fielding f = (Fielding) value;
+            set(JAMMER, f.getCurrentRole() == Role.JAMMER);
+            if (get(JAMMER)) {
+                // check for unassigned jammer box trip and assign it to other jammer if it exists
+                for (BoxTrip bt : game.getAll(Team.BOX_TRIP)) {
+                    if (bt.get(JAMMER)) {
+                        bt.add(FIELDING, getTeam()
+                                             .getOtherTeam()
+                                             .getPosition(getTeam().getOtherTeam().isStarPass() ? FloorPosition.PIVOT
+                                                                                                : FloorPosition.JAMMER)
+                                             .getCurrentFielding());
+                    }
+                }
+            }
+            if (!f.getTeamJam().isStarPass()) { set(START_AFTER_S_P, false); }
         }
         if (prop == TIMING_STOPPED && getClock() != null) {
             if ((Boolean) value) {
@@ -386,17 +399,23 @@ public final class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> impl
 
     @Override
     public void end() {
-        set(WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
         Skater s = get(CURRENT_SKATER);
-        if (!game.isInJam() && getCurrentFielding().getTeamJam().isRunningOrUpcoming()) {
-            if (getTeam().hasFieldingAdvancePending()) { getCurrentFielding().setSkater(null); }
-            remove(FIELDING, getCurrentFielding());
+
+        if (get(WALLTIME_END) == 0L) { // first call to end (more may come if position is assigned later)
+            set(WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
+            set(JAM_CLOCK_END, game.isInJam() ? game.getClock(Clock.ID_JAM).getTimeElapsed() : 0L);
+            if (!game.isInJam() && getCurrentFielding() != null &&
+                getCurrentFielding().getTeamJam().isRunningOrUpcoming()) {
+                if (getTeam().hasFieldingAdvancePending()) { getCurrentFielding().setSkater(null); }
+                remove(FIELDING, getCurrentFielding());
+            }
         }
-        if (getCurrentFielding() == null) {
-            // trip ended in the same interjam as it started -> ignore it
+
+        if (getCurrentFielding() == null && !game.isInJam() && get(SHORTENED) == 0) {
+            // trip ended in the same interjam as it started without jammer swap -> ignore it
             if (s != null) { s.set(Skater.EXTRA_PENALTY_TIME, extraTimeAdded); }
             delete();
-        } else {
+        } else if (getCurrentFielding() != null) {
             set(END_FIELDING, get(CURRENT_FIELDING));
             set(END_BETWEEN_JAMS, !game.isInJam() && !getTeam().hasFieldingAdvancePending() &&
                                       getEndFielding().getTeamJam().isRunningOrEnded());

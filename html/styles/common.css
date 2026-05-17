@@ -119,6 +119,13 @@ div.sbSheets { height: calc(100% - 10px); align-items: flex-start; flex-wrap: wr
 .sbHide.sbHide.sbHide.sbHide { display: none; } 
 .sbTemplates { display: none; }
 
+.sbHasTooltip { position: relative; }
+.sbTooltip { visibility: hidden; background-color: black; color: #fff; text-align: center; padding: 5px; border-radius: 6px; bottom: 100%; left: 50%; width: max-content; max-width: max(100%, 15em); transform: translateX(-50%); position: absolute; z-index: 1; } 
+:hover>.sbTooltip:not(:hover) { visibility: visible; } 
+.sbTooltip::after { content: " "; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: black transparent transparent transparent; } 
+.sbTooltip.Below { top: 100%; bottom: initial; } 
+.sbTooltip.Below::after { bottom: 100%; top: initial; border-color: transparent transparent black transparent; }
+
 [sbSheetStyle="pbt"] .sbShowBySheetStyle:not(.sbShowOnPbt) { display: none; }
 [sbSheetStyle="boxview"] .sbShowBySheetStyle:not(.sbShowOnBoxView) { display: none; }
 [sbSheetStyle="sk"] .sbShowBySheetStyle:not(.sbShowOnSk) { display: none; }

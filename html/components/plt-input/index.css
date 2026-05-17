@@ -14,13 +14,17 @@
 
 /* header row */
 .PltInput>.Team thead td { height: 1em; font-weight: bold; background-color: #cccccc; color: #333333; border-right: none; border-top: none; } 
-.PltInput>.Team #StarPass { background-color: #cee7ff; font-weight: normal; } 
-.PltInput>.Team #StarPass.sbActive { background-color: var(--element-active-bg); } 
+.PltInput>.Team .Count { background-color: #ffff00; }
+.PltInput>.Team .Count.Full { background-color: #cee7ff; }
+.PltInput>.Team .StarPass { background-color: #cee7ff; font-weight: normal; } 
+.PltInput>.Team .StarPass.sbActive { background-color: var(--element-active-bg); } 
 [sbSheetStyle="whiteboard"] .PltInput>.Team thead td { background-color: #000; color: #FFF; } 
 
 .PltInput>.Team .Skater[role="NotInGame"] { display: none; }
 
+/* show/hide options */
 body:not([showNonSkaters]) .PltInput>.Team .NonSkater { display: none; }
+body[nextButton="row"] .PltInput>.Team .Advance { display: none; }
 
 /* LT part text & colors */
 .PltInput>.Team .Role { background-color: #FFF; } 
@@ -31,12 +35,14 @@ body:not([showNonSkaters]) .PltInput>.Team .NonSkater { display: none; }
 .PltInput>.Team .Darker .Darker { background-color: #cee7ff; } 
 .PltInput>.Team .Box.Unserved { background-color: var(--element-unserved-bg); color: var(--element-unserved-fg); } 
 .PltInput>.Team .Box.Serving { background-color: var(--element-inbox-bg); color: var(--element-inbox-fg); } 
-.PltInput>.Team .Menu:not(.Show):not(.Advance) { visibility: hidden; }
-.PltInput>.Team .Menu:not(.Advance)::after { content: "☰"; } 
-.PltInput>.Team [warn="3"] .Menu.Darker { background-color: var(--element-clickme-bg); color: var(--element-clickme-fg); }
-.PltInput>.Team .Menu.Advance { background-color: var(--element-clickme-bg); color: var(--element-clickme-fg); vertical-align: bottom; }
+.PltInput>.Team .Menu:not(.Show), .PltInput>.Team .Advance:not(.Show) { visibility: hidden; }
+.PltInput>.Team .Menu::after { content: "☰"; }
+.PltInput>.Team .Menu.AdvancePending::after { content: "3"; }
+.PltInput>.Team tr.MaySub .Menu:not(.AdvancePending)::after { content: "Sub"; }
+.PltInput>.Team tr[warn="3"] .Menu:not(.AdvancePending) { background-color: var(--element-clickme-bg); color: var(--element-clickme-fg); }
+.PltInput>.Team tr .Advance.Advance { background-color: var(--element-clickme-bg); color: var(--element-clickme-fg); vertical-align: bottom; }
 .PltInput>.Team tr:nth-child(6n+1) .Advance::after { content: "Go To"; } 
-.PltInput>.Team tr:nth-child(6n+3) .Advance::after { content: "Next Jam"; } 
+.PltInput>.Team tr:nth-child(6n+3) .Advance::after { content: "Next Jam"; }
 
 /* PT part text & colors */
 .PltInput>.Team .Number { font-weight: bold; background-color: #f4f4f4; } 
@@ -55,6 +61,8 @@ body:not([showNonSkaters]) .PltInput>.Team .NonSkater { display: none; }
 .PltInput>.Team .Skater .Penalty.Unserved { background-color: var(--element-unserved-bg); color: var(--element-unserved-fg); } 
 .PltInput>.Team .Captain .Number { position: relative; }
 .PltInput>.Team .Captain .Number::before { content: "C"; font-weight: normal; position: absolute; left: .2em; top: .15em; }
+body:not([noCalledBy]) .PltInput>.Team .Set.NoOfficial { position: relative; background-clip: padding-box; } 
+body:not([noCalledBy]) .PltInput>.Team .Set.NoOfficial::after { position: absolute; left: 2px; top: 2px; height: 5px; width: 5px; background-color: blue; content: ""; } 
 
 /* joint text & colors */
 .PltInput>.Team .Skater .OnTrack { background-color: #70ff70; } 
@@ -65,10 +73,19 @@ body:not([showNonSkaters]) .PltInput>.Team .NonSkater { display: none; }
 .PltInput>.Team .Code .Unserved::before { content: "!"; } 
 .PltInput>.Team .Code .Serving::before { content: "\203E" /* overline */; } 
 
+#PenaltyEditor { display: flex; }
 #PenaltyEditor .Codes { flex-wrap: wrap; gap: 0.5em; }
 #PenaltyEditor .Codes>div { width: 150px; height: 90px; border: 1px solid black; font-weight: bold; background-color: #fff; } 
 #PenaltyEditor .Codes>div.Selected { background-color: #F00; color: #FFF; } 
 #PenaltyEditor .Codes>div .Code { font-size: 1.2em; background-color: #FAA; color: #000; } 
 #PenaltyEditor .Codes>div .Description { font-size: 0.75em; } 
+
+body[nocalledby] .CalledBy { display: none; }
+#PenaltyEditor .CalledBy { max-height: 90dvh; width: 400px; overflow: scroll; }
+#PenaltyEditor .CalledBy:not(.Reassign) .OfficialPosition.HasOfficial .OnEdit { display: none; }
+#PenaltyEditor .CalledBy:not(.Reassign) .OfficialPosition.HasOfficial .OnEdit { display: none; }
+#PenaltyEditor .CalledBy:not(.Reassign) .OfficialPosition:not(.HasOfficial) .OnNoEdit { display: none; }
+#PenaltyEditor .CalledBy:not(.Reassign) .Filter { display: none; }
+#PenaltyEditor .CallledBy.Reassign .OnNoEdit { display: none; }
 
 #AnnotationEditor .sbGroup { flex-wrap: wrap; gap: 0.5em; }

@@ -67,6 +67,8 @@ public final class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements
         setCopy(NO_PIVOT, this, RUNNING_OR_UPCOMING_TEAM_JAM, TeamJam.NO_PIVOT, false);
         setCopy(STAR_PASS, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.STAR_PASS, false);
         setCopy(STAR_PASS_TRIP, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.STAR_PASS_TRIP, false);
+        setCopy(ALL_BLOCKERS_SET, this, PLT_TEAM_JAM, TeamJam.ALL_BLOCKERS_SET, true);
+        setCopy(ON_TRACK_COUNT, this, PLT_TEAM_JAM, TeamJam.ON_TRACK_COUNT, true);
         scoreListener = setRecalculated(SCORE)
                             .addIndirectSource(this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.TOTAL_SCORE)
                             .addSource(this, SCORE_ADJUSTMENT)
@@ -103,11 +105,6 @@ public final class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements
         setCopy(ALTERNATE_NAME, this, PREPARED_TEAM, ALTERNATE_NAME, false, PREPARED_TEAM_CONNECTED);
         setCopy(COLOR, this, PREPARED_TEAM, COLOR, false, PREPARED_TEAM_CONNECTED);
         setCopy(ACTIVE_SCORE_ADJUSTMENT_AMOUNT, this, ACTIVE_SCORE_ADJUSTMENT, ScoreAdjustment.AMOUNT, false);
-        setRecalculated(ALL_BLOCKERS_SET)
-            .addSource(getPosition(FloorPosition.PIVOT), Position.SKATER)
-            .addSource(getPosition(FloorPosition.BLOCKER1), Position.SKATER)
-            .addSource(getPosition(FloorPosition.BLOCKER2), Position.SKATER)
-            .addSource(getPosition(FloorPosition.BLOCKER3), Position.SKATER);
         providers.put(skaterListener, null);
     }
     public TeamImpl(Game g, Team source) {
@@ -277,14 +274,8 @@ public final class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements
             for (Skater s : getAll(SKATER)) { count += s.get(Skater.PENALTY_COUNT); }
             return count;
         }
-        if (prop == ALL_BLOCKERS_SET) {
-            for (Position p : getAll(POSITION)) {
-                if (p.getFloorPosition() == FloorPosition.JAMMER) { continue; }
-                if (p.getSkater() == null) { return false; }
-            }
-            return true;
-        }
-        if ((prop == RUNNING_OR_UPCOMING_TEAM_JAM || prop == RUNNING_OR_ENDED_TEAM_JAM) && flag != Flag.SPECIAL_CASE) {
+        if ((prop == RUNNING_OR_UPCOMING_TEAM_JAM || prop == RUNNING_OR_ENDED_TEAM_JAM || prop == PLT_TEAM_JAM) &&
+            flag != Flag.SPECIAL_CASE) {
             return last;
         }
         return value;
@@ -666,17 +657,21 @@ public final class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements
     }
 
     @Override
+    public TeamJam getPltTeamJam() {
+        return get(PLT_TEAM_JAM);
+    }
+
+    @Override
     public void updateTeamJams() {
         synchronized (coreLock) {
             set(RUNNING_OR_ENDED_TEAM_JAM, game.getCurrentPeriod().getCurrentJam().getTeamJam(subId),
                 Flag.SPECIAL_CASE);
             set(RUNNING_OR_UPCOMING_TEAM_JAM,
                 game.isInJam() ? getRunningOrEndedTeamJam() : getRunningOrEndedTeamJam().getNext(), Flag.SPECIAL_CASE);
+            set(PLT_TEAM_JAM, hasFieldingAdvancePending() ? getRunningOrEndedTeamJam() : getRunningOrUpcomingTeamJam(),
+                Flag.SPECIAL_CASE);
             for (Position p : getAll(POSITION)) { p.updateCurrentFielding(); }
-            for (Skater v : getAll(SKATER)) {
-                v.updateFielding(hasFieldingAdvancePending() ? getRunningOrEndedTeamJam()
-                                                             : getRunningOrUpcomingTeamJam());
-            }
+            for (Skater v : getAll(SKATER)) { v.updateFielding(get(PLT_TEAM_JAM)); }
         }
     }
 
@@ -795,7 +790,7 @@ public final class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements
 
     @Override
     public void field(Skater s, Role r) {
-        field(s, r, hasFieldingAdvancePending() ? getRunningOrEndedTeamJam() : getRunningOrUpcomingTeamJam());
+        field(s, r, getPltTeamJam());
     }
 
     @Override
@@ -917,14 +912,6 @@ public final class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements
         return get(DISPLAY_LEAD);
     }
 
-    protected boolean isFieldingStarPass() {
-        if (hasFieldingAdvancePending()) {
-            return getRunningOrEndedTeamJam().isStarPass();
-        } else {
-            return getRunningOrUpcomingTeamJam().isStarPass();
-        }
-    }
-
     @Override
     public boolean isStarPass() {
         return get(STAR_PASS);
@@ -968,7 +955,7 @@ public final class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements
 
     FloorPosition nextReplacedBlocker = FloorPosition.PIVOT;
 
-    private Timer tripScoreTimer = new Timer();
+    private Timer tripScoreTimer = new Timer("trip score timer");
     private TimerTask tripScoreTimerTask = new TimerTask() {
         @Override
         public void run() {} // dummy, so the variable is not

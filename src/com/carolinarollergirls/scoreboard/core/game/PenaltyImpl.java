@@ -3,6 +3,7 @@ package com.carolinarollergirls.scoreboard.core.game;
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
+import com.carolinarollergirls.scoreboard.core.interfaces.OfficialPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
@@ -21,6 +22,7 @@ public final class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penal
         set(TIME, ScoreBoardClock.getInstance().getCurrentWalltime());
         setInverseReference(JAM, Jam.PENALTY);
         setInverseReference(BOX_TRIP, BoxTrip.PENALTY);
+        setInverseReference(CALLING_POSITION, OfficialPosition.PENALTIES);
         addWriteProtectionOverride(TIME, Source.ANY_FILE);
         setRecalculated(SERVED).addSource(this, BOX_TRIP).addSource(this, FORCE_SERVED);
         setCopy(SERVING, this, BOX_TRIP, BoxTrip.IS_CURRENT, true);
@@ -85,6 +87,10 @@ public final class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penal
             }
         }
         if (prop == SERVED) { parent.set(Skater.HAS_UNSERVED, (Boolean) value); }
+        if (prop == CALLING_POSITION) {
+            OfficialPosition p = (OfficialPosition) value;
+            set(CALLING_OFFICIAL, p == null ? null : p.get(OfficialPosition.CURRENT_OFFICIAL));
+        }
     }
 
     @Override

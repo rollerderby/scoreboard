@@ -9,6 +9,8 @@ import java.util.stream.Stream;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Official;
+import com.carolinarollergirls.scoreboard.core.interfaces.OfficialPosition;
+import com.carolinarollergirls.scoreboard.core.interfaces.OfficialsCrew;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedOfficial;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
@@ -24,6 +26,7 @@ public final class OfficialImpl extends ScoreBoardEventProviderImpl<Official> im
         game = g;
         addProperties(props);
         addProperties(preparedProps);
+        setInverseReference(CURRENT_POSITION, OfficialPosition.CURRENT_OFFICIAL);
     }
     public OfficialImpl(Game g, Official source) {
         this(g, UUID.randomUUID().toString(), source.getType());
@@ -33,6 +36,14 @@ public final class OfficialImpl extends ScoreBoardEventProviderImpl<Official> im
         set(CERT, source.get(CERT));
         if (source.get(P1_TEAM) != null) { set(P1_TEAM, g.getTeam(source.get(P1_TEAM).getProviderId())); }
         set(SWAP, source.get(SWAP));
+        setInverseReference(CURRENT_POSITION, OfficialPosition.CURRENT_OFFICIAL);
+    }
+    public OfficialImpl(Game g, OfficialsCrew.Member source) {
+        this(g, UUID.randomUUID().toString(), source.getType() == OfficialsCrew.NSO ? Game.NSO : Game.REF);
+        set(ROLE, source.get(OfficialsCrew.Member.ROLE));
+        set(PREPARED_OFFICIAL, source.get(OfficialsCrew.Member.PREPARED_OFFICIAL));
+        if (source == source.getParent().get(OfficialsCrew.HEAD_NSO)) { g.set(Game.HEAD_NSO, this); }
+        if (source == source.getParent().get(OfficialsCrew.HEAD_REF)) { g.set(Game.HEAD_REF, this); }
     }
 
     @Override
@@ -53,9 +64,13 @@ public final class OfficialImpl extends ScoreBoardEventProviderImpl<Official> im
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == ROLE && value != null) {
             String role = (String) value;
-            if (ROLE_HR.equals(role)) { game.set(Game.HEAD_REF, this); }
-            if (ROLE_HNSO.equals(role)) { game.set(Game.HEAD_NSO, this); }
-            if (ROLE_PLT.equals(role) || ROLE_LT.equals(role) || ROLE_SK.equals(role) || ROLE_JR.equals(role)) {
+            if (ROLE_HR.equals(role)) {
+                game.set(Game.HEAD_REF, this);
+                set(CURRENT_POSITION, game.getOfficialPosition("IPRR"));
+            } else if (ROLE_HNSO.equals(role)) {
+                game.set(Game.HEAD_NSO, this);
+            } else if (ROLE_PLT.equals(role) || ROLE_LT.equals(role) || ROLE_SK.equals(role) || ROLE_JR.equals(role) ||
+                       ROLE_PBT.equals(role)) {
                 for (Official other : game.getAll(ownType)) {
                     if (other != this && role.equals(other.get(ROLE))) {
                         set(SWAP, other.get(SWAP));
@@ -66,11 +81,32 @@ public final class OfficialImpl extends ScoreBoardEventProviderImpl<Official> im
                 }
                 // first Official with this position
                 set(SWAP, ROLE_SK.equals(role) || ROLE_JR.equals(role));
+
+                Team p1Team = get(P1_TEAM);
+                if (p1Team != null) {
+                    set(CURRENT_POSITION,
+                        game.getOfficialPosition(
+                            role.replaceAll("[^\\p{Lu}]", "") +
+                            (get(SWAP) && game.getCurrentPeriodNumber() == 2 ? p1Team.getOtherTeam() : p1Team)
+                                .getProviderId()));
+                }
+            } else if (ROLE_IPR.equals(role)) {
+                set(CURRENT_POSITION, game.getOfficialPosition("IPRF"));
+            } else if (ROLE_ALTR.equals(role)) {
+                set(CURRENT_POSITION, game.getOfficialPosition("RA"));
+            } else if (!"".equals(role) && getType() == Game.NSO) {
+                set(CURRENT_POSITION, game.getOfficialPosition(role.replaceAll("[^\\p{Lu}]", "")));
             }
         }
         if (prop == SWAP && get(ROLE) != null) {
             for (Official other : game.getAll(ownType)) {
                 if (other != this && get(ROLE).equals(other.get(ROLE))) { other.set(SWAP, (Boolean) value); }
+            }
+            if (get(P1_TEAM) != null && game.getCurrentPeriodNumber() == 2) {
+                set(CURRENT_POSITION,
+                    game.getOfficialPosition(
+                        get(ROLE).replaceAll("[^\\p{Lu}]", "") +
+                        ((Boolean) value ? get(P1_TEAM).getOtherTeam() : get(P1_TEAM)).getProviderId()));
             }
         }
         if (prop == P1_TEAM && value != null && !"".equals(get(ROLE))) {
@@ -87,6 +123,10 @@ public final class OfficialImpl extends ScoreBoardEventProviderImpl<Official> im
                 }
             }
             if (partner != null) { partner.set(P1_TEAM, t.getOtherTeam()); }
+            set(CURRENT_POSITION,
+                game.getOfficialPosition(
+                    get(ROLE).replaceAll("[^\\p{Lu}]", "") +
+                    (get(SWAP) && game.getCurrentPeriodNumber() == 2 ? t.getOtherTeam() : t).getProviderId()));
         }
         if (prop == NAME && get(PREPARED_OFFICIAL) == null && !"".equals(value) &&
             ("".equals(get(CERT)) || "".equals(get(LEAGUE)))) {
@@ -102,6 +142,14 @@ public final class OfficialImpl extends ScoreBoardEventProviderImpl<Official> im
             setCopy(NAME, po, NAME, false);
             setCopy(LEAGUE, po, LEAGUE, false);
             setCopy(CERT, po, CERT, false);
+        }
+        if (prop == CURRENT_POSITION && value != null) {
+            Team team = ((OfficialPosition) value).get(OfficialPosition.TEAM);
+            if (game.getCurrentPeriodNumber() == 2 && get(SWAP) && team != null) {
+                set(P1_TEAM, team.getOtherTeam());
+            } else {
+                set(P1_TEAM, team);
+            }
         }
     }
 
@@ -150,7 +198,7 @@ public final class OfficialImpl extends ScoreBoardEventProviderImpl<Official> im
 
     private Game game;
 
-    public static Map<String, String> roleMap =
+    public static final Map<String, String> roleMap =
         Stream
             .of(new String[][] {{normalize(ROLE_HNSO), ROLE_HNSO},
                                 {normalize(ROLE_PLT), ROLE_PLT},

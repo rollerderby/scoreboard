@@ -25,6 +25,8 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Media.MediaFile;
 import com.carolinarollergirls.scoreboard.core.interfaces.Media.MediaType;
 import com.carolinarollergirls.scoreboard.core.interfaces.Official;
+import com.carolinarollergirls.scoreboard.core.interfaces.OfficialPosition;
+import com.carolinarollergirls.scoreboard.core.interfaces.OfficialsCrew;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period.PeriodSnapshot;
@@ -36,6 +38,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 import com.carolinarollergirls.scoreboard.core.interfaces.TimeoutOwner;
+import com.carolinarollergirls.scoreboard.core.prepared.OfficialsCrewImpl;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
@@ -66,7 +69,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
     }
     public GameImpl(ScoreBoard parent, String id) {
         super(parent, id, ScoreBoard.GAME);
-        initReferences(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID), null);
+        initReferences(scoreBoard.getRulesets().get(Rulesets.DEFAULT), null);
         jsonSnapshotter = new JSONStateSnapshotter(getScoreBoard().getJsm(), this, parent.useMetrics());
     }
     public GameImpl(Game source) {
@@ -109,6 +112,15 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
         add(CLOCK, new ClockImpl(this, Clock.ID_LINEUP));
         add(CLOCK, new ClockImpl(this, Clock.ID_TIMEOUT));
         add(CLOCK, new ClockImpl(this, Clock.ID_INTERMISSION));
+        getOfficialPosition("IPRF");
+        getOfficialPosition("IPRR");
+        getOfficialPosition("JR1");
+        getOfficialPosition("JR2");
+        getOfficialPosition("OPRF");
+        getOfficialPosition("OPRM");
+        getOfficialPosition("OPRR");
+        getOfficialPosition("PBM");
+        getOfficialPosition("JT");
         addWriteProtection(CLOCK);
         addWriteProtectionOverride(EXPULSION, Source.NON_WS);
         addWriteProtectionOverride(IN_JAM, Source.NON_WS);
@@ -204,7 +216,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
             Clock.class, getClock(Clock.ID_LINEUP).getId(), Clock.TIME, new ScoreBoardListener() {
                 @Override
                 public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                    if (!"".equals(getSetting(ScoreBoard.SETTING_AUTO_START))) { _possiblyAutostart(); }
+                    _possiblyAutostart();
                 }
             }));
 
@@ -383,6 +395,12 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
             } else {
                 return exportFailureText;
             }
+        } else if (prop == FIIIVE_SECONDS) {
+            if (isInJam()) { return false; }
+            if ((Boolean) value && !(Boolean) last) {
+                set(FIVE_INDICATOR, "5");
+                if (!getClock(Clock.ID_LINEUP).isRunning()) { stopJamTO(); }
+            }
         }
         return value;
     }
@@ -508,6 +526,8 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
             set(CURRENT_PERIOD, getLast(PERIOD));
             if (!getClock(Clock.ID_INTERMISSION).isRunning()) { _preparePeriod(); }
         }
+        if (prop == NSO && item == get(HEAD_NSO)) { set(HEAD_NSO, null); }
+        if (prop == REF && item == get(HEAD_REF)) { set(HEAD_REF, null); }
     }
 
     @Override
@@ -538,6 +558,24 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
             jammerBoxEntry();
         } else if (prop == COPY) {
             parent.add(ownType, new GameImpl(this));
+        } else if (prop == EARLY_5) {
+            Clock lc = getClock(Clock.ID_LINEUP);
+            long delay = 1000 * Integer.valueOf(getSetting(ScoreBoard.SETTING_EARLY_5_DELAY));
+            if (lc.isRunning()) {
+                set(AUTO_FIVE, true);
+                lineupTimeFor5s = lc.getTimeElapsed() + delay;
+                lineupTimeForStart = lineupTimeFor5s + 5000L;
+            }
+        } else if (prop == LOAD_OFFICIALS_CREW) {
+            OfficialsCrew crew = get(OFFICIALS_CREW);
+            if (crew.numberOf(OfficialsCrew.NSO) > 0) { removeAll(NSO); }
+            if (crew.numberOf(OfficialsCrew.REF) > 0) { removeAll(REF); }
+            for (OfficialsCrew.Member nso : crew.getAll(OfficialsCrew.NSO)) { add(NSO, new OfficialImpl(this, nso)); }
+            for (OfficialsCrew.Member ref : crew.getAll(OfficialsCrew.REF)) { add(REF, new OfficialImpl(this, ref)); }
+        } else if (prop == STORE_OFFICIALS_CREW) {
+            OfficialsCrew crew = new OfficialsCrewImpl(this);
+            scoreBoard.add(ScoreBoard.OFFICIALS_CREW, crew);
+            set(OFFICIALS_CREW, crew);
         }
     }
 
@@ -565,6 +603,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
             if (prop == Team.BOX_TRIP) { return new BoxTripImpl(this, id); }
             if (prop == NSO) { return new OfficialImpl(this, id, NSO); }
             if (prop == REF) { return new OfficialImpl(this, id, REF); }
+            if (prop == OFFICIAL_POSITION) { return new OfficialPositionImpl(this, id); }
             if (prop == EXPULSION && source.isFile()) {
                 if (elements.get(Penalty.class) == null) { return null; }
                 Penalty p = (Penalty) elements.get(Penalty.class).get(id);
@@ -853,6 +892,9 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
 
         _endIntermission(false);
         setInPeriod(true);
+        lineupTimeForStart = isInOvertime() ? getLong(Rule.OVERTIME_LINEUP_DURATION) : getLong(Rule.LINEUP_DURATION);
+        lineupTimeFor5s = lineupTimeForStart - 5000L;
+        set(AUTO_FIVE, getBooleanSetting(ScoreBoard.SETTING_AUTO_5));
         lc.changeNumber(1);
         lc.restart();
         if (getBoolean(Rule.LINEUP_STOPS_PERIOD_CLOCK)) { pc.stop(); }
@@ -862,6 +904,8 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
 
         lc.stop();
         lc.set(Clock.NAME, "Lineup");
+        set(FIIIVE_SECONDS, false);
+        set(AUTO_FIVE, false);
     }
     private void _startTimeout() {
         Clock pc = getClock(Clock.ID_PERIOD);
@@ -927,25 +971,21 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
         }
     }
     private void _possiblyAutostart() {
-        Clock pc = getClock(Clock.ID_PERIOD);
-        Clock jc = getClock(Clock.ID_JAM);
         Clock lc = getClock(Clock.ID_LINEUP);
-        Clock tc = getClock(Clock.ID_TIMEOUT);
 
-        long bufferTime = ClockConversion.fromHumanReadable(getSetting(ScoreBoard.SETTING_AUTO_START_BUFFER));
-        long triggerTime =
-            bufferTime + (isInOvertime() ? getLong(Rule.OVERTIME_LINEUP_DURATION) : getLong(Rule.LINEUP_DURATION));
+        String setting =
+            getSetting(get(FIIIVE_SECONDS) ? ScoreBoard.SETTING_AUTO_START_5 : ScoreBoard.SETTING_AUTO_START);
 
-        if (!restoreRunning && lc.getTimeElapsed() >= triggerTime && !autostartRan) {
+        if (!restoreRunning && lc.getTimeElapsed() >= lineupTimeForStart && !autostartRan) {
             autostartRan = true;
-            if (Clock.ID_JAM.equals(getSetting(ScoreBoard.SETTING_AUTO_START))) {
+            if (Clock.ID_JAM.equals(setting)) {
                 startJam();
-                jc.elapseTime(bufferTime);
-            } else if (Clock.ID_TIMEOUT.equals(getSetting(ScoreBoard.SETTING_AUTO_START))) {
+            } else if (Clock.ID_TIMEOUT.equals(setting)) {
                 timeout();
-                if (getInt(Rule.JAMS_PER_PERIOD) == 0) { pc.elapseTime(-bufferTime); }
-                tc.elapseTime(bufferTime);
             }
+        } else if (lc.getTimeElapsed() >= lineupTimeFor5s && get(AUTO_FIVE)) {
+            set(FIIIVE_SECONDS, true);
+            set(FIVE_INDICATOR, String.valueOf((lineupTimeForStart - lc.getTimeElapsed() - 1) / 1000 + 1));
         }
     }
 
@@ -966,6 +1006,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
         set(CURRENT_TIMEOUT, snapshot.getCurrentTimeout());
         getCurrentTimeout().set(Timeout.RUNNING, snapshot.inTimeout());
         set(OR_IS_TO, snapshot.orIsTo());
+        set(FIIIVE_SECONDS, snapshot.fiveSeconds());
         set(IN_OVERTIME, snapshot.inOvertime());
         for (Team team : getAll(TEAM)) { team.restoreSnapshot(snapshot.getTeamSnapshot(team.getProviderId())); }
         for (BoxTrip bt : getAll(Team.BOX_TRIP)) { bt.restoreSnapshot(snapshot.getBoxTripSnapshot(bt.getId())); };
@@ -1029,6 +1070,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
     private void jammerBoxEntry() {
         // start a clock
         BoxTrip newBt = new BoxTripImpl(this);
+        newBt.set(BoxTrip.JAMMER, true);
         add(Team.BOX_TRIP, newBt);
         for (Team team : getAll(TEAM)) {
             if (team.getPosition(team.isStarPass() ? FloorPosition.PIVOT : FloorPosition.JAMMER).isPenaltyBox()) {
@@ -1041,6 +1083,18 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
                 }
                 newBt.add(BoxTrip.FIELDING,
                           newPosition.getCurrentFielding()); // this will trigger jammer swap logic
+                return;
+            }
+        }
+        for (BoxTrip bt : getAll(Team.BOX_TRIP)) {
+            if (bt != newBt && bt.get(BoxTrip.JAMMER)) {
+                // this is a swap, but we don't know who is who - assume basic swap
+                long shorteningAmount = bt.getClock().getTimeRemaining();
+                bt.set(BoxTrip.SHORTENED, 1);
+                newBt.set(BoxTrip.SHORTENED, 1);
+                bt.getClock().changeMaximumTime(-shorteningAmount);
+                newBt.getClock().changeMaximumTime(-shorteningAmount);
+                return;
             }
         }
     }
@@ -1209,12 +1263,20 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
         set(EXPORT_BLOCKED_BY, "");
     }
 
+    @Override
+    public OfficialPosition getOfficialPosition(String id) {
+        return getOrCreate(OFFICIAL_POSITION, id);
+    }
+
     public static void setQuickClockThreshold(long threshold) { quickClockThreshold = threshold; } // for unit tests
 
     protected GameSnapshot snapshot = null;
     protected String replacePending = null;
     protected boolean autostartRan = false;
     protected boolean restoreRunning = false;
+
+    private long lineupTimeFor5s = 0L;
+    private long lineupTimeForStart = 0L;
 
     protected static File jsonDirectory = new File(BasePath.get(), "html/game-data/json");
 
@@ -1241,6 +1303,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
             inPeriod = g.isInPeriod();
             inTimeout = g.getCurrentTimeout().isRunning();
             orIsTo = g.get(OR_IS_TO);
+            fiveSeconds = g.get(FIIIVE_SECONDS);
             currentPeriod = g.getCurrentPeriod();
             periodSnapshot = g.getCurrentPeriod().snapshot();
             clockSnapshots = new HashMap<>();
@@ -1262,6 +1325,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
         public boolean inJam() { return inJam; }
         public boolean inTimeout() { return inTimeout; }
         public boolean orIsTo() { return orIsTo; }
+        public boolean fiveSeconds() { return fiveSeconds; }
         public boolean inPeriod() { return inPeriod; }
         public Period getCurrentPeriod() { return currentPeriod; }
         public PeriodSnapshot getPeriodSnapshot() { return periodSnapshot; }
@@ -1279,6 +1343,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
         protected boolean inJam;
         protected boolean inTimeout;
         protected boolean orIsTo;
+        protected boolean fiveSeconds;
         protected boolean inPeriod;
         protected Period currentPeriod;
         protected PeriodSnapshot periodSnapshot;

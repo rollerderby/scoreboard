@@ -20,6 +20,7 @@ public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
 
     public boolean isRunningOrEnded();
     public boolean isRunningOrUpcoming();
+    public boolean isPlt();
 
     public int getLastScore();
     public void setLastScore(int l);
@@ -71,6 +72,10 @@ public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
     public static final Value<Boolean> STAR_PASS = new Value<>(Boolean.class, "StarPass", false, props);
     public static final Value<ScoringTrip> STAR_PASS_TRIP = new Value<>(ScoringTrip.class, "StarPassTrip", null, props);
     public static final Value<Boolean> NO_PIVOT = new Value<>(Boolean.class, "NoPivot", false, props);
+    public static final Value<Boolean> ALL_BLOCKERS_SET = new Value<>(Boolean.class, "AllBlockersSet", false, props);
+    public static final Value<Integer> ON_TRACK_COUNT = new Value<>(Integer.class, "OnTrackCount", 0, props);
+    public static final Value<String> LT_ANNOTATION = new Value<>(String.class, "LtAnnotation", "", props);
+    public static final Value<String> SK_ANNOTATION = new Value<>(String.class, "SkAnnotation", "", props);
 
     public static final Child<Fielding> FIELDING = new Child<>(Fielding.class, "Fielding", props);
 

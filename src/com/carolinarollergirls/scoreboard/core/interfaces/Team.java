@@ -41,6 +41,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
     public TeamJam getRunningOrUpcomingTeamJam();
     public TeamJam getRunningOrEndedTeamJam();
+    public TeamJam getPltTeamJam();
     public void updateTeamJams();
 
     public int getScore();
@@ -104,6 +105,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
         new Value<>(TeamJam.class, "RunningOrUpcomingTeamJam", null, props);
     public static final Value<TeamJam> RUNNING_OR_ENDED_TEAM_JAM =
         new Value<>(TeamJam.class, "RunningOrEndedTeamJam", null, props);
+    public static final Value<TeamJam> PLT_TEAM_JAM = new Value<>(TeamJam.class, "PltTeamJam", null, props);
     public static final Value<Boolean> FIELDING_ADVANCE_PENDING =
         new Value<>(Boolean.class, "FieldingAdvancePending", false, props);
     public static final Value<ScoringTrip> CURRENT_TRIP = new Value<>(ScoringTrip.class, "CurrentTrip", null, props);
@@ -139,6 +141,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
         new Value<>(Integer.class, "ActiveScoreAdjustmentAmount", 0, props);
     public static final Value<Integer> TOTAL_PENALTIES = new Value<>(Integer.class, "TotalPenalties", 0, props);
     public static final Value<Boolean> ALL_BLOCKERS_SET = new Value<>(Boolean.class, "AllBlockersSet", false, props);
+    public static final Value<Integer> ON_TRACK_COUNT = new Value<>(Integer.class, "OnTrackCount", 0, props);
 
     public static final Child<ValWithId> ALTERNATE_NAME = new Child<>(ValWithId.class, "AlternateName", preparedProps);
     public static final Child<ValWithId> COLOR = new Child<>(ValWithId.class, "Color", preparedProps);

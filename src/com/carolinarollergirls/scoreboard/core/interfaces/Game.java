@@ -79,6 +79,8 @@ public interface Game extends ScoreBoardEventProvider {
     public void exportDone(boolean success, String failureText);
     public void clearStatsbookError();
 
+    public OfficialPosition getOfficialPosition(String id);
+
     public enum State {
         PREPARED("Prepared"),
         RUNNING("Running"),
@@ -141,6 +143,11 @@ public interface Game extends ScoreBoardEventProvider {
     public static final Value<Boolean> CLOCK_DURING_FINAL_SCORE =
         new Value<>(Boolean.class, "ClockDuringFinalScore", false, props);
     public static final Value<String> EXPORT_BLOCKED_BY = new Value<>(String.class, "ExportBlockedBy", "", props);
+    public static final Value<Boolean> FIIIVE_SECONDS = new Value<>(Boolean.class, "FiveSeconds", false, props);
+    public static final Value<Boolean> AUTO_FIVE = new Value<>(Boolean.class, "AutoFive", false, props);
+    public static final Value<String> FIVE_INDICATOR = new Value<>(String.class, "FiveIndicator", "5", props);
+    public static final Value<OfficialsCrew> OFFICIALS_CREW =
+        new Value<>(OfficialsCrew.class, "OfficialsCrew", null, props);
 
     public static final Child<Clock> CLOCK = new Child<>(Clock.class, "Clock", props);
     public static final Child<Team> TEAM = new Child<>(Team.class, "Team", props);
@@ -150,6 +157,8 @@ public interface Game extends ScoreBoardEventProvider {
     public static final Child<ValWithId> EVENT_INFO = new Child<>(ValWithId.class, "EventInfo", props);
     public static final Child<Official> NSO = new Child<>(Official.class, "Nso", props);
     public static final Child<Official> REF = new Child<>(Official.class, "Ref", props);
+    public static final Child<OfficialPosition> OFFICIAL_POSITION =
+        new Child<>(OfficialPosition.class, "OfficialPosition", props);
     public static final Child<Expulsion> EXPULSION = new Child<>(Expulsion.class, "Expulsion", props);
 
     public static final NumberedChild<Period> PERIOD = new NumberedChild<>(Period.class, "Period", props);
@@ -165,6 +174,9 @@ public interface Game extends ScoreBoardEventProvider {
     public static final Command START_BOX_TRIP = new Command("StartBoxTrip", props);
     public static final Command START_JAMMER_BOX_TRIP = new Command("StartJammerBoxTrip", props);
     public static final Command COPY = new Command("Copy", props);
+    public static final Command EARLY_5 = new Command("Early5", props);
+    public static final Command LOAD_OFFICIALS_CREW = new Command("LoadOfficialsCrew", props);
+    public static final Command STORE_OFFICIALS_CREW = new Command("StoreOfficialsCrew", props);
 
     public static final String SETTING_DEFAULT_NAME_FORMAT = "ScoreBoard.Game.DefaultNameFormat";
 
