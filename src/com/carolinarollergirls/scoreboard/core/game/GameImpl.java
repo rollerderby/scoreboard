@@ -398,6 +398,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
         } else if (prop == FIIIVE_SECONDS) {
             if (isInJam()) { return false; }
             if ((Boolean) value && !(Boolean) last) {
+                set(FIVE_INDICATOR, "5");
                 if (!getClock(Clock.ID_LINEUP).isRunning()) { stopJamTO(); }
             }
         }
@@ -562,7 +563,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
             long delay = 1000 * Integer.valueOf(getSetting(ScoreBoard.SETTING_EARLY_5_DELAY));
             if (lc.isRunning()) {
                 set(AUTO_FIVE, true);
-                lineupTimeFor5s = Math.min(lc.getTimeElapsed() + delay, lineupTimeFor5s);
+                lineupTimeFor5s = lc.getTimeElapsed() + delay;
                 lineupTimeForStart = lineupTimeFor5s + 5000L;
             }
         } else if (prop == LOAD_OFFICIALS_CREW) {
@@ -984,6 +985,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
             }
         } else if (lc.getTimeElapsed() >= lineupTimeFor5s && get(AUTO_FIVE)) {
             set(FIIIVE_SECONDS, true);
+            set(FIVE_INDICATOR, String.valueOf((lineupTimeForStart - lc.getTimeElapsed() - 1) / 1000 + 1));
         }
     }
 

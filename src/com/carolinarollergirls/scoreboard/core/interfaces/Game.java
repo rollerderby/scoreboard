@@ -145,6 +145,7 @@ public interface Game extends ScoreBoardEventProvider {
     public static final Value<String> EXPORT_BLOCKED_BY = new Value<>(String.class, "ExportBlockedBy", "", props);
     public static final Value<Boolean> FIIIVE_SECONDS = new Value<>(Boolean.class, "FiveSeconds", false, props);
     public static final Value<Boolean> AUTO_FIVE = new Value<>(Boolean.class, "AutoFive", false, props);
+    public static final Value<String> FIVE_INDICATOR = new Value<>(String.class, "FiveIndicator", "5", props);
     public static final Value<OfficialsCrew> OFFICIALS_CREW =
         new Value<>(OfficialsCrew.class, "OfficialsCrew", null, props);
 

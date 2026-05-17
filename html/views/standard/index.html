@@ -122,12 +122,13 @@
         sbContext="Clock(Jam)"
         sbDisplay="Name,Number: sbToClockInitialNumber"
       ></div>
-      <div class="ShowInLineup ShowInPostTimeoutLineup Clock Description Small Box AutoFit">Lineup</div>
+      <div class="ShowInLineup ShowInPostTimeoutLineup Clock Description Small Box AutoFit" sbClass="sbInvisible: FiveSeconds">Lineup</div>
       <div
         class="ShowInTimeout ShowInPostTimeoutTimeout ShowInPostTimeoutBoth Clock Description Small Box AutoFit Red"
         sbClass="sbInvisible: FiveSeconds"
         sbDisplay="TimeoutOwner, OfficialReview: sbToTimeoutType"
       ></div>
+      <div class="ShowInBetweenJams Clock Description Small Show AutoFit" sbClass="sbInvisible: FiveSeconds: !" sbDisplay="FiveIndicator"></div>
       <div
         class="ShowInLineup ShowInPostTimeoutLineup Clock Lineup Small Box AutoFit sbClock"
         sbDisplay="Clock(Lineup).Time, Clock(Lineup).Direction: sbToTime"
@@ -138,7 +139,6 @@
         sbDisplay="Clock(Timeout).Time, Clock(Timeout).Direction: sbToTime"
         sbClass="Red: NoMoreJam"
       ></div>
-      <div class="ShowInBetweenJams Clock Description Small Show AutoFit" sbClass="sbInvisible: FiveSeconds: !">5</div>
       <div class="ShowInNoClock Clock None Small Box AutoFit">Coming Up</div>
       <div
         class="ShowInPostTimeoutBoth Clock Description Small Below Box AutoFit"

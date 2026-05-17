@@ -5,13 +5,17 @@ WS.Register(
     'ScoreBoard.CurrentGame.TimeoutOwner',
     'ScoreBoard.CurrentGame.OfficialReview',
     'ScoreBoard.CurrentGame.Team(*).Timeouts',
-    'ScoreBoard.CurrentGame.ClockDuringFinalScore'
+    'ScoreBoard.CurrentGame.ClockDuringFinalScore',
   ],
-  sbSetActiveTimeout
+  sbSetActiveTimeout,
 );
 
-WS.Register(['ScoreBoard.Settings.Setting(Overlay.Interactive.ClockAfterTimeout)', 'ScoreBoard.CurrentGame.Clock(*).Running', 'ScoreBoard.CurrentGame.InJam'],
-  function (k) { _sbClockSelect('ScoreBoard.CurrentGame', 'Overlay.Interactive.ClockAfterTimeout') });
+WS.Register(
+  ['ScoreBoard.Settings.Setting(Overlay.Interactive.ClockAfterTimeout)', 'ScoreBoard.CurrentGame.Clock(*).Running', 'ScoreBoard.CurrentGame.InJam'],
+  function (k) {
+    _sbClockSelect('ScoreBoard.CurrentGame', 'Overlay.Interactive.ClockAfterTimeout');
+  },
+);
 
 WS.Register('ScoreBoard.CurrentGame.Rule(Penalties.NumberToFoulout)');
 
@@ -22,15 +26,12 @@ WS.AfterLoad(function () {
 function _ovlToggleSetting(s) {
   WS.Set(
     'ScoreBoard.Settings.Setting(Overlay.Interactive.' + s + ')',
-    !isTrue(WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.' + s + ')'])
+    !isTrue(WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.' + s + ')']),
   );
 }
 
 function _ovlTogglePanel(p) {
-  WS.Set(
-    'ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)',
-    WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'] === p ? '' : p
-  );
+  WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'] === p ? '' : p);
 }
 
 function ovlHandleKey(k, v, elem, e) {
@@ -86,13 +87,7 @@ function ovlToBackground(k, v) {
 
 function ovlToIndicator(k, v) {
   var prefix = k.substring(0, k.lastIndexOf('.'));
-  return isTrue(WS.state[prefix + '.StarPass'])
-    ? 'SP'
-    : isTrue(WS.state[prefix + '.Lost'])
-      ? ''
-      : isTrue(WS.state[prefix + '.Lead'])
-        ? '★'
-        : '';
+  return isTrue(WS.state[prefix + '.StarPass']) ? 'SP' : isTrue(WS.state[prefix + '.Lost']) ? '' : isTrue(WS.state[prefix + '.Lead']) ? '★' : '';
 }
 
 function ovlIsJamming(k, v, elem) {
@@ -150,7 +145,7 @@ function ovlToClockType() {
   const five = WS.state['ScoreBoard.CurrentGame.FiveSeconds'];
 
   if (five) {
-    ret = '5';
+    ret = WS.state['ScoreBaord.CurrentGame.FiveIndicator'];
     $('.ClockDescription').css('backgroundColor', 'yellow');
   } else if (jc) {
     ret = 'Jam';
