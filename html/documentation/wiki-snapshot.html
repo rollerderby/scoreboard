@@ -706,7 +706,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
           <div class="nav-container">
             <div class="nav-inner" id="scroll-spy" style="width: min-content; overflow: auto; top: 60px; bottom: 0; padding 10px 0 10px 0;">
               <span class="toc">Table of contents</span>
-              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the v2025.10 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
+              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the v2027-beta1 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
 <h3 id="howtos">Howtos</h3>
 <ul class="nav"><li><strong><a href="#Installing-the-Scoreboard-Software">Installing the Scoreboard Software</a></strong><ul class="nav"><li><span>Instructions for getting the software installed and running on a standalone computer to provide a functioning scoreboard.</span></li></ul></li><li><strong><a href="#Quick-Start-Guide">Quick Start Guide</a></strong><ul class="nav"><li><span>Basic information to run a game with only what is mandatory for a regulation game. See the pages below for the full feature set.</span></li></ul></li><li><strong><a href="#Preparing-a-Game">Preparing a Game</a></strong></li><li><strong><a href="#Scoreboard-Operation">Scoreboard Operation</a></strong></li><li><strong><a href="#Configuring-Hotkeys">Configuring Hotkeys</a></strong></li><li><strong><a href="#Using-the-Scoreboard-on-a-Network">Using the Scoreboard on a Network</a></strong></li><li><strong><a href="#Penalty-Tracking">Penalty Tracking</a></strong></li><li><strong><a href="#Lineup-Tracking">Lineup Tracking</a></strong></li><li><span>The </span><strong>Penalty Lineup Tracking</strong> interface combines the PT and LT inputs for one team on a single screen. See those pages for info how to operate it.</li><li><strong><a href="#Penalty-Box-Timing">Penalty Box Timing</a></strong></li></ul><h3 id="tips-tricks">Tips &amp; Tricks</h3>
 <ul class="nav"><li><strong><a href="#Scoreboard-Best-Practices">Scoreboard Best Practices</a></strong></li><li><strong><a href="#Graphics">Graphics</a></strong><ul class="nav"><li><span>Information on graphics for use with CRG, such as team logos and sponsor banners.</span></li></ul></li><li><strong><a href="#External-Links">External Links</a></strong><ul class="nav"><li><span>Links to other sites with information about CRG Scoreboard.</span></li></ul></li></ul><h3 id="details-about-screens-tabs">Details about Screens / Tabs</h3>
@@ -868,6 +868,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 </li>
 <li>If you have time, you may also enter the pivots with the &quot;Pivot&quot; buttons. You can also do this after the jam has started. (Or you can skip this step - it&#39;s not required, it just makes star passes easier.)</li>
 <li>During the lineup period, keep a finger near the &quot;Timeout&quot; button so you can stop the clock quickly if needed. (If <em>you</em> call for a timeout, don&#39;t forget to stop the clock when it is issued!)</li>
+<li>If the Lineup Clock is red, another jam should not run. This is based on the internal, accurate clock, which may differ from the displayed clock if Sync Clocks is enabled.</li>
 <li>When the jam timer whistles the start of the next jam, start the jam by pressing the &quot;Start Jam&quot; button.</li>
 </ul>
 <h3 id="during-a-jam">During a Jam</h3>
@@ -1457,6 +1458,8 @@ user before changing hotkeys. It is impolite and confusing to redefine the hotke
 </li>
 <li><p><strong>Don&#39;t enable Auto-End Jam</strong>. Simply reacting to the jam ending whistles when they happen takes less effort than checking the jam duration first. And if Jams are not called off on time (Jam Timers are human), your lineups will still last 30s from the end of the jam instead of being shortened (or requiring the jam timer to ignore the publicly visible lineup clock). When using CRG to time penalties, in case of a late call-off Auto-End Jam would also cause penalty clocks to stop early and thus skaters being released too late.
 (The setting was enabled by default in CRG 4.x and 5.x/2023.x because it had been this way for a very long time and there are a substantial number of people out there that have trained themselves to explicitly rely on it. The default changed in CRG 2025.)</p>
+</li>
+<li><p><strong>Don&#39;t enable Clock Sync</strong>. Syncing the jam/lineup/timeout clocks to the period clock may look nicer, but it results in inaccurately timed jams. It rounds up or down (whichever is closer), which can also create strange situations including apparent violations of Officiating Practice 2.7.</p>
 </li>
 <li><p><strong>Delete old games</strong> from time to time. Each game will increase the size of the internal data notably which will eventually lead to performance impacts if the data grows too large. Note that deleting a game from the internal list does not delete any exported statsbooks or data files from the game (and there is no need to clean up those).</p>
 </li>
@@ -3371,7 +3374,10 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <li><a href="#elements-in-scoreboardperiodjamteamjamscoringtrip-scoreboardgameperiodjamteamjamscoringtrip-and-scoreboardcurrentgameperiodjamteamjamscoringtrip">Elements in <code>ScoreBoard.Period(*).Jam(*).TeamJam(*).ScoringTrip(*)</code>, <code>ScoreBoard.Game(*).Period(*).Jam(*).TeamJam(*).ScoringTrip(*)</code>, and <code>ScoreBoard.CurrentGame.Period(*).Jam(*).TeamJam(*).ScoringTrip(*)</code></a></li>
 <li><a href="#elements-in-scoreboardperiodtimeout-scoreboardgameperiodtimeout-and-scoreboardcurrentgameperiodtimeout">Elements in <code>ScoreBoard.Period(*).Timeout(*)</code>, <code>ScoreBoard.Game(*).Period(*).Timeout(*)</code>, and <code>ScoreBoard.CurrentGame.Period(*).Timeout(*)</code></a></li>
 <li><a href="#elements-in-scoreboardgamenso-scoreboardgameref-scoreboardcurrentgamenso-and-scoreboardcurrentgameref">Elements in <code>ScoreBoard.Game(*).Nso(*)</code>, <code>ScoreBoard.Game(*).Ref(*)</code>, <code>ScoreBoard.CurrentGame.Nso(*)</code>, and <code>ScoreBoard.CurrentGame.Ref(*)</code></a></li>
-<li><a href="#elements-in-scoreboardgameexpulsion-and-scoreboardcurrentgameexpulsion">Elements in <code>ScoreBoard.Game(*).Expulsion(*)</code>, and <code>ScoreBoard.CurrentGame.Expulsion(*)</code></a></li>
+<li><a href="#elements-in-scoreboardgameoffiaialposition-and-scoreboardcurrentgameofficialposition">Elements in <code>ScoreBoard.Game(*).OffiaialPosition(*)</code> and <code>ScoreBoard.CurrentGame.OfficialPosition(*)</code></a></li>
+<li><a href="#elements-in-scoreboardgameexpulsion-and-scoreboardcurrentgameexpulsion">Elements in <code>ScoreBoard.Game(*).Expulsion(*)</code> and <code>ScoreBoard.CurrentGame.Expulsion(*)</code></a></li>
+<li><a href="#elements-in-scoreboardoffiaialscrew">Elements in <code>ScoreBoard.OffiaialsCrew(*)</code></a></li>
+<li><a href="#elements-in-scoreboardoffiaialscrewnso-and-scoreboardoffiaialscrewref">Elements in <code>ScoreBoard.OffiaialsCrew(*).Nso</code> and <code>ScoreBoard.OffiaialsCrew(*).Ref</code></a></li>
 <li><a href="#elements-in-scoreboardpenaltycodes">Elements in <code>ScoreBoard.PenaltyCodes</code></a></li>
 <li><a href="#elements-in-scoreboardrulesets">Elements in <code>ScoreBoard.Rulesets</code></a></li>
 <li><a href="#elements-in-scoreboardrulesetsruledefinition">Elements in <code>ScoreBoard.Rulesets.RuleDefinition(*)</code></a></li>
@@ -3613,6 +3619,13 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td>PreparedOfficial</td>
 <td>yes</td>
 <td>from 2025.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>OfficialsCrew(_id_)</code></td>
+<td>OfficialsCrew</td>
+<td>yes</td>
+<td>from 2027.0</td>
 <td></td>
 </tr>
 <tr>
@@ -3938,6 +3951,27 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td></td>
 </tr>
 <tr>
+<td><code>FiveSeconds</code></td>
+<td>bool</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>AutoFive</code></td>
+<td>bool</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td>reset at the start of lineup as per the corresponding setting</td>
+</tr>
+<tr>
+<td><code>OfficialsCrew</code></td>
+<td>OfficialsCrewId</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td>only evaluated when <code>StoreOfficialsCrew</code> is called</td>
+</tr>
+<tr>
 <td><code>Clock(_clock_)</code></td>
 <td>Clock</td>
 <td>no</td>
@@ -4006,6 +4040,13 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td>yes</td>
 <td></td>
 <td>was not previously in <code>ScoreBoard</code></td>
+</tr>
+<tr>
+<td><code>OfficialPosition(_id_)</code></td>
+<td>OfficialPosition</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td></td>
 </tr>
 <tr>
 <td><code>Expulsion(_id_)</code></td>
@@ -4089,6 +4130,27 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td>-</td>
 <td>-</td>
 <td>from 2025.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Early5</code></td>
+<td>-</td>
+<td>-</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>LoadOfficialsCrew</code></td>
+<td>-</td>
+<td>-</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>StoreOfficialsCrew</code></td>
+<td>-</td>
+<td>-</td>
+<td>from 2027.0</td>
 </tr>
 </tbody>
 </table>
@@ -4440,6 +4502,13 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td></td>
 </tr>
 <tr>
+<td><code>PltTeamJam</code></td>
+<td>TeamJamId</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
 <td><code>FieldingAdvancePending</code></td>
 <td>bool</td>
 <td>no</td>
@@ -4493,7 +4562,14 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td>bool</td>
 <td>no</td>
 <td>from 2025.0</td>
-<td></td>
+<td>copy of <code>PltTeamJam-&gt;AllBlockerSet</code> from 2027.0</td>
+</tr>
+<tr>
+<td><code>OnTrackCount</code></td>
+<td>number</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td>copy of <code>PltTeamJam-&gt;OnTrackCount</code></td>
 </tr>
 <tr>
 <td><code>Skater(_id_)</code></td>
@@ -4837,6 +4913,13 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td></td>
 </tr>
 <tr>
+<td><code>SubPenalties(_id_)</code></td>
+<td>PenaltyId</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
 <td><code>Penalty(_number_)</code></td>
 <td>Penalty</td>
 <td>yes</td>
@@ -4968,6 +5051,27 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td>no</td>
 <td></td>
 <td>Walltime when the penalty was entered</td>
+</tr>
+<tr>
+<td><code>Annotation</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CallingOfficial</code></td>
+<td>OfficialId</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CallingPosition</code></td>
+<td>OfficialPositionId</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td></td>
 </tr>
 <tr>
 <td><code>Remove</code></td>
@@ -5309,6 +5413,13 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td>no</td>
 <td>from 2025.0</td>
 <td></td>
+</tr>
+<tr>
+<td><code>Jammer</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td>set based on button used to start clock if no skater associated</td>
 </tr>
 <tr>
 <td><code>Fielding(_id_)</code></td>
@@ -5882,6 +5993,34 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td></td>
 </tr>
 <tr>
+<td><code>AllBlockersSet</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>OnTrackCount</code></td>
+<td>number</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>LtAnnotation</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>SkAnnotation</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
 <td><code>Fielding(_position_)</code></td>
 <td>Fielding</td>
 <td>no</td>
@@ -5991,6 +6130,13 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td>yes</td>
 <td></td>
 <td></td>
+</tr>
+<tr>
+<td><code>HasUnserved</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td>copy of <code>Skater-&gt;HasUnserved</code></td>
 </tr>
 <tr>
 <td><code>CurrentBoxTrip</code></td>
@@ -6375,6 +6521,13 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td></td>
 </tr>
 <tr>
+<td><code>CurrentPosition</code></td>
+<td>OfficialPositionId</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
 <td><code>PreparedOfficial</code></td>
 <td>PreparedOfficial</td>
 <td>yes</td>
@@ -6389,7 +6542,83 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 </tr>
 </tbody>
 </table>
-<h2 id="elements-in-scoreboard-game-expulsion-and-scoreboard-currentgame-expulsion-">Elements in <code>ScoreBoard.Game(*).Expulsion(*)</code>, and <code>ScoreBoard.CurrentGame.Expulsion(*)</code></h2>
+<h2 id="elements-in-scoreboard-game-offiaialposition-and-scoreboard-currentgame-officialposition-">Elements in <code>ScoreBoard.Game(*).OffiaialPosition(*)</code> and <code>ScoreBoard.CurrentGame.OfficialPosition(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Team</code></td>
+<td>TeamId</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Removable</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CurrentOfficial</code></td>
+<td>OfficialId</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>CurrentOfficialName</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td>Copy of <code>CurrentOfficial-&gt;Name</code></td>
+</tr>
+<tr>
+<td><code>Penalties</code></td>
+<td>PenaltyId</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Remove</code></td>
+<td>-</td>
+<td>-</td>
+<td>from 2027.0</td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-game-expulsion-and-scoreboard-currentgame-expulsion-">Elements in <code>ScoreBoard.Game(*).Expulsion(*)</code> and <code>ScoreBoard.CurrentGame.Expulsion(*)</code></h2>
 <table>
 <thead>
 <tr>
@@ -6434,6 +6663,130 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td>bool</td>
 <td>yes</td>
 <td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-offiaialscrew-">Elements in <code>ScoreBoard.OffiaialsCrew(*)</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>HNSO</code></td>
+<td>MemberId</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>HR</code></td>
+<td>MemberId</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Nso(_id_)</code></td>
+<td>Member</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Ref(_id_)</code></td>
+<td>Member</td>
+<td>yes</td>
+<td>from 2027.0</td>
+</tr>
+</tbody>
+</table>
+<h2 id="elements-in-scoreboard-offiaialscrew-nso-and-scoreboard-offiaialscrew-ref">Elements in <code>ScoreBoard.OffiaialsCrew(*).Nso</code> and <code>ScoreBoard.OffiaialsCrew(*).Ref</code></h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value Type</th>
+<th>Writable</th>
+<th>Versions</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Id</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Readonly</code></td>
+<td>bool</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Role</code></td>
+<td>string</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Name</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td>copy of <code>PreparedOfficial-&gt;Name</code></td>
+</tr>
+<tr>
+<td><code>League</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td>copy of <code>PreparedOfficial-&gt;League</code></td>
+</tr>
+<tr>
+<td><code>Cert</code></td>
+<td>string</td>
+<td>no</td>
+<td>from 2027.0</td>
+<td>copy of <code>PreparedOfficial-&gt;Cert</code></td>
+</tr>
+<tr>
+<td><code>PreparedOfficial</code></td>
+<td>PreparedOfficialId</td>
+<td>yes</td>
+<td>from 2027.0</td>
 </tr>
 </tbody>
 </table>
@@ -6532,6 +6885,13 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td>no</td>
 <td>before 5.0</td>
 <td>copied from <code>CurrentRuleset-&gt;Rule</code></td>
+</tr>
+<tr>
+<td><code>Default</code></td>
+<td>RulesetId</td>
+<td>yes</td>
+<td>from 2027.0</td>
+<td></td>
 </tr>
 <tr>
 <td><code>RuleDefinition(_id_)</code></td>
@@ -6808,13 +7168,31 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td><code>ScoreBoard.AutoStart</code></td>
 <td>empty, <code>Jam</code>, <code>Timeout</code></td>
 <td>from 5.0</td>
-<td>default: empty</td>
+<td>default: empty (<code>Timeout</code> in eJT defaults)</td>
+</tr>
+<tr>
+<td><code>ScoreBoard.AutoStart5</code></td>
+<td>empty, <code>Jam</code>, <code>Timeout</code></td>
+<td>from 2027.0</td>
+<td>default: empty (<code>Jam</code> in eJT defaults)</td>
 </tr>
 <tr>
 <td><code>ScoreBoard.AutoStartBuffer</code></td>
 <td>time</td>
-<td>from 5.0</td>
+<td>from 5.0; before 2027.0</td>
 <td>default: <code>0:02</code></td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Auto5</code></td>
+<td><code>true</code>, <code>false</code></td>
+<td>from 2027.0</td>
+<td>default: <code>false</code> (<code>true</code> in eJT defaults)</td>
+</tr>
+<tr>
+<td><code>ScoreBoard.Early5Delay</code></td>
+<td>nonnegative integer</td>
+<td>from 2027.0</td>
+<td>default: <code>1</code></td>
 </tr>
 <tr>
 <td><code>ScoreBoard.AutoEndJam</code></td>
@@ -7012,7 +7390,7 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td><code>ScoreBoard.Preview_SponsorScaling</code></td>
 <td><code>fill</code>, <code>contain</code>, <code>cover</code></td>
 <td>from 2025.8</td>
-<td>default: <code>fill</code> (scheduled to change to <code>contain</code> in 2027.0)</td>
+<td>default: <code>contain</code> (changed from <code>fill</code> in 2027.0)</td>
 </tr>
 <tr>
 <td><code>ScoreBoard.Preview_SwapTeams</code></td>
@@ -7084,7 +7462,7 @@ And remember that javascript is case sensitive! <code>k.team</code> would not ha
 <td><code>ScoreBoard.View_SponsorScaling</code></td>
 <td><code>fill</code>, <code>contain</code>, <code>cover</code></td>
 <td>from 2025.8</td>
-<td>default: <code>fill</code> (scheduled to change to <code>contain</code> in 2027.0)</td>
+<td>default: <code>contain</code> (changed from <code>fill</code> in 2027.0)</td>
 </tr>
 <tr>
 <td><code>ScoreBoard.View_SwapTeams</code></td>
