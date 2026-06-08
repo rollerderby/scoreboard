@@ -267,7 +267,9 @@ public final class StatsbookExporter extends Thread {
         });
         int rowId = 60;
         for (Official o : nsos) {
-            fillOfficialRow(igrf.getRow(rowId), o);
+            if (o != game.get(Game.HEAD_NSO) && !Official.ROLE_HNSO.equals(o.get(Official.ROLE))) {
+                fillOfficialRow(igrf.getRow(rowId), o);
+            }
             String name = o.get(Official.NAME);
             int tId = -1;
             Team t = o.get(Official.P1_TEAM);
