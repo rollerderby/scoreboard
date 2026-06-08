@@ -8,7 +8,7 @@
 .PltInput>table { border-collapse: separate; border-left: none; border-bottom: none; }
 .PltInput>table td { border-style: solid; }
 .PltInput>table td.Role, .PltInput>.Team td.Darker:not(.Advance) { border-radius: 6px; }
-.PltInput>table td.Advance { border: none; }
+.PltInput>table td.Advance, .PltInput>table td.Disabled { border: none; }
 .PltInput>table td.Number, .PltInput>.Team td.Penalty, .PltInput>.Team td.Total { border-top: none; border-right:none; } 
 .PltInput>table tr.Code td.Penalty { border-bottom-style: dotted; }
 
