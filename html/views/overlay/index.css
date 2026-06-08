@@ -32,6 +32,11 @@ div.AnimatedPanel.AnimationDelay { transition: transform 1s ease-in-out .3s; }
 .TeamBox [Team="1"] .Indicator { border-radius: 8px 0 0 0; } 
 .TeamBox [Team="2"] .Indicator { border-radius: 0 0 0 8px; } 
 .TeamBox.Lineups.UseLT .Indicator { display: none; }
+.TeamBox .SmallIndicator { width: 2%; height: 100%; font-size: 45%; float: left; text-align: center; background: #333; color: #f9f9f9; } 
+.TeamBox .SmallIndicator { width: 1em; height: 1.3em; text-align: center; font-size: 75%; }
+.TeamBox [Team="1"] .SmallIndicator { border-radius: 8px 0 0 0; } 
+.TeamBox [Team="2"] .SmallIndicator { border-radius: 0 0 0 8px; } 
+.TeamBox:not(.Lineups.UseLT) .SmallIndicator { display: none; }
 
 /* main area */
 .TeamBox .Team { width: 12em; float: left; transition: border-radius 1s; } 
@@ -47,6 +52,7 @@ div.AnimatedPanel.AnimationDelay { transition: transform 1s ease-in-out .3s; }
 .TeamBox .Team .Score { width: 18%; text-align: right; padding-right: .1em; font-size: 90%; } 
 .TeamBox .Team .Mini { width: 8%; font-size: 45%; line-height: 99%; padding-top: 12px; } 
 .TeamBox .Team .Mini .JamScore { width: 100%; text-align: center; } 
+.TeamBox .Team .Mini .JamScore.NoInitial:not(.Overtime) { color: #999; }
 .TeamBox .Team .DotTimeouts { width: 3%; padding-top: 2px; } 
 .TeamBox .Team .Dot { width: .15em; height: .15em; margin: .05em 0 0 0; } 
 .TeamBox .Team .Dot, .Dot.Current { border-radius: 100%; } 
