@@ -41,7 +41,13 @@
           <td class="Role Blocker sbShowOnLt" rowspan="2" sbClass="OnTrack: Role: ==='Blocker'" sbCall="pltSetBlocker">
             <span class="Num" sbDisplay="RosterNumber"></span><span class="Pos">B</span>
           </td>
-          <td class="Box Darker sbShowOnLt" rowspan="2" sbClass="Unserved: HasUnserved | Serving: PenaltyBox" sbCall="pltToggleBox">Box</td>
+          <td
+            class="Box Darker sbShowOnLt"
+            rowspan="2"
+            sbClass="Unserved: HasUnserved | Serving: PenaltyBox | Disabled: /ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UsePBT)"
+            sbCall="pltToggleBox"
+            sbDisplay="/ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UsePBT): pltToBoxString"
+          ></td>
           <td
             class="Menu Darker sbShowOnLt"
             rowspan="2"
