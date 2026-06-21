@@ -14,6 +14,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Expulsion;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.Property;
@@ -285,7 +286,8 @@ public class ScoreBoardJSONSetter {
                 Logger.printMessage("Illegal path: " + s.path);
             }
         }
-        for (PropertySet vs : postponedSets) { vs.process(); }
+        for (PropertySet vs : postponedSets) { vs.process(false); }
+        for (PropertySet vs : postponedSets) { vs.process(true); }
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -310,7 +312,8 @@ public class ScoreBoardJSONSetter {
                 } else if (prop instanceof Value) {
                     // postpone setting PermanentProperties except ID, as they may reference
                     // elements not yet created when restoring from autosave
-                    postponedSets.add(new ValueSet(p, (Value) prop, value, source, flag));
+                    postponedSets.add(
+                        new ValueSet(p, (Value) prop, value, source, flag, prop == Team.PREPARED_TEAM_CONNECTED));
                 } else if (prop instanceof Command) {
                     if (Boolean.parseBoolean(value)) { p.execute((Command) prop, source); }
                 } else if (remainder != null) {
@@ -360,21 +363,23 @@ public class ScoreBoardJSONSetter {
     }
 
     protected static interface PropertySet {
-        public void process();
+        public void process(boolean secondPass);
     }
 
     protected static class ValueSet<T> implements PropertySet {
-        protected ValueSet(ScoreBoardEventProvider sbe, Value<T> prop, String value, Source source, Flag flag) {
+        protected ValueSet(ScoreBoardEventProvider sbe, Value<T> prop, String value, Source source, Flag flag,
+                           boolean secondPassOnly) {
             this.sbe = sbe;
             this.prop = prop;
             this.value = value;
             this.source = source;
             this.flag = flag;
+            this.secondPassOnly = secondPassOnly;
         }
 
         @Override
-        public void process() {
-            sbe.set(prop, sbe.valueFromString(prop, value), source, flag);
+        public void process(boolean secondPass) {
+            if (!secondPassOnly || secondPass) { sbe.set(prop, sbe.valueFromString(prop, value), source, flag); }
         }
 
         private ScoreBoardEventProvider sbe;
@@ -382,6 +387,7 @@ public class ScoreBoardJSONSetter {
         private String value;
         private Source source;
         private Flag flag;
+        private boolean secondPassOnly;
     }
 
     protected static class ChildSet<T extends ScoreBoardEventProvider> implements PropertySet {
@@ -394,7 +400,7 @@ public class ScoreBoardJSONSetter {
         }
 
         @Override
-        public void process() {
+        public void process(boolean secondPass) {
             sbe.add(prop, sbe.childFromString(prop, id, value), source);
         }
 
@@ -418,7 +424,7 @@ public class ScoreBoardJSONSetter {
         }
 
         @Override
-        public void process() {
+        public void process(boolean secondPass) {
             Expulsion e = parent.getOrCreate(prop, id, source);
             if (e == null) {
                 Logger.printMessage("Failed to import data for expulsion " + id);
@@ -426,7 +432,7 @@ public class ScoreBoardJSONSetter {
             }
             List<PropertySet> postponedSets = new ArrayList<>();
             set(e, remainder, value, source, flag, postponedSets);
-            for (PropertySet s : postponedSets) { s.process(); }
+            for (PropertySet s : postponedSets) { s.process(secondPass); }
         }
 
         private ScoreBoardEventProvider parent;
