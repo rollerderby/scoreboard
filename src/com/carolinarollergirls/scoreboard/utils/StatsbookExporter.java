@@ -424,7 +424,7 @@ public final class StatsbookExporter extends Thread {
             int rowIndex = startRowIndex[pn] + 3;
             for (int jn = 1; jn <= p.getCurrentJamNumber(); jn++) {
                 int numRows = p.getJam(jn).get(Jam.STAR_PASS) ? 2 : 1;
-                if (rowIndex + numRows - startRowIndex[pn] - 3 >= jamRows[pn]) {
+                if (rowIndex + numRows - startRowIndex[pn] - 3 > jamRows[pn]) {
                     // sheet too short
                     int rowsNeeded = 0;
                     for (Jam j : p.getAll(Period.JAM)) { rowsNeeded += j.get(Jam.STAR_PASS) ? 2 : 1; }
