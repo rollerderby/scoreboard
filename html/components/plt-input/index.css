@@ -61,8 +61,8 @@ body[nextButton="row"] .PltInput>.Team .Advance { display: none; }
 .PltInput>.Team .Skater .Penalty.Unserved { background-color: var(--element-unserved-bg); color: var(--element-unserved-fg); } 
 .PltInput>.Team .Captain .Number { position: relative; }
 .PltInput>.Team .Captain .Number::before { content: "C"; font-weight: normal; position: absolute; left: .2em; top: .15em; }
-body:not([noCalledBy]) .PltInput>.Team .Set.NoOfficial { position: relative; background-clip: padding-box; } 
-body:not([noCalledBy]) .PltInput>.Team .Set.NoOfficial::after { position: absolute; left: 2px; top: 2px; height: 5px; width: 5px; background-color: blue; content: ""; } 
+body[calledBy] .PltInput>.Team .Set.NoOfficial { position: relative; background-clip: padding-box; } 
+body[calledBy] .PltInput>.Team .Set.NoOfficial::after { position: absolute; left: 2px; top: 2px; height: 5px; width: 5px; background-color: blue; content: ""; } 
 
 /* joint text & colors */
 .PltInput>.Team .Skater .OnTrack { background-color: #70ff70; } 
@@ -80,7 +80,7 @@ body:not([noCalledBy]) .PltInput>.Team .Set.NoOfficial::after { position: absolu
 #PenaltyEditor .Codes>div .Code { font-size: 1.2em; background-color: #FAA; color: #000; } 
 #PenaltyEditor .Codes>div .Description { font-size: 0.75em; } 
 
-body[nocalledby] .CalledBy { display: none; }
+body:not([calledBy]) .CalledBy { display: none; }
 #PenaltyEditor .CalledBy { max-height: 90dvh; width: 400px; overflow: scroll; }
 #PenaltyEditor .CalledBy:not(.Reassign) .OfficialPosition.HasOfficial .OnEdit { display: none; }
 #PenaltyEditor .CalledBy:not(.Reassign) .OfficialPosition.HasOfficial .OnEdit { display: none; }
