@@ -54,7 +54,11 @@ public final class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> impl
 
     @Override
     public void removeClient(Client c) {
-        synchronized (coreLock) { c.delete(Source.UNLINK); }
+        synchronized (coreLock) {
+            requestBatchStart();
+            c.delete(Source.UNLINK);
+            requestBatchEnd();
+        }
     }
 
     @Override
