@@ -368,18 +368,18 @@ public class ScoreBoardJSONSetter {
 
     protected static class ValueSet<T> implements PropertySet {
         protected ValueSet(ScoreBoardEventProvider sbe, Value<T> prop, String value, Source source, Flag flag,
-                           boolean secondPassOnly) {
+                           boolean inSecondPass) {
             this.sbe = sbe;
             this.prop = prop;
             this.value = value;
             this.source = source;
             this.flag = flag;
-            this.secondPassOnly = secondPassOnly;
+            this.inSecondPass = inSecondPass;
         }
 
         @Override
         public void process(boolean secondPass) {
-            if (!secondPassOnly || secondPass) { sbe.set(prop, sbe.valueFromString(prop, value), source, flag); }
+            if (inSecondPass == secondPass) { sbe.set(prop, sbe.valueFromString(prop, value), source, flag); }
         }
 
         private ScoreBoardEventProvider sbe;
@@ -387,7 +387,7 @@ public class ScoreBoardJSONSetter {
         private String value;
         private Source source;
         private Flag flag;
-        private boolean secondPassOnly;
+        private boolean inSecondPass;
     }
 
     protected static class ChildSet<T extends ScoreBoardEventProvider> implements PropertySet {
@@ -432,7 +432,10 @@ public class ScoreBoardJSONSetter {
             }
             List<PropertySet> postponedSets = new ArrayList<>();
             set(e, remainder, value, source, flag, postponedSets);
-            for (PropertySet s : postponedSets) { s.process(secondPass); }
+            for (PropertySet s : postponedSets) {
+                s.process(false);
+                s.process(true);
+            }
         }
 
         private ScoreBoardEventProvider parent;
