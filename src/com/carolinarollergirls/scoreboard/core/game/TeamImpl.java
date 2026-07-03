@@ -248,6 +248,7 @@ public final class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements
                 // no team change after game start
                 return last;
             }
+            set(PREPARED_TEAM_CONNECTED, false, source, Flag.SPECIAL_CASE);
             if (value != null) { execute(CLEAR_SKATERS, source); }
             set(PREPARED_TEAM_CONNECTED, value != null, source, Flag.SPECIAL_CASE);
         }
