@@ -69,3 +69,103 @@ const theme = new URL(window.location).searchParams.get('theme');
 if (theme) {
   _include(theme);
 }
+
+function _addThemeToUrl(href) {
+  if (!theme || !href) {
+    return href;
+  }
+
+  const trimmedHref = href.trim();
+  
+  // Do not alter links to non URLs.
+  if (
+    trimmedHref.startsWith('#') ||
+    trimmedHref.startsWith('javascript:') ||
+    trimmedHref.startsWith('mailto:') ||
+    trimmedHref.startsWith('tel:') ||
+    trimmedHref.startsWith('data:')
+  ) {
+    return href;
+  }
+
+  let url;
+
+  try {
+    url = new URL(href, window.location.href);
+  } catch (error) {
+    console.warn('Unable to add theme to URL:', href, error);
+    return href;
+  }
+
+  // Do not alter links to other websites or hosts.
+  if (url.origin !== window.location.origin) {
+    return href;
+  }
+
+  url.searchParams.set('theme', theme);
+
+  return url.pathname + url.search + url.hash;
+}
+
+
+function _propagateThemeToLinks(root) {
+  if (!theme) {
+    return;
+  }
+
+  const container = root instanceof Element || root instanceof Document
+    ? root
+    : document;
+
+
+  const links = [];
+
+  if (container instanceof Element && container.matches('a[href]')) {
+    links.push(container);
+  }
+
+  container.querySelectorAll('a[href]').forEach(function (link) {
+    links.push(link);
+  });
+
+  links.forEach(function (link) {
+    const href = link.getAttribute('href');
+    const themedHref = _addThemeToUrl(href);
+
+    if (themedHref !== href) {
+      link.setAttribute('href', themedHref);
+    }
+  });
+}
+
+if (theme) {
+  $(function () {
+    _propagateThemeToLinks(document);
+
+    const themeLinkObserver = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+
+        mutation.addedNodes.forEach(function (node) {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            _propagateThemeToLinks(node);
+          }
+        });
+
+        if (
+          mutation.type === 'attributes' &&
+          mutation.target instanceof Element &&
+          mutation.target.matches('a[href]')
+        ) {
+          _propagateThemeToLinks(mutation.target);
+        }
+      });
+    });
+
+    themeLinkObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['href']
+    });
+  });
+}
