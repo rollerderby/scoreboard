@@ -5,6 +5,38 @@ if (typeof $ === 'undefined') {
 
 var _alreadyIncludedScripts = {};
 
+function _getUrlParam(param) {
+  var entries = window.location.search.substring(1).split('&');
+  for (var i = 0; i < entries.length; i++) {
+    var separator = entries[i].indexOf('=');
+    var key = separator < 0 ? entries[i] : entries[i].substring(0, separator);
+    if (decodeURIComponent(key.replace(/\+/g, ' ')) === param) {
+      var value = separator < 0 ? '' : entries[i].substring(separator + 1);
+      return decodeURIComponent(value.replace(/\+/g, ' '));
+    }
+  }
+  return null;
+}
+
+function _urlWithParam(param, value) {
+  var entries = window.location.search.substring(1) === '' ? [] : window.location.search.substring(1).split('&');
+  var found = false;
+  for (var i = 0; i < entries.length; i++) {
+    var separator = entries[i].indexOf('=');
+    var key = separator < 0 ? entries[i] : entries[i].substring(0, separator);
+    if (decodeURIComponent(key.replace(/\+/g, ' ')) === param) {
+      entries[i] = encodeURIComponent(param) + '=' + encodeURIComponent(value);
+      found = true;
+      break;
+    }
+  }
+  if (!found) {
+    entries.push(encodeURIComponent(param) + '=' + encodeURIComponent(value));
+  }
+  var newSearch = entries.length ? '?' + entries.join('&') : '';
+  return window.location.pathname + newSearch + window.location.hash;
+}
+
 function _includeUrl(url, callback) {
   var filename = url.replace(/^.*[\/]/g, '');
   if (/\.[cC][sS][sS](\?.*)?$/.test(url) && !$('head link[href="' + url + '"],head link[href="' + filename + '"]').length) {
@@ -65,7 +97,7 @@ _include('/json', ['WS.js'], function () {
   WS.Connect();
   WS.Process(window.location.pathname);
 });
-const theme = new URL(window.location).searchParams.get('theme');
+const theme = _getUrlParam('theme');
 if (theme) {
   _include(theme);
 }

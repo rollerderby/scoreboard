@@ -166,8 +166,8 @@ function _pltUpdateCurrentJamStyle() {
 //
 //###################################################################
 
-let pltReplacePath = '';
-let pltReplaceTarget = '';
+var pltReplacePath = '';
+var pltReplaceTarget = '';
 
 function _pltOpenReplaceDialog(k, pos) {
   pltReplacePath = k + '.Role';

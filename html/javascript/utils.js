@@ -76,7 +76,5 @@ function sbReverseOnNonSheet(k, v, elem) {
 }
 
 function _sbUpdateUrl(key, val) {
-  var url = new URL(window.location);
-  url.searchParams.set(key, val);
-  window.history.replaceState(null, '', url);
+  window.history.replaceState(null, '', _urlWithParam(key, val));
 }
