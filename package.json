@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "compat": "eslint 'html/**/*.js'"
+  },
+  "devDependencies": {
+    "eslint": "^10.9.0",
+    "eslint-plugin-compat": "^7.0.2"
+  }
+}
