@@ -40,7 +40,7 @@ function sbOrderRsAsTree(a, b) {
   const setA = _sbRsGetParents(rsA);
   const setB = _sbRsGetParents(rsB);
 
-  for (let i = 0; i < Math.min(setA.length, setB.length); i++) {
+  for (var i = 0; i < Math.min(setA.length, setB.length); i++) {
     if (setA[i] !== setB[i]) {
       return WS.state['ScoreBoard.Rulesets.Ruleset(' + setA[i] + ').Name'] > WS.state['ScoreBoard.Rulesets.Ruleset(' + setB[i] + ').Name'];
     }

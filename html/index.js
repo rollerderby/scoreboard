@@ -49,7 +49,5 @@ WS.AfterLoad(function () {
 });
 
 function setTheme(k, v) {
-  var url = new URL(window.location);
-  url.searchParams.set('theme', v);
-  window.location.replace(url);
+  window.location.replace(_urlWithParam('theme', v));
 }

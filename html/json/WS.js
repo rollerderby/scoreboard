@@ -501,9 +501,9 @@ var WS = {
           return !elem.is(v.elem);
         });
       }
-      Object.entries(trie).forEach(function (entry) {
-        if (entry[0] !== '_values') {
-          filter(entry[1], elem);
+      Object.keys(trie).forEach(function (key) {
+        if (key !== '_values') {
+          filter(trie[key], elem);
         }
       });
     }
@@ -1055,7 +1055,9 @@ var WS = {
     }
 
     var prefixes = {};
-    Object.entries(WS._getPrefixes(elem.parent(), isPreRegister)).forEach(function ([prefix, value]) {
+    var parentPrefixes = WS._getPrefixes(elem.parent(), isPreRegister);
+    Object.keys(parentPrefixes).forEach(function (prefix) {
+      var value = parentPrefixes[prefix];
       prefixes[prefix] = { prefix: value.prefix, suffix: value.suffix, reevaluate: value.reevaluate };
     });
     const [value, reevaluate] = WS._replacePathComponents(elem, 'sbPrefix', isPreRegister, skipCopyContext);
