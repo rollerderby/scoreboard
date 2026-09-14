@@ -16,14 +16,19 @@ if [ -n "${JAVA_HOME}" ] && [ -x "${JAVA_HOME}/bin/java" ]; then
 elif [ -x /usr/libexec/java_home ] && [ -n "$(/usr/libexec/java_home -F 2>/dev/null)" ]; then
   # We're on OS X, which has its own way of doing Java
   JAVA="/usr/libexec/java_home -exec java"
-elif command -v java >/dev/null 2>&1; then
-  # Fall back to java on the PATH (covers Homebrew/OpenJDK installs
-  # that aren't registered with java_home)
-  JAVA="$(command -v java)"
+elif JAVA_PATH="$(which java 2>/dev/null)" || JAVA_PATH="$(command -v java 2>/dev/null)"; then
+  # Fall back to java on the PATH for installs
+  # that aren't registered with java_home
+  JAVA="$JAVA_PATH"
 fi
 
 if [ -z "$JAVA" ]; then
-  echo "Could not find a Java runtime. Install one (e.g. brew install openjdk) and try again." >&2
+  SHELL_RC="your shell rc file"
+  case "$SHELL" in
+    */bash) SHELL_RC="~/.bashrc" ;;
+    */zsh) SHELL_RC="~/.zshrc" ;;
+  esac
+  echo "Could not find a Java runtime. Install one and set \`JAVA_HOME\` in $SHELL_RC if needed, then restart your shell." >&2
   exit 1
 fi
 
