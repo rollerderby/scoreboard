@@ -1,6 +1,6 @@
 #!/bin/bash
 
-loc="$(dirname "${0}")"
+loc="$(dirname $(readlink -f "${0}"))"
 cd "${loc}" || exit 1
 
 
