@@ -85,6 +85,7 @@ public final class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<
         }
         if (prop == ALL_BLOCKERS_SET) {
             for (Fielding f : getAll(FIELDING)) {
+                if (f.getPosition() == null) { return false; } // Jam is being deleted
                 if (f.getPosition().getFloorPosition() == FloorPosition.JAMMER) { continue; }
                 if (f.getSkater() == null) { return false; }
             }
