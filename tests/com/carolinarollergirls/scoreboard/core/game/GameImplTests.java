@@ -1929,6 +1929,9 @@ public class GameImplTests {
 
     @Test
     public void testDeleteJam() {
+        Team team = g.getTeam(Team.ID_1);
+        Skater skater1 = new SkaterImpl(team, UUID.randomUUID().toString());
+        Skater skater2 = new SkaterImpl(team, UUID.randomUUID().toString());
         fastForwardJams(3);
         g.startJam();
 
@@ -1941,6 +1944,9 @@ public class GameImplTests {
         // Make sure we can start the jam again.
         g.stopJamTO();
         assertEquals(3, g.getCurrentPeriod().numberOf(Period.JAM));
+        team.execute(Team.ADVANCE_FIELDINGS);
+        skater1.set(Skater.ROLE, Role.JAMMER);
+        skater2.set(Skater.ROLE, Role.PIVOT);
         g.startJam();
         assertEquals(4, g.getCurrentPeriod().numberOf(Period.JAM));
         assertEquals(4, g.getCurrentPeriod().getCurrentJam().getNumber());
