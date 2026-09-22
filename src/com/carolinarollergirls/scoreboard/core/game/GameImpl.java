@@ -559,9 +559,12 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
         } else if (prop == COPY) {
             parent.add(ownType, new GameImpl(this));
         } else if (prop == EARLY_5) {
+            // this can only be called from eJT, which only works with AutoStartWith5s set to "Jam"
+            scoreBoard.getSettings().set(ScoreBoard.SETTING_AUTO_START_5, "Jam");
             Clock lc = getClock(Clock.ID_LINEUP);
             long delay = 1000 * Integer.valueOf(getSetting(ScoreBoard.SETTING_EARLY_5_DELAY));
             if (lc.isRunning()) {
+                set(FIIIVE_SECONDS, false);
                 set(AUTO_FIVE, true);
                 lineupTimeFor5s = lc.getTimeElapsed() + delay;
                 lineupTimeForStart = lineupTimeFor5s + 5000L;
