@@ -145,9 +145,14 @@ function datNewTeam() {
 }
 
 function datNewCrew() {
-  const teamid = sbNewUuid();
-  WS.Set('ScoreBoard.OfficialsCrew(' + teamid + ').Id', teamid);
-  window.open('/settings/crews?crew=' + teamid, '_blank');
+  const crewid = sbNewUuid();
+  WS.Set('ScoreBoard.OfficialsCrew(' + crewid + ').Id', crewid);
+  window.open('/settings/crews?crew=' + crewid, '_blank');
+}
+
+function datNewOfficial() {
+  const officialId = sbNewUuid();
+  WS.Set('ScoreBoard.PreparedOfficial(' + officialId + ').Name', ' New');
 }
 
 function datNewRuleset() {
