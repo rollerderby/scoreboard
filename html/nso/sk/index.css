@@ -5,8 +5,8 @@ body[showTeam="1"]>.Content>[Team="2"], body[showTeam="2"]>.Content>[Team="1"] {
 body[showTeam="1"]>.Content { grid-template-columns: 1fr 0; }
 body[showTeam="2"]>.Content { grid-template-columns: 0 1fr; }
 .Content>.GameAdvance { grid-area: 1 / 1 / 2 / 3; }
-.Content>[Team="1"], [swapTeams][showTeams="both"] .Content>[Team="2"] { grid-column: 1 / 2; }
-.Content>[Team="2"], [swapTeams][showTeams="both"] .Content>[Team="1"] { grid-column: 2 / 3; }
+.Content>[Team="1"], [swapTeams][showTeam="both"] .Content>[Team="2"] { grid-column: 1 / 2; }
+.Content>[Team="2"], [swapTeams][showTeam="both"] .Content>[Team="1"] { grid-column: 2 / 3; }
 .Content>.Input { grid-row: 2 / 3; }
 .Content>.Sheet { grid-row: 3 / 4; }
 .Content>.SettingsButton { grid-area: 4 / 1 / 5 / 3 }
