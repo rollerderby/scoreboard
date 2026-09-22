@@ -156,6 +156,9 @@
 
 <div class="sbTemplates">
   <div id="AutomationSettingsDialog" class="sbSegment" sbContext="^Settings" sbPrefix="$:ScoreBoard.Settings.Setting(ScoreBoard:)">
+    <div class="sbGroup ScoreBoardOptions">
+      These settings are global. Setting them here also affects other SBO or eJT users. Only change them if you are controlling the clocks.
+    </div>
     <div class="sbGroup">
       <button sbCall="opSetAutomationSboDefaults">Set to SBO defaults</button>
       <button sbCall="opSetAutomationEjtDefaults">Set to eJT defaults</button>

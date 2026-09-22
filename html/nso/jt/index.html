@@ -143,6 +143,9 @@
     <div class="sbTemplates">
       <div id="SettingsDialog" class="sbSegment" sbContext="^Settings" sbPrefix="$:ScoreBoard.Settings.Setting(ScoreBoard:)">
         <div class="sbGroup">
+          These settings are global. Setting them here also affects other eJT or SBO users. Only change them if you are controlling the clocks.
+        </div>
+        <div class="sbGroup">
           <button sbClass="sbClickMe: $.AutoStart5: !== 'Jam'" sbCall="jtSetEjtDefaults">Set to eJT defaults</button>
         </div>
         <div class="sbGroup">
@@ -164,7 +167,7 @@
               <option value="Jam">Jam</option>
               <option value="Timeout">Timeout</option>
             </select>
-            <span class="sbTooltip">Triggers when the lineup clock reaches the configured duration and "Five Seconds" <em>has</em> been marked.</span>
+            <span class="sbTooltip">Must be set to "Jam" for eJT to work properly.</span>
           </span>
           <button sbToggle="$.Auto5">
             Auto 5s<span class="sbTooltip"
