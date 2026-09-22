@@ -24,7 +24,7 @@ const _windowFunctions = {
 
   /* URL parameters */
   getParam: function (param) {
-    return new URL(window.location).searchParams.get(param);
+    return _getUrlParam(param);
   },
   hasParam: function (param) {
     return this.getParam(param) != null;

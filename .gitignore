@@ -26,7 +26,6 @@ android/build/
 /rules/
 /game-data/
 /node_modules/
-/package-lock.json
 /jdoc/
 spotbugs-report.xml
 html/images/old-sponsor_banner
