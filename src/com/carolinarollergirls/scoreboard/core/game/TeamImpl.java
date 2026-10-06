@@ -473,7 +473,8 @@ public final class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements
 
     @Override
     public String getAlternateName(String i) {
-        return get(ALTERNATE_NAME, i).getValue();
+        ValWithId alternateName = get(ALTERNATE_NAME, i);
+        return alternateName == null ? null : alternateName.getValue();
     }
 
     @Override

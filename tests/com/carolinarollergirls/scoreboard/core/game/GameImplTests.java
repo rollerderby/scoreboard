@@ -3,6 +3,7 @@ package com.carolinarollergirls.scoreboard.core.game;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -1997,6 +1998,17 @@ public class GameImplTests {
         g.startJam();
         advance(1000);
         assertEquals(2, p.numberOf(Period.JAM));
+    }
+
+    @Test
+    public void testOfficialPositionsCreated() {
+        // each listed position was created
+        for (String position : Game.DEFAULT_CALLED_BY_POSITIONS) {
+            assertNotNull(g.get(Game.OFFICIAL_POSITION, position));
+        }
+
+        // only listed positions were created
+        assertEquals(Game.DEFAULT_CALLED_BY_POSITIONS.size(), g.getAll(Game.OFFICIAL_POSITION).size());
     }
 
     @Test

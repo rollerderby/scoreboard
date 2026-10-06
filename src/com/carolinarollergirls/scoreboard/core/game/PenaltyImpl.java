@@ -87,10 +87,6 @@ public final class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penal
             }
         }
         if (prop == SERVED) { parent.set(Skater.HAS_UNSERVED, (Boolean) value); }
-        if (prop == CALLING_POSITION) {
-            OfficialPosition p = (OfficialPosition) value;
-            set(CALLING_OFFICIAL, p == null ? null : p.get(OfficialPosition.CURRENT_OFFICIAL));
-        }
     }
 
     @Override

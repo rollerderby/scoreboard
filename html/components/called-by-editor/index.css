@@ -1,0 +1,11 @@
+body:not([calledBy]) .CalledBy { display: none; }
+#PenaltyEditor .CalledBy { max-height: 90dvh; width: 400px; overflow: scroll; }
+#PenaltyEditor .CalledBy:not(.Reassign) .OfficialPosition.HasOfficial .OnEdit { display: none; }
+#PenaltyEditor .CalledBy:not(.Reassign) .OfficialPosition:not(.HasOfficial) .OnNoEdit { display: none; }
+#PenaltyEditor .CalledBy:not(.Reassign) .Filter { display: none; }
+#PenaltyEditor .CalledBy.Reassign .OnNoEdit { display: none; }
+#PenaltyEditor .CalledBy:not(.Reassign) .OfficialPosition .OnEdit { display: none; }
+#PenaltyEditor .CalledBy select { width: 95%; }
+
+#PenaltyEditor .TemporaryAssignment.sbActive select { display: none; }
+#PenaltyEditor .TemporaryAssignment:not(.sbActive) .TemporaryAssignmentNoEdit { display: none; }

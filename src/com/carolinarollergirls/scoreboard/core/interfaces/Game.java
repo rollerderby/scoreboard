@@ -3,6 +3,7 @@ package com.carolinarollergirls.scoreboard.core.interfaces;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets.Ruleset;
 import com.carolinarollergirls.scoreboard.event.Child;
@@ -199,4 +200,7 @@ public interface Game extends ScoreBoardEventProvider {
     public static final String ACTION_RE_TIMEOUT = "New Timeout";
     public static final String ACTION_OVERTIME = "Overtime Lineup";
     public static final String UNDO_PREFIX = "Un-";
+
+    public static final List<String> DEFAULT_CALLED_BY_POSITIONS =
+        Arrays.asList("IPRF", "IPRR", "JR1", "JR2", "OPRF", "OPRM", "OPRR", "PLT1", "PLT2", "PBM");
 }
