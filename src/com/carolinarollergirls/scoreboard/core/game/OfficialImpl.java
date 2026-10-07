@@ -17,7 +17,10 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.prepared.PreparedOfficialImpl;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.Value;
 
 public final class OfficialImpl extends ScoreBoardEventProviderImpl<Official> implements Official {
@@ -27,6 +30,20 @@ public final class OfficialImpl extends ScoreBoardEventProviderImpl<Official> im
         addProperties(props);
         addProperties(preparedProps);
         setInverseReference(CURRENT_POSITION, OfficialPosition.CURRENT_OFFICIAL);
+        game.addScoreBoardListener(new ConditionalScoreBoardListener<>(game, Game.CURRENT_PERIOD_NUMBER,
+            new ScoreBoardListener() {
+                @Override
+                public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                    if (game.getCurrentPeriodNumber() != 2) { return; }
+                    String role = get(ROLE);
+                    Team p1Team = get(P1_TEAM);
+                    if (get(SWAP) && isTeamAssignedRole(role) && p1Team != null) {
+                        Team p2Team = p1Team.getOtherTeam();
+                        set(CURRENT_POSITION, game.getOfficialPosition(
+                            role.replaceAll("[^\\p{Lu}]", "") + p2Team.getProviderId()));
+                    }
+                }
+            }));
     }
     public OfficialImpl(Game g, Official source) {
         this(g, UUID.randomUUID().toString(), source.getType());
@@ -69,8 +86,7 @@ public final class OfficialImpl extends ScoreBoardEventProviderImpl<Official> im
                 set(CURRENT_POSITION, game.getOfficialPosition("IPRR"));
             } else if (ROLE_HNSO.equals(role)) {
                 game.set(Game.HEAD_NSO, this);
-            } else if (ROLE_PLT.equals(role) || ROLE_LT.equals(role) || ROLE_SK.equals(role) || ROLE_JR.equals(role) ||
-                       ROLE_PBT.equals(role)) {
+            } else if (isTeamAssignedRole(role)) {
                 for (Official other : game.getAll(ownType)) {
                     if (other != this && role.equals(other.get(ROLE))) {
                         set(SWAP, other.get(SWAP));
@@ -151,6 +167,11 @@ public final class OfficialImpl extends ScoreBoardEventProviderImpl<Official> im
                 set(P1_TEAM, team);
             }
         }
+    }
+
+    private static boolean isTeamAssignedRole(String role) {
+        return ROLE_PLT.equals(role) || ROLE_LT.equals(role) || ROLE_SK.equals(role) || ROLE_JR.equals(role) ||
+               ROLE_PBT.equals(role);
     }
 
     @Override
