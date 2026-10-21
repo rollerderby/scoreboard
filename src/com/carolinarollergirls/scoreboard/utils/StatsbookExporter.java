@@ -423,7 +423,12 @@ public final class StatsbookExporter extends Thread {
 
             int rowIndex = startRowIndex[pn] + 3;
             for (int jn = 1; jn <= p.getCurrentJamNumber(); jn++) {
-                int numRows = p.getJam(jn).get(Jam.STAR_PASS) ? 2 : 1;
+                Jam jam = p.getJam(jn);
+                if (jam == null) {
+                    // jam numbers can have gaps, e.g. after a reset mid-game
+                    continue;
+                }
+                int numRows = jam.get(Jam.STAR_PASS) ? 2 : 1;
                 if (rowIndex + numRows - startRowIndex[pn] - 3 > jamRows[pn]) {
                     // sheet too short
                     int rowsNeeded = 0;
@@ -433,8 +438,7 @@ public final class StatsbookExporter extends Thread {
                     throw new RuntimeException(failureText);
                 }
                 fillJam(score.getRow(rowIndex), score.getRow(rowIndex + 1), osOffset.getRow(rowIndex),
-                        lineups.getRow(rowIndex), lineups.getRow(rowIndex + 1), clock.getRow(pn * 51 + jn + 9),
-                        p.getJam(jn));
+                        lineups.getRow(rowIndex), lineups.getRow(rowIndex + 1), clock.getRow(pn * 51 + jn + 9), jam);
                 rowIndex += numRows;
             }
         }
