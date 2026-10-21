@@ -780,4 +780,24 @@ public class BoxTripImplTests {
         assertEquals(30000L, bt1.getClock().getTimeRemaining());
         assertEquals(15000L, bt2.getClock().getTimeRemaining());
     }
+
+    @Test
+    public void testStarPassRemoved() {
+        Skater j = new SkaterImpl(t, (String) null);
+        t.addSkater(j);
+        g.startJam();
+        t.field(j, Role.JAMMER);
+        t.field(s, Role.PIVOT);
+        t.set(Team.STAR_PASS, true);
+        s.setPenaltyBox(true);
+        BoxTrip trip = s.getCurrentBoxTrip();
+        assertTrue(trip.startedAfterSP());
+
+        // SP entered by mistake
+        t.set(Team.STAR_PASS, false);
+        assertFalse(trip.startedAfterSP());
+        Fielding f = s.getFielding(t.getRunningOrUpcomingTeamJam());
+        assertEquals("-", f.get(Fielding.BOX_TRIP_SYMBOLS_BEFORE_S_P));
+        assertEquals("-", f.get(Fielding.BOX_TRIP_SYMBOLS));
+    }
 }
