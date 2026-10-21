@@ -5,6 +5,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.OfficialPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
+import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.event.Command;
@@ -49,6 +50,14 @@ public final class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penal
         if (prop == NEXT && getNumber() == 0) { return null; }
         if (prop == PREVIOUS && value != null && ((Penalty) value).getNumber() == 0) { return null; }
         if (prop == SERVED) { return (get(BOX_TRIP) != null || get(FORCE_SERVED)); }
+        if (prop == JAM && value != null && !source.isFile() &&
+            ((Jam) value).getPeriod() == game.getFirst(Game.PERIOD)) {
+            // Period 0 only holds the placeholder jam before the game. A penalty assessed there belongs
+            // to the first jam, otherwise it is missing from the statsbook.
+            Period p1 = game.get(Game.PERIOD, 1);
+            Jam first = p1 == null ? null : p1.getFirst(Period.JAM);
+            return first == null ? game.getUpcomingJam() : first;
+        }
         return value;
     }
     @Override

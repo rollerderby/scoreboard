@@ -1985,6 +1985,28 @@ public class GameImplTests {
     }
 
     @Test
+    public void testPenaltyBeforeFirstJam() {
+        Team team = g.getTeam(Team.ID_1);
+        Skater skater = new SkaterImpl(team, UUID.randomUUID().toString());
+
+        // assessed before the game, e.g. for equipment
+        Penalty penalty = skater.getOrCreate(Skater.PENALTY, "1");
+        penalty.set(Penalty.CODE, "X");
+        assertEquals(g.getUpcomingJam(), penalty.getJam());
+
+        fastForwardJams(2);
+        assertEquals(1, penalty.getPeriodNumber());
+        assertEquals(1, penalty.getJamNumber());
+
+        // selecting the pre-game jam explicitly also ends up in jam 1
+        Penalty second = skater.getOrCreate(Skater.PENALTY, "2");
+        second.set(Penalty.JAM, g.getFirst(Game.PERIOD).getFirst(Period.JAM));
+        second.set(Penalty.CODE, "X");
+        assertEquals(1, second.getPeriodNumber());
+        assertEquals(1, second.getJamNumber());
+    }
+
+    @Test
     public void testJamsAndPeriodsCreated() {
         // Starting a jam creates a jam and its successor.
         g.startJam();
