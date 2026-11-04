@@ -89,6 +89,12 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
         jsonSnapshotter = new JSONStateSnapshotter(getScoreBoard().getJsm(), this, getScoreBoard().useMetrics());
     }
 
+    /** Stops the game's file writer and timers, when the game is deleted. */
+    public void stopThreads() {
+        jsonSnapshotter.unregister();
+        for (Team t : getAll(TEAM)) { ((TeamImpl) t).stopTripScoreTimer(); }
+    }
+
     private void initReferences(Ruleset rs, Game source) {
         addProperties(props);
 

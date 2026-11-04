@@ -28,8 +28,12 @@ public final class JSONStateSnapshotter implements JSONStateListener {
         }
         filters.add("ScoreBoard.Version");
         filters.add("ScoreBoard.Game(" + g.getId() + ")");
+        this.jsm = jsm;
         jsm.register(this);
     }
+
+    /** Stop listening, when the game is deleted. */
+    public void unregister() { jsm.unregister(this); }
 
     @Override
     public void sendUpdates(StateTrie newState, StateTrie changedState) {
@@ -80,6 +84,7 @@ public final class JSONStateSnapshotter implements JSONStateListener {
         if (useMetrics) { timer.observeDuration(); }
     }
 
+    private JSONStateManager jsm;
     private File directory;
     private String filename;
     private AtomicBoolean writeOnNextUpdate = new AtomicBoolean(false);

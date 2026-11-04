@@ -697,6 +697,9 @@ public final class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements
 
     public boolean cancelTripAdvancement() { return tripScoreTimerTask.cancel(); }
 
+    /** Ends the timer's thread, when the game is deleted. */
+    public void stopTripScoreTimer() { tripScoreTimer.cancel(); }
+
     @Override
     public boolean inTimeout() {
         return get(IN_TIMEOUT);
