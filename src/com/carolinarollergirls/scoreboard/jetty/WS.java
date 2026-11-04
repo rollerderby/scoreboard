@@ -146,6 +146,13 @@ public class WS extends WebSocketServlet {
                 case "Set":
                     sbClient.write();
                     String key = (String) json.get("key");
+                    String readOnly = sb.getTracks().readOnlyReason(key);
+                    if (readOnly != null) {
+                        json = new HashMap<>();
+                        json.put("authorization", readOnly);
+                        send(json);
+                        break;
+                    }
                     Object value = json.get("value");
                     String v;
                     if (value == null) {
@@ -165,6 +172,18 @@ public class WS extends WebSocketServlet {
                             ScoreBoardJSONSetter.set(sb, Collections.singletonList(js), Source.WS);
                         }
                     });
+                    break;
+                case "TrackStatus":
+                    // a track's scoreboard, when this one is the tournament server
+                    track = String.valueOf(json.get("track"));
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> status = (Map<String, Object>) json.get("status");
+                    String error = sb.getTracks().trackStatus(track, status, this, sbClient.get(Client.REMOTE_ADDR));
+                    if (error != null) {
+                        json = new HashMap<>();
+                        json.put("error", error);
+                        send(json);
+                    }
                     break;
                 case "StartNewGame":
                     sbClient.write();
@@ -294,6 +313,7 @@ public class WS extends WebSocketServlet {
         @OnWebSocketClose
         public void onClose(int closeCode, String message) {
             if (useMetrics) { connectionsActive.dec(); }
+            if (track != null) { sb.getTracks().trackDisconnected(track, this); }
             jsm.unregister(this);
             sb.getClients().removeClient(sbClient);
 
@@ -330,6 +350,7 @@ public class WS extends WebSocketServlet {
 
         protected Client sbClient;
         protected Device device;
+        protected String track; // when this is a track reporting to the tournament server
         protected PathTrie paths = new PathTrie();
         private StateTrie state = new StateTrie();
         private Session wsSession;
