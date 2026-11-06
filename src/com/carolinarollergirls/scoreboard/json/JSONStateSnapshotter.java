@@ -32,12 +32,19 @@ public final class JSONStateSnapshotter implements JSONStateListener {
         jsm.register(this);
     }
 
-    /** Stop listening, when the game is deleted. */
-    public void unregister() { jsm.unregister(this); }
+    /** Stop listening and let go of the state, when the game is deleted. */
+    public synchronized void unregister() {
+        jsm.unregister(this);
+        unregistered = true;
+        state = null;
+    }
 
     @Override
     public void sendUpdates(StateTrie newState, StateTrie changedState) {
-        state = newState;
+        synchronized (this) {
+            if (unregistered) { return; }
+            state = newState;
+        }
         if (writeOnNextUpdate.getAndSet(false)) { writeFile(); }
     }
 
@@ -46,6 +53,7 @@ public final class JSONStateSnapshotter implements JSONStateListener {
     public synchronized void setFilename(String newName) { filename = newName; }
 
     public synchronized void writeFile() {
+        if (unregistered) { return; }
         Histogram.Timer timer = useMetrics ? updateStateDuration.startTimer() : null;
 
         File file = new File(new File(directory, "html/game-data/json"), filename + ".json");
@@ -85,6 +93,7 @@ public final class JSONStateSnapshotter implements JSONStateListener {
     }
 
     private JSONStateManager jsm;
+    private boolean unregistered = false;
     private File directory;
     private String filename;
     private AtomicBoolean writeOnNextUpdate = new AtomicBoolean(false);
