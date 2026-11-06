@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -167,6 +168,11 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
                 set((Value) prop, null, Source.UNLINK);
             }
         }
+        removeListeners();
+        getParent().remove(ownType, (C) this, Source.UNLINK);
+        elements.get(providerClass).remove(get(ID));
+    }
+    protected void removeListeners() {
         for (ScoreBoardListener l : providers.keySet()) {
             if (l instanceof SelfRemovingScoreBoardListener) {
                 ((SelfRemovingScoreBoardListener) l).delete();
@@ -174,8 +180,27 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
                 providers.get(l).removeScoreBoardListener(l);
             }
         }
-        getParent().remove(ownType, (C) this, Source.UNLINK);
-        elements.get(providerClass).remove(get(ID));
+    }
+    /**
+     * Drops the given element and everything below it, so they can be freed once they are removed.
+     * Unlike delete() this only cuts the links to the rest of the scoreboard and leaves their data alone.
+     */
+    protected void releaseElementsOf(ScoreBoardEventProvider root) {
+        for (Map<String, ScoreBoardEventProvider> list : elements.values()) {
+            for (Iterator<ScoreBoardEventProvider> it = list.values().iterator(); it.hasNext();) {
+                ScoreBoardEventProvider e = it.next();
+                if (isPartOf(e, root)) {
+                    ((ScoreBoardEventProviderImpl<?>) e).removeListeners();
+                    it.remove();
+                }
+            }
+        }
+    }
+    protected static boolean isPartOf(ScoreBoardEventProvider element, ScoreBoardEventProvider root) {
+        for (ScoreBoardEventProvider p = element; p != null; p = p.getParent()) {
+            if (p == root) { return true; }
+        }
+        return false;
     }
 
     /** make a property read only */
@@ -720,7 +745,8 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     /**
      * To be overridden by implementations. Postprocess <code>Child</code> updates.
      * <p>
-     * This is called after a new <code>Child</code> instance has been removed and after all event listeners have finished.
+     * This is called after a new <code>Child</code> instance has been removed and after all event listeners have
+     * finished.
      */
     protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {}
     @Override

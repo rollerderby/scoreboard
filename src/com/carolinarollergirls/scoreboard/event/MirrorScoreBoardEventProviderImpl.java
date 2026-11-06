@@ -3,6 +3,7 @@ package com.carolinarollergirls.scoreboard.event;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 @SuppressWarnings("this-escape")
@@ -88,7 +89,8 @@ public class MirrorScoreBoardEventProviderImpl<M extends ScoreBoardEventProvider
         if (source == null) { return null; }
         MirrorScoreBoardEventProvider<T> mirror =
             (MirrorScoreBoardEventProvider<T>) getElement(classMap.get(source.getProviderClass()), source.getId());
-        if (mirror == null) {
+        // ids aren't unique across games (noTimeout), so this can be the mirror of another game's element
+        if (mirror == null || mirror.getSourceElement() != source) {
             MirrorScoreBoardEventProviderImpl<?, ?> paren =
                 (MirrorScoreBoardEventProviderImpl<?, ?>) toMirror(source.getParent());
             mirror = mirrorFactory.createMirror(paren, source);
@@ -101,6 +103,23 @@ public class MirrorScoreBoardEventProviderImpl<M extends ScoreBoardEventProvider
     protected <T extends ScoreBoardEventProvider> T fromMirror(MirrorScoreBoardEventProvider<T> image) {
         if (image == null) { return null; }
         return image.getSourceElement();
+    }
+
+    /**
+     * Drops the mirrors of the given element and everything below it, so they no longer follow it. Don't use delete()
+     * for this, as that would pass the changes on to the mirrored elements.
+     */
+    protected void releaseMirrorsOf(ScoreBoardEventProvider root) {
+        for (Map<String, ScoreBoardEventProvider> list : elements.values()) {
+            for (Iterator<ScoreBoardEventProvider> it = list.values().iterator(); it.hasNext();) {
+                ScoreBoardEventProvider e = it.next();
+                if (e instanceof MirrorScoreBoardEventProviderImpl &&
+                    isPartOf(((MirrorScoreBoardEventProviderImpl<?, ?>) e).sourceElement, root)) {
+                    ((MirrorScoreBoardEventProviderImpl<?, ?>) e).removeListeners();
+                    it.remove();
+                }
+            }
+        }
     }
 
     protected <T> void setCopy(Value<T> prop) { setCopy(prop, sourceElement, prop, false); }

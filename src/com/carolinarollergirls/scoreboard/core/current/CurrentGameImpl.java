@@ -66,6 +66,8 @@ public final class CurrentGameImpl extends MirrorScoreBoardEventProviderImpl<Gam
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == GAME && (!source.isFile() || value != null)) {
             if (last != null) { elements.get(CurrentGame.class).remove(((Game) last).getId()); }
+            // otherwise every game that was current once stays mirrored until restart
+            if (last != null && value != last) { releaseMirrorsOf((Game) last); }
             if (value == null && last != null) {
                 // having no current game will brake lots of things, so inhibit that
                 value = new GameImpl(scoreBoard, UUID.randomUUID().toString());
