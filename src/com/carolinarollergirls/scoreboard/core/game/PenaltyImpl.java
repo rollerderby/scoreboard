@@ -34,7 +34,9 @@ public final class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penal
         if (s.isPenaltyBox(true)) { set(BOX_TRIP, s.getCurrentBoxTrip()); }
         set(SERVED, get(BOX_TRIP) != null);
         set(CODE, "?");
-        set(JAM, game.getCurrentPeriod().getCurrentJam(), Flag.SPECIAL_CASE);
+        // a period without jams shows the last jam of the previous period as current
+        Period cp = game.getCurrentPeriod();
+        set(JAM, cp.numberOf(Period.JAM) == 0 ? game.getUpcomingJam() : cp.getCurrentJam(), Flag.SPECIAL_CASE);
     }
 
     @Override

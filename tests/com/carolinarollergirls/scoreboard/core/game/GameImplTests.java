@@ -2006,6 +2006,53 @@ public class GameImplTests {
         assertEquals(1, second.getJamNumber());
     }
 
+    private Period endFirstPeriodAndIntermission() {
+        fastForwardJams(1);
+        fastForwardPeriod();
+        ic.setTime(0);
+        ic.stop();
+        assertEquals(2, g.getCurrentPeriodNumber());
+        assertEquals(0, g.getCurrentPeriod().numberOf(Period.JAM));
+        return g.getCurrentPeriod();
+    }
+
+    @Test
+    public void testPenaltyBeforeFirstJamOfPeriod() {
+        Skater skater = new SkaterImpl(g.getTeam(Team.ID_1), UUID.randomUUID().toString());
+        Period p2 = endFirstPeriodAndIntermission();
+
+        Penalty penalty = skater.getOrCreate(Skater.PENALTY, "1");
+        penalty.set(Penalty.CODE, "X");
+        assertEquals(g.getUpcomingJam(), penalty.getJam());
+        assertEquals(2, penalty.getPeriodNumber());
+        assertEquals(1, penalty.getJamNumber());
+
+        g.startJam();
+        g.stopJamTO();
+        assertEquals(p2, penalty.getJam().getPeriod());
+        assertEquals(1, p2.get(Period.TEAM_1_PENALTY_COUNT).intValue());
+        assertEquals(1, penalty.getJamNumber());
+
+        // the last jam of the previous period can still be selected
+        Jam last = p2.getPrevious().getLast(Period.JAM);
+        Penalty late = skater.getOrCreate(Skater.PENALTY, "2");
+        late.set(Penalty.JAM, last);
+        late.set(Penalty.CODE, "X");
+        assertEquals(last, late.getJam());
+    }
+
+    @Test
+    public void testPenaltyDuringIntermissionStaysInPeriod() {
+        Skater skater = new SkaterImpl(g.getTeam(Team.ID_1), UUID.randomUUID().toString());
+        fastForwardJams(1);
+        fastForwardPeriod();
+        assertTrue(ic.isRunning());
+
+        Penalty penalty = skater.getOrCreate(Skater.PENALTY, "1");
+        penalty.set(Penalty.CODE, "X");
+        assertEquals(1, penalty.getPeriodNumber());
+    }
+
     @Test
     public void testJamsAndPeriodsCreated() {
         // Starting a jam creates a jam and its successor.
