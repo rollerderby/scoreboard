@@ -1993,6 +1993,29 @@ public class GameImplTests {
     }
 
     @Test
+    public void testDeleteStarPassJam() {
+        g.startJam();
+        g.getTeam(Team.ID_1).set(Team.STAR_PASS, true);
+        g.stopJamTO();
+        g.getCurrentPeriod().getCurrentJam().execute(Jam.DELETE);
+        assertEquals(0, g.getCurrentPeriod().numberOf(Period.JAM));
+        assertEquals(Game.ACTION_NONE, g.getLabel(Button.UNDO));
+    }
+
+    @Test
+    public void testUndoStartAfterInsertingJamWithStarPass() {
+        g.startJam();
+        g.getTeam(Team.ID_1).set(Team.STAR_PASS, true);
+        g.getCurrentPeriod().getCurrentJam().execute(Jam.INSERT_BEFORE);
+
+        g.clockUndo(false);
+        assertFalse(g.isInJam());
+        assertFalse(g.restoreRunning);
+        g.startJam();
+        assertTrue(g.isInJam());
+    }
+
+    @Test
     public void testUndoAfterDeletingTimeout() {
         g.startJam();
         g.stopJamTO();
