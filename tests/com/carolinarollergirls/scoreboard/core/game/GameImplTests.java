@@ -1959,6 +1959,81 @@ public class GameImplTests {
     }
 
     @Test
+    public void testUndoAfterDeletingStoppedJam() {
+        g.startJam();
+        advance(5000);
+        g.stopJamTO();
+        g.getCurrentPeriod().getCurrentJam().execute(Jam.DELETE);
+        assertEquals(0, g.getCurrentPeriod().numberOf(Period.JAM));
+        assertEquals(Game.ACTION_NONE, g.getLabel(Button.UNDO));
+
+        // nothing to undo - clocks and buttons keep working
+        g.clockUndo(false);
+        assertFalse(g.isInJam());
+        assertTrue(lc.isRunning());
+        g.startJam();
+        assertTrue(g.isInJam());
+        assertEquals(1, g.getCurrentPeriod().numberOf(Period.JAM));
+    }
+
+    @Test
+    public void testUndoAfterDeletingEarlierJam() {
+        fastForwardJams(3);
+        g.startJam();
+        advance(5000);
+        g.stopJamTO();
+        g.getCurrentPeriod().getJam(1).execute(Jam.DELETE);
+        assertEquals(Game.UNDO_PREFIX + Game.ACTION_STOP_JAM, g.getLabel(Button.UNDO));
+
+        g.clockUndo(false);
+        assertTrue(g.isInJam());
+        assertEquals(3, g.getCurrentPeriod().getCurrentJamNumber());
+        g.stopJamTO();
+        assertFalse(g.isInJam());
+    }
+
+    @Test
+    public void testUndoAfterDeletingTimeout() {
+        g.startJam();
+        g.stopJamTO();
+        g.timeout();
+        advance(5000);
+        g.stopJamTO();
+        Timeout t = g.getCurrentTimeout();
+        t.execute(Timeout.DELETE);
+        assertEquals(0, g.getCurrentPeriod().numberOf(Period.TIMEOUT));
+        assertEquals(Game.ACTION_NONE, g.getLabel(Button.UNDO));
+
+        g.clockUndo(false);
+        assertTrue(lc.isRunning());
+        g.startJam();
+        assertTrue(g.isInJam());
+    }
+
+    @Test
+    public void testFailedUndoKeepsClocksRunning() {
+        g.startJam();
+        g.stopJamTO();
+        // remove the jam without the operator's Delete, so the snapshot still refers to it
+        Jam j = g.getCurrentPeriod().getCurrentJam();
+        ((JamImpl) j).delete(Source.OTHER);
+        g.getCurrentPeriod().set(Period.CURRENT_JAM, j.getPrevious());
+
+        try {
+            g.clockUndo(false);
+        } catch (RuntimeException e) {}
+        // only the stop from setUp is left
+        ScoreBoardClock.getInstance().start(false);
+        assertTrue(ScoreBoardClock.getInstance().isRunning());
+        ScoreBoardClock.getInstance().stop();
+        assertFalse(g.restoreRunning);
+        assertEquals(Game.ACTION_NONE, g.getLabel(Button.UNDO));
+        // the half done restore still points the period at the removed jam
+        g.getCurrentPeriod().set(Period.CURRENT_JAM, j.getPrevious());
+        g.set(Game.IN_JAM, false);
+    }
+
+    @Test
     public void testPenaltiesMovedOnPeriodDelete() {
         Team team = g.getTeam(Team.ID_1);
         Skater skater = new SkaterImpl(team, UUID.randomUUID().toString());

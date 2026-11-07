@@ -94,6 +94,7 @@ public final class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> impl
                     return;
                 }
 
+                game.forgetUndoFor(this);
                 delete(source);
 
                 if (parent instanceof Period && this == ((Period) parent).getCurrentJam()) {
