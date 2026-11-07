@@ -13,6 +13,7 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
+import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
@@ -60,6 +61,25 @@ public class SkaterImplTests {
         ScoreBoardClock.getInstance().advance(1000);
         g.getClock(Clock.ID_INTERMISSION).setTime(0);
         ScoreBoardClock.getInstance().advance(1000);
+    }
+
+    @Test
+    public void loaded_penalties_keep_their_numbers() {
+        Jam j3 = g.getOrCreatePeriod(1).getJam(3);
+        Jam j4 = g.getOrCreatePeriod(1).getJam(4);
+        Penalty p1 = skater.getOrCreate(Skater.PENALTY, "1");
+        p1.set(Penalty.JAM, j3, Source.JSON);
+        p1.set(Penalty.TIME, 2000L, Source.JSON);
+        Penalty p2 = skater.getOrCreate(Skater.PENALTY, "2");
+        p2.set(Penalty.JAM, j4, Source.JSON);
+        p2.set(Penalty.TIME, 1000L, Source.JSON);
+
+        // a game file also lists the penalty under its jam
+        j3.add(Jam.PENALTY, p2, Source.JSON);
+
+        assertEquals(j3, p2.getJam());
+        assertEquals(1, p1.getNumber());
+        assertEquals(2, p2.getNumber());
     }
 
     @Test
