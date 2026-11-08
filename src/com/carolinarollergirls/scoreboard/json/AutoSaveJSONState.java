@@ -97,8 +97,8 @@ public final class AutoSaveJSONState implements Runnable {
         if (backupDir.exists()) {
             Logger.printMessage("Could not back up auto-save files, backup directory already exists");
         } else {
-            int n = 0;
-            do {
+            // only the newest file - it's the one a restart loads, and each file holds all games
+            for (int n = 0; n <= AUTOSAVE_FILES; n++) {
                 File from = getFile(n);
                 if (from.exists()) {
                     try {
@@ -106,8 +106,9 @@ public final class AutoSaveJSONState implements Runnable {
                     } catch (Exception e) {
                         Logger.printStackTrace("backing up auto-save file '" + from.getName() + "'", e);
                     }
+                    break;
                 }
-            } while (n++ < AUTOSAVE_FILES);
+            }
         }
     }
 
