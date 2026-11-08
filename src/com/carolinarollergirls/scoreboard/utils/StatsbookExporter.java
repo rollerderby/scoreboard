@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.poi.ooxml.POIXMLProperties.CustomProperties;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
@@ -30,6 +31,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.carolinarollergirls.scoreboard.core.game.GameImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Expulsion;
@@ -117,6 +119,7 @@ public final class StatsbookExporter extends Thread {
                     if (hadOsOffset) { fillIgrfOsOffsetInfo(); }
                 }
                 wb.setForceFormulaRecalculation(true);
+                setVersionProperty(wb, Version.get());
 
                 FileOutputStream out = new FileOutputStream(tmpPath.toFile());
                 wb.write(out);
@@ -755,6 +758,16 @@ public final class StatsbookExporter extends Thread {
         setComment(cell, String.join("; ", comments));
     }
 
+    static void setVersionProperty(Workbook wb, String version) {
+        if (!(wb instanceof XSSFWorkbook)) { return; }
+        CustomProperties props = ((XSSFWorkbook) wb).getProperties().getCustomProperties();
+        if (props.contains(VERSION_PROPERTY)) {
+            props.getProperty(VERSION_PROPERTY).setLpwstr(version);
+        } else {
+            props.addProperty(VERSION_PROPERTY, version);
+        }
+    }
+
     private static void setComment(Cell cell, String text) {
         if ("".equals(text)) { return; }
 
@@ -792,6 +805,8 @@ public final class StatsbookExporter extends Thread {
         strikedName.cloneStyleFrom(igrf.getRow(13).getCell(2).getCellStyle());
         strikedName.setFont(strikeFont);
     }
+
+    static final String VERSION_PROPERTY = "CRG ScoreBoard Version";
 
     private Game game;
     private Workbook wb;
