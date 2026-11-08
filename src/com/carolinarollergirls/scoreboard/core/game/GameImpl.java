@@ -93,6 +93,13 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
     public void stopThreads() {
         jsonSnapshotter.unregister();
         for (Team t : getAll(TEAM)) { ((TeamImpl) t).stopTripScoreTimer(); }
+        for (Clock c : getAll(CLOCK)) { ClockImpl.updateClockTimerTask.removeClock((ClockImpl) c); }
+    }
+
+    /** Listeners on elements outside the game have to end with the game. */
+    private void _listenTo(ScoreBoardEventProvider element, ScoreBoardListener l) {
+        element.addScoreBoardListener(l);
+        providers.put(l, element);
     }
 
     private void initReferences(Ruleset rs, Game source) {
@@ -273,39 +280,33 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
         }));
 
         // handle changes to the ruleset (if following a preset ruleset)
-        scoreBoard.getRulesets().addScoreBoardListener(
-            new ConditionalScoreBoardListener<>(Ruleset.class, Ruleset.RULE, new ScoreBoardListener() {
-                @Override
-                public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                    refreshRuleset((Ruleset) event.getProvider());
-                }
-            }));
+        _listenTo(scoreBoard.getRulesets(),
+                  new ConditionalScoreBoardListener<>(Ruleset.class, Ruleset.RULE, new ScoreBoardListener() {
+                      @Override
+                      public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                          refreshRuleset((Ruleset) event.getProvider());
+                      }
+                  }));
 
         // handle file updates
-        scoreBoard.getMedia()
-            .getFormat("game-data")
-            .getType("json")
-            .addScoreBoardListener(
-                new ConditionalScoreBoardListener<>(MediaType.class, MediaType.FILE, new ScoreBoardListener() {
-                    @Override
-                    public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                        if (((MediaFile) event.getValue()).getId().equals(getFilename() + ".json")) {
-                            set(JSON_EXISTS, true);
-                        }
-                    }
-                }));
-        scoreBoard.getMedia()
-            .getFormat("game-data")
-            .getType("xlsx")
-            .addScoreBoardListener(
-                new ConditionalScoreBoardListener<>(MediaType.class, MediaType.FILE, new ScoreBoardListener() {
-                    @Override
-                    public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                        if (((MediaFile) event.getValue()).getId().equals(getFilename() + ".xlsx")) {
-                            set(STATSBOOK_EXISTS, true);
-                        }
-                    }
-                }));
+        _listenTo(scoreBoard.getMedia().getFormat("game-data").getType("json"),
+                  new ConditionalScoreBoardListener<>(MediaType.class, MediaType.FILE, new ScoreBoardListener() {
+                      @Override
+                      public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                          if (((MediaFile) event.getValue()).getId().equals(getFilename() + ".json")) {
+                              set(JSON_EXISTS, true);
+                          }
+                      }
+                  }));
+        _listenTo(scoreBoard.getMedia().getFormat("game-data").getType("xlsx"),
+                  new ConditionalScoreBoardListener<>(MediaType.class, MediaType.FILE, new ScoreBoardListener() {
+                      @Override
+                      public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                          if (((MediaFile) event.getValue()).getId().equals(getFilename() + ".xlsx")) {
+                              set(STATSBOOK_EXISTS, true);
+                          }
+                      }
+                  }));
     }
 
     @Override

@@ -62,8 +62,11 @@ public final class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard
         if (prop == GAME && item == getCurrentGame().getSourceElement()) {
             getCurrentGame().set(CurrentGame.GAME, null);
         }
-        // otherwise the game's threads keep running
-        if (prop == GAME) { ((GameImpl) item).stopThreads(); }
+        if (prop == GAME) {
+            // otherwise the game's threads keep running and it stays in memory until restart
+            ((GameImpl) item).stopThreads();
+            releaseElementsOf((GameImpl) item);
+        }
     }
 
     @Override
