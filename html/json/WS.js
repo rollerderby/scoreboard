@@ -495,30 +495,32 @@ var WS = {
   },
 
   Forget: function (elements) {
-    function filter(trie, elem) {
+    function filter(trie, forgotten) {
       if (trie._values) {
         trie._values = trie._values.filter(function (v) {
-          return !elem.is(v.elem);
+          return !v.elem || !forgotten.has(v.elem[0]);
         });
       }
       Object.keys(trie).forEach(function (key) {
         if (key !== '_values') {
-          filter(trie[key], elem);
+          filter(trie[key], forgotten);
         }
       });
     }
 
-    filter(
-      WS._callbackTrie,
-      elements
-        .find('*')
-        .addBack()
-        .each(function () {
-          WS._pathCache.delete(this);
-          WS._prefixCache.delete(this);
-          WS._selectCache.delete(this);
-        }),
-    );
+    const forgotten = new Set();
+    elements
+      .find('*')
+      .addBack()
+      .each(function () {
+        forgotten.add(this);
+        WS._pathCache.delete(this);
+        WS._prefixCache.delete(this);
+        WS._selectCache.delete(this);
+      });
+    if (forgotten.size) {
+      filter(WS._callbackTrie, forgotten);
+    }
   },
 
   _getParameters: function (
