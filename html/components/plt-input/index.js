@@ -2,6 +2,11 @@
   const gameId = _windowFunctions.getParam('game');
   const prefix = gameId ? 'ScoreBoard.Game(' + gameId + ').' : 'ScoreBoard.CurrentGame.';
 
+  if (!gameId) {
+    // the annotation editor can't be opened without a game (whiteboard) - without this its [game] paths would load all games
+    $('#AnnotationEditor').remove();
+  }
+
   WS.Register([prefix + 'Rule(Penalties.NumberToFoulout)']);
   WS.Register([prefix + 'Clock(Period).Number'], _pltUpdateCurrentPeriodStyle);
   WS.Register([prefix + 'Clock(Jam).Number'], _pltUpdateCurrentJamStyle);
