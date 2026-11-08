@@ -425,7 +425,9 @@ public final class StatsbookExporter extends Thread {
             for (int jn = 1; jn <= p.getCurrentJamNumber(); jn++) {
                 Jam jam = p.getJam(jn);
                 if (jam == null) {
-                    // jam numbers can have gaps, e.g. after a reset mid-game
+                    // gaps in the jam numbers shouldn't happen - skip the jam instead of failing the whole export
+                    Logger.printMessage("Statsbook export: period " + p.getNumber() + " has no jam " + jn +
+                                        ", skipping it");
                     continue;
                 }
                 int numRows = jam.get(Jam.STAR_PASS) ? 2 : 1;
