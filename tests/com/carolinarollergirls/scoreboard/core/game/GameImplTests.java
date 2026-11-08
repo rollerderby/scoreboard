@@ -2034,29 +2034,6 @@ public class GameImplTests {
     }
 
     @Test
-    public void testFailedUndoKeepsClocksRunning() {
-        g.startJam();
-        g.stopJamTO();
-        // remove the jam without the operator's Delete, so the snapshot still refers to it
-        Jam j = g.getCurrentPeriod().getCurrentJam();
-        ((JamImpl) j).delete(Source.OTHER);
-        g.getCurrentPeriod().set(Period.CURRENT_JAM, j.getPrevious());
-
-        try {
-            g.clockUndo(false);
-        } catch (RuntimeException e) {}
-        // only the stop from setUp is left
-        ScoreBoardClock.getInstance().start(false);
-        assertTrue(ScoreBoardClock.getInstance().isRunning());
-        ScoreBoardClock.getInstance().stop();
-        assertFalse(g.restoreRunning);
-        assertEquals(Game.ACTION_NONE, g.getLabel(Button.UNDO));
-        // the half done restore still points the period at the removed jam
-        g.getCurrentPeriod().set(Period.CURRENT_JAM, j.getPrevious());
-        g.set(Game.IN_JAM, false);
-    }
-
-    @Test
     public void testPenaltiesMovedOnPeriodDelete() {
         Team team = g.getTeam(Team.ID_1);
         Skater skater = new SkaterImpl(team, UUID.randomUUID().toString());

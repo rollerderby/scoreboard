@@ -1045,16 +1045,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
                 lastButton = Button.UNDO;
             } else if (snapshot != null) {
                 ScoreBoardClock.getInstance().stop();
-                try {
-                    restoreSnapshot();
-                } catch (RuntimeException e) {
-                    // don't leave the clocks stopped and the clock buttons blocked
-                    restoreRunning = false;
-                    snapshot = null;
-                    ScoreBoardClock.getInstance().start(true);
-                    setLabels();
-                    throw e;
-                }
+                restoreSnapshot();
                 if (replace) {
                     replacePending = snapshot.getType();
                 } else {
