@@ -1,5 +1,6 @@
 package com.carolinarollergirls.scoreboard.core.game;
 
+import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
@@ -106,6 +107,15 @@ public final class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<
         if (prop == STAR_PASS_TRIP) {
             if (last != null) { getLast(SCORING_TRIP).set(ScoringTrip.AFTER_S_P, false, Flag.SPECIAL_CASE); }
             if (value != null) { ((ScoringTrip) value).set(ScoringTrip.AFTER_S_P, true, Flag.SPECIAL_CASE); }
+        }
+        if (prop == STAR_PASS && !(Boolean) value && !source.isFile()) {
+            // Without a star pass nothing in this jam happened after one.
+            for (Fielding f : getAll(FIELDING)) {
+                for (BoxTrip bt : f.getAll(Fielding.BOX_TRIP)) {
+                    if (bt.getStartFielding() == f) { bt.set(BoxTrip.START_AFTER_S_P, false); }
+                    if (bt.getEndFielding() == f) { bt.set(BoxTrip.END_AFTER_S_P, false); }
+                }
+            }
         }
         if (prop == INJURY) { getOtherTeam().set(INJURY, (Boolean) value); }
         if (prop == CURRENT_TRIP) {
