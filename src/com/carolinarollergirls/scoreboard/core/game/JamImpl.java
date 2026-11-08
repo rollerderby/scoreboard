@@ -63,7 +63,12 @@ public final class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> impl
 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == STAR_PASS) { return getTeamJam(Team.ID_1).isStarPass() || getTeamJam(Team.ID_2).isStarPass(); }
+        if (prop == STAR_PASS) {
+            TeamJam tj1 = getTeamJam(Team.ID_1);
+            TeamJam tj2 = getTeamJam(Team.ID_2);
+            // while the jam is deleted its team jams are removed first
+            return tj1 != null && tj1.isStarPass() || tj2 != null && tj2.isStarPass();
+        }
         return value;
     }
     @Override
@@ -94,6 +99,7 @@ public final class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> impl
                     return;
                 }
 
+                game.forgetUndoFor(this);
                 delete(source);
 
                 if (parent instanceof Period && this == ((Period) parent).getCurrentJam()) {

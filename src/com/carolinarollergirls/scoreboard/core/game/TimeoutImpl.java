@@ -91,7 +91,10 @@ public final class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> impl
     public void execute(Command prop, Source source) {
         synchronized (coreLock) {
             if (prop == DELETE) {
-                if (!isRunning()) { delete(source); }
+                if (!isRunning()) {
+                    game.forgetUndoFor(this);
+                    delete(source);
+                }
             } else if (prop == INSERT_AFTER) {
                 Timeout newTo = new TimeoutImpl(get(PRECEDING_JAM));
                 newTo.set(RUNNING, false);

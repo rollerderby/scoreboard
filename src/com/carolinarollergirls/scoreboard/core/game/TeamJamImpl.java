@@ -105,7 +105,9 @@ public final class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<
     @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == STAR_PASS_TRIP) {
-            if (last != null) { getLast(SCORING_TRIP).set(ScoringTrip.AFTER_S_P, false, Flag.SPECIAL_CASE); }
+            if (last != null && getLast(SCORING_TRIP) != null) {
+                getLast(SCORING_TRIP).set(ScoringTrip.AFTER_S_P, false, Flag.SPECIAL_CASE);
+            }
             if (value != null) { ((ScoringTrip) value).set(ScoringTrip.AFTER_S_P, true, Flag.SPECIAL_CASE); }
         }
         if (prop == STAR_PASS && !(Boolean) value && !source.isFile()) {

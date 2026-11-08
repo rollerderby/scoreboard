@@ -56,6 +56,8 @@ public interface Game extends ScoreBoardEventProvider {
     public void setTimeoutType(TimeoutOwner owner, boolean review);
 
     public void clockUndo(boolean replace);
+    /** Called when the operator deletes an element. Undo can't bring back what it refers to, so it's dropped. */
+    public void forgetUndoFor(ScoreBoardEventProvider deleted);
 
     public Clock getClock(String id);
 

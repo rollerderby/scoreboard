@@ -1959,6 +1959,81 @@ public class GameImplTests {
     }
 
     @Test
+    public void testUndoAfterDeletingStoppedJam() {
+        g.startJam();
+        advance(5000);
+        g.stopJamTO();
+        g.getCurrentPeriod().getCurrentJam().execute(Jam.DELETE);
+        assertEquals(0, g.getCurrentPeriod().numberOf(Period.JAM));
+        assertEquals(Game.ACTION_NONE, g.getLabel(Button.UNDO));
+
+        // nothing to undo - clocks and buttons keep working
+        g.clockUndo(false);
+        assertFalse(g.isInJam());
+        assertTrue(lc.isRunning());
+        g.startJam();
+        assertTrue(g.isInJam());
+        assertEquals(1, g.getCurrentPeriod().numberOf(Period.JAM));
+    }
+
+    @Test
+    public void testUndoAfterDeletingEarlierJam() {
+        fastForwardJams(3);
+        g.startJam();
+        advance(5000);
+        g.stopJamTO();
+        g.getCurrentPeriod().getJam(1).execute(Jam.DELETE);
+        assertEquals(Game.UNDO_PREFIX + Game.ACTION_STOP_JAM, g.getLabel(Button.UNDO));
+
+        g.clockUndo(false);
+        assertTrue(g.isInJam());
+        assertEquals(3, g.getCurrentPeriod().getCurrentJamNumber());
+        g.stopJamTO();
+        assertFalse(g.isInJam());
+    }
+
+    @Test
+    public void testDeleteStarPassJam() {
+        g.startJam();
+        g.getTeam(Team.ID_1).set(Team.STAR_PASS, true);
+        g.stopJamTO();
+        g.getCurrentPeriod().getCurrentJam().execute(Jam.DELETE);
+        assertEquals(0, g.getCurrentPeriod().numberOf(Period.JAM));
+        assertEquals(Game.ACTION_NONE, g.getLabel(Button.UNDO));
+    }
+
+    @Test
+    public void testUndoStartAfterInsertingJamWithStarPass() {
+        g.startJam();
+        g.getTeam(Team.ID_1).set(Team.STAR_PASS, true);
+        g.getCurrentPeriod().getCurrentJam().execute(Jam.INSERT_BEFORE);
+
+        g.clockUndo(false);
+        assertFalse(g.isInJam());
+        assertFalse(g.restoreRunning);
+        g.startJam();
+        assertTrue(g.isInJam());
+    }
+
+    @Test
+    public void testUndoAfterDeletingTimeout() {
+        g.startJam();
+        g.stopJamTO();
+        g.timeout();
+        advance(5000);
+        g.stopJamTO();
+        Timeout t = g.getCurrentTimeout();
+        t.execute(Timeout.DELETE);
+        assertEquals(0, g.getCurrentPeriod().numberOf(Period.TIMEOUT));
+        assertEquals(Game.ACTION_NONE, g.getLabel(Button.UNDO));
+
+        g.clockUndo(false);
+        assertTrue(lc.isRunning());
+        g.startJam();
+        assertTrue(g.isInJam());
+    }
+
+    @Test
     public void testPenaltiesMovedOnPeriodDelete() {
         Team team = g.getTeam(Team.ID_1);
         Skater skater = new SkaterImpl(team, UUID.randomUUID().toString());

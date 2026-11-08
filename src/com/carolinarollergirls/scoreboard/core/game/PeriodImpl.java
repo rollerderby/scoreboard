@@ -153,7 +153,10 @@ public final class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period
     public void execute(Command prop, Source source) {
         synchronized (coreLock) {
             if (prop == DELETE) {
-                if (!isRunning() && get(TEAM_1_POINTS) == 0 && get(TEAM_2_POINTS) == 0) { delete(source); }
+                if (!isRunning() && get(TEAM_1_POINTS) == 0 && get(TEAM_2_POINTS) == 0) {
+                    game.forgetUndoFor(this);
+                    delete(source);
+                }
             } else if (prop == INSERT_BEFORE) {
                 if (game.getCurrentPeriodNumber() < game.getInt(Rule.NUMBER_PERIODS))
                     game.add(ownType, new PeriodImpl(game, getNumber()));

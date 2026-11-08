@@ -1002,6 +1002,15 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
     protected void createSnapshot(String type) {
         if (!restoreRunning) { snapshot = new GameSnapshot(this, type); }
     }
+    @Override
+    public void forgetUndoFor(ScoreBoardEventProvider deleted) {
+        synchronized (coreLock) {
+            if (snapshot != null && snapshot.refersTo(deleted)) {
+                snapshot = null;
+                setLabels();
+            }
+        }
+    }
     protected void restoreSnapshot() {
         restoreRunning = true;
         ScoreBoardClock.getInstance().rewindTo(snapshot.getSnapshotTime());
@@ -1327,6 +1336,9 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
             }
         }
 
+        public boolean refersTo(ScoreBoardEventProvider p) {
+            return p == currentPeriod || p == currentTimeout || p == periodSnapshot.getCurrentJam();
+        }
         public String getType() { return type; }
         public long getSnapshotTime() { return snapshotTime; }
         public Timeout getCurrentTimeout() { return currentTimeout; }
