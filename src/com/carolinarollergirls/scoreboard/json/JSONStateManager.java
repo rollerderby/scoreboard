@@ -2,7 +2,6 @@ package com.carolinarollergirls.scoreboard.json;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -44,8 +43,8 @@ public class JSONStateManager {
 
     public void unregister(JSONStateListener source) {
         synchronized (sources) {
-            sources.get(source).shutdownNow();
-            sources.remove(source);
+            // Updates that were still queued will never run.
+            pending.addAndGet(-sources.remove(source).shutdownNow().size());
         }
     }
 
@@ -65,18 +64,18 @@ public class JSONStateManager {
 
             // Send updates async, as the WS connections can block if the
             // kernel TCP send buffer fills up.
-            Set<JSONStateListener> sourceSet;
-            synchronized (sources) { sourceSet = sources.keySet(); }
-            for (JSONStateListener source : sourceSet) {
-                final JSONStateListener localSource = source;
-                pending.incrementAndGet();
-                sources.get(source).execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        localSource.sendUpdates(localState, localChanged);
-                        pending.decrementAndGet();
-                    }
-                });
+            synchronized (sources) {
+                for (Map.Entry<JSONStateListener, ExecutorService> source : sources.entrySet()) {
+                    final JSONStateListener localSource = source.getKey();
+                    pending.incrementAndGet();
+                    source.getValue().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            localSource.sendUpdates(localState, localChanged);
+                            pending.decrementAndGet();
+                        }
+                    });
+                }
             }
         }
 
