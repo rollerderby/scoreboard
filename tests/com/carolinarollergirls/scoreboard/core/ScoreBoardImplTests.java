@@ -185,4 +185,20 @@ public class ScoreBoardImplTests {
         assertEquals(next.getCurrentTimeout(),
                      ((CurrentTimeout) sb.getElement(CurrentTimeout.class, "noTimeout")).getSourceElement());
     }
+
+    @Test
+    public void testSwitchingGameAfterAutosaveLoad() {
+        // an autosave has ScoreBoard.CurrentGame.Id with an empty value
+        sb.getCurrentGame().set(CurrentGame.ID, "", Source.AUTOSAVE);
+        Game next = sb.getOrCreate(ScoreBoard.GAME, "next");
+        next.getTeam(Team.ID_1).set(Team.TEAM_NAME, "Next");
+        CurrentGame cg = sb.getCurrentGame();
+        cg.set(CurrentGame.GAME, next);
+
+        assertEquals(next, cg.get(CurrentGame.GAME));
+        assertEquals(next.get(Game.NAME), cg.get(Game.NAME));
+        assertEquals("Next", cg.getMirror(Game.TEAM, Team.ID_1).get(Team.TEAM_NAME));
+        next.startJam();
+        assertTrue(cg.get(Game.IN_JAM));
+    }
 }

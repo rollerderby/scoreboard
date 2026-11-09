@@ -113,7 +113,8 @@ public class MirrorScoreBoardEventProviderImpl<M extends ScoreBoardEventProvider
         for (Map<String, ScoreBoardEventProvider> list : elements.values()) {
             for (Iterator<ScoreBoardEventProvider> it = list.values().iterator(); it.hasNext();) {
                 ScoreBoardEventProvider e = it.next();
-                if (e instanceof MirrorScoreBoardEventProviderImpl &&
+                // loading an autosave also files this under its own id "" - it must keep following the next game
+                if (e != this && e instanceof MirrorScoreBoardEventProviderImpl &&
                     isPartOf(((MirrorScoreBoardEventProviderImpl<?, ?>) e).sourceElement, root)) {
                     ((MirrorScoreBoardEventProviderImpl<?, ?>) e).removeListeners();
                     it.remove();
