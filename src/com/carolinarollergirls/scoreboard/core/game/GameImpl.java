@@ -217,7 +217,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
                 @Override
                 public void scoreBoardChange(ScoreBoardEvent<?> event) {
                     if (getClock(Clock.ID_PERIOD).isTimeAtStart() && getCurrentPeriod().numberOf(Period.JAM) == 0 &&
-                        getCurrentPeriodNumber() > 0) {
+                        getCurrentPeriod().numberOf(Period.TIMEOUT) == 0 && getCurrentPeriodNumber() > 0) {
                         // intermission clock has been restarted before period start - undo period advancement
                         set(CURRENT_PERIOD, getCurrentPeriod().getPrevious());
                     }
@@ -926,12 +926,17 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
             _endTimeout(false, false);
         }
 
+        // during intermission a timeout is about the period that just ended, even if this advances the period
+        boolean afterPeriod = getClock(Clock.ID_INTERMISSION).isRunning() && getCurrentPeriodNumber() > 0;
+
         if (getBoolean(Rule.STOP_PC_ON_TO)) { pc.stop(); }
         _endLineup();
         _endJam(false);
         _endIntermission(false);
         setInPeriod(true);
-        set(CURRENT_TIMEOUT, new TimeoutImpl(getCurrentPeriod().getCurrentJam()));
+        Jam precedingJam = getCurrentPeriod().getCurrentJam();
+        set(CURRENT_TIMEOUT,
+            afterPeriod ? new TimeoutImpl(precedingJam) : new TimeoutImpl(getCurrentPeriod(), precedingJam));
         getCurrentTimeout().getParent().add(Period.TIMEOUT, getCurrentTimeout());
         tc.changeNumber(1);
         tc.restart();

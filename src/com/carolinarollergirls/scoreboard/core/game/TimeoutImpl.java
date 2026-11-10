@@ -12,6 +12,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.TimeoutOwner;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public final class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> implements Timeout {
@@ -25,9 +26,11 @@ public final class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> impl
         }
     }
 
-    public TimeoutImpl(Jam precedingJam) {
-        super(precedingJam.getParent(), UUID.randomUUID().toString(), Period.TIMEOUT);
-        game = precedingJam.getPeriod().getGame();
+    public TimeoutImpl(Jam precedingJam) { this(precedingJam.getPeriod(), precedingJam); }
+
+    public TimeoutImpl(Period p, Jam precedingJam) {
+        super(p, UUID.randomUUID().toString(), Period.TIMEOUT);
+        game = p.getGame();
         initReferences();
         set(PRECEDING_JAM, precedingJam);
         set(WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
@@ -52,6 +55,14 @@ public final class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> impl
     }
 
     @Override
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == PRECEDING_JAM_NUMBER && !_isInPrecedingJamsPeriod() &&
+            game.getBoolean(Rule.JAM_NUMBER_PER_PERIOD)) {
+            return 0;
+        }
+        return value;
+    }
+    @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == OWNER) {
             if (last instanceof Team) { ((Team) last).remove(Team.TIME_OUT, this); }
@@ -68,10 +79,12 @@ public final class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> impl
         }
         if (prop == RETAINED_REVIEW && getOwner() instanceof Team) { ((Team) getOwner()).recountTimeouts(); }
         if (prop == PRECEDING_JAM) {
-            if (value != null && ((Jam) value).getParent() != getParent()) {
+            if (value != null && ((Jam) value).getParent() != getParent() && !source.isFile() &&
+                !_isBeforeFirstJam((Jam) value)) {
                 getParent().remove(Period.TIMEOUT, this);
                 parent = ((Jam) value).getParent();
                 getParent().add(Period.TIMEOUT, this);
+                set(PRECEDING_JAM_NUMBER, ((Jam) value).getNumber(), Source.COPY);
             }
             if (getOwner() instanceof Team) { ((Team) getOwner()).recountTimeouts(); }
             if (game.getCurrentPeriod() != null &&
@@ -79,6 +92,14 @@ public final class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> impl
                 game.set(Game.NO_MORE_JAM, game.get(Game.NO_MORE_JAM), Source.RECALCULATE);
             }
         }
+    }
+
+    private boolean _isInPrecedingJamsPeriod() {
+        return get(PRECEDING_JAM) == null || get(PRECEDING_JAM).getParent() == getParent();
+    }
+    private boolean _isBeforeFirstJam(Jam precedingJam) {
+        Period p = (Period) getParent();
+        return p.hasPrevious() && precedingJam == p.getPrevious().getCurrentJam();
     }
 
     @Override

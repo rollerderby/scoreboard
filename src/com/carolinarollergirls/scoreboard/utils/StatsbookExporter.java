@@ -714,6 +714,7 @@ public final class StatsbookExporter extends Thread {
             eventDetails.add(String.join(", ", injuries));
         }
         for (Timeout t : j.getAll(Jam.TIMEOUTS_AFTER)) {
+            if (t.getParent() != j.getParent()) { continue; } // before the first jam of the next period
             if (t.getOwner() instanceof Team) {
                 events.add(t.isReview() ? "OR" : "TO");
                 eventDetails.add(((Team) t.getOwner()).get(Team.UNIFORM_COLOR));
