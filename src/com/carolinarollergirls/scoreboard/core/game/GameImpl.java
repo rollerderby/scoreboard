@@ -322,8 +322,8 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
             if (getInt(Rule.JAMS_PER_PERIOD) > 0) { return false; }
             if (!getBoolean(Rule.PERIOD_END_BETWEEN_JAMS)) { return false; }
             if (getBoolean(Rule.LINEUP_STOPS_PERIOD_CLOCK)) { return false; }
-            if (getClock(Clock.ID_PERIOD).isTimeAtStart()) { return false; }
             Jam lastJam = getCurrentPeriod().getCurrentJam();
+            if (lastJam.getPeriod() != getCurrentPeriod()) { return false; }
             long pcRemaining = getClock(Clock.ID_PERIOD).getMaximumTime() - lastJam.getPeriodClockElapsedEnd();
             if (pcRemaining > getLong(Rule.LINEUP_DURATION)) { return false; }
             boolean ttoForcesJam = getBoolean(Rule.STOP_PC_ON_TO) || getBoolean(Rule.STOP_PC_ON_TTO);
