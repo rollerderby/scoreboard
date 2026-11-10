@@ -575,6 +575,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
                 set(AUTO_FIVE, true);
                 lineupTimeFor5s = lc.getTimeElapsed() + delay;
                 lineupTimeForStart = lineupTimeFor5s + 5000L;
+                autostartRan = false;
             }
         } else if (prop == LOAD_OFFICIALS_CREW) {
             OfficialsCrew crew = get(OFFICIALS_CREW);
