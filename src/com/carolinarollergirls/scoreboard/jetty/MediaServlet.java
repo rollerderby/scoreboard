@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -124,6 +125,10 @@ public class MediaServlet extends HttpServlet {
     protected void processFileItemList(List<FileItem> fileItems, String media, String type)
         throws FileNotFoundException, IOException {
         File typeDir = getTypeDir(media, type);
+        // check all names before writing anything, so a bad entry doesn't leave half a zip behind
+        for (FileItem item : fileItems) {
+            if (!item.isFormField()) { getTargetFile(typeDir, item.getName()); }
+        }
 
         ListIterator<FileItem> fileItemIterator = fileItems.listIterator();
         while (fileItemIterator.hasNext()) {
@@ -149,7 +154,7 @@ public class MediaServlet extends HttpServlet {
     }
 
     protected File createFile(File typeDir, FileItem item) throws IOException, FileNotFoundException {
-        File f = new File(typeDir, item.getName());
+        File f = getTargetFile(typeDir, item.getName());
         f.getParentFile().mkdirs();
         FileOutputStream fos = null;
         InputStream is = item.getInputStream();
@@ -161,6 +166,17 @@ public class MediaServlet extends HttpServlet {
             is.close();
             if (null != fos) { fos.close(); }
         }
+    }
+
+    /** The file to write for an uploaded name, which must stay inside the type folder. */
+    protected File getTargetFile(File typeDir, String name) throws IllegalArgumentException {
+        // names come from the client (file name or zip entry) and may contain ".." or be absolute
+        Path dir = typeDir.toPath().toAbsolutePath().normalize();
+        Path p = dir.resolve(name).normalize();
+        if (!p.startsWith(dir) || p.equals(dir)) {
+            throw new IllegalArgumentException("Invalid file name '" + name + "'");
+        }
+        return p.toFile();
     }
 
     protected void processZipFileItem(FileItemFactory factory, FileItem zip, List<FileItem> fileItems)
