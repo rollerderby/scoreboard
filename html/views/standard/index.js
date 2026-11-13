@@ -14,6 +14,21 @@
     });
   });
 
+  // the display's theme is set by the SBO, unless the URL has one
+  if (!_windowFunctions.getParam('theme')) {
+    WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_Theme)', function (k, v) {
+      $('head link.DisplayTheme').remove();
+      if (v) {
+        // a theme folder has its stylesheet in theme.css
+        $('<link>')
+          .addClass('DisplayTheme')
+          .attr({ href: /\/$/.test(v) ? v + 'theme.css' : v, type: 'text/css', rel: 'stylesheet' })
+          .appendTo('head');
+      }
+      $(window).trigger('resize');
+    });
+  }
+
   WS.Register(
     ['ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_BoxStyle)', 'ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_SidePadding)'],
     {
