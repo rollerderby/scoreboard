@@ -41,16 +41,20 @@ $(function () {
 });
 
 WS.AfterLoad(function () {
-  const theme = _windowFunctions.getParam('theme');
-  $('#themeSelector').val(theme || '');
-  // pass a theme from the URL on to the screens opened from here, but not a missing one as "null"
-  if (theme) {
+  $('#themeSelector').val(theme);
+  // a theme given in the URL is passed on to the screens opened from here
+  const urlTheme = _windowFunctions.getParam('theme');
+  if (urlTheme) {
     $('[href*="?"]').attr('href', function (_, value) {
-      return value.replace(/\?(theme=[^&]*)?/, '?theme=' + theme);
+      return value.replace(/\?(theme=[^&]*)?/, '?theme=' + urlTheme);
     });
   }
 });
 
 function setTheme(k, v) {
-  window.location.replace(_urlWithParam('theme', v));
+  _storeTheme(v);
+  // drop the theme from the URL, as it would win over the chosen one
+  window.location.replace(
+    window.location.pathname + window.location.search.replace(/([?&])theme=[^&]*&?/, '$1').replace(/[?&]$/, '')
+  );
 }

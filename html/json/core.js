@@ -97,7 +97,22 @@ _include('/json', ['WS.js'], function () {
   WS.Connect();
   WS.Process(window.location.pathname);
 });
-const theme = _getUrlParam('theme');
+// a theme in the URL wins over the one chosen on the start page, which is kept in this browser
+const theme = _getUrlParam('theme') || _getStoredTheme();
 if (theme) {
   _include(/\/$/.test(theme) ? theme + 'theme.css' : theme);
+}
+
+function _getStoredTheme() {
+  try {
+    return window.localStorage.getItem('ScoreBoard.Theme') || '';
+  } catch (e) {
+    return '';
+  }
+}
+
+function _storeTheme(theme) {
+  try {
+    window.localStorage.setItem('ScoreBoard.Theme', theme);
+  } catch (e) {}
 }
