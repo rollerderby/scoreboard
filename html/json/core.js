@@ -99,5 +99,5 @@ _include('/json', ['WS.js'], function () {
 });
 const theme = _getUrlParam('theme');
 if (theme) {
-  _include(theme);
+  _include(/\/$/.test(theme) ? theme + 'theme.css' : theme);
 }

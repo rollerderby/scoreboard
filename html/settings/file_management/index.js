@@ -72,6 +72,7 @@ function filCreateRemoveDialog(k, v, elem) {
 
 function filCreateUploadDialog(k) {
   var div = $('div.UploadMediaDialog').clone(true);
+  div.find('p.ThemeHint').toggleClass('sbHide', k.Format !== 'themes');
   var uploader = div.find('div.Upload').fileupload({
     url: '/Media/upload',
     dropZone: null,

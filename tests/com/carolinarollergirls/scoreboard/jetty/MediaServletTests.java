@@ -62,8 +62,8 @@ public class MediaServletTests {
         ms.processFileItemList(list, "themes", "custom");
     }
 
-    private void uploadZip(String... names) throws IOException {
-        FileItem zip = factory.createItem(null, null, false, "upload.zip");
+    private FileItem zip(String zipName, String... names) throws IOException {
+        FileItem zip = factory.createItem(null, null, false, zipName);
         ZipOutputStream zoS = new ZipOutputStream(zip.getOutputStream());
         for (String name : names) {
             zoS.putNextEntry(new ZipEntry(name));
@@ -71,8 +71,19 @@ public class MediaServletTests {
             zoS.closeEntry();
         }
         zoS.close();
+        return zip;
+    }
+
+    private void uploadZip(String... names) throws IOException {
         List<FileItem> list = new ArrayList<>();
-        ms.processZipFileItem(factory, zip, list);
+        ms.processZipFileItem(factory, zip("upload.zip", names), list, "");
+        ms.processFileItemList(list, "themes", "custom");
+    }
+
+    private void uploadTheme(String zipName, String... names) throws IOException {
+        FileItem zip = zip(zipName, names);
+        List<FileItem> list = new ArrayList<>();
+        ms.processZipFileItem(factory, zip, list, ms.getThemeFolder(zip));
         ms.processFileItemList(list, "themes", "custom");
     }
 
@@ -113,6 +124,36 @@ public class MediaServletTests {
         assertFalse(new File(dir.getRoot(), "outside.txt").exists());
         // nothing is written when one entry is refused
         assertFalse(new File(typeDir, "ok.css").exists());
+        assertEquals(0, typeDir.list().length);
+    }
+
+    @Test
+    public void testThemeZipWithFolder() throws Exception {
+        uploadTheme("download (1).zip", "dark/theme.css", "dark/fonts/a.woff2", "__MACOSX/dark/._theme.css");
+        assertTrue(new File(typeDir, "dark/theme.css").exists());
+        assertTrue(new File(typeDir, "dark/fonts/a.woff2").exists());
+        assertFalse(new File(typeDir, "__MACOSX").exists());
+    }
+
+    @Test
+    public void testThemeZipWithoutFolder() throws Exception {
+        // files at the top go into a folder named after the zip
+        uploadTheme("dark.zip", "theme.css", "fonts/a.woff2");
+        assertTrue(new File(typeDir, "dark/theme.css").exists());
+        assertTrue(new File(typeDir, "dark/fonts/a.woff2").exists());
+        assertFalse(new File(typeDir, "theme.css").exists());
+    }
+
+    @Test
+    public void testThemeZipWithoutThemeCss() throws Exception {
+        try {
+            uploadTheme("dark.zip", "dark/style.css");
+            fail();
+        } catch (IllegalArgumentException e) {}
+        try {
+            uploadTheme("two.zip", "one/theme.css", "two/theme.css");
+            fail();
+        } catch (IllegalArgumentException e) {}
         assertEquals(0, typeDir.list().length);
     }
 }
