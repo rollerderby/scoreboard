@@ -57,6 +57,54 @@
     --button-clicked-transform: translate(0, 0);
     --button-active-shadow: var(--button-border-color) 1px 1px inset;
     --button-active-hover-shadow: var(--button-border-color) 2px 2px inset;
+
+    /* paper-style sheets (PLT, LT, SK, penalties, OR, IGRF summary) */
+    --sheet-bg: #fff;
+    --sheet-fg: #000;
+    --sheet-border: #777;
+    --sheet-header-bg: #ccc;
+    --sheet-header-fg: #333;
+    --sheet-title-bg: #333;
+    --sheet-title-fg: #fff;
+    --sheet-number-bg: #f4f4f4;
+    --sheet-number-darker-bg: #e8e8e8;
+    --sheet-lineup-bg: #e7f3ff;
+    --sheet-lineup-darker-bg: #cee7ff;
+    --sheet-lineup-box-bg: #b6daff;
+    --sheet-penalty-bg: #ffe8ff;
+    --sheet-penalty-darker-bg: #ffd0ff;
+    --sheet-score-bg: #e9f6da;
+    --sheet-score-darker-bg: #d3ecb6;
+    --sheet-timeout-bg: #e0d0f0;
+    --sheet-count-bg: #ff0;
+    --sheet-annotation: red;
+
+    /* skaters on track; penalty warnings (5th, 6th, expulsion); box trips */
+    --on-track-bg: #70ff70;
+    --on-track-pivot-bg: #00ee00;
+    --on-track-jammer-bg: #00cc00;
+    --on-track-fg: #000;
+    --warn-fg: #000;
+    --warn-1-bg: #ff0;
+    --warn-1-darker-bg: #e8e800;
+    --warn-2-bg: #ff9010;
+    --warn-2-darker-bg: #e87800;
+    --warn-3-bg: #ff2828;
+    --warn-3-darker-bg: #e80808;
+    --box-stand-bg: #ff0;
+    --box-done-bg: #6fdf6f;
+    --box-fg: #000;
+    --penalty-code-bg: #fff;
+    --penalty-code-fg: #000;
+    --penalty-code-label-bg: #faa;
+    --penalty-code-selected-bg: #f00;
+    --penalty-code-selected-fg: #fff;
+
+    --list-row-bg: #eee;
+    --list-row-darker-bg: #e4e4e4;
+
+    --tooltip-bg: black;
+    --tooltip-fg: #fff;
 }
 
 a { color: inherit; }
@@ -83,12 +131,12 @@ table.sbGroup tr:nth-of-type(even) { background-color: var(--table-row-stripe); 
 .sbStack { display: flex; flex-direction: column; gap: var(--element-gap); }
 .sbStack>div { width: 100%; display: flex; justify-content: space-around; align-items: center; gap: var(--element-gap); }
 
-div.sbSheets { height: calc(100% - 10px); align-items: flex-start; flex-wrap: wrap; gap: 1rem; color: #000; }
+div.sbSheets { height: calc(100% - 10px); align-items: flex-start; flex-wrap: wrap; gap: 1rem; color: var(--sheet-fg); }
 .sbSheets>table { width: calc(100% - 12px); border-spacing: 0; border-collapse: collapse; table-layout:fixed; }
-.sbSheets>table, .sbSheets>table>tbody, .sbSheets>table td { border: 1px solid #777; }
+.sbSheets>table, .sbSheets>table>tbody, .sbSheets>table td { border: 1px solid var(--sheet-border); }
 .sbSheets>table td { text-align: center; vertical-align: middle; padding: 0; border-style: dotted solid; }
 .sbSheets .sbHasAnnotation { position: relative; background-clip: padding-box; } 
-.sbSheets .sbHasAnnotation::after { position: absolute; right: 2px; top: 2px; height: 5px; width: 5px; background-color: red; content: ""; } 
+.sbSheets .sbHasAnnotation::after { position: absolute; right: 2px; top: 2px; height: 5px; width: 5px; background-color: var(--sheet-annotation); content: ""; } 
 
 .sbActive, .ui-button.sbActive { background: var(--element-active-bg); color: var(--element-active-fg); box-shadow: var(--button-active-shadow); transform: var(--button-active-transform); }
 .sbClickMe, .ui-button.sbClickMe { background: var(--element-clickme-bg); color: var(--element-clickme-fg); }
@@ -120,11 +168,11 @@ div.sbSheets { height: calc(100% - 10px); align-items: flex-start; flex-wrap: wr
 .sbTemplates { display: none; }
 
 .sbHasTooltip { position: relative; }
-.sbTooltip { visibility: hidden; background-color: black; color: #fff; text-align: center; padding: 5px; border-radius: 6px; bottom: 100%; left: 50%; width: max-content; max-width: max(100%, 15em); transform: translateX(-50%); position: absolute; z-index: 1; } 
+.sbTooltip { visibility: hidden; background-color: var(--tooltip-bg); color: var(--tooltip-fg); text-align: center; padding: 5px; border-radius: 6px; bottom: 100%; left: 50%; width: max-content; max-width: max(100%, 15em); transform: translateX(-50%); position: absolute; z-index: 1; } 
 :hover>.sbTooltip:not(:hover) { visibility: visible; } 
-.sbTooltip::after { content: " "; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: black transparent transparent transparent; } 
+.sbTooltip::after { content: " "; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: var(--tooltip-bg) transparent transparent transparent; } 
 .sbTooltip.Below { top: 100%; bottom: initial; } 
-.sbTooltip.Below::after { bottom: 100%; top: initial; border-color: transparent transparent black transparent; }
+.sbTooltip.Below::after { bottom: 100%; top: initial; border-color: transparent transparent var(--tooltip-bg) transparent; }
 
 [sbSheetStyle="pbt"] .sbShowBySheetStyle:not(.sbShowOnPbt) { display: none; }
 [sbSheetStyle="boxview"] .sbShowBySheetStyle:not(.sbShowOnBoxView) { display: none; }
