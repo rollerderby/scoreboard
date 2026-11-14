@@ -23,6 +23,15 @@
         $('<link>')
           .addClass('DisplayTheme')
           .attr({ href: /\/$/.test(v) ? v + 'theme.css' : v, type: 'text/css', rel: 'stylesheet' })
+          // fit the texts again once the theme (and any font it brings) is in use
+          .on('load', function () {
+            $(window).trigger('resize');
+            if (document.fonts) {
+              document.fonts.ready.then(function () {
+                $(window).trigger('resize');
+              });
+            }
+          })
           .appendTo('head');
       }
       $(window).trigger('resize');
