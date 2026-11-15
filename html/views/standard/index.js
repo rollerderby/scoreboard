@@ -14,8 +14,8 @@
     });
   });
 
-  // the display's theme is set by the SBO, unless the URL has one
-  if (!_windowFunctions.getParam('theme')) {
+  // the display's theme is set by the SBO, unless the URL has one (older start pages put "theme=null" in their links)
+  if (!_windowFunctions.getParam('theme') || _windowFunctions.getParam('theme') === 'null') {
     WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_Theme)', function (k, v) {
       $('head link.DisplayTheme').remove();
       if (v) {

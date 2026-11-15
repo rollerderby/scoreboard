@@ -42,10 +42,13 @@ $(function () {
 
 WS.AfterLoad(function () {
   const theme = _windowFunctions.getParam('theme');
-  $('#themeSelector').val(theme);
-  $('[href*="?"]').attr('href', function (_, value) {
-    return value.replace(/\?(theme=[^&]*)?/, '?theme=' + theme);
-  });
+  $('#themeSelector').val(theme || '');
+  // pass a theme from the URL on to the screens opened from here, but not a missing one as "null"
+  if (theme) {
+    $('[href*="?"]').attr('href', function (_, value) {
+      return value.replace(/\?(theme=[^&]*)?/, '?theme=' + theme);
+    });
+  }
 });
 
 function setTheme(k, v) {
