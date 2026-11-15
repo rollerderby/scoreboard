@@ -14,13 +14,13 @@
 body[hideCopy] .LtSheet>.Period .Copy { display: none; }
 
 /* header row */
-.LtSheet>.Period th { font-size: 95%; background-color: #cccccc; color: #333333; } 
+.LtSheet>.Period th { font-size: 95%; background-color: var(--sheet-header-bg); color: var(--sheet-header-fg); } 
 
 /* Colors & Borders*/
-.LtSheet>.Period { background-color: #FFF; } 
-.LtSheet>.Period .Darker { background-color: #e7f3ff; } 
-.LtSheet>.Period .Darker .Darker { background-color: #cee7ff; } 
-.LtSheet>.Period td.Box { background-color: #b6daff; }
+.LtSheet>.Period { background-color: var(--sheet-bg); } 
+.LtSheet>.Period .Darker { background-color: var(--sheet-lineup-bg); } 
+.LtSheet>.Period .Darker .Darker { background-color: var(--sheet-lineup-darker-bg); } 
+.LtSheet>.Period td.Box { background-color: var(--sheet-lineup-box-bg); }
 
 #FieldingEditor .Skater { flex-wrap: wrap; gap: var(--element-gap); }
 #FieldingEditor td.Earlier { text-align: right; width: 80px; }

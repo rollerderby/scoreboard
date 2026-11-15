@@ -8,10 +8,10 @@
 #Igrf div.Files .ui-button { margin: 1px 5px; } 
 #Igrf div.Files .Warning { color: red; }
 
-#Igrf table.Summary { border: 1px solid black; border-collapse: collapse; background-color: white; font-weight: 600; margin: auto; }
-#Igrf table.Summary td { border: 1px solid black; border-collapse: collapse; width: 80px; }
-#Igrf table.Summary .Head, #Igrf table.Summary .Total { background-color: #ffd0ff; }
-#Igrf table.Summary .Label { background-color: #ffe8ff; }
+#Igrf table.Summary { border: 1px solid var(--sheet-fg); border-collapse: collapse; background-color: var(--sheet-bg); color: var(--sheet-fg); font-weight: 600; margin: auto; }
+#Igrf table.Summary td { border: 1px solid var(--sheet-fg); border-collapse: collapse; width: 80px; }
+#Igrf table.Summary .Head, #Igrf table.Summary .Total { background-color: var(--sheet-penalty-darker-bg); }
+#Igrf table.Summary .Label { background-color: var(--sheet-penalty-bg); }
 #Igrf table.Summary .Small { font-weight: normal; }
 #Igrf table.Summary .Value { font-size: 125%; }
 

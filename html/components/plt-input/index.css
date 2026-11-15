@@ -13,10 +13,10 @@
 .PltInput>table tr.Code td.Penalty { border-bottom-style: dotted; }
 
 /* header row */
-.PltInput>.Team thead td { height: 1em; font-weight: bold; background-color: #cccccc; color: #333333; border-right: none; border-top: none; } 
-.PltInput>.Team .Count { background-color: #ffff00; }
-.PltInput>.Team .Count.Full { background-color: #cee7ff; }
-.PltInput>.Team .StarPass { background-color: #cee7ff; font-weight: normal; } 
+.PltInput>.Team thead td { height: 1em; font-weight: bold; background-color: var(--sheet-header-bg); color: var(--sheet-header-fg); border-right: none; border-top: none; } 
+.PltInput>.Team .Count { background-color: var(--sheet-count-bg); }
+.PltInput>.Team .Count.Full { background-color: var(--sheet-lineup-darker-bg); }
+.PltInput>.Team .StarPass { background-color: var(--sheet-lineup-darker-bg); font-weight: normal; } 
 .PltInput>.Team .StarPass.sbActive { background-color: var(--element-active-bg); } 
 [sbSheetStyle="whiteboard"] .PltInput>.Team thead td { background-color: #000; color: #FFF; } 
 
@@ -27,12 +27,12 @@ body:not([showNonSkaters]) .PltInput>.Team .NonSkater { display: none; }
 body[nextButton="row"] .PltInput>.Team .Advance { display: none; }
 
 /* LT part text & colors */
-.PltInput>.Team .Role { background-color: #FFF; } 
-.PltInput>.Team .Darker .Role { background-color: #e7f3ff; } 
+.PltInput>.Team .Role { background-color: var(--sheet-bg); } 
+.PltInput>.Team .Darker .Role { background-color: var(--sheet-lineup-bg); } 
 .PltInput>.Team .Role:not(.OnTrack)>span.Num { display: none; } 
 .PltInput>.Team .Role.OnTrack>span.Pos { display: none; } 
-.PltInput>.Team tr .Darker { background-color: #e7f3ff; } 
-.PltInput>.Team .Darker .Darker { background-color: #cee7ff; } 
+.PltInput>.Team tr .Darker { background-color: var(--sheet-lineup-bg); } 
+.PltInput>.Team .Darker .Darker { background-color: var(--sheet-lineup-darker-bg); } 
 .PltInput>.Team .Box.Unserved { background-color: var(--element-unserved-bg); color: var(--element-unserved-fg); } 
 .PltInput>.Team .Box.Serving { background-color: var(--element-inbox-bg); color: var(--element-inbox-fg); } 
 .PltInput>.Team .Menu:not(.Show), .PltInput>.Team .Advance:not(.Show) { visibility: hidden; }
@@ -45,19 +45,19 @@ body[nextButton="row"] .PltInput>.Team .Advance { display: none; }
 .PltInput>.Team tr:nth-child(6n+3) .Advance::after { content: "Next Jam"; }
 
 /* PT part text & colors */
-.PltInput>.Team .Number { font-weight: bold; background-color: #f4f4f4; } 
-.PltInput>.Team .Darker .Number { background-color: #E8E8E8; } 
-.PltInput>.Team .Number.OnTrack { background-color: #70ff70; } 
-.PltInput>.Team .Penalty, .PltInput>.Team .Total { background-color: #FFF; } 
-.PltInput>.Team .Darker .Penalty, .PltInput>.Team .Darker .Total { background-color: #FFE8FF; } 
-.PltInput>.Team.Team [Penalty="0"]  { background-color: #ffd0ff; } 
-.PltInput>.Team [warn="1"] .ShowWarn { background-color: #ffff00; } 
-.PltInput>.Team [warn="1"].Darker .ShowWarn { background-color: #e8e800; } 
-.PltInput>.Team [warn="2"] .ShowWarn { background-color: #ff9010; } 
-.PltInput>.Team [warn="2"].Darker .ShowWarn { background-color: #e87800; } 
-.PltInput>.Team [warn="3"] .ShowWarn { background-color: #ff2828; } 
-.PltInput>.Team [warn="3"].Darker .ShowWarn { background-color: #e80808; } 
-.PltInput>.Team .Skater .Penalty.Serving { background-color: #70ff70; } 
+.PltInput>.Team .Number { font-weight: bold; background-color: var(--sheet-number-bg); } 
+.PltInput>.Team .Darker .Number { background-color: var(--sheet-number-darker-bg); } 
+.PltInput>.Team .Number.OnTrack { background-color: var(--on-track-bg); color: var(--on-track-fg); } 
+.PltInput>.Team .Penalty, .PltInput>.Team .Total { background-color: var(--sheet-bg); } 
+.PltInput>.Team .Darker .Penalty, .PltInput>.Team .Darker .Total { background-color: var(--sheet-penalty-bg); } 
+.PltInput>.Team.Team [Penalty="0"]  { background-color: var(--sheet-penalty-darker-bg); } 
+.PltInput>.Team [warn="1"] .ShowWarn { background-color: var(--warn-1-bg); color: var(--warn-fg); } 
+.PltInput>.Team [warn="1"].Darker .ShowWarn { background-color: var(--warn-1-darker-bg); } 
+.PltInput>.Team [warn="2"] .ShowWarn { background-color: var(--warn-2-bg); color: var(--warn-fg); } 
+.PltInput>.Team [warn="2"].Darker .ShowWarn { background-color: var(--warn-2-darker-bg); } 
+.PltInput>.Team [warn="3"] .ShowWarn { background-color: var(--warn-3-bg); color: var(--warn-fg); } 
+.PltInput>.Team [warn="3"].Darker .ShowWarn { background-color: var(--warn-3-darker-bg); } 
+.PltInput>.Team .Skater .Penalty.Serving { background-color: var(--on-track-bg); color: var(--on-track-fg); } 
 .PltInput>.Team .Skater .Penalty.Unserved { background-color: var(--element-unserved-bg); color: var(--element-unserved-fg); } 
 .PltInput>.Team .Captain .Number { position: relative; }
 .PltInput>.Team .Captain .Number::before { content: "C"; font-weight: normal; position: absolute; left: .2em; top: .15em; }
@@ -65,9 +65,9 @@ body[calledBy] .PltInput>.Team .Set.NoOfficial { position: relative; background-
 body[calledBy] .PltInput>.Team .Set.NoOfficial::after { position: absolute; left: 2px; top: 2px; height: 5px; width: 5px; background-color: blue; content: ""; } 
 
 /* joint text & colors */
-.PltInput>.Team .Skater .OnTrack { background-color: #70ff70; } 
-.PltInput>.Team [role='Pivot'] .OnTrack { background-color: #00ee00; } 
-.PltInput>.Team [role='Jammer'] .OnTrack { background-color: #00cc00; } 
+.PltInput>.Team .Skater .OnTrack { background-color: var(--on-track-bg); color: var(--on-track-fg); } 
+.PltInput>.Team [role='Pivot'] .OnTrack { background-color: var(--on-track-pivot-bg); } 
+.PltInput>.Team [role='Jammer'] .OnTrack { background-color: var(--on-track-jammer-bg); } 
 .PltInput>.Team .Serving, .PltInput>.Team .Unserved { position: relative; background-clip: padding-box; } 
 .PltInput>.Team .Serving::before, .PltInput>.Team .Unserved::before { font-weight: normal; position: absolute; left: .2em; top: .15em; } 
 .PltInput>.Team .Code .Unserved::before { content: "!"; } 
@@ -75,9 +75,9 @@ body[calledBy] .PltInput>.Team .Set.NoOfficial::after { position: absolute; left
 
 #PenaltyEditor { display: flex; }
 #PenaltyEditor .Codes { flex-wrap: wrap; gap: 0.5em; }
-#PenaltyEditor .Codes>div { width: 150px; height: 90px; border: 1px solid black; font-weight: bold; background-color: #fff; } 
-#PenaltyEditor .Codes>div.Selected { background-color: #F00; color: #FFF; } 
-#PenaltyEditor .Codes>div .Code { font-size: 1.2em; background-color: #FAA; color: #000; } 
+#PenaltyEditor .Codes>div { width: 150px; height: 90px; border: 1px solid var(--penalty-code-fg); font-weight: bold; background-color: var(--penalty-code-bg); } 
+#PenaltyEditor .Codes>div.Selected { background-color: var(--penalty-code-selected-bg); color: var(--penalty-code-selected-fg); } 
+#PenaltyEditor .Codes>div .Code { font-size: 1.2em; background-color: var(--penalty-code-label-bg); color: var(--penalty-code-fg); } 
 #PenaltyEditor .Codes>div .Description { font-size: 0.75em; } 
 
 body:not([calledBy]) .CalledBy { display: none; }

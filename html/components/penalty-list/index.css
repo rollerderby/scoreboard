@@ -5,15 +5,15 @@
 #PenaltyList>:last-child { border-bottom-left-radius: var(--segment-corner-radius); border-bottom-right-radius: var(--segment-corner-radius); }
 
 #PenaltyList .Trip:not(.Stand):not(.Done):not(.Old) { background-color: var(--element-inbox-bg); color: var(--element-inbox-fg); border-color: var(--element-inbox-fg); }
-#PenaltyList .Trip.Stand:not(.Done) { background-color: yellow; color: #000; border-color: #000; }
-#PenaltyList .Trip.Done:not(.Old) { background-color: #6fdf6f; color: #000; border-color: #000; }
-#PenaltyList .Trip [warn="1"] { background-color: #ffff00; color: #000; }
-#PenaltyList .Trip [warn="2"] { background-color: #ff9010; color: #000; }
-#PenaltyList .Trip [warn="3"] { background-color: #ff2828; color: #fff; }
-#PenaltyList .Trip:not(.Stand):not(.Done):not(.Old) [warn="3"] { background-color: #fff; color: #000; }
+#PenaltyList .Trip.Stand:not(.Done) { background-color: var(--box-stand-bg); color: var(--box-fg); border-color: var(--box-fg); }
+#PenaltyList .Trip.Done:not(.Old) { background-color: var(--box-done-bg); color: var(--box-fg); border-color: var(--box-fg); }
+#PenaltyList .Trip [warn="1"] { background-color: var(--warn-1-bg); color: var(--warn-fg); }
+#PenaltyList .Trip [warn="2"] { background-color: var(--warn-2-bg); color: var(--warn-fg); }
+#PenaltyList .Trip [warn="3"] { background-color: var(--warn-3-bg); color: #fff; }
+#PenaltyList .Trip:not(.Stand):not(.Done):not(.Old) [warn="3"] { background-color: var(--sheet-bg); color: var(--sheet-fg); }
 
 #PenaltySelector .Codes { flex-wrap: wrap; gap: 0.5em; }
-#PenaltySelector .Codes>div { width: 150px; height: 90px; border: 1px solid black; font-weight: bold; background-color: #fff; } 
-#PenaltySelector .Codes>div.Selected { background-color: #F00; color: #FFF; } 
-#PenaltySelector .Codes>div .Code { font-size: 1.2em; background-color: #FAA; color: #000; } 
+#PenaltySelector .Codes>div { width: 150px; height: 90px; border: 1px solid var(--penalty-code-fg); font-weight: bold; background-color: var(--penalty-code-bg); } 
+#PenaltySelector .Codes>div.Selected { background-color: var(--penalty-code-selected-bg); color: var(--penalty-code-selected-fg); } 
+#PenaltySelector .Codes>div .Code { font-size: 1.2em; background-color: var(--penalty-code-label-bg); color: var(--penalty-code-fg); } 
 #PenaltySelector .Codes>div .Description { font-size: 0.75em; } 

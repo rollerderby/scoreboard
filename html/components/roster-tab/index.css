@@ -11,6 +11,6 @@
 #RosterTab table.Skaters #skaterCount { font-weight: normal; font-size: 1rem; }
 
 #RosterTab table.Skaters tr[flag='ALT'] { display:none; }
-#RosterTab table.Skaters tr[role='Pivot']>td { background: #00ee00 !important; }
-#RosterTab table.Skaters tr[role='Jammer']>td { background: #00cc00 !important; }
-#RosterTab table.Skaters tr[role='Blocker']>td { background: #70ff70 !important; } 
+#RosterTab table.Skaters tr[role='Pivot']>td { background: var(--on-track-pivot-bg) !important; color: var(--on-track-fg); }
+#RosterTab table.Skaters tr[role='Jammer']>td { background: var(--on-track-jammer-bg) !important; color: var(--on-track-fg); }
+#RosterTab table.Skaters tr[role='Blocker']>td { background: var(--on-track-bg) !important; color: var(--on-track-fg); } 

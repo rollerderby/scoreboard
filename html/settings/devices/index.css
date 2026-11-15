@@ -1,5 +1,5 @@
-table.Devices>tbody.Device tr.Darker { background-color: #e4e4e4; }
-table.Devices>tbody.Device tr:not(.Darker) { background-color: #eee; }
+table.Devices>tbody.Device tr.Darker { background-color: var(--list-row-darker-bg); }
+table.Devices>tbody.Device tr:not(.Darker) { background-color: var(--list-row-bg); }
 
 .Devices tbody.HasClients .LastSeenActive { background-color: #adddad; } 
 .Devices tbody.HasWritten .LastWrite { background-color: #ddddad; } 
