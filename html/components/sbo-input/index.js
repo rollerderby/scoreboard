@@ -1,6 +1,7 @@
 WS.Register([
   'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').CurrentJam',
   'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').UpcomingJamNumber',
+  'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Period(*).CurrentJam',
   'ScoreBoard.Rulesets.Ruleset(*).Parent',
   'ScoreBoard.Rulesets.Default',
 ]);
@@ -380,6 +381,12 @@ function opToToSortString(k, v) {
 
 function opToCurentJam(k, v) {
   return WS.state[k.upTo('Game') + '.Period(' + v + ').CurrentJam'];
+}
+
+function opToPeriodStartJam(k, v) {
+  // a timeout before the first jam of a period has the last jam of the previous period as preceding jam -
+  // shown as '-', not selectable as it would move the timeout to the end of the previous period
+  return WS.state[k.upTo('Game') + '.Period(' + (v - 1) + ').CurrentJam'];
 }
 
 function opAddTimeout(k, v, elem) {
