@@ -2060,6 +2060,54 @@ public class GameImplTests {
     }
 
     @Test
+    public void testPenaltyBeforeFirstJam() {
+        Skater skater = new SkaterImpl(g.getTeam(Team.ID_1), UUID.randomUUID().toString());
+
+        // assessed before the game, e.g. for equipment
+        Penalty penalty = skater.getOrCreate(Skater.PENALTY, "1");
+        penalty.set(Penalty.CODE, "X");
+        assertEquals(g.getUpcomingJam(), penalty.getJam());
+
+        // also after a timeout before the first jam
+        g.timeout();
+        Penalty second = skater.getOrCreate(Skater.PENALTY, "2");
+        second.set(Penalty.CODE, "X");
+        assertEquals(g.getUpcomingJam(), second.getJam());
+        g.stopJamTO();
+
+        fastForwardJams(2);
+        assertEquals(1, penalty.getPeriodNumber());
+        assertEquals(1, penalty.getJamNumber());
+        assertEquals(1, second.getPeriodNumber());
+        assertEquals(1, second.getJamNumber());
+    }
+
+    @Test
+    public void testPenaltyBeforeFirstJamOfPeriod() {
+        Skater skater = new SkaterImpl(g.getTeam(Team.ID_1), UUID.randomUUID().toString());
+        fastForwardJams(1);
+        fastForwardPeriod();
+        ic.setTime(0);
+        ic.stop();
+        Period p2 = g.getCurrentPeriod();
+        Jam last = p2.getPrevious().getLast(Period.JAM);
+
+        // between jams a penalty goes to the previous jam, also across intermission
+        Penalty penalty = skater.getOrCreate(Skater.PENALTY, "1");
+        penalty.set(Penalty.CODE, "X");
+        assertEquals(last, penalty.getJam());
+
+        // the operator selects the upcoming jam if it belongs there
+        Penalty upcoming = skater.getOrCreate(Skater.PENALTY, "2");
+        upcoming.set(Penalty.JAM, g.getUpcomingJam());
+        upcoming.set(Penalty.CODE, "X");
+        g.startJam();
+        g.stopJamTO();
+        assertEquals(p2, upcoming.getJam().getPeriod());
+        assertEquals(1, upcoming.getJamNumber());
+    }
+
+    @Test
     public void testJamsAndPeriodsCreated() {
         // Starting a jam creates a jam and its successor.
         g.startJam();
