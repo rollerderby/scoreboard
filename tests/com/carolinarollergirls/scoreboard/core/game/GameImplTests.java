@@ -2060,6 +2060,179 @@ public class GameImplTests {
     }
 
     @Test
+    public void testPenaltyBeforeFirstJam() {
+        Skater skater = new SkaterImpl(g.getTeam(Team.ID_1), UUID.randomUUID().toString());
+
+        // assessed before the game, e.g. for equipment
+        Penalty penalty = skater.getOrCreate(Skater.PENALTY, "1");
+        penalty.set(Penalty.CODE, "X");
+        assertEquals(g.getUpcomingJam(), penalty.getJam());
+
+        // also after a timeout before the first jam
+        g.timeout();
+        Penalty second = skater.getOrCreate(Skater.PENALTY, "2");
+        second.set(Penalty.CODE, "X");
+        assertEquals(g.getUpcomingJam(), second.getJam());
+        g.stopJamTO();
+
+        fastForwardJams(2);
+        assertEquals(1, penalty.getPeriodNumber());
+        assertEquals(1, penalty.getJamNumber());
+        assertEquals(1, second.getPeriodNumber());
+        assertEquals(1, second.getJamNumber());
+    }
+
+    @Test
+    public void testPenaltyBeforeFirstJamOfPeriod() {
+        Skater skater = new SkaterImpl(g.getTeam(Team.ID_1), UUID.randomUUID().toString());
+        fastForwardJams(1);
+        fastForwardPeriod();
+        ic.setTime(0);
+        ic.stop();
+        Period p2 = g.getCurrentPeriod();
+        Jam last = p2.getPrevious().getLast(Period.JAM);
+
+        // between jams a penalty goes to the previous jam, also across intermission
+        Penalty penalty = skater.getOrCreate(Skater.PENALTY, "1");
+        penalty.set(Penalty.CODE, "X");
+        assertEquals(last, penalty.getJam());
+
+        // the operator selects the upcoming jam if it belongs there
+        Penalty upcoming = skater.getOrCreate(Skater.PENALTY, "2");
+        upcoming.set(Penalty.JAM, g.getUpcomingJam());
+        upcoming.set(Penalty.CODE, "X");
+        g.startJam();
+        g.stopJamTO();
+        assertEquals(p2, upcoming.getJam().getPeriod());
+        assertEquals(1, upcoming.getJamNumber());
+    }
+
+    private Period endFirstPeriodAndIntermission() {
+        fastForwardJams(1);
+        fastForwardPeriod();
+        ic.setTime(0);
+        ic.stop();
+        assertEquals(2, g.getCurrentPeriodNumber());
+        assertEquals(0, g.getCurrentPeriod().numberOf(Period.JAM));
+        return g.getCurrentPeriod();
+    }
+
+    @Test
+    public void testReviewBeforeFirstJamOfPeriod() {
+        Team team = g.getTeam(Team.ID_1);
+        Period p2 = endFirstPeriodAndIntermission();
+        Period p1 = p2.getPrevious();
+        Jam last = p1.getLast(Period.JAM);
+        int reviews = team.get(Team.OFFICIAL_REVIEWS);
+
+        g.setTimeoutType(team, true);
+        Timeout review = g.getCurrentTimeout();
+        assertEquals(p2, review.getParent());
+        assertEquals(last, review.get(Timeout.PRECEDING_JAM));
+        assertEquals(0, review.get(Timeout.PRECEDING_JAM_NUMBER).intValue());
+        assertEquals(reviews - 1, team.get(Team.OFFICIAL_REVIEWS).intValue());
+
+        g.stopJamTO();
+        g.startJam();
+        g.stopJamTO();
+        assertEquals(p2, review.getParent());
+        assertEquals(1, p2.numberOf(Period.TIMEOUT));
+        assertEquals(0, p1.numberOf(Period.TIMEOUT));
+
+        // a copy stays at the start of the period
+        review.execute(Timeout.INSERT_AFTER);
+        assertEquals(2, p2.numberOf(Period.TIMEOUT));
+        assertEquals(0, p1.numberOf(Period.TIMEOUT));
+
+        // choosing a jam of the previous period moves it there
+        review.set(Timeout.PRECEDING_JAM, p1.getFirst(Period.JAM));
+        assertEquals(p1, review.getParent());
+        assertEquals(p1.getFirst(Period.JAM).getNumber(), review.get(Timeout.PRECEDING_JAM_NUMBER).intValue());
+    }
+
+    @Test
+    public void testDeletingLastJamKeepsReviewAtPeriodStart() {
+        Team team = g.getTeam(Team.ID_1);
+        fastForwardJams(1);
+        Period p2 = endFirstPeriodAndIntermission();
+        Period p1 = p2.getPrevious();
+        Jam last = p1.getLast(Period.JAM);
+        g.setTimeoutType(team, true);
+        Timeout review = g.getCurrentTimeout();
+        g.stopJamTO();
+
+        last.execute(Jam.DELETE);
+        assertEquals(p2, review.getParent());
+        assertEquals(p1.getLast(Period.JAM), review.get(Timeout.PRECEDING_JAM));
+        assertEquals(0, team.get(Team.OFFICIAL_REVIEWS).intValue());
+    }
+
+    @Test
+    public void testLoadingReviewAtPeriodStart() {
+        Period p2 = endFirstPeriodAndIntermission();
+        Jam last = p2.getPrevious().getLast(Period.JAM);
+
+        // as a game file has it: the timeout in period 2 and in the list of the last jam of period 1
+        Timeout loaded = new TimeoutImpl(p2, "loaded");
+        p2.add(Period.TIMEOUT, loaded, Source.JSON);
+        last.add(Jam.TIMEOUTS_AFTER, loaded, Source.JSON);
+        assertEquals(p2, loaded.getParent());
+        assertEquals(last, loaded.get(Timeout.PRECEDING_JAM));
+    }
+
+    @Test
+    public void testTimeoutDuringIntermission() {
+        fastForwardJams(1);
+        fastForwardPeriod();
+        Period p1 = g.getCurrentPeriod();
+
+        // in the first half of intermission the period is extended
+        g.timeout();
+        assertEquals(p1, g.getCurrentPeriod());
+        assertEquals(p1, g.getCurrentTimeout().getParent());
+        g.clockUndo(false);
+        assertEquals(0, p1.numberOf(Period.TIMEOUT));
+
+        // in the second half the next period starts with the timeout, e.g. when a team doesn't field a jammer
+        assertTrue(ic.isRunning());
+        ic.setTime(ic.getTimeRemaining() / 4);
+        g.timeout();
+        assertEquals(2, g.getCurrentPeriodNumber());
+        assertEquals(g.getCurrentPeriod(), g.getCurrentTimeout().getParent());
+        assertEquals(p1.getLast(Period.JAM), g.getCurrentTimeout().get(Timeout.PRECEDING_JAM));
+    }
+
+    @Test
+    public void testTimeoutBeforeFirstJam() {
+        g.timeout();
+        assertEquals(1, ((Period) g.getCurrentTimeout().getParent()).getNumber());
+        assertEquals(0, g.getCurrentTimeout().get(Timeout.PRECEDING_JAM_NUMBER).intValue());
+    }
+
+    @Test
+    public void testIntermissionRestartRemovesTimeoutBeforeFirstJam() {
+        Team team = g.getTeam(Team.ID_1);
+        endFirstPeriodAndIntermission();
+        int reviews = team.get(Team.OFFICIAL_REVIEWS);
+        g.setTimeoutType(team, true);
+        g.stopJamTO();
+
+        // the period advance is undone and the review goes with period 2
+        ic.start();
+        assertEquals(1, g.getCurrentPeriodNumber());
+        assertNull(g.get(Game.PERIOD, 2));
+        assertEquals(0, g.getCurrentPeriod().numberOf(Period.TIMEOUT));
+        assertEquals(reviews, team.get(Team.OFFICIAL_REVIEWS).intValue());
+
+        // and the period advances only once afterwards
+        ic.setTime(0);
+        ic.stop();
+        g.startJam();
+        assertEquals(2, g.getCurrentPeriodNumber());
+        assertEquals(1, g.getCurrentPeriod().getCurrentJamNumber());
+    }
+
+    @Test
     public void testJamsAndPeriodsCreated() {
         // Starting a jam creates a jam and its successor.
         g.startJam();

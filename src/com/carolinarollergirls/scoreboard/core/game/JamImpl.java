@@ -56,7 +56,10 @@ public final class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> impl
     public void delete(Source source) {
         if (source != Source.UNLINK) {
             for (Penalty p : getAll(PENALTY)) { p.set(Penalty.JAM, hasNext() ? getNext() : getPrevious()); }
-            for (Timeout t : getAll(TIMEOUTS_AFTER)) { t.set(Timeout.PRECEDING_JAM, getPrevious()); }
+            for (Timeout t : getAll(TIMEOUTS_AFTER)) {
+                // a timeout at the start of the next period stays there
+                t.set(Timeout.PRECEDING_JAM, getPrevious(), t.getParent() == parent ? null : Flag.SPECIAL_CASE);
+            }
         }
         super.delete(source);
     }

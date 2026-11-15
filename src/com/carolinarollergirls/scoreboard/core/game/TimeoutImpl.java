@@ -12,6 +12,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.TimeoutOwner;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public final class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> implements Timeout {
@@ -25,11 +26,16 @@ public final class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> impl
         }
     }
 
-    public TimeoutImpl(Jam precedingJam) {
-        super(precedingJam.getParent(), UUID.randomUUID().toString(), Period.TIMEOUT);
-        game = precedingJam.getPeriod().getGame();
+    public TimeoutImpl(Jam precedingJam) { this(precedingJam.getPeriod(), precedingJam); }
+
+    /** A timeout at the start of a period, before its first jam. */
+    public TimeoutImpl(Period p) { this(p, p.getPrevious().getCurrentJam()); }
+
+    private TimeoutImpl(Period p, Jam precedingJam) {
+        super(p, UUID.randomUUID().toString(), Period.TIMEOUT);
+        game = p.getGame();
         initReferences();
-        set(PRECEDING_JAM, precedingJam);
+        set(PRECEDING_JAM, precedingJam, Flag.SPECIAL_CASE);
         set(WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
         set(PERIOD_CLOCK_ELAPSED_START, game.getClock(Clock.ID_PERIOD).getTimeElapsed());
     }
@@ -52,6 +58,15 @@ public final class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> impl
     }
 
     @Override
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == PRECEDING_JAM_NUMBER && get(PRECEDING_JAM) != null &&
+            get(PRECEDING_JAM).getParent() != getParent() && game.getBoolean(Rule.JAM_NUMBER_PER_PERIOD)) {
+            // at the start of the period - no jam of this period precedes it
+            return 0;
+        }
+        return value;
+    }
+    @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == OWNER) {
             if (last instanceof Team) { ((Team) last).remove(Team.TIME_OUT, this); }
@@ -68,10 +83,14 @@ public final class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> impl
         }
         if (prop == RETAINED_REVIEW && getOwner() instanceof Team) { ((Team) getOwner()).recountTimeouts(); }
         if (prop == PRECEDING_JAM) {
-            if (value != null && ((Jam) value).getParent() != getParent()) {
+            // only a timeout at the start of a period has its preceding jam in another period;
+            // the jam's list of timeouts follows the timeout, e.g. when a game file is loaded
+            if (value != null && ((Jam) value).getParent() != getParent() && flag != Flag.SPECIAL_CASE &&
+                source != Source.INVERSE_REFERENCE && !source.isFile()) {
                 getParent().remove(Period.TIMEOUT, this);
                 parent = ((Jam) value).getParent();
                 getParent().add(Period.TIMEOUT, this);
+                set(PRECEDING_JAM_NUMBER, ((Jam) value).getNumber(), Source.COPY);
             }
             if (getOwner() instanceof Team) { ((Team) getOwner()).recountTimeouts(); }
             if (game.getCurrentPeriod() != null &&
@@ -96,7 +115,7 @@ public final class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> impl
                     delete(source);
                 }
             } else if (prop == INSERT_AFTER) {
-                Timeout newTo = new TimeoutImpl(get(PRECEDING_JAM));
+                Timeout newTo = new TimeoutImpl((Period) getParent(), get(PRECEDING_JAM));
                 newTo.set(RUNNING, false);
                 newTo.set(WALLTIME_START, get(WALLTIME_END));
                 newTo.set(WALLTIME_END, get(WALLTIME_END));

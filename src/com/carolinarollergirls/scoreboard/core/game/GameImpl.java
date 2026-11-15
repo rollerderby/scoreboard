@@ -932,7 +932,10 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
         _endJam(false);
         _endIntermission(false);
         setInPeriod(true);
-        set(CURRENT_TIMEOUT, new TimeoutImpl(getCurrentPeriod().getCurrentJam()));
+        Period cp = getCurrentPeriod();
+        // before the first jam of a period the timeout belongs at the start of that period
+        set(CURRENT_TIMEOUT, cp.numberOf(Period.JAM) == 0 && cp.hasPrevious() ? new TimeoutImpl(cp)
+                                                                              : new TimeoutImpl(cp.getCurrentJam()));
         getCurrentTimeout().getParent().add(Period.TIMEOUT, getCurrentTimeout());
         tc.changeNumber(1);
         tc.restart();
