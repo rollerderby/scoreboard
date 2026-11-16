@@ -1030,6 +1030,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
         getCurrentTimeout().set(Timeout.RUNNING, snapshot.inTimeout());
         set(OR_IS_TO, snapshot.orIsTo());
         set(FIIIVE_SECONDS, snapshot.fiveSeconds());
+        set(AUTO_FIVE, snapshot.autoFive());
         set(IN_OVERTIME, snapshot.inOvertime());
         for (Team team : getAll(TEAM)) { team.restoreSnapshot(snapshot.getTeamSnapshot(team.getProviderId())); }
         for (BoxTrip bt : getAll(Team.BOX_TRIP)) { bt.restoreSnapshot(snapshot.getBoxTripSnapshot(bt.getId())); };
@@ -1327,6 +1328,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
             inTimeout = g.getCurrentTimeout().isRunning();
             orIsTo = g.get(OR_IS_TO);
             fiveSeconds = g.get(FIIIVE_SECONDS);
+            autoFive = g.get(AUTO_FIVE);
             currentPeriod = g.getCurrentPeriod();
             periodSnapshot = g.getCurrentPeriod().snapshot();
             clockSnapshots = new HashMap<>();
@@ -1352,6 +1354,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
         public boolean inTimeout() { return inTimeout; }
         public boolean orIsTo() { return orIsTo; }
         public boolean fiveSeconds() { return fiveSeconds; }
+        public boolean autoFive() { return autoFive; }
         public boolean inPeriod() { return inPeriod; }
         public Period getCurrentPeriod() { return currentPeriod; }
         public PeriodSnapshot getPeriodSnapshot() { return periodSnapshot; }
@@ -1370,6 +1373,7 @@ public final class GameImpl extends ScoreBoardEventProviderImpl<Game> implements
         protected boolean inTimeout;
         protected boolean orIsTo;
         protected boolean fiveSeconds;
+        protected boolean autoFive;
         protected boolean inPeriod;
         protected Period currentPeriod;
         protected PeriodSnapshot periodSnapshot;
