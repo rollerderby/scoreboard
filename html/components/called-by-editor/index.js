@@ -1,6 +1,6 @@
 const DEFAULT_CALLED_BY_POSITIONS = ["IPRF", "IPRR", "JR1", "JR2", "OPRF", "OPRM", "OPRR", "PLT1", "PLT2", "PBM"]
 
-function pltToggleReassign(k, v, elem) {
+function cbeToggleReassign(k, v, elem) {
   // toggles the ability to edit the officials assigned to the positions of the default positions
   elem.closest('.CalledBy').toggleClass('Reassign');
   elem.toggleClass('sbActive', elem.closest('.CalledBy').hasClass('Reassign'));
@@ -42,19 +42,19 @@ function _closeDialogOnCallerSelection(k, v, elem, event) {
   }
 }
 
-function pltGetCallingPositionName(k) {
+function cbeGetCallingPositionName(k) {
   return WS.state[k.upTo('Game') + '.OfficialPosition(' + _getPositionShortNameFromPositionID(WS.state[k.upTo('Penalty') + '.CallingPosition']) + ').Name']
 }
 
-function pltGetCallingOfficialName(k) {
+function cbeGetCallingOfficialName(k) {
   const callingOfficialID = WS.state[k.upTo('Penalty') + '.CallingOfficial']
   return WS.state[k.upTo('Game') + '.Nso(' + callingOfficialID + ').Name'] || WS.state[k.upTo('Game') + '.Ref(' + callingOfficialID + ').Name']
 }
 
-function pltToCalledByDisplay(k) {
+function cbeToCalledByDisplay(k) {
   // generates the Position: Name label for the read-only "Called By" field
-  const callingPositionName = pltGetCallingPositionName(k)
-  const callingOfficialName = pltGetCallingOfficialName(k)
+  const callingPositionName = cbeGetCallingPositionName(k)
+  const callingOfficialName = cbeGetCallingOfficialName(k)
 
   if (callingPositionName && callingOfficialName) {
     return callingPositionName + ' : ' + callingOfficialName;
@@ -65,7 +65,7 @@ function pltToCalledByDisplay(k) {
 //###################################################################
 // Default OfficialPositions 
 //###################################################################
-function pltIsDefaultOfficialPositionActive (k, v, elem) {
+function cbeIsDefaultOfficialPositionActive (k, v, elem) {
   // Default section is active when:
   //  the CallingPosition is one of the default positions, and  
   //  the CallingOfficial matches the CallingPosition.CurrentOfficial
@@ -80,7 +80,7 @@ function pltIsDefaultOfficialPositionActive (k, v, elem) {
   return divPositionIsDefaultPosition && divIDMatchesCallingPositionID && _callingOfficialIsAssignedToCallingPosition(k.Game, penaltyStatePath)
 }
 
-function pltToggleDefaultOfficialPosition(k, v, elem, event) {
+function cbeToggleDefaultOfficialPosition(k, v, elem, event) {
   // Handles a click in a default position
   // When the div has class sbActive, it clears the assignment.
   // Otherwise, it sets the assignment.
@@ -107,7 +107,7 @@ function pltToggleDefaultOfficialPosition(k, v, elem, event) {
 //###################################################################
 // Other OfficialPositions 
 //###################################################################
-function isOtherOfficialPositionActive (k, v, elem) {
+function cbeIsOtherOfficialPositionActive (k, v, elem) {
   // Other section is active when:
   //  the CallingPosition is not one of the default positions, and 
   //  the CallingOfficial matches the CallingPosition.CurrentOfficial
@@ -116,7 +116,7 @@ function isOtherOfficialPositionActive (k, v, elem) {
     return !callingPositionIsDefaultPosition && _callingOfficialIsAssignedToCallingPosition(k.Game, penaltyStatePath)
 }
 
-function pltGetOtherOfficialPositionOptionText(k) {
+function cbeGetOtherOfficialPositionOptionText(k) {
   // generates the Position: Official labels for the 'Other' select control
   const positionPath = k.substring(0, k.lastIndexOf('.'));
   const positionName = WS.state[positionPath + '.Name'];
@@ -127,7 +127,7 @@ function pltGetOtherOfficialPositionOptionText(k) {
   return positionName || currentOfficialName || '';
 }
 
-function pltIsOtherOfficialPositionOptionSelectedInitialValue(k, v, elem) {
+function cbeIsOtherOfficialPositionOptionSelectedInitialValue(k, v, elem) {
   // option is selected when:
   //  it's value matches the CallingPosition, and
   //  the CallingOfficial matches the CallingPosition.CurrentOfficial
@@ -135,7 +135,7 @@ function pltIsOtherOfficialPositionOptionSelectedInitialValue(k, v, elem) {
   return (elem.attr('value') == WS.state[penaltyStatePath + '.CallingPosition']) && _callingOfficialIsAssignedToCallingPosition(k.Game, penaltyStatePath)
 }
 
-function pltSelectOtherOfficialPosition(k, callingPositionID, elem, event) {
+function cbeSelectOtherOfficialPosition(k, callingPositionID, elem, event) {
   // handles a selection change in the Other input
   // an empty selection clears the assignment
   // a non-empty selection sets the assignment
@@ -152,7 +152,7 @@ function pltSelectOtherOfficialPosition(k, callingPositionID, elem, event) {
   _closeDialogOnCallerSelection(k, callingPositionID, elem, event);
 }
 
-function pltClearOtherOfficialPosition(k, v, elem, event) {
+function cbeClearOtherOfficialPosition(k, v, elem, event) {
   // Handles a click in the Other section
   //  When the div has class sbActive, it clears the assignment.
   //  Otherwise, the click is ignored
@@ -171,15 +171,7 @@ function pltClearOtherOfficialPosition(k, v, elem, event) {
 //###################################################################
 // Temporary OfficialPosition + Official Assignment
 //###################################################################
-function pltTemporaryOfficialPositionValue (k, v, elem) {
-  return pltGetCallingPositionName(k)
-}
-
-function pltTemporaryOfficialValue (k) {
-  return pltGetCallingOfficialName(k)
-}
-
-function pltIsTemporaryAssignmentActive (k, v, elem) {
+function cbeIsTemporaryAssignmentActive (k, v, elem) {
   // Temporary Assignment section is active when:
   //  a CallingPosition or CallingOfficial is assigned, and
   //  the CallingOfficial does not match CallingPosition.CurrentOfficial
@@ -189,7 +181,7 @@ function pltIsTemporaryAssignmentActive (k, v, elem) {
   return (callingPositionID || callingOfficialID) ? !_callingOfficialIsAssignedToCallingPosition(k.Game, penaltyStatePath) : false
 }
 
-function pltToggleTemporaryAssignment(k, v, elem, event) {
+function cbeToggleTemporaryAssignment(k, v, elem, event) {
   // Handles a click in the Temporary Assignment section.
   // When the div has class sbActive, it clears the assignment.
   // Otherwise, it assigns the OfficialPosition + Official currently selected in the drop downs
