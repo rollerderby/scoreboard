@@ -123,6 +123,8 @@ public final class MediaImpl extends ScoreBoardEventProviderImpl<Media> implemen
     }
 
     private void mediaFileCreated(String format, String type, String filename) {
+        // Ignore hidden files such as .DS_Store created by macOS Finder.
+        if (filename.startsWith(".")) { return; }
         synchronized (coreLock) {
             MediaType mt = getFormat(format).getType(type);
             String id = filename.replaceAll("[\\[\\]()]", "_");

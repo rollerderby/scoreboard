@@ -113,6 +113,27 @@ public class MediaImplTests {
     }
 
     @Test
+    public void testHiddenFilesIgnoredAtStartup() throws Exception {
+        dir.newFile("html/images/teamlogo/.DS_Store");
+        media = new MediaImpl(sb);
+        MediaType mt = media.getFormat("images").getType("teamlogo");
+        assertNull(mt.getFile(".DS_Store"));
+        assertEquals(1, mt.getAll(MediaType.FILE).size());
+    }
+
+    @Test
+    public void testHiddenFileCreationIgnored() throws Exception {
+        dir.newFile("html/images/teamlogo/.hidden.png");
+        dir.newFile("html/images/teamlogo/visible.png");
+        // Wait until the visible file shows up, so the hidden one has been processed too.
+        MediaType mt = media.getFormat("images").getType("teamlogo");
+        long deadline = System.currentTimeMillis() + secondsToWait * 1000L;
+        while (mt.getFile("visible.png") == null && System.currentTimeMillis() < deadline) { Thread.sleep(50); }
+        assertNotNull(mt.getFile("visible.png"));
+        assertNull(mt.getFile(".hidden.png"));
+    }
+
+    @Test
     public void testThemes() throws Exception {
         dir.newFolder("html", "themes", "custom", "dark", "fonts");
         dir.newFile("html/themes/custom/dark/theme.css");
