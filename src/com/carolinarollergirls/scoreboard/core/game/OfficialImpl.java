@@ -34,13 +34,13 @@ public final class OfficialImpl extends ScoreBoardEventProviderImpl<Official> im
             new ScoreBoardListener() {
                 @Override
                 public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                    if (game.getCurrentPeriodNumber() != 2) { return; }
                     String role = get(ROLE);
                     Team p1Team = get(P1_TEAM);
-                    if (get(SWAP) && isTeamAssignedRole(role) && p1Team != null) {
-                        Team p2Team = p1Team.getOtherTeam();
+                    if (isTeamAssignedRole(role) && p1Team != null) {
                         set(CURRENT_POSITION, game.getOfficialPosition(
-                            role.replaceAll("[^\\p{Lu}]", "") + p2Team.getProviderId()));
+                            role.replaceAll("[^\\p{Lu}]", "") +
+                            (get(SWAP) && game.getCurrentPeriodNumber() == 2 ? p1Team.getOtherTeam() : p1Team)
+                                .getProviderId()));
                     }
                 }
             }));

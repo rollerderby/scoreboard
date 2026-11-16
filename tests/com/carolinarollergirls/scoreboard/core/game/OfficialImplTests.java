@@ -62,7 +62,8 @@ public class OfficialImplTests {
 
                 fastForwardPeriod(game);
                 fastForwardPeriod(game);
-
+                
+                // team-assigned roles swapped for p2
                 assertEquals(2, game.getCurrentPeriodNumber());
                 assertEquals(Team.ID_1, official.get(Official.P1_TEAM).getProviderId());
                 assertEquals(Team.ID_2, partner.get(Official.P1_TEAM).getProviderId());
@@ -72,6 +73,17 @@ public class OfficialImplTests {
                              official.get(Official.CURRENT_POSITION).get(OfficialPosition.TEAM).getProviderId());
                 String expectedPartnerTeam = swap ? Team.ID_1 : Team.ID_2;
                 assertEquals(role + " partner with Swap=" + swap, expectedPartnerTeam,
+                             partner.get(Official.CURRENT_POSITION).get(OfficialPosition.TEAM).getProviderId());
+                
+                // team assigned roles swapped back after setting the game back to p1
+                game.set(Game.CURRENT_PERIOD, game.getOrCreatePeriod(1));
+
+                assertEquals(1, game.getCurrentPeriodNumber());
+                assertEquals(Team.ID_1, official.get(Official.P1_TEAM).getProviderId());
+                assertEquals(Team.ID_2, partner.get(Official.P1_TEAM).getProviderId());
+                assertEquals(role + " restored in period 1 with Swap=" + swap, Team.ID_1,
+                             official.get(Official.CURRENT_POSITION).get(OfficialPosition.TEAM).getProviderId());
+                assertEquals(role + " partner restored in period 1 with Swap=" + swap, Team.ID_2,
                              partner.get(Official.CURRENT_POSITION).get(OfficialPosition.TEAM).getProviderId());
 
                 gameNumber++;
