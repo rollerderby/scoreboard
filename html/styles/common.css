@@ -105,6 +105,23 @@
 
     --tooltip-bg: black;
     --tooltip-fg: #fff;
+
+    /* main display */
+    --display-bg: #000;
+    --display-fg: #fff;
+    --display-box-bg: linear-gradient(to bottom, #fff, #a0a0a0);
+    --display-box-fg: #000;
+    --display-box-shadow: inset -0.03em -0.05em 0.15em rgba(0, 0, 0, 0.5);
+    --display-box-radius: 15px;
+    --display-flat-box-bg: linear-gradient(to bottom, #efefef, #d4d4d4);
+    --display-flat-box-radius: 5px;
+    --display-bright-box-bg: #fff;
+    --display-red-box-bg: linear-gradient(to bottom, #d02020, #802020);
+    --display-bright-red-box-bg: #a02020;
+    --display-red-box-fg: #fff;
+    --display-dark-box-bg: linear-gradient(to bottom, #595959, #474747);
+    --display-dark-box-fg: #fff;
+    --display-dot-bg: #000;
 }
 
 a { color: inherit; }

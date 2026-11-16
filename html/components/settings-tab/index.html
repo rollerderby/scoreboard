@@ -182,6 +182,20 @@
           <option value="box_flat_bright">Flat & Bright</option>
         </select>
       </span>
+      <span class="sbHasTooltip">
+        <label>Theme: </label>
+        <select sbControl="$_Theme" ApplyPreview="Theme">
+          <option value="">Default</option>
+          <option value="/themes/liberation.css">Liberation</option>
+          <option
+            sbContext="/ScoreBoard.Media.Format(themes).Type(custom)"
+            sbForeach="File:: name: resort=Name"
+            sbAttr="value: Src | name: Name"
+            sbDisplay="Name"
+          ></option>
+        </select>
+        <span class="sbTooltip">Colours and fonts of the main display, e.g. for an event.<br />A theme in the display's URL takes precedence.</span>
+      </span>
       <span sbContext="/ScoreBoard.Media.Format(images).Type(fullscreen)">
         <label>Image View: </label>
         <select sbControl="$_Image" ApplyPreview="Image">

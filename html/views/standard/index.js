@@ -14,6 +14,30 @@
     });
   });
 
+  // the display's theme is set by the SBO, unless the URL has one (older start pages put "theme=null" in their links)
+  if (!_windowFunctions.getParam('theme') || _windowFunctions.getParam('theme') === 'null') {
+    WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_Theme)', function (k, v) {
+      $('head link.DisplayTheme').remove();
+      if (v) {
+        // a theme folder has its stylesheet in theme.css
+        $('<link>')
+          .addClass('DisplayTheme')
+          .attr({ href: /\/$/.test(v) ? v + 'theme.css' : v, type: 'text/css', rel: 'stylesheet' })
+          // fit the texts again once the theme (and any font it brings) is in use
+          .on('load', function () {
+            $(window).trigger('resize');
+            if (document.fonts) {
+              document.fonts.ready.then(function () {
+                $(window).trigger('resize');
+              });
+            }
+          })
+          .appendTo('head');
+      }
+      $(window).trigger('resize');
+    });
+  }
+
   WS.Register(
     ['ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_BoxStyle)', 'ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_SidePadding)'],
     {
