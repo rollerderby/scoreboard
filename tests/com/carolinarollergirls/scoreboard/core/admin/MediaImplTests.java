@@ -111,4 +111,20 @@ public class MediaImplTests {
         assertNotNull(e);
         assertEquals(ScoreBoardEventProviderImpl.BATCH_END, e.getProperty());
     }
+
+    @Test
+    public void testThemes() throws Exception {
+        dir.newFolder("html", "themes", "custom", "dark", "fonts");
+        dir.newFile("html/themes/custom/dark/theme.css");
+        dir.newFile("html/themes/custom/light.css");
+        dir.newFile("html/themes/custom/a.woff2");
+        media = new MediaImpl(sb);
+        MediaType mt = media.getFormat("themes").getType("custom");
+        assertEquals("/themes/custom/dark/", mt.getFile("dark").getSrc());
+        assertEquals("dark", mt.getFile("dark").getName());
+        assertEquals("/themes/custom/light.css", mt.getFile("light.css").getSrc());
+        // files a theme uses are not themes themselves
+        assertNull(mt.getFile("a.woff2"));
+        assertEquals(2, mt.getAll(MediaType.FILE).size());
+    }
 }

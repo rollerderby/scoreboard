@@ -126,11 +126,14 @@ public final class MediaImpl extends ScoreBoardEventProviderImpl<Media> implemen
         synchronized (coreLock) {
             MediaType mt = getFormat(format).getType(type);
             String id = filename.replaceAll("[\\[\\]()]", "_");
+            boolean isDir = path.resolve(format).resolve(type).resolve(filename).toFile().isDirectory();
+            // a theme is a .css file or a folder with theme.css and the files it uses
+            if ("themes".equals(format) && !isDir && !filename.toLowerCase().endsWith(".css")) { return; }
             if (mt.getFile(id) == null) {
                 // URL paths always use forward slashes.
-                String p = "/" + format + "/" + type + "/" + filename;
+                String p = "/" + format + "/" + type + "/" + filename + ("themes".equals(format) && isDir ? "/" : "");
                 // Name is the filename without the extension.
-                mt.addFile(new MediaFileImpl(mt, id, filename.replaceFirst("\\.[^.]*$", ""), p));
+                mt.addFile(new MediaFileImpl(mt, id, isDir ? filename : filename.replaceFirst("\\.[^.]*$", ""), p));
             }
         }
     }

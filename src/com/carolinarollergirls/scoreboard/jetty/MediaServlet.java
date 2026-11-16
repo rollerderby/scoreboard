@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -24,6 +26,7 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
@@ -72,6 +75,7 @@ public class MediaServlet extends HttpServlet {
             FileItemFactory fiF = new DiskFileItemFactory();
             ServletFileUpload sfU = new ServletFileUpload(fiF);
             List<FileItem> fileItems = new LinkedList<>();
+            List<FileItem> zips = new LinkedList<>();
             Iterator<?> i = sfU.parseRequest(request).iterator();
 
             while (i.hasNext()) {
@@ -83,10 +87,14 @@ public class MediaServlet extends HttpServlet {
                         type = item.getString();
                     }
                 } else if (item.getName().matches(zipExtRegex)) {
-                    processZipFileItem(fiF, item, fileItems);
+                    zips.add(item);
                 } else if (scoreBoard.getMedia().validFileName(item.getName())) {
                     fileItems.add(item);
                 }
+            }
+
+            for (FileItem zip : zips) {
+                processZipFileItem(fiF, zip, fileItems, "themes".equals(media) ? getThemeFolder(zip) : "");
             }
 
             if (fileItems.size() == 0) {
@@ -179,14 +187,45 @@ public class MediaServlet extends HttpServlet {
         return p.toFile();
     }
 
-    protected void processZipFileItem(FileItemFactory factory, FileItem zip, List<FileItem> fileItems)
+    /**
+     * A theme zip unpacks into a folder of its own: the one folder all its files are in, or else a folder named after
+     * the zip. Returns the prefix for the zip's entries.
+     */
+    protected String getThemeFolder(FileItem zip) throws IOException, IllegalArgumentException {
+        Set<String> names = new HashSet<>();
+        Set<String> folders = new HashSet<>();
+        ZipInputStream ziS = new ZipInputStream(zip.getInputStream());
+        ZipEntry zE;
+        try {
+            while (null != (zE = ziS.getNextEntry())) {
+                if (zE.isDirectory() || !useZipEntry(zE.getName())) { continue; }
+                names.add(zE.getName());
+                int slash = zE.getName().indexOf('/');
+                folders.add(slash < 0 ? "" : zE.getName().substring(0, slash));
+            }
+        } finally { ziS.close(); }
+        if (folders.size() == 1 && !folders.contains("")) {
+            String folder = folders.iterator().next();
+            if (names.contains(folder + "/theme.css")) { return ""; }
+        } else if (names.contains("theme.css")) {
+            return FilenameUtils.getBaseName(zip.getName()) + "/";
+        }
+        throw new IllegalArgumentException("A theme zip needs a theme.css, either at the top or in its one folder");
+    }
+
+    protected boolean useZipEntry(String name) {
+        // folders macOS adds to zips it creates
+        return scoreBoard.getMedia().validFileName(name) && !name.startsWith("__MACOSX/");
+    }
+
+    protected void processZipFileItem(FileItemFactory factory, FileItem zip, List<FileItem> fileItems, String prefix)
         throws IOException {
         ZipInputStream ziS = new ZipInputStream(zip.getInputStream());
         ZipEntry zE;
         try {
             while (null != (zE = ziS.getNextEntry())) {
-                if (zE.isDirectory() || !scoreBoard.getMedia().validFileName(zE.getName())) { continue; }
-                FileItem item = factory.createItem(null, null, false, zE.getName());
+                if (zE.isDirectory() || !useZipEntry(zE.getName())) { continue; }
+                FileItem item = factory.createItem(null, null, false, prefix + zE.getName());
                 OutputStream oS = item.getOutputStream();
                 IOUtils.copyLarge(ziS, oS);
                 oS.close();

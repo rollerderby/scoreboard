@@ -162,6 +162,8 @@ public final class Main extends Logger {
     }
 
     private static void copyDir(Path src, Path dst, Path subdirectory, CopyOption... options) throws IOException {
+        // older versions may not have it
+        if (!Files.isDirectory(src.resolve(subdirectory))) { return; }
 
         Files.walkFileTree(src.resolve(subdirectory), new SimpleFileVisitor<Path>() {
             @Override
@@ -239,6 +241,7 @@ public final class Main extends Logger {
             copyDir(sourcePath, targetPath, Paths.get("html", "custom"));
             copyDir(sourcePath, targetPath, Paths.get("html", "images"));
             copyDir(sourcePath, targetPath, Paths.get("html", "videos"));
+            copyDir(sourcePath, targetPath, Paths.get("html", "themes", "custom"));
         } catch (IOException e) { Logger.printStackTrace("importing", e); }
     }
 
