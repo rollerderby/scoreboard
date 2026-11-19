@@ -73,6 +73,11 @@ body[calledBy] .PltInput>.Team .Set.NoOfficial::after { position: absolute; left
 .PltInput>.Team .Code .Unserved::before { content: "!"; } 
 .PltInput>.Team .Code .Serving::before { content: "\203E" /* overline */; } 
 
+/* Enlarge the dialog titlebar and "x" close button for easier use on touch screens */
+.ui-dialog-titlebar.ui-dialog-titlebar.ui-dialog-titlebar { padding: 0.8em 2em; }
+.ui-dialog-titlebar-close.ui-dialog-titlebar-close.ui-dialog-titlebar-close { width: 40px; height: 40px; margin: -20px 0 0 0; padding: 2px; }
+.ui-dialog-titlebar-close.ui-dialog-titlebar-close .ui-icon { width: 32px; height: 32px; margin-top: -16px; margin-left: -16px; background-size: 512px 480px; background-position: -192px -256px; }
+
 #PenaltyEditor { display: flex; }
 #PenaltyEditor .Codes { flex-wrap: wrap; gap: 0.5em; }
 #PenaltyEditor .Codes>div { width: 150px; height: 90px; border: 1px solid var(--penalty-code-fg); font-weight: bold; background-color: var(--penalty-code-bg); } 
@@ -80,12 +85,18 @@ body[calledBy] .PltInput>.Team .Set.NoOfficial::after { position: absolute; left
 #PenaltyEditor .Codes>div .Code { font-size: 1.2em; background-color: var(--penalty-code-label-bg); color: var(--penalty-code-fg); } 
 #PenaltyEditor .Codes>div .Description { font-size: 0.75em; } 
 
-body:not([calledBy]) .CalledBy { display: none; }
-#PenaltyEditor .CalledBy { max-height: 90dvh; width: 400px; overflow: scroll; }
-#PenaltyEditor .CalledBy:not(.Reassign) .OfficialPosition.HasOfficial .OnEdit { display: none; }
-#PenaltyEditor .CalledBy:not(.Reassign) .OfficialPosition.HasOfficial .OnEdit { display: none; }
-#PenaltyEditor .CalledBy:not(.Reassign) .OfficialPosition:not(.HasOfficial) .OnNoEdit { display: none; }
-#PenaltyEditor .CalledBy:not(.Reassign) .Filter { display: none; }
-#PenaltyEditor .CallledBy.Reassign .OnNoEdit { display: none; }
+body[calledBy] .CalledByReadOnly { display: none; }
+/* match spacing/alignment with Annotation display */
+#PenaltyEditor .CalledByReadOnly .CalledByText {
+  display: inline-block;
+  box-sizing: border-box;
+  text-align: left;
+  width: 370px;
+  padding: 1px 2px;
+  font: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 
 #AnnotationEditor .sbGroup { flex-wrap: wrap; gap: 0.5em; }

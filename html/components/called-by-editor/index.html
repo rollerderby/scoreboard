@@ -1,0 +1,46 @@
+<div class="sbGroup sbSubHeader">Called By <button class="sbNoDistract" sbCall="cbeToggleReassign">Edit Pos</button></div>
+<div
+  class="sbGroup sbStack OfficialPosition"
+  sbContext="^^^"
+  sbForeach="OfficialPosition:IPRR,IPRF,JR1,JR2,OPRF,OPRM,OPRR,PLT1,PLT2,PBM: only"
+  sbClass="HasOfficial: CurrentOfficial: sbIsNotEmpty | sbActive: p.CallingPosition, p.CallingOfficial: cbeIsDefaultOfficialPositionActive"
+  sbCall="cbeToggleDefaultOfficialPosition"
+>
+  <span sbDisplay="Name"></span>
+  <span class="OnNoEdit" sbDisplay="CurrentOfficialName"></span>
+  <select class="OnEdit" sbControl="CurrentOfficial">
+    <option value=""></option>
+    <option sbContext="^" sbForeach="Ref" sbAttr="value: Id" sbDisplay="Name" sbClass="Filter: CurrentPosition: sbIsNotEmpty"></option>
+    <option sbContext="^" sbForeach="Nso" sbAttr="value: Id" sbDisplay="Name" sbClass="Filter: CurrentPosition: sbIsNotEmpty"></option>
+  </select>
+</div>
+<div class="sbGroup sbStack OfficialPosition" sbClass="sbActive:p.CallingPosition, p.CallingOfficial: cbeIsOtherOfficialPositionActive" sbContext="^^^" sbCall="cbeClearOtherOfficialPosition">
+  <span>Other</span>
+  <select sbCall="cbeSelectOtherOfficialPosition">
+    <option value=""></option>
+    <option
+      sbForeach="OfficialPosition"
+      sbAttr="value: Id"
+      sbProp="textContent: Name, CurrentOfficialName: cbeGetOtherOfficialPositionOptionText | selected: p.CallingPosition, p.CallingOfficial: cbeIsOtherOfficialPositionOptionSelectedInitialValue">
+    </option>
+  </select>
+</div>
+<div
+  class="sbGroup sbStack OfficialPosition TemporaryAssignment"
+  sbContext="^^^"
+  sbClass="sbActive: p.CallingPosition, p.CallingOfficial: cbeIsTemporaryAssignmentActive"
+  sbCall="cbeToggleTemporaryAssignment"
+>
+  <span>Temporary Assignment</span>
+  <span class="TemporaryAssignmentNoEdit" sbDisplay="p.CallingPosition: cbeGetCallingPositionName"></span>
+  <span class="TemporaryAssignmentNoEdit" sbDisplay="p.CallingOfficial: cbeGetCallingOfficialName"></span>
+  <select>
+    <option value=""></option>
+    <option sbForeach="OfficialPosition" sbAttr="value: Id" sbDisplay="Name"></option>
+  </select>
+  <select>
+    <option value=""></option>
+    <option sbForeach="Ref" sbAttr="value: Id" sbDisplay="Name"></option>
+    <option sbForeach="Nso" sbAttr="value: Id" sbDisplay="Name"></option>
+  </select>
+</div>

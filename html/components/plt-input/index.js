@@ -369,15 +369,19 @@ function pltToExpCodeDisplay(k, v, elem) {
   return pltToPenaltyCodeDisplay(k, v, elem, ' (EXP)');
 }
 
-function pltToggleReassign(k, v, elem) {
-  elem.closest('.CalledBy').toggleClass('Reassign');
-  elem.toggleClass('sbActive', elem.closest('.CalledBy').hasClass('Reassign'));
+function pltCloseDialogOnPenaltySelection(k, v, elem, event) {
+  // close the dialog on selection if:
+  //  Called By Tracking is disabled, or
+  //  the CallingPosition has also been set
+  const penaltyStatePath = _getPenaltyStatePath(elem);
+  if (!$('body').is('[calledBy]') || WS.state[penaltyStatePath + '.CallingPosition']) {
+    sbCloseDialog(k, v, elem, event);
+  }
 }
 
-function pltFilterOfficial(k, v, elem) {
-  const targetPosition = elem.parent().parent().attr('OfficialPosition');
-  const officialsPosition = v.match(/\p{Lu}/gu).join();
-  return targetPosition.startsWith(officialsPosition);
+function _getPenaltyStatePath(elem) {
+  // navigates the context heirarchy to get the Penalty context
+  return elem.closest('#PenaltyEditor').attr('sbContext').replace(/^\//, '');
 }
 
 //###################################################################

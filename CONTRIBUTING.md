@@ -29,6 +29,16 @@ When [creating a new issue](https://github.com/rollerderby/scoreboard/issues/new
 
 Code changes can be contributed by opening a pull request.
 
+### AI Usage Guidelines
+
+Contributions that were made with the assistance of AI tools are welcome, with the following requirements:
+
+- Pull requests must include a brief description of what the AI did (for example, drafting code, writing tests, or reviewing changes) and what you verified yourself.
+- Commits that used AI assistance must include a trailer that identifies the AI tool and model used, such as `Assisted-by` or `Co-authored-by`. For example:
+
+  ```
+  Assisted-by: <tool>:<model>
+  ```
 
 ### Pull request guidelines
 
