@@ -37,27 +37,29 @@ public final class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> impl
     @Override
     public Client addClient(String deviceId, String remoteAddr, String source, String platform) {
         synchronized (coreLock) {
-            requestBatchStart();
-            Device d = get(DEVICE, deviceId);
-            ClientImpl c = new ClientImpl(d, UUID.randomUUID().toString());
-            c.set(Client.SOURCE, source);
-            c.set(Client.REMOTE_ADDR, remoteAddr);
-            d.set(Device.REMOTE_ADDR, remoteAddr);
-            c.set(Client.PLATFORM, platform);
-            d.add(Device.CLIENT, c);
-            if (platform != null) { d.set(Device.PLATFORM, platform); }
-            c.set(Client.CREATED, System.currentTimeMillis());
-            requestBatchEnd();
-            return c;
+            try {
+                requestBatchStart();
+                Device d = get(DEVICE, deviceId);
+                ClientImpl c = new ClientImpl(d, UUID.randomUUID().toString());
+                c.set(Client.SOURCE, source);
+                c.set(Client.REMOTE_ADDR, remoteAddr);
+                d.set(Device.REMOTE_ADDR, remoteAddr);
+                c.set(Client.PLATFORM, platform);
+                d.add(Device.CLIENT, c);
+                if (platform != null) { d.set(Device.PLATFORM, platform); }
+                c.set(Client.CREATED, System.currentTimeMillis());
+                return c;
+            } finally { requestBatchEnd(); }
         }
     }
 
     @Override
     public void removeClient(Client c) {
         synchronized (coreLock) {
-            requestBatchStart();
-            c.delete(Source.UNLINK);
-            requestBatchEnd();
+            try {
+                requestBatchStart();
+                c.delete(Source.UNLINK);
+            } finally { requestBatchEnd(); }
         }
     }
 
@@ -91,24 +93,25 @@ public final class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> impl
         synchronized (coreLock) {
             Device d = getDevice(sessionId);
             if (d == null) {
-                requestBatchStart();
-                d = new DeviceImpl(this, UUID.randomUUID().toString());
-                d.set(Device.SESSION_ID_SECRET, sessionId);
-                long now = System.currentTimeMillis();
-                d.set(Device.CREATED, now);
-                d.set(Device.ACCESSED, now);
-                // Try to find an unused name, fallback to a UUID.
-                String name = UUID.randomUUID().toString();
-                for (int i = 0; i < 10; i++) {
-                    String n = HumanIdGenerator.generate();
-                    if (getDeviceByName(n) == null) {
-                        name = n;
-                        break;
+                try {
+                    requestBatchStart();
+                    d = new DeviceImpl(this, UUID.randomUUID().toString());
+                    d.set(Device.SESSION_ID_SECRET, sessionId);
+                    long now = System.currentTimeMillis();
+                    d.set(Device.CREATED, now);
+                    d.set(Device.ACCESSED, now);
+                    // Try to find an unused name, fallback to a UUID.
+                    String name = UUID.randomUUID().toString();
+                    for (int i = 0; i < 10; i++) {
+                        String n = HumanIdGenerator.generate();
+                        if (getDeviceByName(n) == null) {
+                            name = n;
+                            break;
+                        }
                     }
-                }
-                d.set(Device.NAME, name);
-                add(DEVICE, d);
-                requestBatchEnd();
+                    d.set(Device.NAME, name);
+                    add(DEVICE, d);
+                } finally { requestBatchEnd(); }
             }
             return d;
         }
@@ -127,14 +130,15 @@ public final class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> impl
     public int gcOldDevices(long gcBefore) {
         synchronized (coreLock) {
             int removed = 0;
-            requestBatchStart();
-            for (Device d : getAll(DEVICE)) {
-                if (d.get(Device.ACCESSED) > gcBefore) { continue; }
-                if (!d.get(Device.COMMENT).isEmpty()) { continue; }
-                remove(DEVICE, d.getId());
-                removed++;
-            }
-            requestBatchEnd();
+            try {
+                requestBatchStart();
+                for (Device d : getAll(DEVICE)) {
+                    if (d.get(Device.ACCESSED) > gcBefore) { continue; }
+                    if (!d.get(Device.COMMENT).isEmpty()) { continue; }
+                    remove(DEVICE, d.getId());
+                    removed++;
+                }
+            } finally { requestBatchEnd(); }
             return removed;
         }
     }
