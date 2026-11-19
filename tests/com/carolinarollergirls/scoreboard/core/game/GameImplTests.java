@@ -1658,6 +1658,36 @@ public class GameImplTests {
     }
 
     @Test
+    public void testAutoStartJamAfterUndoTimeout() {
+        sb.getSettings().set(ScoreBoard.SETTING_AUTO_5, "true");
+        sb.getSettings().set(ScoreBoard.SETTING_AUTO_START, Clock.ID_TIMEOUT);
+        sb.getSettings().set(ScoreBoard.SETTING_AUTO_START_5, Clock.ID_JAM);
+
+        fastForwardJams(1);
+        assertTrue(lc.isRunning());
+        assertTrue(g.get(Game.AUTO_FIVE));
+
+        advance(10000);
+        g.timeout();
+        assertFalse(g.get(Game.AUTO_FIVE));
+        advance(2000);
+
+        g.clockUndo(true);
+        g.clockUndo(true);
+        assertTrue(lc.isRunning());
+        assertTrue(g.get(Game.AUTO_FIVE));
+
+        advance(ScoreBoardClock.getInstance().getLastRewind() + 13000);
+        assertEquals(25000, lc.getTimeElapsed());
+        assertTrue(g.get(Game.FIIIVE_SECONDS));
+
+        advance(5000);
+        assertTrue(jc.isRunning());
+        assertFalse(lc.isRunning());
+        assertFalse(tc.isRunning());
+    }
+
+    @Test
     public void testNoAutoEndJam() {
         sb.getSettings().set(ScoreBoard.SETTING_AUTO_END_JAM, "false");
 
