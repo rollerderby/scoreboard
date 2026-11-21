@@ -20,6 +20,8 @@
 .SkSheet>.Period tr.Darker .Darker { background-color: var(--sheet-score-darker-bg); } 
 .SkSheet>.Period tr .GameTotal { background-color: var(--sheet-score-darker-bg); } 
 .SkSheet>.Period .GameTotal, .SkSheet>.Period .JamTotal,.SkSheet>.Period .Lost, .SkSheet>.Period [ScoringTrip="2"] { border-left-width: 2px; } 
+.SkSheet>.Period td.Trip.Used.High:not(.sbHasAnnotation) { background: var(--element-clickme-bg); color: var(--element-clickme-fg); }
+.SkSheet>.Period .sbHasAnnotation.OtherUsed::after { display: none; }
 
 /* Edit Mode */
 .SkSheet>.Period tbody.Edit .EditButton .ui-button { background: var(--element-active-bg); color: var(--element-active-fg); }

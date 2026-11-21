@@ -90,14 +90,14 @@
           <td
             class="Trip"
             sbForeach="ScoringTrip: 2,3,4,5,6,7,8,9,10: only"
-            sbClass="sbHasAnnotation: Annotation: sbIsNotEmpty | Used: AfterSP: sbIsSetAndFalse | OtherUsed: AfterSP"
+            sbClass="sbHasAnnotation: Annotation: sbIsNotEmpty | Used: AfterSP: sbIsSetAndFalse | OtherUsed: AfterSP | High: Score: >4"
             sbCall="sksOpenTripEditor"
           >
             <button class="EditOnly UsedOnly" sbSet="Score: 1: change">+</button><br class="EditOnly UsedOnly" />
             <span sbDisplay="Score, AfterSP, Current: sksToTripPoints"></span><br class="EditOnly UsedOnly" />
             <button class="EditOnly UsedOnly" sbSet="Score: -1: change">-</button><br class="EditOnly UsedOnly" />
             <button class="EditOnly UsedOnly" sbSet="Remove">X</button>
-            <button class="EditOnly OtherUsedOnly" sbSet="AfterSp: false" sbDisplay="-:sksToArrow"></button>
+            <button class="EditOnly OtherUsedOnly" sbSet="AfterSP: false" sbDisplay="-:sksToArrow"></button>
             <button class="EditOnly FirstUnusedOnly" sbSet="Score: 0">Add</button>
           </td>
           <td
@@ -135,12 +135,16 @@
             sbDisplay="^NoInitial, ^StarPass: sksToXifSP"
             sbCall="sksOpenTripEditor"
           ></td>
-          <td class="Trip" sbForeach="ScoringTrip: 2,3,4,5,6,7,8,9,10: only" sbClass="Used: AfterSP | OtherUsed: AfterSP: sbIsSetAndFalse">
+          <td
+            class="Trip"
+            sbForeach="ScoringTrip: 2,3,4,5,6,7,8,9,10: only"
+            sbClass="sbHasAnnotation: Annotation: sbIsNotEmpty | Used: AfterSP | OtherUsed: AfterSP: sbIsSetAndFalse | High: Score: >4"
+          >
             <button class="EditOnly UsedOnly" sbSet="Score: 1: change">+</button><br class="EditOnly UsedOnly" />
             <span sbDisplay="Score, AfterSP, Current: sksToTripSpPoints" sbCall="sksOpenTripEditor"></span><br class="EditOnly UsedOnly" />
             <button class="EditOnly UsedOnly" sbSet="Score: -1: change">-</button><br class="EditOnly UsedOnly" />
             <button class="EditOnly UsedOnly" sbSet="Remove">X</button>
-            <button class="EditOnly OtherUsedOnly" sbSet="AfterSp" sbDisplay="-:sksToArrow"></button>
+            <button class="EditOnly OtherUsedOnly" sbSet="AfterSP" sbDisplay="-:sksToArrow"></button>
             <button class="EditOnly FirstUnusedOnly" sbSet="Score: 0">Add</button>
           </td>
           <td class="JamTotal" sbCall="showOffsetEditor" sbDisplay="AfterSPScore"></td>
