@@ -58,6 +58,14 @@
     <span sbClass="sbHide: JsonExists">No JSON yet</span>
     <a download sbAttr="href: Filename: igrfToXlsxDl" sbClass="sbHide: StatsbookExists: !" sbButton>Download Statsbook</a>
     <span sbClass="sbHide: StatsbookExists">No Statsbook yet</span>
+    <button
+      class="sbHide"
+      sbClass="sbHide: /ScoreBoard.Tracks.PulledGame([game]).Id, /ScoreBoard.Tracks.PulledGame([game]).HandedOver: igrfHideHandOver | sbClickMe: OfficialScore"
+      sbCall="igrfHandOver"
+    >
+      Hand Over
+    </button>
+    <span class="sbHide" sbClass="sbHide: /ScoreBoard.Tracks.PulledGame([game]).HandedOver: igrfNotHandedOver">Handed over for review</span>
     <span>Last Updated: <span sbDisplay="LastFileUpdate"></span></span>
     <span class="Warning sbHide" sbClass="sbHide: ^BlankStatsbookFound: !== 'none'"> Blank Statsbook not found.</span>
     <span class="Warning sbHide" sbClass="sbHide: ^BlankStatsbookFound: !== 'broken'"> Blank Statsbook not readable.</span>
@@ -72,6 +80,7 @@
     <div class="Event">
       <span>Tournament: <input type="text" size="50" sbControl="EventInfo(Tournament)" /></span>
       <span>Game: <input type="text" size="5" sbControl="EventInfo(GameNo)" /></span>
+      <span>Track: <input type="text" size="3" sbControl="EventInfo(Track)" /></span>
     </div>
     <div class="Host">
       <span>Host League: <input type="text" size="50" sbControl="EventInfo(HostLeague)" /></span>

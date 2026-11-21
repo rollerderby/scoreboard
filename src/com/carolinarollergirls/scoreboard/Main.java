@@ -79,6 +79,7 @@ public final class Main extends Logger {
                 scoreBoard.postAutosaveUpdate();
             }
         });
+        scoreBoard.getTracks().start();
 
         // Only start auto-saves once everything is loaded in.
         final AutoSaveJSONState autosaver = new AutoSaveJSONState(jsm, autoSaveDir, useMetrics);

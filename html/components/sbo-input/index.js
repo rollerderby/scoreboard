@@ -4,6 +4,8 @@ WS.Register([
   'ScoreBoard.Game(' + _windowFunctions.getParam('game') + ').Period(*).CurrentJam',
   'ScoreBoard.Rulesets.Ruleset(*).Parent',
   'ScoreBoard.Rulesets.Default',
+  'ScoreBoard.Tracks.ServerGame(*)',
+  'ScoreBoard.Settings.Setting(ScoreBoard.Tracks.Track)',
 ]);
 
 function opToggleKeyEdit(k, v, elem) {
@@ -127,6 +129,48 @@ function opIsStartableGame(k, v) {
 
 function opFetchGame(k, v, elem) {
   return elem.siblings('select').val();
+}
+
+function _opIsMyTrack(track) {
+  return track !== '' && track === WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Tracks.Track)'];
+}
+
+function _opServerGameKey(elem) {
+  const prefix = 'ScoreBoard.Tracks.ServerGame(' + $(elem).attr('ServerGame') + ').';
+  // this track's games first, then by date, start time and game number
+  return (
+    (_opIsMyTrack(WS.state[prefix + 'Track'] || '') ? '0 ' : '1 ') +
+    (WS.state[prefix + 'Date'] || '9999') +
+    ' ' +
+    (WS.state[prefix + 'StartTime'] || '99:99') +
+    ' ' +
+    ('0000' + (WS.state[prefix + 'GameNo'] || '')).slice(-4) +
+    ' ' +
+    WS.state[prefix + 'Name']
+  );
+}
+
+function opServerGameSort(a, b) {
+  return _opServerGameKey(a) > _opServerGameKey(b);
+}
+
+function opServerGameLabel(k, v) {
+  const track = WS.state[k.upTo('ServerGame') + '.Track'] || '';
+  return v + (track && !_opIsMyTrack(track) ? ' (track ' + track + ')' : '');
+}
+
+function opIsNotPullable(k, v) {
+  const prefix = k.upTo('ServerGame') + '.';
+  // running on another track, handed over for review or already played
+  return (
+    (v !== '' && !_opIsMyTrack(v)) || isTrue(WS.state[prefix + 'HandedOver']) || WS.state[prefix + 'State'] === 'Finished'
+  );
+}
+
+function opPullServerGame(k, v, elem) {
+  // the track puts the game on the scoreboard once it has arrived
+  WS.Set('ScoreBoard.Tracks.ServerGame(' + elem.siblings('select').val() + ').Pull', true);
+  sbCloseDialog(k, v, elem);
 }
 
 function opIsDefaultRuleset(k, v) {

@@ -7,6 +7,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Settings;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
+import com.carolinarollergirls.scoreboard.core.interfaces.Tracks;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
@@ -35,6 +36,9 @@ public final class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> im
                 set(ScoreBoard.SETTING_USE_LT, "true");
             } else if (ScoreBoard.SETTING_USE_LT.equals(item.getId()) && "false".equals(item.getValue())) {
                 set(ScoreBoard.SETTING_USE_PBT, "false");
+                set(Tracks.SETTING_TOURNAMENT_SERVER, "false");
+                set(Tracks.SETTING_SERVER, "");
+                set(Tracks.SETTING_TRACK, "");
             }
         }
     }

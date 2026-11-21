@@ -196,3 +196,39 @@ function igrfOpenRemoveDialog(k) {
     ],
   });
 }
+
+function igrfHideHandOver(k) {
+  // only for a game pulled from the tournament server that is still on this track
+  const prefix = 'ScoreBoard.Tracks.PulledGame(' + k.PulledGame + ').';
+  return !WS.state[prefix + 'Id'] || Number(WS.state[prefix + 'HandedOver'] || 0) > 0;
+}
+
+function igrfNotHandedOver(k, v) {
+  return !(Number(v || 0) > 0);
+}
+
+function igrfHandOver(k) {
+  $('<div>')
+    .append(
+      $('<p>').text(
+        'Hand this game over to the tournament server for review? Changes can then only be made there, unless the game is taken back on the Tracks page.',
+      ),
+    )
+    .dialog({
+      title: 'Hand Over',
+      modal: true,
+      width: 500,
+      close: function () {
+        $(this).dialog('destroy').remove();
+      },
+      buttons: {
+        'Hand Over': function () {
+          WS.Set('ScoreBoard.Tracks.PulledGame(' + k.Game + ').HandOver', true);
+          $(this).dialog('close');
+        },
+        Cancel: function () {
+          $(this).dialog('close');
+        },
+      },
+    });
+}

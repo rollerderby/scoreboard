@@ -16,10 +16,12 @@
 	<classpathentry kind="lib" path="lib/deps/jetty-server-9.4.44.v20210927.jar"/>
 	<classpathentry kind="lib" path="lib/deps/jetty-servlet-9.4.44.v20210927.jar"/>
 	<classpathentry kind="lib" path="lib/deps/jetty-util-9.4.44.v20210927.jar"/>
+	<classpathentry kind="lib" path="lib/deps/jetty-client-9.4.44.v20210927.jar"/>
 	<classpathentry kind="lib" path="lib/deps/websocket-servlet-9.4.44.v20210927.jar"/>
 	<classpathentry kind="lib" path="lib/deps/websocket-server-9.4.44.v20210927.jar"/>
 	<classpathentry kind="lib" path="lib/deps/websocket-common-9.4.44.v20210927.jar"/>
 	<classpathentry kind="lib" path="lib/deps/websocket-api-9.4.44.v20210927.jar"/>
+	<classpathentry kind="lib" path="lib/deps/websocket-client-9.4.44.v20210927.jar"/>
 	<classpathentry kind="lib" path="lib/deps/servlet-api-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/deps/poi-4.1.2.jar"/>
 	<classpathentry kind="lib" path="lib/deps/poi-ooxml-4.1.2.jar"/>
