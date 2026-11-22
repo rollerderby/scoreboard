@@ -182,8 +182,7 @@ public class ScoreBoardImplTests {
         sb.getCurrentGame().set(CurrentGame.GAME, sb.getOrCreate(ScoreBoard.GAME, "next"));
         Game next = sb.getCurrentGame().get(CurrentGame.GAME);
 
-        assertEquals(next.getCurrentTimeout(),
-                     ((CurrentTimeout) sb.getElement(CurrentTimeout.class, "noTimeout")).getSourceElement());
+        assertEquals(next.getCurrentTimeout(), sb.getElement(CurrentTimeout.class, "noTimeout").getSourceElement());
     }
 
     @Test
