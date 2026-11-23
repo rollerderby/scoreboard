@@ -21,7 +21,8 @@ public final class OfficialPositionImpl
         setCopy(CURRENT_OFFICIAL_NAME, this, CURRENT_OFFICIAL, Official.NAME, true);
         setRecalculated(NAME)
             .addIndirectSource(this, TEAM, Team.UNIFORM_COLOR)
-            .addIndirectSource(this, TEAM, Team.DISPLAY_NAME);
+            .addIndirectSource(this, TEAM, Team.DISPLAY_NAME)
+            .addIndirectSource(this, TEAM, Team.ALTERNATE_NAME);
         setRecalculated(REMOVABLE).addSource(this, PENALTIES).addSource(this, CURRENT_OFFICIAL);
         if (id.endsWith(Team.ID_1)) { set(TEAM, game.getTeam(Team.ID_1)); }
         if (id.endsWith(Team.ID_2)) { set(TEAM, game.getTeam(Team.ID_2)); }
@@ -40,8 +41,10 @@ public final class OfficialPositionImpl
             Team team = get(TEAM);
             if (team != null) {
                 String uniformColor = team.get(Team.UNIFORM_COLOR);
-                String teamName =
-                    uniformColor == null || "".equals(uniformColor) ? team.get(Team.DISPLAY_NAME) : uniformColor;
+                String pltAlternateName = team.getAlternateName("plt");
+                String teamName = pltAlternateName != null && !"".equals(pltAlternateName) ? pltAlternateName
+                    : uniformColor != null && !"".equals(uniformColor) ? uniformColor
+                    : team.get(Team.DISPLAY_NAME);
                 return subId.substring(0, subId.length() - 1) + " " + teamName;
             } else if ("IPRF".equals(subId)) {
                 return "IPR Front";
@@ -62,9 +65,7 @@ public final class OfficialPositionImpl
             }
         }
         if (prop == REMOVABLE) {
-            if ("IPRF".equals(subId) || "IPRR".equals(subId) || "JR1".equals(subId) || "JR2".equals(subId) ||
-                "OPRR".equals(subId) || "OPRM".equals(subId) || "OPRF".equals(subId) || "PBM".equals(subId) ||
-                "JT".equals(subId)) {
+            if (Game.DEFAULT_CALLED_BY_POSITIONS.contains(subId)) {
                 // Frontend expects these to always be present
                 return false;
             }
