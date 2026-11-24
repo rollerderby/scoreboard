@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+  <head>
+    <title>All Tracks | CRG ScoreBoard</title>
+    <script type="text/javascript" src="/external/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/json/core.js"></script>
+  </head>
+  <body>
+    <div id="Tracks" sbContext="ScoreBoard.Tracks">
+      <div
+        class="Tile"
+        sbForeach="Track:: order: resort=Id"
+        sbAttr="order: Id: trvTrackOrder"
+        sbClass="Disconnected: Connected: ! | NoGame: GameState: sbIsEmpty"
+      >
+        <div class="Inner">
+          <div class="TrackName AutoFit" sbDisplay="Id: trvTrackName"></div>
+          <div class="Status AutoFit" sbDisplay="Connected, LastSeen, GameState, Period, Jam: trvStatus"></div>
+          <div class="Team Team1 AutoFit" sbDisplay="Team1" sbClass="HasLead: Lead1"></div>
+          <div class="Dots Dots1">
+            <div class="DotTimeouts Box">
+              <div
+                class="Dot Timeout1"
+                team="1"
+                dot="1"
+                sbClass="Used: Timeouts1: <1 | Current: TimeoutOwner, OfficialReview, Timeouts1: trvIsCurrent"
+              ></div>
+              <div
+                class="Dot Timeout2"
+                team="1"
+                dot="2"
+                sbClass="Used: Timeouts1: <2 | Current: TimeoutOwner, OfficialReview, Timeouts1: trvIsCurrent"
+              ></div>
+              <div
+                class="Dot Timeout3"
+                team="1"
+                dot="3"
+                sbClass="Used: Timeouts1: <3 | Current: TimeoutOwner, OfficialReview, Timeouts1: trvIsCurrent"
+              ></div>
+            </div>
+            <div class="DotOfficialReviews Box">
+              <div
+                class="Dot OfficialReview1"
+                team="1"
+                sbClass="Retained: RetainedOfficialReview1 | Used: OfficialReviews1: <1 | Current: TimeoutOwner, OfficialReview: trvIsCurrentReview"
+              ></div>
+              <div
+                class="Dot OfficialReviewHelper"
+                team="1"
+                sbClass="Retained: RetainedOfficialReview1 | Used: OfficialReviews1: <1 | Current: TimeoutOwner, OfficialReview: trvIsCurrentReview"
+              ></div>
+            </div>
+          </div>
+          <div class="Score Score1 Box AutoFit" sbDisplay="Score1"></div>
+          <div class="Team Team2 AutoFit" sbDisplay="Team2" sbClass="HasLead: Lead2"></div>
+          <div class="Dots Dots2">
+            <div class="DotTimeouts Box">
+              <div
+                class="Dot Timeout1"
+                team="2"
+                dot="1"
+                sbClass="Used: Timeouts2: <1 | Current: TimeoutOwner, OfficialReview, Timeouts2: trvIsCurrent"
+              ></div>
+              <div
+                class="Dot Timeout2"
+                team="2"
+                dot="2"
+                sbClass="Used: Timeouts2: <2 | Current: TimeoutOwner, OfficialReview, Timeouts2: trvIsCurrent"
+              ></div>
+              <div
+                class="Dot Timeout3"
+                team="2"
+                dot="3"
+                sbClass="Used: Timeouts2: <3 | Current: TimeoutOwner, OfficialReview, Timeouts2: trvIsCurrent"
+              ></div>
+            </div>
+            <div class="DotOfficialReviews Box">
+              <div
+                class="Dot OfficialReview1"
+                team="2"
+                sbClass="Retained: RetainedOfficialReview2 | Used: OfficialReviews2: <1 | Current: TimeoutOwner, OfficialReview: trvIsCurrentReview"
+              ></div>
+              <div
+                class="Dot OfficialReviewHelper"
+                team="2"
+                sbClass="Retained: RetainedOfficialReview2 | Used: OfficialReviews2: <1 | Current: TimeoutOwner, OfficialReview: trvIsCurrentReview"
+              ></div>
+            </div>
+          </div>
+          <div class="Score Score2 Box AutoFit" sbDisplay="Score2"></div>
+          <div class="PeriodClock Box">
+            <div class="Label AutoFit">Period</div>
+            <div class="Time AutoFit" sbDisplay="PeriodClock: trvTime"></div>
+          </div>
+          <div class="Clock Box" sbClass="Lineup: Clock: trvIsLineup | sbInvisible: Clock: sbIsEmpty">
+            <div class="Label AutoFit" sbDisplay="Clock"></div>
+            <div class="Time AutoFit" sbDisplay="ClockTime: trvTime"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="NoTracks" class="sbHide">
+      No track has connected yet. This page shows the tracks on the tournament server (<i>Tracks</i> on the start page).
+    </div>
+  </body>
+</html>

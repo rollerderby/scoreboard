@@ -1,0 +1,20 @@
+#Tracks th { padding-left: 10px; padding-right: 10px; }
+#Tracks td { padding-left: 10px; padding-right: 10px; line-height: 27px; }
+#Tracks .Name { text-align: left; }
+#Tracks .Status { text-align: left; }
+#Tracks .Buttons { text-align: left; white-space: nowrap; }
+#Tracks .Buttons .ui-button { font-size: 75%; }
+#Tracks .Intro, #Tracks .Help { text-align: left; }
+#Tracks .Setup > span { margin-right: 1em; }
+#Tracks .Error { color: #b00; font-weight: bold; }
+#Tracks .Urls { margin-left: 1em; }
+#Tracks tr.Mine { background-color: #adddad; }
+#Tracks tr.Elsewhere { color: #888; }
+#Tracks tr.HasError .Status { color: #b00; font-weight: bold; }
+#Tracks tr.HandedOver { color: #666; }
+#Tracks .Server button { white-space: nowrap; }
+#Tracks .Live .Score { text-align: left; white-space: nowrap; }
+#Tracks .Live .Clock { white-space: nowrap; }
+#Tracks tr.Disconnected { color: #888; }
+#Tracks tr.Disconnected .Connection { color: #b00; font-weight: bold; }
+#Tracks .Setup .Connected { font-weight: bold; }

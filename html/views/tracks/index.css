@@ -1,0 +1,49 @@
+body { color: #FFFFFF; font-weight: bold; background: #000000; height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; user-select: none; }
+div { text-align: center; overflow: hidden; }
+
+#Tracks { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: grid; box-sizing: border-box; padding: 0.5vmin; gap: 0.5vmin; }
+#Tracks>.Tile { display: flex; align-items: center; justify-content: center; min-width: 0; min-height: 0; }
+#Tracks>.Tile>.Inner { position: relative; }
+#Tracks>.Tile.Disconnected>.Inner, #Tracks>.Tile.NoGame>.Inner { opacity: 0.4; }
+
+.Box { box-shadow: inset -0.03em -0.05em 0.15em rgba(0,0,0,0.5); color: #000000; background: linear-gradient(to bottom, #FFFFFF, #A0A0A0); border-radius: 0.8vmin; }
+
+.Box.Lineup { background: linear-gradient(to bottom, #C8C8C8, #808080); }
+.Inner>div { position: absolute; }
+.Inner>.TrackName { left: 1%; top: 1%; width: 40%; height: 13%; text-align: left; color: #FFD700; }
+.Inner>.Status { left: 42%; top: 1%; width: 57%; height: 13%; text-align: right; }
+.Inner>.Team { left: 1%; width: 62%; height: 22%; text-align: left; }
+.Inner>.Team1 { top: 17%; }
+.Inner>.Team2 { top: 42%; }
+.Inner>.Score { left: 71%; width: 28%; height: 22%; }
+.Inner>.Score1 { top: 17%; }
+.Inner>.Score2 { top: 42%; }
+.Inner>.Dots { left: 64%; width: 5%; height: 22%; }
+.Inner>.Dots1 { top: 17%; }
+.Inner>.Dots2 { top: 42%; }
+.Dots>.DotTimeouts { position: absolute; left: 0; top: 0; width: 100%; height: 70%; }
+.Dots>.DotOfficialReviews { position: absolute; left: 0; top: 76%; width: 100%; height: 24%; }
+/* the tile is 16:9, so these sizes give round dots */
+.Dots>.DotTimeouts .Dot { position: absolute; width: 40%; height: 23%; left: 30%; }
+.Dots>.DotTimeouts .Timeout1 { top: 7%; }
+.Dots>.DotTimeouts .Timeout2 { top: 38.5%; }
+.Dots>.DotTimeouts .Timeout3 { top: 70%; }
+.Dots>.DotOfficialReviews .Dot { position: absolute; width: 36%; height: 60%; left: 32%; top: 20%; }
+.Dots>.DotOfficialReviews .Dot.OfficialReview1.Retained { border-radius: 20%; width: 14%; left: 43%; }
+.Dots>.DotOfficialReviews .Dot.OfficialReviewHelper.Retained { border-radius: 20%; height: 24%; top: 38%; }
+.Dots>.DotOfficialReviews .Dot.OfficialReviewHelper:not(.Retained) { display: none; }
+.Dot { border-radius: 100%; background: #000000; }
+.Dot.Current { opacity: 0; animation: DotActive 0.75s infinite steps(6); }
+.Dot.Used { opacity: 0; }
+@keyframes DotActive { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+.Inner>.PeriodClock { left: 1%; top: 68%; width: 41%; height: 31%; }
+.Inner>.Clock { left: 44%; top: 68%; width: 55%; height: 31%; }
+.Inner>.Team div, .Inner>.TrackName div { text-align: left; }
+/* lead jammer: the team name blinks as the jammer's name does on the main scoreboard */
+.Inner>.Team.HasLead { color: #FF0000; animation: HasLead 1s infinite steps(6); }
+@keyframes HasLead { 0% { color: #FF0000; } 50% { color: #FFFFFF; } 100% { color: #FF0000; } }
+.Inner>.Status div { text-align: right; }
+.Inner .Label { position: absolute; left: 3%; top: 4%; width: 94%; height: 30%; }
+.Inner .Time { position: absolute; left: 3%; top: 32%; width: 94%; height: 66%; }
+
+#NoTracks { position: absolute; left: 10%; top: 40%; width: 80%; font-size: 3vmin; font-weight: normal; }

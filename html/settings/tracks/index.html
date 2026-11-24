@@ -1,0 +1,234 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Tracks | CRG ScoreBoard</title>
+
+    <script type="text/javascript" src="/external/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/json/core.js"></script>
+  </head>
+
+  <body sbContext="ScoreBoard" sbPrefix="$:ScoreBoard.Settings.Setting(ScoreBoard:)">
+    <a id="sbIndexLink" href="/">Back to index page</a>
+    <div id="Tracks">
+      <div class="sbSegment">
+        <div class="sbGroup sbHeader"><span>Tournament on Several Tracks</span></div>
+        <div class="sbGroup Intro">
+          <span
+            >One scoreboard is the tournament server: the games are prepared there. The scoreboard of each track pulls its games from the
+            tournament server and sends them back while they run, so the tournament server always has every game. When a game is over and its
+            paperwork checked, the track hands it over, so it can be reviewed and its statsbook made on the tournament server while the track runs the next game.
+            With a single track none of this is needed.</span
+          >
+        </div>
+      </div>
+
+      <div class="sbSegment Server">
+        <div class="sbGroup sbHeader"><span>Tournament Server</span></div>
+        <div class="sbGroup">
+          <button sbToggle="$.Tracks.TournamentServer">
+            This Scoreboard is the Tournament Server<span class="sbTooltip Below"
+              >Lets the scoreboards of the tracks pull games from this one and send them back.</span
+            >
+          </button>
+          <span class="Urls sbHide" sbClass="sbHide: $.Tracks.TournamentServer: !"
+            >Enter one of these addresses on the tracks: <span id="Urls"></span
+          ></span>
+        </div>
+        <table
+          class="sbGroup Live sbHide"
+          sbContext="Tracks"
+          sbClass="sbHide: /ScoreBoard.Settings.Setting(ScoreBoard.Tracks.TournamentServer): !"
+        >
+          <thead class="sbHeader">
+            <tr>
+              <th colspan="8">Tracks</th>
+            </tr>
+            <tr>
+              <th>Track</th>
+              <th>Connection</th>
+              <th class="Name">Game</th>
+              <th>Period</th>
+              <th>Jam</th>
+              <th>Clock</th>
+              <th class="Score">Score</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr sbForeach="Track:: order: resort=Id" sbAttr="order: Id: trkTrackOrder" sbClass="Disconnected: Connected: !">
+              <td class="TrackNo" sbDisplay="Id"></td>
+              <td class="Connection" sbDisplay="Connected, LastSeen, RemoteAddr: trkConnection"></td>
+              <td class="Name" sbDisplay="GameName"></td>
+              <td sbDisplay="Period, PeriodClock: trkPeriod"></td>
+              <td sbDisplay="Jam"></td>
+              <td class="Clock" sbDisplay="Clock, ClockTime: trkClock"></td>
+              <td class="Score" sbDisplay="Team1, Score1, Team2, Score2: trkScore"></td>
+              <td class="Buttons"><button sbClass="sbHide: Connected" sbSet="Remove">Remove</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="sbGroup Games sbHide" sbClass="sbHide: $.Tracks.TournamentServer: !">
+          <thead class="sbHeader">
+            <tr>
+              <th colspan="6">Games</th>
+            </tr>
+            <tr>
+              <th>Game</th>
+              <th>Date</th>
+              <th>Start</th>
+              <th>Track</th>
+              <th class="Name">Name</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr sbForeach="Game:: order: resort=Name" sbAttr="order: Name: trkGameOrder">
+              <td class="GameNo" sbDisplay="EventInfo(GameNo)"></td>
+              <td sbDisplay="EventInfo(Date)"></td>
+              <td sbDisplay="EventInfo(StartTime)"></td>
+              <td><input type="text" size="3" sbControl="EventInfo(Track)" /></td>
+              <td class="Name" sbDisplay="Name"></td>
+              <td class="Buttons"><a sbAttr="href: Id: '/nso/hnso?game=' + v" sbButton>Edit</a></td>
+            </tr>
+          </tbody>
+        </table>
+        <table
+          class="sbGroup TrackGames sbHide"
+          sbContext="Tracks"
+          sbClass="sbHide: /ScoreBoard.Settings.Setting(ScoreBoard.Tracks.TournamentServer): !"
+        >
+          <thead class="sbHeader">
+            <tr>
+              <th colspan="6">Games Pulled by Tracks</th>
+            </tr>
+            <tr>
+              <th>Track</th>
+              <th class="Name">Name</th>
+              <th>Pulled</th>
+              <th>Last Received</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr sbForeach="TrackGame:: pulled: resort=Pulled" sbAttr="pulled: Pulled" sbClass="HandedOver: HandedOver: > 0">
+              <td sbDisplay="Track"></td>
+              <td class="Name" sbDisplay="Name"></td>
+              <td sbDisplay="Pulled: trkTime"></td>
+              <td sbDisplay="Pushed: trkTime"></td>
+              <td class="Status" sbDisplay="HandedOver: trkTrackGameStatus"></td>
+              <td class="Buttons">
+                <a sbClass="sbHide: HandedOver: == 0" sbAttr="href: Track: trkEditLink" sbButton>Edit</a>
+                <button sbClass="sbHide: HandedOver: > 0" sbCall="trkRelease">Release</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="sbGroup Help sbHide" sbClass="sbHide: $.Tracks.TournamentServer: !">
+          <span
+            >The scoreboard of each track connects to this one and reports what it is doing. Enter the track of each game here or on its
+            IGRF tab. While a track runs a game, the game can only be changed on that track's scoreboard. <i>Release</i> lets another track
+            pull it, e.g. when a track's laptop broke down; the game is then as this scoreboard last received it.</span
+          >
+        </div>
+      </div>
+
+      <div
+        class="sbSegment Track"
+        sbContext="Tracks"
+        sbClass="sbHide: /ScoreBoard.Settings.Setting(ScoreBoard.Tracks.TournamentServer): trkIsOn"
+      >
+        <div class="sbGroup sbHeader"><span>This Scoreboard as a Track</span></div>
+        <div class="sbGroup Setup">
+          <span class="sbHasTooltip"
+            >Tournament Server:
+            <input
+              type="text"
+              size="25"
+              placeholder="192.168.1.10:8000"
+              sbControl="/ScoreBoard.Settings.Setting(ScoreBoard.Tracks.Server)"
+            />
+            <span class="sbTooltip"
+              >The address of the tournament server's scoreboard, as shown on its Tracks page.<br />Leave empty when this scoreboard isn't a
+              track of a tournament.</span
+            ></span
+          >
+          <span>Track: <input type="text" size="3" sbControl="/ScoreBoard.Settings.Setting(ScoreBoard.Tracks.Track)" /></span>
+          <span class="Connected" sbDisplay="ServerConnected: trkServerConnected"></span>
+          <span class="Contact" sbDisplay="ServerContact: trkContact"></span>
+          <span class="Error" sbDisplay="ServerError"></span>
+        </div>
+        <table class="sbGroup ServerGames">
+          <thead class="sbHeader">
+            <tr>
+              <th colspan="7">Games on the Tournament Server</th>
+            </tr>
+            <tr>
+              <th>Game</th>
+              <th>Date</th>
+              <th>Start</th>
+              <th>Track</th>
+              <th class="Name">Name</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              sbForeach="ServerGame:: order: resort=Name"
+              sbAttr="order: Name: trkServerGameOrder"
+              sbClass="Mine: Track: trkIsMine | Elsewhere: RunsOn: trkIsElsewhere"
+            >
+              <td class="GameNo" sbDisplay="GameNo"></td>
+              <td sbDisplay="Date"></td>
+              <td sbDisplay="StartTime"></td>
+              <td sbDisplay="Track"></td>
+              <td class="Name" sbDisplay="Name"></td>
+              <td class="Status" sbDisplay="RunsOn: trkServerGameStatus"></td>
+              <td class="Buttons"><button sbClass="sbHide: RunsOn: trkIsElsewhere" sbCall="trkPull">Pull</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="sbGroup PulledGames">
+          <thead class="sbHeader">
+            <tr>
+              <th colspan="4">Games Pulled to this Scoreboard</th>
+            </tr>
+            <tr>
+              <th class="Name">Name</th>
+              <th>Pulled</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              sbForeach="PulledGame:: pulled: resort=Pulled"
+              sbAttr="pulled: Pulled"
+              sbClass="HasError: Error: !== '' | HandedOver: HandedOver: > 0"
+            >
+              <td class="Name" sbDisplay="Name"></td>
+              <td sbDisplay="Pulled: trkTime"></td>
+              <td class="Status" sbDisplay="Error, Pushed, HandedOver: trkPushStatus"></td>
+              <td class="Buttons">
+                <button sbClass="sbHide: HandedOver: > 0" sbSet="Push">Send Now</button>
+                <button sbClass="sbHide: HandedOver: > 0" sbCall="trkHandOver">Hand Over</button>
+                <button sbClass="sbHide: HandedOver: == 0" sbCall="trkTakeBack">Take Back</button>
+                <button sbCall="trkForget">Forget</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="sbGroup Help">
+          <span
+            >A pulled game goes on this scoreboard. Between jams it is sent to the tournament server whenever it has changed; while the
+            tournament server can't be reached, it is tried again every few seconds, and nothing is lost. During a jam, the tournament
+            server shows the clocks and the score this scoreboard reports. Once the paperwork has been checked, <i>Hand Over</i> (also on
+            the IGRF tab) sends the game to the tournament server for review; it can't be changed here any more after that.
+            <i>Take Back</i> pulls it back with any changes made there.</span
+          >
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

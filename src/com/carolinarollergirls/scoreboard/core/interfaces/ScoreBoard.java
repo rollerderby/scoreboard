@@ -25,6 +25,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public Clients getClients();
 
+    public Tracks getTracks();
+
     public Game getGame(String id);
 
     public PreparedTeam getPreparedTeam(String id);
@@ -46,6 +48,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public static final Child<Settings> SETTINGS = new Child<>(Settings.class, "Settings", props);
     public static final Child<Media> MEDIA = new Child<>(Media.class, "Media", props);
     public static final Child<Clients> CLIENTS = new Child<>(Clients.class, "Clients", props);
+    public static final Child<Tracks> TRACKS = new Child<>(Tracks.class, "Tracks", props);
     public static final Child<Rulesets> RULESETS = new Child<>(Rulesets.class, "Rulesets", props);
     public static final Child<Game> GAME = new Child<>(Game.class, "Game", props);
     public static final Child<PreparedTeam> PREPARED_TEAM = new Child<>(PreparedTeam.class, "PreparedTeam", props);

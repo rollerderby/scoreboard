@@ -5,6 +5,7 @@ import java.util.Map;
 import com.carolinarollergirls.scoreboard.core.admin.ClientsImpl;
 import com.carolinarollergirls.scoreboard.core.admin.MediaImpl;
 import com.carolinarollergirls.scoreboard.core.admin.SettingsImpl;
+import com.carolinarollergirls.scoreboard.core.admin.TracksImpl;
 import com.carolinarollergirls.scoreboard.core.current.CurrentGameImpl;
 import com.carolinarollergirls.scoreboard.core.game.GameImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients;
@@ -17,6 +18,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Settings;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 import com.carolinarollergirls.scoreboard.core.interfaces.TimeoutOwner;
+import com.carolinarollergirls.scoreboard.core.interfaces.Tracks;
 import com.carolinarollergirls.scoreboard.core.prepared.OfficialsCrewImpl;
 import com.carolinarollergirls.scoreboard.core.prepared.PreparedOfficialImpl;
 import com.carolinarollergirls.scoreboard.core.prepared.PreparedTeamImpl;
@@ -53,6 +55,8 @@ public final class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard
         addWriteProtection(MEDIA);
         add(CLIENTS, new ClientsImpl(this));
         addWriteProtection(CLIENTS);
+        add(TRACKS, new TracksImpl(this));
+        addWriteProtection(TRACKS);
         add(CURRENT_GAME, new CurrentGameImpl(this));
         addWriteProtection(CURRENT_GAME);
     }
@@ -109,6 +113,11 @@ public final class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard
     @Override
     public Clients getClients() {
         return get(CLIENTS, "");
+    }
+
+    @Override
+    public Tracks getTracks() {
+        return get(TRACKS, "");
     }
 
     @Override

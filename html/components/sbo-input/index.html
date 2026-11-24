@@ -224,6 +224,22 @@
         <button disabled sbSet="CurrentGame.Game: opFetchGame" sbCall="sbCloseDialog">Start Prepared Game</button>
       </div>
     </div>
+    <div class="sbSegment" sbClass="sbHide: /ScoreBoard.Settings.Setting(ScoreBoard.Tracks.Server): sbIsEmpty">
+      <div class="sbGroup sbHeader"><span>Start From Tournament Server</span></div>
+      <div class="sbGroup sbStack" sbContext="Tracks">
+        <select sbCall="opEnableStartButton">
+          <option value="">No Game Selected</option>
+          <option
+            sbForeach="ServerGame:: opServerGameSort"
+            sbAttr="value: Id"
+            sbClass="sbHide: RunsOn: opIsNotPullable"
+            sbDisplay="Name: opServerGameLabel"
+          ></option>
+        </select>
+        <span class="Error" sbDisplay="ServerError"></span>
+        <button disabled sbCall="opPullServerGame">Pull and Start Prepared Game</button>
+      </div>
+    </div>
     <div class="sbSegment">
       <div class="sbGroup sbHeader"><span>Start an Adhoc Game</span></div>
       <div class="sbGroup sbStack">
